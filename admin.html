@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - NUCA Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -14,38 +15,64 @@
                         'nuca-beige': '#D8C6A5',
                         'nuca-green': '#556B4F',
                         'nuca-dark': '#2C3328',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
+    <style>
+        body { background-color: #D8C6A5; color: #556B4F; font-family: 'Space Grotesk', sans-serif; }
+        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; }
+    </style>
 </head>
-<body class="bg-nuca-beige min-h-screen p-8">
+<body class="min-h-screen p-4 md:p-8">
     <div class="max-w-7xl mx-auto">
-        <h1 class="text-4xl font-bold text-nuca-green mb-8">Painel de Encomendas NUCA</h1>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold nuca-logo text-nuca-green">Painel NUCA</h1>
+            <button onclick="loadOrders()" class="bg-nuca-green text-nuca-beige px-6 py-2 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                Atualizar
+            </button>
+        </div>
         
-        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-nuca-green text-nuca-beige">
-                    <tr>
-                        <th class="p-4">Nº Encomenda</th>
-                        <th class="p-4">Data</th>
-                        <th class="p-4">Cliente</th>
-                        <th class="p-4">Total</th>
-                        <th class="p-4">Estado</th>
-                        <th class="p-4">Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="orders-list" class="divide-y divide-nuca-green/10">
-                    <tr><td colspan="6" class="p-8 text-center text-nuca-green/60">A carregar...</td></tr>
-                </tbody>
-            </table>
+        <div class="bg-white/50 rounded-3xl shadow-lg overflow-hidden border border-nuca-green/10">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-nuca-green text-nuca-beige">
+                        <tr>
+                            <th class="p-4 text-sm">Nº Encomenda</th>
+                            <th class="p-4 text-sm">Data</th>
+                            <th class="p-4 text-sm">Cliente</th>
+                            <th class="p-4 text-sm">Itens</th>
+                            <th class="p-4 text-sm">Total</th>
+                            <th class="p-4 text-sm">Estado</th>
+                            <th class="p-4 text-sm">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-list" class="divide-y divide-nuca-green/10">
+                        <tr><td colspan="7" class="p-8 text-center text-nuca-green/60">A carregar...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="order-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-nuca-beige rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-nuca-green hover:text-nuca-dark">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div id="modal-content"></div>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://seu-projeto.supabase.co';
-        const SUPABASE_KEY = 'sua-chave-anon-publica-aqui';
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         async function loadOrders() {
@@ -56,38 +83,146 @@
 
             if(error) {
                 console.error(error);
+                document.getElementById('orders-list').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-600">Erro: ${error.message}</td></tr>`;
                 return;
             }
 
             const tbody = document.getElementById('orders-list');
-            tbody.innerHTML = orders.map(order => `
-                <tr class="hover:bg-nuca-green/5">
-                    <td class="p-4 font-mono font-bold text-nuca-green">${order.order_number}</td>
+            
+            if(orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-nuca-green/60">Sem encomendas ainda</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = orders.map(order => {
+                const itemCount = order.items ? order.items.length : 0;
+                return `
+                <tr class="hover:bg-nuca-green/5 transition-colors">
+                    <td class="p-4 font-mono font-bold text-nuca-green text-sm">${order.order_number}</td>
                     <td class="p-4 text-sm text-nuca-green/70">${new Date(order.created_at).toLocaleString('pt-PT')}</td>
                     <td class="p-4">
-                        <div class="font-medium text-nuca-green">${order.customer_name}</div>
-                        <div class="text-sm text-nuca-green/60">${order.customer_email}</div>
+                        <div class="font-medium text-nuca-green text-sm">${order.customer_name}</div>
+                        <div class="text-xs text-nuca-green/60">${order.customer_email}</div>
                     </td>
+                    <td class="p-4 text-sm text-nuca-green/70">${itemCount} item(s)</td>
                     <td class="p-4 font-bold text-nuca-green">€${order.total.toFixed(2)}</td>
                     <td class="p-4">
                         <span class="px-3 py-1 rounded-full text-xs font-bold ${
                             order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                             order.status === 'paid' ? 'bg-green-100 text-green-700' :
+                            order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
                             'bg-gray-100 text-gray-700'
                         }">${order.status.toUpperCase()}</span>
                     </td>
                     <td class="p-4">
-                        <button onclick="viewDetails('${order.id}')" class="text-nuca-green hover:underline text-sm">Ver detalhes</button>
+                        <button onclick="viewDetails('${order.id}')" class="text-nuca-green hover:underline text-sm font-medium">Ver detalhes</button>
                     </td>
                 </tr>
+            `}).join('');
+        }
+
+        async function viewDetails(orderId) {
+            const { data: order, error } = await supabase
+                .from('orders')
+                .select('*')
+                .eq('id', orderId)
+                .single();
+
+            if(error) return;
+
+            const modal = document.getElementById('order-modal');
+            const content = document.getElementById('modal-content');
+            
+            const itemsHtml = order.items.map(item => `
+                <div class="flex justify-between py-2 border-b border-nuca-green/10">
+                    <div>
+                        <span class="font-medium text-nuca-green">${item.name}</span>
+                        <span class="text-sm text-nuca-green/60">x${item.quantity} • ${item.size}</span>
+                    </div>
+                    <span class="text-nuca-green font-medium">€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
             `).join('');
+
+            content.innerHTML = `
+                <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Detalhes da Encomenda</h2>
+                
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white/50 p-4 rounded-2xl">
+                        <h3 class="font-bold text-nuca-green mb-2 text-sm uppercase">Cliente</h3>
+                        <p class="text-nuca-green"><strong>${order.customer_name}</strong></p>
+                        <p class="text-sm text-nuca-green/70">${order.customer_email}</p>
+                        <p class="text-sm text-nuca-green/70">${order.customer_phone}</p>
+                    </div>
+                    <div class="bg-white/50 p-4 rounded-2xl">
+                        <h3 class="font-bold text-nuca-green mb-2 text-sm uppercase">Envio</h3>
+                        <p class="text-sm text-nuca-green/70">${order.shipping_address.address}</p>
+                        <p class="text-sm text-nuca-green/70">${order.shipping_address.postal} ${order.shipping_address.city}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/50 p-4 rounded-2xl mb-6">
+                    <h3 class="font-bold text-nuca-green mb-3 text-sm uppercase">Itens</h3>
+                    ${itemsHtml}
+                    <div class="mt-4 pt-4 border-t border-nuca-green/20 space-y-1 text-sm">
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Subtotal</span>
+                            <span>€${order.subtotal.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Desconto</span>
+                            <span class="text-green-600">-€${order.discount.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Envio</span>
+                            <span>${order.shipping === 0 ? 'Grátis' : '€' + order.shipping.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
+                            <span>Total</span>
+                            <span>€${order.total.toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <select onchange="updateStatus('${order.id}', this.value)" class="flex-1 bg-white border border-nuca-green/20 rounded-xl px-4 py-2 text-nuca-green">
+                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendente</option>
+                        <option value="paid" ${order.status === 'paid' ? 'selected' : ''}>Pago</option>
+                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviado</option>
+                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
+                    </select>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        function viewDetails(orderId) {
-            // Abrir modal ou redirecionar para página de detalhes
-            alert('ID da encomenda: ' + orderId);
+        async function updateStatus(orderId, newStatus) {
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', orderId);
+
+            if(error) {
+                alert('Erro ao atualizar: ' + error.message);
+            } else {
+                loadOrders();
+                alert('Estado atualizado!');
+            }
         }
 
+        function closeModal() {
+            const modal = document.getElementById('order-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Fechar modal ao clicar fora
+        document.getElementById('order-modal').addEventListener('click', (e) => {
+            if(e.target.id === 'order-modal') closeModal();
+        });
+
+        // Carregar ao iniciar
         loadOrders();
         
         // Atualizar a cada 30 segundos
