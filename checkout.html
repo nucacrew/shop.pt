@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
@@ -72,7 +71,6 @@
 
     <div class="grain-overlay"></div>
 
-    <!-- Header -->
     <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
@@ -364,26 +362,37 @@
     </main>
 
     <script>
-        // === CONFIGURAÇÃO SUPABASE ===
-        // Substitui estes valores pelos teus do Supabase (Project Settings → API)
-        const SUPABASE_URL = 'https://seu-projeto.supabase.co';
-        const SUPABASE_KEY = 'sua-chave-anon-publica-aqui';
+        // === CONFIGURAÇÃO SUPABASE - TUS CREDENCIAIS ===
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
-        // Inicializar cliente Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // Dados do carrinho (simulado - na prática vêm da tua página principal)
-        let cart = [
-            {
-                id: 1,
-                name: "T-shirt NUCA Bege",
-                price: 25,
-                size: "M",
-                quantity: 1,
-                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80",
-                isPack: false
+        // Carrinho vazio inicialmente - será preenchido do localStorage ou da página principal
+        let cart = [];
+        
+        // Tentar carregar carrinho do localStorage (temporariamente até integrares com a página principal)
+        try {
+            const savedCart = localStorage.getItem('nucaCart');
+            if(savedCart) {
+                cart = JSON.parse(savedCart);
+            } else {
+                // Dados de exemplo se não houver carrinho
+                cart = [
+                    {
+                        id: 1,
+                        name: "T-shirt NUCA Bege",
+                        price: 25,
+                        size: "M",
+                        quantity: 1,
+                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80",
+                        isPack: false
+                    }
+                ];
             }
-        ];
+        } catch(e) {
+            console.log('Sem carrinho guardado');
+        }
         
         let currentStep = 1;
         let selectedPaymentMethod = 'mbway';
@@ -399,6 +408,12 @@
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
             
+            if(cart.length === 0) {
+                container.innerHTML = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio</p>';
+                summaryContainer.innerHTML = '<p class="text-center text-nuca-green/60">Carrinho vazio</p>';
+                return;
+            }
+            
             const html = cart.map(item => `
                 <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${item.isPack ? 'border-l-4 border-nuca-green' : ''}">
                     <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
@@ -410,7 +425,7 @@
                                     ${item.isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
                                 </h4>
                                 ${item.isPack ? `
-                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items.length} peças • Tamanho ${item.size}</p>
+                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items?.length || 3} peças • Tamanho ${item.size}</p>
                                 ` : `
                                     <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
                                 `}
@@ -433,9 +448,9 @@
             let discount = 0;
             
             cart.forEach(item => {
-                if(item.isPack) {
-                    subtotal += (item.originalPrice || item.price * 1.2) * item.quantity;
-                    discount += ((item.originalPrice || item.price * 1.2) - item.price) * item.quantity;
+                if(item.isPack && item.originalPrice) {
+                    subtotal += item.originalPrice * item.quantity;
+                    discount += (item.originalPrice - item.price) * item.quantity;
                 } else {
                     subtotal += item.price * item.quantity;
                 }
@@ -526,21 +541,18 @@
             document.getElementById('payment-details').innerHTML = `<p class="text-sm text-nuca-green/80 text-center">${texts[method]}</p>`;
         }
 
-        // === FUNÇÃO PRINCIPAL: GUARDAR NA BASE DE DADOS ===
+        // === FUNÇÃO PRINCIPAL: GUARDAR NO SUPABASE ===
         async function processPayment() {
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
             
-            // Mostrar loading
             btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A processar...</span>';
             btn.disabled = true;
             
             try {
-                // 1. Calcular totais
                 const totals = updateSummary();
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
-                // 2. Preparar dados para a base de dados
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -568,7 +580,7 @@
                     status: 'pending'
                 };
                 
-                // 3. INSERIR NO SUPABASE
+                // INSERIR NO SUPABASE
                 const { data, error } = await supabase
                     .from('orders')
                     .insert([orderPayload])
@@ -576,19 +588,22 @@
                 
                 if(error) throw error;
                 
-                // 4. Guardar dados para o recibo
+                console.log('Encomenda guardada:', data);
+                
                 savedOrderId = data[0].id;
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
                 orderData.payment = selectedPaymentMethod.toUpperCase();
                 orderData.totals = totals;
                 
-                // 5. Avançar para confirmação
+                // Limpar carrinho após compra bem-sucedida
+                localStorage.removeItem('nucaCart');
+                
                 goToStep(4);
                 
             } catch(error) {
-                console.error('Erro:', error);
-                alert('Erro ao processar encomenda. Tenta novamente.');
+                console.error('Erro ao guardar:', error);
+                alert('Erro ao processar encomenda. Tenta novamente.\n\nDetalhe: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
