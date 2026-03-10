@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - NUCA Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-nuca-beige min-h-screen p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-4xl font-bold text-nuca-green mb-8">Painel de Encomendas NUCA</h1>
+        
+        <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-nuca-green text-nuca-beige">
+                    <tr>
+                        <th class="p-4">Nº Encomenda</th>
+                        <th class="p-4">Data</th>
+                        <th class="p-4">Cliente</th>
+                        <th class="p-4">Total</th>
+                        <th class="p-4">Estado</th>
+                        <th class="p-4">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-list" class="divide-y divide-nuca-green/10">
+                    <tr><td colspan="6" class="p-8 text-center text-nuca-green/60">A carregar...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://seu-projeto.supabase.co';
+        const SUPABASE_KEY = 'sua-chave-anon-publica-aqui';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadOrders() {
+            const { data: orders, error } = await supabase
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if(error) {
+                console.error(error);
+                return;
+            }
+
+            const tbody = document.getElementById('orders-list');
+            tbody.innerHTML = orders.map(order => `
+                <tr class="hover:bg-nuca-green/5">
+                    <td class="p-4 font-mono font-bold text-nuca-green">${order.order_number}</td>
+                    <td class="p-4 text-sm text-nuca-green/70">${new Date(order.created_at).toLocaleString('pt-PT')}</td>
+                    <td class="p-4">
+                        <div class="font-medium text-nuca-green">${order.customer_name}</div>
+                        <div class="text-sm text-nuca-green/60">${order.customer_email}</div>
+                    </td>
+                    <td class="p-4 font-bold text-nuca-green">€${order.total.toFixed(2)}</td>
+                    <td class="p-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                            order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                            order.status === 'paid' ? 'bg-green-100 text-green-700' :
+                            'bg-gray-100 text-gray-700'
+                        }">${order.status.toUpperCase()}</span>
+                    </td>
+                    <td class="p-4">
+                        <button onclick="viewDetails('${order.id}')" class="text-nuca-green hover:underline text-sm">Ver detalhes</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function viewDetails(orderId) {
+            // Abrir modal ou redirecionar para página de detalhes
+            alert('ID da encomenda: ' + orderId);
+        }
+
+        loadOrders();
+        
+        // Atualizar a cada 30 segundos
+        setInterval(loadOrders, 30000);
+    </script>
+</body>
+</html>
