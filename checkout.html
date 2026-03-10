@@ -116,7 +116,9 @@
                 <!-- Step 1: Carrinho -->
                 <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Resumo do Pedido</h2>
-                    <div id="checkout-items" class="space-y-4 mb-6"></div>
+                    <div id="checkout-items" class="space-y-4 mb-6">
+                        <p class="text-center text-nuca-green/60 py-8">A carregar carrinho...</p>
+                    </div>
                     <div class="border-t border-nuca-green/10 pt-4 space-y-2 text-sm">
                         <div class="flex justify-between text-nuca-green/60">
                             <span>Subtotal</span>
@@ -339,7 +341,9 @@
                 <div class="sticky top-32 space-y-6">
                     <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
                         <h3 class="font-display text-xl font-bold text-nuca-green mb-4">Resumo</h3>
-                        <div id="summary-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto"></div>
+                        <div id="summary-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <p class="text-center text-nuca-green/60">A carregar...</p>
+                        </div>
                         <div class="border-t border-nuca-green/10 pt-4 space-y-2">
                             <div class="flex justify-between text-sm text-nuca-green/60">
                                 <span>Subtotal</span>
@@ -362,82 +366,99 @@
     </main>
 
     <script>
-        // === CONFIGURAÇÃO SUPABASE - TUS CREDENCIAIS ===
+        // === CONFIGURAÇÃO SUPABASE ===
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // Carrinho vazio inicialmente - será preenchido do localStorage ou da página principal
+        // Carrinho - será preenchido da URL
         let cart = [];
-        
-        // Tentar carregar carrinho do localStorage (temporariamente até integrares com a página principal)
-        try {
-            const savedCart = localStorage.getItem('nucaCart');
-            if(savedCart) {
-                cart = JSON.parse(savedCart);
-            } else {
-                // Dados de exemplo se não houver carrinho
-                cart = [
-                    {
-                        id: 1,
-                        name: "T-shirt NUCA Bege",
-                        price: 25,
-                        size: "M",
-                        quantity: 1,
-                        image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80",
-                        isPack: false
-                    }
-                ];
-            }
-        } catch(e) {
-            console.log('Sem carrinho guardado');
-        }
         
         let currentStep = 1;
         let selectedPaymentMethod = 'mbway';
         let orderData = {};
         let savedOrderId = null;
 
+        // === FUNÇÃO CRÍTICA: Obter carrinho da URL ===
+        function getCartFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const cartData = urlParams.get('cart');
+            
+            if (cartData) {
+                try {
+                    // Decodificar e parsear o carrinho
+                    const decoded = decodeURIComponent(cartData);
+                    cart = JSON.parse(decoded);
+                    console.log('Carrinho carregado da URL:', cart);
+                    return true;
+                } catch (e) {
+                    console.error('Erro ao carregar carrinho:', e);
+                    cart = [];
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            renderCheckoutItems();
-            updateSummary();
+            // Tentar carregar da URL primeiro
+            const hasCart = getCartFromURL();
+            
+            if (!hasCart || cart.length === 0) {
+                // Se não houver carrinho na URL, mostrar mensagem
+                document.getElementById('checkout-items').innerHTML = 
+                    '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio. Volta à loja para adicionar produtos.</p>';
+                document.getElementById('summary-items').innerHTML = 
+                    '<p class="text-center text-nuca-green/60">Carrinho vazio</p>';
+                
+                // Desabilitar botão de continuar
+                const btn = document.querySelector('#step-1 button');
+                if(btn) btn.disabled = true;
+            } else {
+                // Carrinho carregado com sucesso
+                renderCheckoutItems();
+                updateSummary();
+            }
         });
 
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
             
-            if(cart.length === 0) {
+            if(!cart || cart.length === 0) {
                 container.innerHTML = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio</p>';
                 summaryContainer.innerHTML = '<p class="text-center text-nuca-green/60">Carrinho vazio</p>';
                 return;
             }
             
-            const html = cart.map(item => `
+            const html = cart.map(item => {
+                const itemTotal = (item.price || 0) * (item.quantity || 1);
+                return `
                 <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${item.isPack ? 'border-l-4 border-nuca-green' : ''}">
-                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
+                    <img src="${item.image || ''}" alt="${item.name || 'Produto'}" class="w-20 h-20 object-cover rounded-xl">
                     <div class="flex-1">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="font-bold text-nuca-green ${item.isPack ? 'flex items-center gap-2' : ''}">
-                                    ${item.name}
+                                    ${item.name || 'Produto'}
                                     ${item.isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
                                 </h4>
                                 ${item.isPack ? `
-                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items?.length || 3} peças • Tamanho ${item.size}</p>
+                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items?.length || 0} peças • Tamanho ${item.size || 'M'}</p>
                                 ` : `
-                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
+                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size || 'M'}</p>
                                 `}
                             </div>
-                            <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
+                            <span class="font-bold text-nuca-green">€${itemTotal.toFixed(2)}</span>
                         </div>
                         <div class="flex items-center gap-2 mt-2">
-                            <span class="text-xs text-nuca-green/40">Qtd: ${item.quantity}</span>
+                            <span class="text-xs text-nuca-green/40">Qtd: ${item.quantity || 1}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
             
             container.innerHTML = html;
             summaryContainer.innerHTML = html;
@@ -447,28 +468,43 @@
             let subtotal = 0;
             let discount = 0;
             
+            if (!cart || cart.length === 0) {
+                updateDisplayValues(0, 0, 0, 0);
+                return { subtotal: 0, discount: 0, shipping: 0, total: 0 };
+            }
+            
             cart.forEach(item => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseInt(item.quantity) || 1;
+                
                 if(item.isPack && item.originalPrice) {
-                    subtotal += item.originalPrice * item.quantity;
-                    discount += (item.originalPrice - item.price) * item.quantity;
+                    const original = parseFloat(item.originalPrice) || 0;
+                    subtotal += original * qty;
+                    discount += (original - price) * qty;
                 } else {
-                    subtotal += item.price * item.quantity;
+                    subtotal += price * qty;
                 }
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
             const total = subtotal - discount + shipping;
             
+            updateDisplayValues(subtotal, discount, shipping, total);
+            
+            return { subtotal, discount, shipping, total };
+        }
+
+        function updateDisplayValues(subtotal, discount, shipping, total) {
+            // Checkout
             document.getElementById('checkout-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('checkout-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
             document.getElementById('checkout-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('checkout-total').textContent = `€${total.toFixed(2)}`;
             
+            // Resumo lateral
             document.getElementById('summary-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
-            
-            return { subtotal, discount, shipping, total };
         }
 
         function goToStep(step) {
@@ -541,7 +577,6 @@
             document.getElementById('payment-details').innerHTML = `<p class="text-sm text-nuca-green/80 text-center">${texts[method]}</p>`;
         }
 
-        // === FUNÇÃO PRINCIPAL: GUARDAR NO SUPABASE ===
         async function processPayment() {
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
@@ -567,9 +602,9 @@
                     items: cart.map(item => ({
                         id: item.id,
                         name: item.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        size: item.size,
+                        price: parseFloat(item.price) || 0,
+                        quantity: parseInt(item.quantity) || 1,
+                        size: item.size || 'M',
                         isPack: item.isPack || false
                     })),
                     payment_method: selectedPaymentMethod,
@@ -580,7 +615,6 @@
                     status: 'pending'
                 };
                 
-                // INSERIR NO SUPABASE
                 const { data, error } = await supabase
                     .from('orders')
                     .insert([orderPayload])
@@ -588,16 +622,11 @@
                 
                 if(error) throw error;
                 
-                console.log('Encomenda guardada:', data);
-                
                 savedOrderId = data[0].id;
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
                 orderData.payment = selectedPaymentMethod.toUpperCase();
                 orderData.totals = totals;
-                
-                // Limpar carrinho após compra bem-sucedida
-                localStorage.removeItem('nucaCart');
                 
                 goToStep(4);
                 
@@ -621,10 +650,10 @@
                 <div class="flex justify-between py-1 border-b border-nuca-green/5 last:border-0">
                     <div class="flex-1">
                         <span class="text-nuca-green font-medium">${item.name}</span>
-                        ${item.isPack ? `<span class="text-xs text-nuca-green/60 block">${item.items?.length || 3} peças</span>` : ''}
-                        <span class="text-xs text-nuca-green/40">x${item.quantity} • ${item.size}</span>
+                        ${item.isPack ? `<span class="text-xs text-nuca-green/60 block">${item.items?.length || 0} peças</span>` : ''}
+                        <span class="text-xs text-nuca-green/40">x${item.quantity || 1} • ${item.size || 'M'}</span>
                     </div>
-                    <span class="text-nuca-green font-medium">€${(item.price * item.quantity).toFixed(2)}</span>
+                    <span class="text-nuca-green font-medium">€${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
                 </div>
             `).join('');
             
