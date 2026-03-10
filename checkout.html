@@ -372,7 +372,7 @@
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // Carrinho - inicializado vazio
+        // Carrinho - variável global
         let cart = [];
         
         let currentStep = 1;
@@ -380,36 +380,44 @@
         let orderData = {};
         let savedOrderId = null;
 
-        // === FUNÇÃO PARA OBTER CARRINHO DA URL ===
+        // === OBTÉM CARRINHO DA URL (BASE64) ===
         function getCartFromURL() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const cartData = urlParams.get('cart');
                 
+                console.log('URL completa:', window.location.href);
+                console.log('Param cart:', cartData);
+                
                 if (cartData) {
-                    const decoded = atob(cartData); // Base64 decode
+                    // Decodificar Base64
+                    const decoded = atob(cartData);
+                    console.log('Decoded:', decoded);
                     const parsed = JSON.parse(decoded);
-                    console.log('Carrinho carregado:', parsed);
+                    console.log('Parsed:', parsed);
                     return parsed;
                 }
             } catch (e) {
                 console.error('Erro ao carregar carrinho:', e);
+                alert('Erro ao carregar carrinho: ' + e.message);
             }
             return null;
         }
 
-        // Inicialização imediata
-        (function init() {
+        // === INICIALIZAÇÃO IMEDIATA ===
+        window.onload = function() {
+            console.log('Página carregada');
             const loadedCart = getCartFromURL();
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
                 cart = loadedCart;
-                renderCheckoutItems();
-                calculateAndDisplayTotals();
+                console.log('Carrinho carregado:', cart);
+                renderAll();
             } else {
+                console.log('Carrinho vazio ou inválido');
                 showEmptyCart();
             }
-        })();
+        };
 
         function showEmptyCart() {
             const msg = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio. <a href="index.html" class="underline text-nuca-green">Voltar à loja</a></p>';
@@ -426,6 +434,11 @@
             updateDisplayValues(0, 0, 0, 0);
         }
 
+        function renderAll() {
+            renderCheckoutItems();
+            calculateAndDisplayTotals();
+        }
+
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -436,14 +449,13 @@
             }
             
             let html = '';
-            let summaryHtml = '';
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
-                const itemHtml = `
+                html += `
                     <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${item.isPack ? 'border-l-4 border-nuca-green' : ''}">
                         <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name || 'Produto'}" class="w-20 h-20 object-cover rounded-xl">
                         <div class="flex-1">
@@ -470,27 +482,29 @@
                         </div>
                     </div>
                 `;
-                
-                html += itemHtml;
-                summaryHtml += itemHtml;
             });
             
             container.innerHTML = html;
-            summaryContainer.innerHTML = summaryHtml;
+            summaryContainer.innerHTML = html;
         }
 
         function calculateAndDisplayTotals() {
             let subtotal = 0;
             let discount = 0;
             
+            console.log('Calculando totais para:', cart);
+            
             if (!cart || cart.length === 0) {
                 updateDisplayValues(0, 0, 0, 0);
                 return;
             }
             
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
+                console.log(`Item ${index}:`, item);
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
+                
+                console.log(`  Price: ${price}, Qty: ${qty}`);
                 
                 if(item.isPack && item.originalPrice) {
                     const original = parseFloat(item.originalPrice) || 0;
@@ -501,8 +515,12 @@
                 }
             });
             
+            console.log(`Subtotal: ${subtotal}, Discount: ${discount}`);
+            
             const shipping = subtotal > 50 ? 0 : 3.99;
             const total = subtotal - discount + shipping;
+            
+            console.log(`Shipping: ${shipping}, Total: ${total}`);
             
             updateDisplayValues(subtotal, discount, shipping, total);
         }
