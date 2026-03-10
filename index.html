@@ -1154,15 +1154,25 @@
                 return;
             }
             
-            // Converter carrinho para Base64 (mais fiável que URI encoding)
+            // Mostrar no console o que vai ser enviado
+            console.log('Carrinho a enviar:', cart);
+            
+            // Converter carrinho para JSON e depois Base64
             const cartJson = JSON.stringify(cart);
             const cartBase64 = btoa(cartJson);
             
-            // Ir para checkout com dados na URL
-            window.location.href = `checkout.html?cart=${cartBase64}`;
+            console.log('Base64:', cartBase64);
+            
+            // Criar URL
+            const url = `checkout.html?cart=${cartBase64}`;
+            console.log('URL:', url);
+            
+            // Navegar para checkout
+            window.location.href = url;
         }
     </script>
 </body>
 </html>
+
 
 
