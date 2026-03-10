@@ -483,7 +483,8 @@
             </div>
         </div>
         <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-nuca-beige/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/40">
-            <p>&copy; 2024 NUCA. Todos os direitos reservados.</p>
+            <p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p>
+        </div>
             <div class="flex gap-6">
                 <a href="#" class="hover:text-nuca-beige transition-colors">Política de Privacidade</a>
                 <a href="#" class="hover:text-nuca-beige transition-colors">Termos de Uso</a>
@@ -1131,7 +1132,10 @@
                 localStorage.removeItem('filter');
             }
         });
+        // Ano dos Direitos da pagina
+        document.getElementById("year").textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
+
 
