@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NUCA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400 ;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com "></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -24,6 +24,7 @@
                         'float': 'float 6s ease-in-out infinite',
                         'fade-in': 'fadeIn 1s ease-out forwards',
                         'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         float: {
@@ -63,7 +64,7 @@
             pointer-events: none;
             z-index: 50;
             opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg '%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
         .hero-text {
             font-size: clamp(3rem, 15vw, 12rem);
@@ -113,18 +114,47 @@
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
-        .instagram-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
+        .pack-card {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            position: relative;
+            overflow: hidden;
         }
-        .instagram-grid img {
-            aspect-ratio: 1;
-            object-fit: cover;
-            transition: transform 0.3s ease;
+        .pack-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.03) 10px,
+                rgba(255,255,255,0.03) 20px
+            );
+            animation: slide 20s linear infinite;
         }
-        .instagram-grid a:hover img {
-            transform: scale(1.05);
+        @keyframes slide {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        .tab-active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .quantity-btn {
+            transition: all 0.2s;
+        }
+        .quantity-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -140,17 +170,18 @@
             
             <div class="hidden md:flex items-center gap-8">
                 <a href="#shop" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Loja</a>
+                <a href="#packs" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Packs</a>
                 <a href="#about" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Sobre</a>
                 <a href="#contact" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Contacto</a>
             </div>
 
             <div class="flex items-center gap-4">
                 <button onclick="toggleCart()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     <span id="cart-count" class="absolute -top-1 -right-1 bg-nuca-green text-nuca-beige text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
                 </button>
                 <button class="md:hidden p-2" onclick="toggleMobileMenu()">
-                    <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                 </button>
             </div>
         </div>
@@ -161,11 +192,12 @@
         <div class="p-6 flex justify-between items-center border-b border-nuca-green/10">
             <span class="nuca-logo text-2xl">NUCA</span>
             <button onclick="toggleMobileMenu()" class="p-2">
-                <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div class="flex flex-col p-6 gap-6 text-2xl font-display">
             <a href="#shop" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Loja</a>
+            <a href="#packs" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Packs</a>
             <a href="#about" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Sobre</a>
             <a href="#contact" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Contacto</a>
         </div>
@@ -177,14 +209,22 @@
         <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
             <h2 class="font-display text-2xl font-bold">Carrinho</h2>
             <button onclick="toggleCart()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
         <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4">
             <p class="text-center text-nuca-green/60 py-12">O teu carrinho está vazio</p>
         </div>
         <div class="p-6 border-t border-nuca-green/10 space-y-4">
-            <div class="flex justify-between text-lg font-bold">
+            <div class="flex justify-between items-center text-sm text-nuca-green/60">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">€0.00</span>
+            </div>
+            <div class="flex justify-between items-center text-sm text-nuca-green/60">
+                <span>Desconto Pack</span>
+                <span id="cart-discount" class="text-green-600">-€0.00</span>
+            </div>
+            <div class="flex justify-between text-lg font-bold border-t border-nuca-green/10 pt-4">
                 <span>Total</span>
                 <span id="cart-total">€0.00</span>
             </div>
@@ -221,16 +261,16 @@
             <div class="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style="animation-delay: 0.8s">
                 <a href="#shop" class="bg-nuca-green text-nuca-beige px-8 py-4 rounded-full font-bold hover:bg-nuca-dark transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2">
                     Ver Peças
-                    <svg xmlns="http://www.w3.org/2000/svg " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </a>
-                <a href="#about" class="border-2 border-nuca-green text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-nuca-green hover:text-nuca-beige transition-all inline-flex items-center justify-center gap-2">
-                    Conhecer a Marca
+                <a href="#packs" class="border-2 border-nuca-green text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-nuca-green hover:text-nuca-beige transition-all inline-flex items-center justify-center gap-2">
+                    Ver Packs
                 </a>
             </div>
         </div>
 
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
     </section>
 
@@ -268,6 +308,23 @@
         </div>
     </section>
 
+    <!-- Packs Section - NOVO -->
+    <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-nuca-light/30 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Coleção Especial</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Packs Exclusivos</h2>
+                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Compra as peças individuais ou o pack completo e poupa. Quantidades limitadas!</p>
+            </div>
+
+            <div id="packs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Packs will be injected by JS -->
+            </div>
+        </div>
+    </section>
+
     <!-- About Section -->
     <section id="about" class="py-24 px-6 lg:px-12">
         <div class="max-w-7xl mx-auto">
@@ -299,7 +356,7 @@
                 </div>
                 <div class="relative">
                     <div class="aspect-square rounded-3xl overflow-hidden bg-nuca-light">
-                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80 " alt="NUCA Concept" class="w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" alt="NUCA Concept" class="w-full h-full object-cover">
                     </div>
                     <div class="absolute -bottom-6 -left-6 bg-nuca-green text-nuca-beige p-8 rounded-2xl max-w-xs hidden md:block">
                         <p class="font-display text-xl font-bold mb-2">"Simplicidade é sofisticação"</p>
@@ -319,25 +376,25 @@
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center">
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
                     <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg " width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
                     </div>
                     <h3 class="font-display text-xl font-bold mb-3">Produção Local</h3>
                     <p class="text-nuca-beige/70">Todas as peças são produzidas em Portugal, apoiando a economia local e garantindo qualidade.</p>
                 </div>
                 
-                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center">
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
                     <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg " width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <h3 class="font-display text-xl font-bold mb-3">Qualidade Primeiro</h3>
                     <p class="text-nuca-beige/70">Selecionamos os melhores materiais para criar peças que duram e mantêm a forma.</p>
                 </div>
                 
-                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center">
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
                     <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg " width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
                     <h3 class="font-display text-xl font-bold mb-3">Apoio Personalizado</h3>
                     <p class="text-nuca-beige/70">Como loja online, estamos sempre disponíveis para ajudar com tamanhos, trocas ou dúvidas.</p>
@@ -346,10 +403,8 @@
         </div>
     </section>
 
-
-    <!-- Instagram Section - Estilo Melhorado -->
+    <!-- Instagram Section -->
     <section class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
-        <!-- Elemento decorativo de fundo -->
         <div class="absolute top-0 right-0 w-96 h-96 bg-nuca-green/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div class="absolute bottom-0 left-0 w-64 h-64 bg-nuca-light rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
         
@@ -359,7 +414,6 @@
                 <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-6">Segue a NUCA</h2>
                 <p class="text-nuca-green/70 text-lg max-w-md mx-auto mb-8">Fica a par das novidades, drops exclusivos e behind-the-scenes da nossa jornada em Lisboa.</p>
                 
-                <!-- Botão Instagram estilizado com tons do site -->
                 <a href="https://instagram.com/nuca.pt" target="_blank" rel="noopener noreferrer" 
                    class="inline-flex items-center gap-3 bg-nuca-green text-nuca-beige px-8 py-4 rounded-full font-bold hover:bg-nuca-dark transition-all hover:scale-105 hover:shadow-xl group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-12 transition-transform">
@@ -370,112 +424,6 @@
                     @nuca.pt
                 </a>
             </div>
-            
-            <!-- Instagram Grid Preview - Estilo mais clean
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80" alt="NUCA Style 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80" alt="NUCA Style 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&q=80" alt="NUCA Style 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=400&q=80" alt="NUCA Style 4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&q=80" alt="NUCA Style 5" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-                <a href="https://instagram.com/nuca.crew" target="_blank" class="block relative group aspect-square overflow-hidden rounded-2xl bg-nuca-light">
-                    <img src="https://images.unsplash.com/photo-1597484662317-c9253e609f9c?w=400&q=80" alt="NUCA Style 6" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute inset-0 bg-nuca-green/0 group-hover:bg-nuca-green/40 transition-all duration-300 flex items-center justify-center">
-                        <svg class="opacity-0 group-hover:opacity-100 text-nuca-beige transition-all duration-300 transform scale-50 group-hover:scale-100" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </div>
-                </a>
-            </div>-->
-            
-            <!-- Stats ou info adicional 
-            <div class="mt-12 flex flex-wrap justify-center gap-8 md:gap-16 text-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-nuca-green/10 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <p class="font-bold text-nuca-green text-lg">+1.2k</p>
-                        <p class="text-sm text-nuca-green/60">Seguidores</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-nuca-green/10 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <p class="font-bold text-nuca-green text-lg">150+</p>
-                        <p class="text-sm text-nuca-green/60">Publicações</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 rounded-full bg-nuca-green/10 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green">
-                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-                        </svg>
-                    </div>
-                    <div class="text-left">
-                        <p class="font-bold text-nuca-green text-lg">Lisboa</p>
-                        <p class="text-sm text-nuca-green/60">Base</p>
-                    </div>
-                </div>
-            </div>-->
             
             <p class="text-center text-nuca-green/50 text-sm mt-12">Conteúdo exclusivo, antecipação de drops e muito mais</p>
         </div>
@@ -492,49 +440,45 @@
             <div>
                 <h4 class="font-bold mb-4 text-nuca-light">Loja</h4>
                 <ul class="space-y-2 text-nuca-beige/60 text-sm">
-                    <li><a href="#" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
-                    <li><a href="#" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
-                    <li><a href="#" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
-                    <li><a href="#" class="hover:text-nuca-beige transition-colors">Ver Tudo</a></li>
+                    <li><a href="#shop" onclick="filterFromFooter('camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
+                    <li><a href="#shop" onclick="filterFromFooter('hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
+                    <li><a href="#shop" onclick="filterFromFooter('acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
+                    <li><a href="#shop" class="hover:text-nuca-beige transition-colors">Ver Tudo</a></li>
+                    <li><a href="#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-4 text-nuca-light">Ajuda</h4>
                 <ul class="space-y-2 text-nuca-beige/60 text-sm">
-                    <li><a href="#" class="hover:text-nuca-beige transition-colors">Envios e Entregas</a></li>
-                    <li><a href="suporte.html" class="hover:text-nuca-beige transition-colors">Trocas e Devoluções</a></li>
-                    <li><a href="suporte.html" class="hover:text-nuca-beige transition-colors">Guia de Tamanhos</a></li>
-                    <li><a href="suporte.html" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
+                    <li><a href="suporte.html?tab=trocas" class="hover:text-nuca-beige transition-colors">Trocas e Devoluções</a></li>
+                    <li><a href="suporte.html?tab=tamanhos" class="hover:text-nuca-beige transition-colors">Guia de Tamanhos</a></li>
+                    <li><a href="suporte.html?tab=suporte" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="font-bold mb-4 text-nuca-light">Siga-nos</h4>
                 <div class="flex gap-4">
-                <!-- Instagram -->
-                <a href="https://instagram.com/nuca.pt" target="_blank"
-                class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="2" width="20" height="20" rx="5"/>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                    </svg>
-                </a>
-
-                <!-- X -->
-                <a href="#"
-                class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                        fill="currentColor">
-                        <path d="M18.244 2H21l-6.5 7.43L22 22h-6.828l-5.34-6.99L3.5 22H1l7.01-8.01L2 2h6.828l4.86 6.37L18.244 2z"/>
-                    </svg>
-                </a>
-
-            </div>
-                <div class="mt-6">
-                    <p class="text-sm text-nuca-beige/60 mb-2">Contactos:</p>
-                    <a href="mailto:ola@nuca.pt" class="text-nuca-beige hover:underline">nuca.crew@gmail.com</a>
-                    <a href="mailto:ola@nuca.pt" class="text-nuca-beige hover:underline">nuca.crew.support@gmail.com</a>
+                    <a href="https://instagram.com/nuca.pt" target="_blank"
+                    class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <a href="#"
+                    class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path d="M18.244 2H21l-6.5 7.43L22 22h-6.828l-5.34-6.99L3.5 22H1l7.01-8.01L2 2h6.828l4.86 6.37L18.244 2z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="mt-6 space-y-1">
+                    <p class="text-sm text-nuca-beige/60">Contactos:</p>
+                    <a href="mailto:nuca.crew@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew@gmail.com</a>
+                    <a href="mailto:nuca.crew.support@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew.support@gmail.com</a>
                 </div>
             </div>
         </div>
@@ -552,7 +496,7 @@
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeProductModal()"></div>
         <div class="absolute inset-0 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl transform transition-transform scale-95 opacity-0" id="modal-content">
             <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
             
             <div class="w-full md:w-1/2 bg-nuca-light relative">
@@ -579,17 +523,17 @@
                     <div class="pt-6 border-t border-nuca-green/10 space-y-4">
                         <button onclick="addToCartFromModal()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
                             Adicionar ao Carrinho
-                            <svg xmlns="http://www.w3.org/2000/svg " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         </button>
                         <div class="flex items-center gap-2 text-sm text-nuca-green/60 justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg " width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             <span>Envio grátis em compras acima de €50</span>
                         </div>
                     </div>
                     
                     <div class="bg-nuca-light/50 p-6 rounded-2xl">
                         <h4 class="font-bold text-nuca-green mb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg " width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                             Informação Importante
                         </h4>
                         <p class="text-sm text-nuca-green/70">Como somos uma loja online em crescimento, os envios podem levar 2-3 dias úteis. Agradecemos a tua paciência e confiança!</p>
@@ -599,15 +543,74 @@
         </div>
     </div>
 
+    <!-- Pack Modal - NOVO -->
+    <div id="pack-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePackModal()"></div>
+        <div class="absolute inset-4 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col shadow-2xl transform transition-transform scale-95 opacity-0" id="pack-modal-content">
+            <button onclick="closePackModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            
+            <div class="flex-1 overflow-y-auto">
+                <div class="grid md:grid-cols-2 h-full">
+                    <div class="bg-nuca-green text-nuca-beige p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute top-0 left-0 w-full h-full" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);"></div>
+                        </div>
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4">Pack Exclusivo</span>
+                            <h2 id="pack-modal-title" class="font-display text-4xl md:text-5xl font-bold mb-4"></h2>
+                            <p id="pack-modal-description" class="text-nuca-beige/80 text-lg mb-6"></p>
+                            <div class="flex items-baseline gap-3 mb-2">
+                                <span id="pack-modal-price" class="text-4xl font-bold"></span>
+                                <span id="pack-modal-original" class="text-xl line-through text-nuca-beige/50"></span>
+                                <span id="pack-modal-savings" class="text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span>
+                            </div>
+                            <p class="text-sm text-nuca-beige/60 mt-4">Economiza ao comprar o pack completo em vez de peças individuais</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-8 md:p-12 bg-nuca-beige overflow-y-auto">
+                        <h3 class="font-display text-2xl font-bold text-nuca-green mb-6">O Pack Inclui:</h3>
+                        <div id="pack-modal-items" class="space-y-4 mb-8">
+                            <!-- Items injected by JS -->
+                        </div>
+                        
+                        <div class="space-y-4 pt-6 border-t border-nuca-green/10">
+                            <div class="bg-nuca-light/50 p-4 rounded-xl">
+                                <label class="block text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho para todas as peças:</label>
+                                <div class="flex gap-2 flex-wrap" id="pack-modal-sizes">
+                                    <button onclick="selectPackSize('S')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="S">S</button>
+                                    <button onclick="selectPackSize('M')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige" data-size="M">M</button>
+                                    <button onclick="selectPackSize('L')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="L">L</button>
+                                    <button onclick="selectPackSize('XL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XL">XL</button>
+                                </div>
+                            </div>
+                            
+                            <button onclick="addPackToCart()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                                Adicionar Pack ao Carrinho
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            </button>
+                            
+                            <button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-sm">
+                                Preferes escolher tamanhos diferentes? Compra individualmente
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Products Data - Simplified for new store
+        // Products Data
         const products = [
             {
                 id: 1,
                 name: "T-shirt NUCA Bege",
                 category: "camisetas",
                 price: 25,
-                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
                 description: "T-shirt em algodão orgânico de 180gsm, cor bege. Corte regular, perfeita para o dia-a-dia. Produzida em Portugal.",
                 sizes: ["S", "M", "L", "XL"],
                 badge: null
@@ -617,7 +620,7 @@
                 name: "Hoodie Verde Oliva",
                 category: "hoodies",
                 price: 55,
-                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80",
                 description: "Hoodie confortável em tom verde oliva. Interior felpudo, ideal para os dias mais frescos de Lisboa. 80% algodão, 20% poliéster.",
                 sizes: ["S", "M", "L", "XL"],
                 badge: null
@@ -627,7 +630,7 @@
                 name: "Boné NUCA",
                 category: "acessorios",
                 price: 20,
-                image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80",
                 description: "Boné clássico em algodão, cor bege com logo bordado. Ajustável, tamanho único.",
                 sizes: ["Único"],
                 badge: null
@@ -637,7 +640,7 @@
                 name: "T-shirt Verde",
                 category: "camisetas",
                 price: 25,
-                image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80",
                 description: "T-shirt na nossa cor verde característica. 100% algodão orgânico, tingimento sustentável. Corte unissexo.",
                 sizes: ["S", "M", "L", "XL"],
                 badge: null
@@ -647,7 +650,7 @@
                 name: "Tote Bag NUCA",
                 category: "acessorios",
                 price: 15,
-                image: "https://images.unsplash.com/photo-1597484662317-c9253e609f9c?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1597484662317-c9253e609f9c?w=600&q=80",
                 description: "Tote bag em algodão cru, resistente e espaçosa. Perfeita para as compras ou um dia na praia.",
                 sizes: ["Único"],
                 badge: null
@@ -657,20 +660,54 @@
                 name: "Hoodie Bege",
                 category: "hoodies",
                 price: 55,
-                image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80 ",
+                image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80",
                 description: "Hoodie na cor bege da marca, básico e versátil. Qualidade premium para usar e abusar.",
                 sizes: ["S", "M", "L", "XL", "XXL"],
                 badge: null
             }
         ];
 
+        // Packs Data - NOVO
+        const packs = [
+            {
+                id: "pack-1",
+                name: "Pack Essentials",
+                description: "O básico que não pode faltar no teu guarda-roupa. As nossas peças mais icónicas num pack especial.",
+                items: [1, 4, 6], // IDs dos produtos
+                discount: 15, // % de desconto
+                image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&q=80",
+                badge: "POPULAR"
+            },
+            {
+                id: "pack-2",
+                name: "Pack Completo",
+                description: "Tudo o que precisas para um look completo NUCA. Do topo à base, incluindo acessórios.",
+                items: [1, 2, 3, 5], // IDs dos produtos
+                discount: 20, // % de desconto
+                image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
+                badge: "MAIOR POUPANÇA"
+            },
+            {
+                id: "pack-3",
+                name: "Pack Verão",
+                description: "Ideal para os dias quentes de Lisboa. Leve, confortável e com o estilo NUCA.",
+                items: [1, 4, 3], // IDs dos produtos
+                discount: 12, // % de desconto
+                image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
+                badge: "TEMPORADA"
+            }
+        ];
+
         let cart = [];
         let currentProduct = null;
         let selectedSize = null;
+        let currentPack = null;
+        let selectedPackSize = 'M';
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts('all');
+            renderPacks();
             setupScrollListener();
         });
 
@@ -705,9 +742,53 @@
             `).join('');
         }
 
+        // Render Packs - NOVO
+        function renderPacks() {
+            const grid = document.getElementById('packs-grid');
+            
+            grid.innerHTML = packs.map(pack => {
+                const packProducts = pack.items.map(id => products.find(p => p.id === id));
+                const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+                const discountedPrice = Math.round(totalPrice * (1 - pack.discount / 100));
+                
+                return `
+                    <div class="pack-card rounded-3xl p-8 text-nuca-beige relative group cursor-pointer transform transition-all hover:scale-[1.02]" onclick="openPackModal('${pack.id}')">
+                        <div class="relative z-10">
+                            ${pack.badge ? `
+                                <span class="inline-block px-3 py-1 bg-nuca-beige text-nuca-green rounded-full text-xs font-bold tracking-wider mb-4">${pack.badge}</span>
+                            ` : ''}
+                            <h3 class="font-display text-3xl font-bold mb-2">${pack.name}</h3>
+                            <p class="text-nuca-beige/80 mb-6 line-clamp-2">${pack.description}</p>
+                            
+                            <div class="flex items-baseline gap-3 mb-4">
+                                <span class="text-3xl font-bold">€${discountedPrice}</span>
+                                <span class="text-lg line-through text-nuca-beige/50">€${totalPrice}</span>
+                                <span class="text-sm bg-nuca-beige text-nuca-green px-2 py-1 rounded-full font-bold">-${pack.discount}%</span>
+                            </div>
+                            
+                            <div class="flex -space-x-3 mb-6">
+                                ${packProducts.slice(0, 4).map(p => `
+                                    <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-full border-2 border-nuca-green object-cover">
+                                `).join('')}
+                                ${packProducts.length > 4 ? `
+                                    <div class="w-12 h-12 rounded-full border-2 border-nuca-green bg-nuca-beige/20 flex items-center justify-center text-xs font-bold">
+                                        +${packProducts.length - 4}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="flex items-center gap-2 text-sm font-medium">
+                                <span>Ver Pack Completo</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // Filter Products
         function filterProducts(category) {
-            // Update buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.dataset.filter === category) {
                     btn.classList.add('bg-nuca-green', 'text-nuca-beige');
@@ -718,7 +799,6 @@
                 }
             });
             
-            // Animate grid
             const grid = document.getElementById('products-grid');
             grid.style.opacity = '0';
             grid.style.transform = 'translateY(20px)';
@@ -729,6 +809,14 @@
                 grid.style.opacity = '1';
                 grid.style.transform = 'translateY(0)';
             }, 300);
+        }
+
+        // Filter from Footer - NOVO
+        function filterFromFooter(category) {
+            filterProducts(category);
+            setTimeout(() => {
+                document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         }
 
         // Product Modal
@@ -742,7 +830,6 @@
             document.getElementById('modal-price').textContent = `€${currentProduct.price}`;
             document.getElementById('modal-description').textContent = currentProduct.description;
             
-            // Render sizes
             const sizesContainer = document.getElementById('modal-sizes');
             sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `
                 <button onclick="selectSize('${size}')" class="size-btn w-12 h-12 rounded-full border border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" data-size="${size}">
@@ -788,11 +875,120 @@
             });
         }
 
+        // Pack Modal Functions - NOVO
+        function openPackModal(packId) {
+            currentPack = packs.find(p => p.id === packId);
+            selectedPackSize = 'M';
+            
+            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
+            const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+            const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
+            
+            document.getElementById('pack-modal-title').textContent = currentPack.name;
+            document.getElementById('pack-modal-description').textContent = currentPack.description;
+            document.getElementById('pack-modal-price').textContent = `€${discountedPrice}`;
+            document.getElementById('pack-modal-original').textContent = `€${totalPrice}`;
+            document.getElementById('pack-modal-savings').textContent = `Poupas €${totalPrice - discountedPrice}`;
+            
+            const itemsContainer = document.getElementById('pack-modal-items');
+            itemsContainer.innerHTML = packProducts.map(p => `
+                <div class="flex items-center gap-4 bg-nuca-light/50 p-4 rounded-xl">
+                    <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-nuca-green">${p.name}</h4>
+                        <p class="text-sm text-nuca-green/60">€${p.price}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Reset size selection
+            document.querySelectorAll('.pack-size-btn').forEach(btn => {
+                if(btn.dataset.size === 'M') {
+                    btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.remove('text-nuca-green');
+                } else {
+                    btn.classList.remove('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.add('text-nuca-green');
+                }
+            });
+            
+            const modal = document.getElementById('pack-modal');
+            const content = document.getElementById('pack-modal-content');
+            modal.classList.remove('hidden');
+            
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+            
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePackModal() {
+            const modal = document.getElementById('pack-modal');
+            const content = document.getElementById('pack-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function selectPackSize(size) {
+            selectedPackSize = size;
+            document.querySelectorAll('.pack-size-btn').forEach(btn => {
+                if(btn.dataset.size === size) {
+                    btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.remove('text-nuca-green');
+                } else {
+                    btn.classList.remove('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.add('text-nuca-green');
+                }
+            });
+        }
+
+        function addPackToCart() {
+            if(!currentPack) return;
+            
+            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
+            const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+            const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
+            
+            // Adicionar como um item de pack
+            cart.push({
+                id: currentPack.id,
+                name: currentPack.name,
+                price: discountedPrice,
+                size: selectedPackSize,
+                quantity: 1,
+                isPack: true,
+                originalPrice: totalPrice,
+                items: packProducts
+            });
+            
+            updateCart();
+            closePackModal();
+            toggleCart();
+        }
+
+        function buyPackItemsIndividually() {
+            closePackModal();
+            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
+            
+            // Abrir o primeiro produto
+            if(packProducts.length > 0) {
+                openProductModal(packProducts[0].id);
+            }
+        }
+
         // Cart Functions
         function addToCartFromModal() {
             if(!currentProduct || !selectedSize) return;
             
-            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize);
+            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize && !item.isPack);
             
             if(existingItem) {
                 existingItem.quantity++;
@@ -800,7 +996,8 @@
                 cart.push({
                     ...currentProduct,
                     size: selectedSize,
-                    quantity: 1
+                    quantity: 1,
+                    isPack: false
                 });
             }
             
@@ -814,7 +1011,23 @@
             document.getElementById('cart-count').textContent = count;
             
             const container = document.getElementById('cart-items');
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            let subtotal = 0;
+            let discount = 0;
+            
+            cart.forEach(item => {
+                if(item.isPack) {
+                    subtotal += item.originalPrice * item.quantity;
+                    discount += (item.originalPrice - item.price) * item.quantity;
+                } else {
+                    subtotal += item.price * item.quantity;
+                }
+            });
+            
+            const total = subtotal - discount;
+            
+            document.getElementById('cart-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('cart-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
             document.getElementById('cart-total').textContent = `€${total.toFixed(2)}`;
             
             if(cart.length === 0) {
@@ -823,21 +1036,35 @@
             }
             
             container.innerHTML = cart.map((item, index) => `
-                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl">
-                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
+                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl ${item.isPack ? 'border-2 border-nuca-green/20' : ''}">
+                    <img src="${item.isPack ? item.items[0].image : item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
                     <div class="flex-1">
-                        <h4 class="font-bold text-nuca-green">${item.name}</h4>
-                        <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
-                        <p class="text-sm font-bold text-nuca-green mt-1">€${item.price}</p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <button onclick="updateQuantity(${index}, -1)" class="w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">-</button>
-                            <span class="text-sm font-bold w-4 text-center">${item.quantity}</span>
-                            <button onclick="updateQuantity(${index}, 1)" class="w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">+</button>
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4 class="font-bold text-nuca-green ${item.isPack ? 'flex items-center gap-2' : ''}">
+                                    ${item.name}
+                                    ${item.isPack ? '<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK</span>' : ''}
+                                </h4>
+                                ${item.isPack ? `
+                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items.length} peças • Tamanho ${item.size}</p>
+                                    <p class="text-xs text-green-600 font-medium">Poupaste €${(item.originalPrice - item.price).toFixed(2)}</p>
+                                ` : `
+                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
+                                `}
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-nuca-green/40 hover:text-nuca-green">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between mt-2">
+                            <div class="flex items-center gap-2">
+                                <button onclick="updateQuantity(${index}, -1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">-</button>
+                                <span class="text-sm font-bold w-4 text-center">${item.quantity}</span>
+                                <button onclick="updateQuantity(${index}, 1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">+</button>
+                            </div>
+                            <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
                         </div>
                     </div>
-                    <button onclick="removeFromCart(${index})" class="text-nuca-green/40 hover:text-nuca-green self-start">
-                        <svg xmlns="http://www.w3.org/2000/svg " width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
                 </div>
             `).join('');
         }
