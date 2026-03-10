@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <!-- Fundo bege NUCA -->
-  <rect width="100" height="100" rx="20" fill="#D8C6A5"/>
+  <rect width="100" height="100" rx="20" fill="#556B4F"/>
   
   <!-- Letra N em verde NUCA -->
   <text x="50" y="72" 
         font-family="Syne, sans-serif" 
         font-size="70" 
         font-weight="800" 
-        fill="#556B4F" 
+        fill="#D8C6A5" 
         text-anchor="middle">N</text>
 </svg>
