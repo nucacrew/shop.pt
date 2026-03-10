@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - NUCA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .nuca-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .step-active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+        }
+        .step-completed {
+            background-color: #2C3328;
+            color: #D8C6A5;
+        }
+        .step-pending {
+            background-color: transparent;
+            color: #556B4F;
+            border: 2px solid #556B4F;
+        }
+        .input-field {
+            background-color: rgba(255,255,255,0.5);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #556B4F;
+            background-color: white;
+        }
+        .payment-method.selected {
+            border-color: #556B4F;
+            background-color: rgba(85, 107, 79, 0.1);
+        }
+        /* Estilos específicos para o comprovativo de PDF */
+        .receipt-paper {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .receipt-paper { box-shadow: none; }
+        }
+        .receipt-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            border: 3px solid #556B4F;
+            color: #556B4F;
+            padding: 1rem 2rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            opacity: 0.3;
+            pointer-events: none;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Grain Overlay -->
+    <div class="grain-overlay"></div>
+
+    <!-- Header Simples -->
+    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
+            <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Checkout Seguro</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
+        
+        <!-- Steps Indicator -->
+        <div class="mb-12">
+            <div class="flex items-center justify-center gap-4 md:gap-8">
+                <div class="flex items-center gap-3" id="step-1-indicator">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-active transition-all">1</div>
+                    <span class="hidden md:block font-medium">Carrinho</span>
+                </div>
+                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
+                <div class="flex items-center gap-3" id="step-2-indicator">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">2</div>
+                    <span class="hidden md:block font-medium text-nuca-green/60">Envio</span>
+                </div>
+                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
+                <div class="flex items-center gap-3" id="step-3-indicator">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">3</div>
+                    <span class="hidden md:block font-medium text-nuca-green/60">Pagamento</span>
+                </div>
+                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
+                <div class="flex items-center gap-3" id="step-4-indicator">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">4</div>
+                    <span class="hidden md:block font-medium text-nuca-green/60">Confirmação</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12">
+            
+            <!-- Coluna Esquerda - Formulários -->
+            <div class="space-y-8" id="checkout-forms">
+                
+                <!-- Step 1: Revisão do Carrinho -->
+                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Resumo do Pedido</h2>
+                    <div id="checkout-items" class="space-y-4 mb-6">
+                        <!-- Items injetados via JS -->
+                    </div>
+                    <div class="border-t border-nuca-green/10 pt-4 space-y-2 text-sm">
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Subtotal</span>
+                            <span id="checkout-subtotal">€0.00</span>
+                        </div>
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Desconto Pack</span>
+                            <span id="checkout-discount" class="text-green-600">-€0.00</span>
+                        </div>
+                        <div class="flex justify-between text-nuca-green/60">
+                            <span>Envio</span>
+                            <span id="checkout-shipping">€0.00</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
+                            <span>Total</span>
+                            <span id="checkout-total">€0.00</span>
+                        </div>
+                    </div>
+                    <button onclick="goToStep(2)" class="w-full mt-6 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                        Continuar para Envio
+                    </button>
+                </div>
+
+                <!-- Step 2: Dados de Envio -->
+                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Dados de Envio</h2>
+                    <form id="shipping-form" class="space-y-4">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Nome *</label>
+                                <input type="text" name="firstName" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Primeiro nome">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Apelido *</label>
+                                <input type="text" name="lastName" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Último nome">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Email *</label>
+                            <input type="email" name="email" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="email@exemplo.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Telemóvel *</label>
+                            <input type="tel" name="phone" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912 345 678">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Morada *</label>
+                            <input type="text" name="address" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Rua, número, andar">
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Código Postal *</label>
+                                <input type="text" name="postal" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="1000-001">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Cidade *</label>
+                                <input type="text" name="city" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Lisboa">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Notas (opcional)</label>
+                            <textarea name="notes" rows="3" class="input-field w-full px-4 py-3 rounded-xl" placeholder="Instruções especiais para a entrega..."></textarea>
+                        </div>
+                    </form>
+                    <div class="flex gap-4 mt-6">
+                        <button onclick="goToStep(1)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
+                            Voltar
+                        </button>
+                        <button onclick="validateShipping()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                            Continuar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Pagamento -->
+                <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Método de Pagamento</h2>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40 selected" onclick="selectPayment('mbway')">
+                            <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-nuca-green">MB WAY</h4>
+                                <p class="text-sm text-nuca-green/60">Pagamento instantâneo via telemóvel</p>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-nuca-green flex items-center justify-center check-icon">
+                                <div class="w-3 h-3 rounded-full bg-nuca-green"></div>
+                            </div>
+                        </div>
+
+                        <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40" onclick="selectPayment('multibanco')">
+                            <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-nuca-green">Multibanco</h4>
+                                <p class="text-sm text-nuca-green/60">Referência para pagamento em ATM ou homebanking</p>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-nuca-green/30 flex items-center justify-center check-icon">
+                                <div class="w-3 h-3 rounded-full bg-nuca-green hidden"></div>
+                            </div>
+                        </div>
+
+                        <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40" onclick="selectPayment('card')">
+                            <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-nuca-green">Cartão de Crédito/Débito</h4>
+                                <p class="text-sm text-nuca-green/60">Visa, Mastercard, Maestro</p>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-nuca-green/30 flex items-center justify-center check-icon">
+                                <div class="w-3 h-3 rounded-full bg-nuca-green hidden"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="payment-details" class="bg-nuca-light/30 rounded-2xl p-6 mb-6">
+                        <p class="text-sm text-nuca-green/80 text-center">Serás redirecionado para o ambiente seguro do MB WAY após confirmares a encomenda.</p>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
+                            Voltar
+                        </button>
+                        <button onclick="processPayment()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                            <span>Confirmar Encomenda</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Confirmação -->
+                <div id="step-4" class="hidden">
+                    <div class="bg-nuca-green text-nuca-beige rounded-3xl p-8 text-center mb-8">
+                        <div class="w-20 h-20 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <h2 class="font-display text-3xl font-bold mb-4">Encomenda Confirmada!</h2>
+                        <p class="text-nuca-beige/80 mb-2">Obrigado pela tua compra. Receberás um email de confirmação em breve.</p>
+                        <p class="text-sm text-nuca-beige/60">Número da encomenda: <span id="order-number" class="font-mono font-bold text-nuca-beige"></span></p>
+                    </div>
+
+                    <!-- Comprovativo -->
+                    <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
+                        <div class="receipt-stamp">PAGO</div>
+                        
+                        <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
+                            <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
+                            <p class="text-nuca-green/60 text-sm">Moda minimalista, feita em Portugal</p>
+                            <p class="text-nuca-green/40 text-xs mt-1">Loja Online Lisboa</p>
+                        </div>
+
+                        <div class="space-y-4 mb-6 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-nuca-green/60">Nº Encomenda:</span>
+                                <span class="font-mono font-bold text-nuca-green" id="receipt-order-number"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-nuca-green/60">Data:</span>
+                                <span class="text-nuca-green" id="receipt-date"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-nuca-green/60">Cliente:</span>
+                                <span class="text-nuca-green font-medium" id="receipt-customer"></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-nuca-green/60">Pagamento:</span>
+                                <span class="text-nuca-green" id="receipt-payment"></span>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-b border-nuca-green/10 py-4 mb-6">
+                            <h4 class="font-bold text-nuca-green mb-3 text-xs uppercase tracking-wider">Itens</h4>
+                            <div id="receipt-items" class="space-y-2 text-sm">
+                                <!-- Items via JS -->
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-sm border-b border-nuca-green/10 pb-4 mb-4">
+                            <div class="flex justify-between text-nuca-green/60">
+                                <span>Subtotal</span>
+                                <span id="receipt-subtotal"></span>
+                            </div>
+                            <div class="flex justify-between text-nuca-green/60">
+                                <span>Desconto</span>
+                                <span id="receipt-discount" class="text-green-600"></span>
+                            </div>
+                            <div class="flex justify-between text-nuca-green/60">
+                                <span>Envio</span>
+                                <span id="receipt-shipping"></span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-lg font-bold text-nuca-green mb-8">
+                            <span>TOTAL</span>
+                            <span id="receipt-total"></span>
+                        </div>
+
+                        <div class="text-center space-y-2 text-xs text-nuca-green/40 border-t border-dashed border-nuca-green/20 pt-4">
+                            <p>Este documento serve como comprovativo de compra.</p>
+                            <p>Para trocas ou devoluções, contacta: nuca.crew@gmail.com</p>
+                            <p class="font-mono mt-2">Obrigado por escolheres a NUCA!</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-8 no-print">
+                        <button onclick="downloadReceipt()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Download PDF</span>
+                        </button>
+                        <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center">
+                            Voltar à Loja
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Coluna Direita - Resumo (Sticky) -->
+            <div class="hidden lg:block">
+                <div class="sticky top-32 space-y-6">
+                    <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
+                        <h3 class="font-display text-xl font-bold text-nuca-green mb-4">Resumo</h3>
+                        <div id="summary-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                            <!-- Items via JS -->
+                        </div>
+                        <div class="border-t border-nuca-green/10 pt-4 space-y-2">
+                            <div class="flex justify-between text-sm text-nuca-green/60">
+                                <span>Subtotal</span>
+                                <span id="summary-subtotal">€0.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm text-nuca-green/60">
+                                <span>Envio</span>
+                                <span id="summary-shipping">Calculado no próximo passo</span>
+                            </div>
+                            <div class="flex justify-between text-xl font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
+                                <span>Total</span>
+                                <span id="summary-total">€0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-nuca-green/5 rounded-2xl p-6 border border-nuca-green/10">
+                        <div class="flex items-start gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <div>
+                                <h4 class="font-bold text-nuca-green text-sm mb-1">Envio Seguro</h4>
+                                <p class="text-xs text-nuca-green/70">Entrega em 2-3 dias úteis. Tracking disponível.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer Minimal -->
+    <footer class="bg-nuca-dark text-nuca-beige py-8 px-6 lg:px-12 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/60">
+            <p>&copy; 2024 NUCA. Todos os direitos reservados.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-nuca-beige transition-colors">Privacidade</a>
+                <a href="#" class="hover:text-nuca-beige transition-colors">Termos</a>
+                <a href="#" class="hover:text-nuca-beige transition-colors">Contacto</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Dados simulados do carrinho (na prática, viriam do localStorage)
+        let cart = [
+            {
+                id: 1,
+                name: "T-shirt NUCA Bege",
+                price: 25,
+                size: "M",
+                quantity: 1,
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80",
+                isPack: false
+            },
+            {
+                id: "pack-1",
+                name: "Pack Essentials",
+                price: 89,
+                originalPrice: 105,
+                size: "M",
+                quantity: 1,
+                image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=200&q=80",
+                isPack: true,
+                items: [
+                    {name: "T-shirt NUCA Bege"},
+                    {name: "T-shirt Verde"},
+                    {name: "Hoodie Bege"}
+                ]
+            }
+        ];
+
+        let currentStep = 1;
+        let selectedPaymentMethod = 'mbway';
+        let orderData = {};
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCheckoutItems();
+            updateSummary();
+        });
+
+        function renderCheckoutItems() {
+            const container = document.getElementById('checkout-items');
+            const summaryContainer = document.getElementById('summary-items');
+            
+            const html = cart.map(item => `
+                <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${item.isPack ? 'border-l-4 border-nuca-green' : ''}">
+                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-nuca-green ${item.isPack ? 'flex items-center gap-2' : ''}">
+                                    ${item.name}
+                                    ${item.isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                                </h4>
+                                ${item.isPack ? `
+                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items.length} peças • Tamanho ${item.size}</p>
+                                ` : `
+                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
+                                `}
+                            </div>
+                            <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-xs text-nuca-green/40">Qtd: ${item.quantity}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            container.innerHTML = html;
+            summaryContainer.innerHTML = html;
+        }
+
+        function updateSummary() {
+            let subtotal = 0;
+            let discount = 0;
+            
+            cart.forEach(item => {
+                if(item.isPack) {
+                    subtotal += item.originalPrice * item.quantity;
+                    discount += (item.originalPrice - item.price) * item.quantity;
+                } else {
+                    subtotal += item.price * item.quantity;
+                }
+            });
+            
+            const shipping = subtotal > 50 ? 0 : 3.99;
+            const total = subtotal - discount + shipping;
+            
+            document.getElementById('checkout-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('checkout-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            document.getElementById('checkout-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
+            document.getElementById('checkout-total').textContent = `€${total.toFixed(2)}`;
+            
+            document.getElementById('summary-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
+            document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
+        }
+
+        function goToStep(step) {
+            // Validar step atual antes de avançar
+            if(step > currentStep && !validateCurrentStep()) return;
+            
+            // Esconder step atual
+            document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            
+            // Mostrar novo step
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            // Atualizar indicadores
+            updateStepIndicators(step);
+            
+            currentStep = step;
+            
+            // Se for o step 4, gerar comprovativo
+            if(step === 4) {
+                generateReceipt();
+            }
+        }
+
+        function updateStepIndicators(activeStep) {
+            for(let i = 1; i <= 4; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                const circle = indicator.querySelector('div');
+                
+                circle.classList.remove('step-active', 'step-completed', 'step-pending');
+                
+                if(i < activeStep) {
+                    circle.classList.add('step-completed');
+                    circle.innerHTML = '✓';
+                } else if(i === activeStep) {
+                    circle.classList.add('step-active');
+                    circle.innerHTML = i;
+                } else {
+                    circle.classList.add('step-pending');
+                    circle.innerHTML = i;
+                }
+            }
+        }
+
+        function validateCurrentStep() {
+            if(currentStep === 2) {
+                return validateShipping();
+            }
+            return true;
+        }
+
+        function validateShipping() {
+            const form = document.getElementById('shipping-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Validação simples
+            if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
+                alert('Por favor, preenche todos os campos obrigatórios.');
+                return false;
+            }
+            
+            // Guardar dados
+            orderData.shipping = data;
+            goToStep(3);
+            return true;
+        }
+
+        function selectPayment(method) {
+            selectedPaymentMethod = method;
+            
+            // Atualizar UI
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('selected');
+                el.querySelector('.check-icon div').classList.add('hidden');
+            });
+            
+            event.currentTarget.classList.add('selected');
+            event.currentTarget.querySelector('.check-icon div').classList.remove('hidden');
+            
+            // Atualizar texto explicativo
+            const details = document.getElementById('payment-details');
+            const texts = {
+                'mbway': 'Serás redirecionado para o ambiente seguro do MB WAY após confirmares a encomenda.',
+                'multibanco': 'Receberás uma referência de pagamento por email e SMS. O prazo de pagamento é de 24 horas.',
+                'card': 'Serás redirecionado para o ambiente seguro do Stripe para completar o pagamento.'
+            };
+            details.innerHTML = `<p class="text-sm text-nuca-green/80 text-center">${texts[method]}</p>`;
+        }
+
+        function processPayment() {
+            // Simular processamento
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="animate-pulse">A processar...</span>';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                // Gerar número de encomenda
+                orderData.orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase();
+                orderData.date = new Date().toLocaleDateString('pt-PT');
+                orderData.payment = selectedPaymentMethod.toUpperCase();
+                orderData.items = cart;
+                
+                goToStep(4);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function generateReceipt() {
+            document.getElementById('order-number').textContent = orderData.orderNumber;
+            document.getElementById('receipt-order-number').textContent = orderData.orderNumber;
+            document.getElementById('receipt-date').textContent = orderData.date;
+            document.getElementById('receipt-customer').textContent = `${orderData.shipping.firstName} ${orderData.shipping.lastName}`;
+            document.getElementById('receipt-payment').textContent = orderData.payment;
+            
+            // Items no recibo
+            const itemsHtml = cart.map(item => `
+                <div class="flex justify-between py-1 border-b border-nuca-green/5 last:border-0">
+                    <div class="flex-1">
+                        <span class="text-nuca-green font-medium">${item.name}</span>
+                        ${item.isPack ? `<span class="text-xs text-nuca-green/60 block">${item.items.length} peças</span>` : ''}
+                        <span class="text-xs text-nuca-green/40">x${item.quantity} • ${item.size}</span>
+                    </div>
+                    <span class="text-nuca-green font-medium">€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('receipt-items').innerHTML = itemsHtml;
+            
+            // Totais
+            let subtotal = 0;
+            let discount = 0;
+            cart.forEach(item => {
+                if(item.isPack) {
+                    subtotal += item.originalPrice * item.quantity;
+                    discount += (item.originalPrice - item.price) * item.quantity;
+                } else {
+                    subtotal += item.price * item.quantity;
+                }
+            });
+            const shipping = subtotal > 50 ? 0 : 3.99;
+            const total = subtotal - discount + shipping;
+            
+            document.getElementById('receipt-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('receipt-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            document.getElementById('receipt-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
+            document.getElementById('receipt-total').textContent = `€${total.toFixed(2)}`;
+        }
+
+        function downloadReceipt() {
+            const element = document.getElementById('receipt-container');
+            const opt = {
+                margin: 10,
+                filename: `NUCA_Comprovativo_${orderData.orderNumber}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Temporariamente remover classe para PDF limpo
+            element.classList.remove('receipt-paper');
+            element.style.boxShadow = 'none';
+            
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('receipt-paper');
+                element.style.boxShadow = '';
+            });
+        }
+    </script>
+</body>
+</html>
