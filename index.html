@@ -1122,6 +1122,16 @@
                 lastScroll = currentScroll;
             });
         }
+
+        // Verificar filtro do localStorage ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedFilter = localStorage.getItem('filter');
+            if(savedFilter && window.location.hash === '#shop') {
+                filterProducts(savedFilter);
+                localStorage.removeItem('filter');
+            }
+        });
     </script>
 </body>
 </html>
+
