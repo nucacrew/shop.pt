@@ -502,30 +502,29 @@
                 <h4 class="font-bold mb-4 text-nuca-light">Ajuda</h4>
                 <ul class="space-y-2 text-nuca-beige/60 text-sm">
                     <li>
-                        <a href="#" class="hover:text-nuca-beige transition-colors">
+                        <a href="#" onclick="showTab('envios'); return false;" class="hover:text-nuca-beige transition-colors">
                             Envios e Entregas
                         </a>
                     </li>
                 
                     <li>
-                        <a href="suporte.html" class="hover:text-nuca-beige transition-colors">
+                        <a href="#" onclick="showTab('trocas'); return false;" class="hover:text-nuca-beige transition-colors">
                             Trocas e Devoluções
                         </a>
                     </li>
                 
                     <li>
-                        <a href="suporte.html#tamanhos" class="hover:text-nuca-beige transition-colors">
+                        <a href="#" onclick="showTab('tamanhos'); return false;" class="hover:text-nuca-beige transition-colors">
                             Guia de Tamanhos
                         </a>
                     </li>
                 
                     <li>
-                        <a href="suporte.html#suporte" class="hover:text-nuca-beige transition-colors">
+                        <a href="#" onclick="showTab('suporte'); return false;" class="hover:text-nuca-beige transition-colors">
                             Contactar Suporte
                         </a>
                     </li>
                 </ul>
-            </div>
             <div>
                 <h4 class="font-bold mb-4 text-nuca-light">Siga-nos</h4>
                 <div class="flex gap-4">
@@ -914,7 +913,28 @@
                 lastScroll = currentScroll;
             });
         }
+
+        function showTab(tab){
+        
+            // esconder todos conteúdos
+            document.querySelectorAll(".tab-content").forEach(el=>{
+                el.classList.add("hidden");
+            });
+        
+            // remover active de todos botões
+            document.querySelectorAll("[id^='tab-']").forEach(btn=>{
+                btn.classList.remove("tab-active");
+            });
+        
+            // mostrar conteúdo selecionado
+            document.getElementById("content-" + tab).classList.remove("hidden");
+        
+            // ativar botão
+            document.getElementById("tab-" + tab).classList.add("tab-active");
+        
+        }
     </script>
 </body>
 
 </html>
+
