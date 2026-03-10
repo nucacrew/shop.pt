@@ -239,6 +239,7 @@
                 <span>Total</span>
                 <span id="cart-total">€0.00</span>
             </div>
+            <!-- ALTERAÇÃO 1: Adicionei onclick="goToCheckout()" aqui -->
             <button onclick="goToCheckout()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
                 Finalizar Compra
             </button>
@@ -1145,11 +1146,18 @@
         });
         // Ano dos Direitos da pagina
         document.getElementById("year").textContent = new Date().getFullYear();
+
+        // ALTERAÇÃO 2: Função para ir para o checkout
+        function goToCheckout() {
+            if(cart.length === 0) {
+                alert('O teu carrinho está vazio!');
+                return;
+            }
+            // Guardar carrinho no localStorage para o checkout aceder
+            localStorage.setItem('nucaCart', JSON.stringify(cart));
+            // Ir para a página de checkout
+            window.location.href = 'checkout.html';
+        }
     </script>
 </body>
 </html>
-
-
-
-
-
