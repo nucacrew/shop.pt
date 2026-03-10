@@ -80,14 +80,18 @@
             
             <div class="hidden md:flex items-center gap-8">
                 <a href="index.html#shop" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Loja</a>
+                <a href="index.html#packs" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Packs</a>
                 <a href="index.html#about" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Sobre</a>
                 <a href="suporte.html" class="text-sm font-medium text-nuca-dark transition-colors uppercase tracking-wider border-b-2 border-nuca-green pb-1">Suporte</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="index.html" class="text-sm font-medium hover:text-nuca-dark transition-colors">
+                <a href="index.html" class="text-sm font-medium hover:text-nuca-dark transition-colors hidden md:block">
                     Voltar à Loja
                 </a>
+                <button class="md:hidden p-2" onclick="history.back()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                </button>
             </div>
         </div>
     </nav>
@@ -396,21 +400,75 @@
         </div>
     </section>
 
-    <!-- Footer Simples -->
-    <footer class="bg-nuca-dark text-nuca-beige py-12 px-6 lg:px-12">
-        <div class="max-w-4xl mx-auto text-center">
-            <a href="index.html" class="nuca-logo text-3xl block mb-4">NUCA</a>
-            <p class="text-nuca-beige/60 text-sm mb-6">Moda minimalista, feita em Portugal.</p>
-            <div class="flex justify-center gap-6 text-sm">
-                <a href="index.html" class="hover:text-nuca-beige transition-colors">Loja</a>
-                <a href="index.html#about" class="hover:text-nuca-beige transition-colors">Sobre</a>
-                <a href="suporte.html" class="text-nuca-beige">Suporte</a>
+    <!-- Footer Completo (Igual ao index.html) -->
+    <footer id="contact" class="bg-nuca-dark text-nuca-beige py-16 px-6 lg:px-12">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="space-y-4">
+                <span class="nuca-logo text-4xl block">NUCA</span>
+                <p class="text-nuca-beige/60 text-sm">Moda minimalista, feita em Portugal. Desde Lisboa para o mundo.</p>
+                <p class="text-nuca-beige/40 text-xs">Loja 100% Online</p>
             </div>
-            <p class="text-nuca-beige/40 text-xs mt-8">© 2024 NUCA. Todos os direitos reservados.</p>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Loja</h4>
+                <ul class="space-y-2 text-nuca-beige/60 text-sm">
+                    <li><a href="index.html#shop" onclick="localStorage.setItem('filter', 'camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
+                    <li><a href="index.html#shop" onclick="localStorage.setItem('filter', 'hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
+                    <li><a href="index.html#shop" onclick="localStorage.setItem('filter', 'acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
+                    <li><a href="index.html#shop" class="hover:text-nuca-beige transition-colors">Ver Tudo</a></li>
+                    <li><a href="index.html#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Ajuda</h4>
+                <ul class="space-y-2 text-nuca-beige/60 text-sm">
+                    <li><a href="suporte.html?tab=trocas" class="hover:text-nuca-beige transition-colors">Trocas e Devoluções</a></li>
+                    <li><a href="suporte.html?tab=tamanhos" class="hover:text-nuca-beige transition-colors">Guia de Tamanhos</a></li>
+                    <li><a href="suporte.html?tab=suporte" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Siga-nos</h4>
+                <div class="flex gap-4">
+                    <a href="https://instagram.com/nuca.pt" target="_blank"
+                    class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <a href="#"
+                    class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                            fill="currentColor">
+                            <path d="M18.244 2H21l-6.5 7.43L22 22h-6.828l-5.34-6.99L3.5 22H1l7.01-8.01L2 2h6.828l4.86 6.37L18.244 2z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="mt-6 space-y-1">
+                    <p class="text-sm text-nuca-beige/60">Contactos:</p>
+                    <a href="mailto:nuca.crew@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew@gmail.com</a>
+                    <a href="mailto:nuca.crew.support@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew.support@gmail.com</a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-nuca-beige/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/40">
+            <p>&copy; 2024 NUCA. Todos os direitos reservados.</p>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-nuca-beige transition-colors">Política de Privacidade</a>
+                <a href="#" class="hover:text-nuca-beige transition-colors">Termos de Uso</a>
+            </div>
         </div>
     </footer>
 
     <script>
+        // Verificar URL params para abrir tab automaticamente
+        function getUrlParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
         function showTab(tabName) {
             // Esconder todos os conteúdos
             document.getElementById('content-trocas').classList.add('hidden');
@@ -429,7 +487,20 @@
             document.getElementById('content-' + tabName).classList.remove('hidden');
             document.getElementById('tab-' + tabName).classList.remove('tab-inactive');
             document.getElementById('tab-' + tabName).classList.add('tab-active');
+
+            // Atualizar URL sem recarregar
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('tab', tabName);
+            window.history.pushState({}, '', newUrl);
         }
+
+        // Inicializar com tab da URL ou padrão
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabFromUrl = getUrlParam('tab');
+            if(tabFromUrl && ['trocas', 'tamanhos', 'suporte'].includes(tabFromUrl)) {
+                showTab(tabFromUrl);
+            }
+        });
     </script>
 </body>
 </html>
