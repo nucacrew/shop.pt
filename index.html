@@ -1153,11 +1153,14 @@
                 alert('O teu carrinho está vazio!');
                 return;
             }
-            // Guardar carrinho no localStorage para o checkout aceder
-            localStorage.setItem('nucaCart', JSON.stringify(cart));
-            // Ir para a página de checkout
-            window.location.href = 'checkout.html';
+            
+            // Converter carrinho para JSON e codificar para URL
+            const cartData = encodeURIComponent(JSON.stringify(cart));
+            
+            // Ir para checkout com dados na URL
+            window.location.href = `checkout.html?cart=${cartData}`;
         }
     </script>
 </body>
 </html>
+
