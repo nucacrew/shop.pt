@@ -66,7 +66,16 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .eupago-iframe { width: 100%; height: 400px; border: none; }
+        .error-message {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+        }
     </style>
+<base target="_blank">
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
@@ -198,9 +207,12 @@
                 <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Método de Pagamento</h2>
                     
+                    <!-- Área de erro -->
+                    <div id="payment-error" class="error-message hidden"></div>
+                    
                     <div class="space-y-3 mb-6">
                         <!-- MB WAY -->
-                        <!--<div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40 selected" onclick="selectPayment('mbway')">
+                        <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40 selected" onclick="selectPayment('mbway')">
                             <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
                             </div>
@@ -211,7 +223,7 @@
                             <div class="w-6 h-6 rounded-full border-2 border-nuca-green flex items-center justify-center check-icon">
                                 <div class="w-3 h-3 rounded-full bg-nuca-green"></div>
                             </div>
-                        </div>-->
+                        </div>
 
                         <!-- Multibanco -->
                         <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40" onclick="selectPayment('multibanco')">
@@ -662,6 +674,10 @@
         function selectPayment(method) {
             selectedPaymentMethod = method;
             
+            // Esconder mensagem de erro
+            const errorDiv = document.getElementById('payment-error');
+            if(errorDiv) errorDiv.classList.add('hidden');
+            
             document.querySelectorAll('.payment-method').forEach(el => {
                 el.classList.remove('selected');
                 el.querySelector('.check-icon div').classList.add('hidden');
@@ -683,6 +699,15 @@
             }
         }
     
+        function showError(message) {
+            const errorDiv = document.getElementById('payment-error');
+            if(errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.classList.remove('hidden');
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    
         // === FUNÇÕES EUPAGO VIA EDGE FUNCTION ===
     
         async function createEupagoPayment(orderNumber, total, customerData) {
@@ -700,6 +725,9 @@
                 methodType = 'card';
             }
     
+            // Determinar URL base (remover path, manter apenas origin)
+            const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+            
             const payload = {
                 chave: EUPAGO_API_KEY,
                 valor: total.toFixed(2),
@@ -712,7 +740,7 @@
                 codigopostal: customerData.postal,
                 localidade: customerData.city,
                 pais: 'PT',
-                url_retorno: window.location.origin + '/callback/eupago',
+                base_url: baseUrl,
                 url_confirmacao: window.location.href
             };
     
@@ -720,10 +748,13 @@
                 payload.telefone = document.getElementById('mbway-phone').value;
             }
     
-            try {
-                console.log('A enviar para Edge Function:', EUPAGO_PROXY_URL);
-                console.log('Payload:', { endpoint, methodType, sandbox: EUPAGO_SANDBOX });
+            console.log('=== FRONTEND: A enviar para Edge Function ===');
+            console.log('URL:', EUPAGO_PROXY_URL);
+            console.log('Endpoint:', endpoint);
+            console.log('Method:', methodType);
+            console.log('Payload:', payload);
     
+            try {
                 const response = await fetch(EUPAGO_PROXY_URL, {
                     method: 'POST',
                     headers: {
@@ -738,7 +769,8 @@
                     })
                 });
     
-                console.log('Resposta status:', response.status);
+                console.log('=== FRONTEND: Resposta HTTP ===');
+                console.log('Status:', response.status);
     
                 if(!response.ok) {
                     const errorText = await response.text();
@@ -747,16 +779,23 @@
                 }
     
                 const data = await response.json();
-                console.log('Resposta Eupago:', data);
+                console.log('=== FRONTEND: Resposta da Edge Function ===');
+                console.log('Data:', data);
                 
+                // Verificar se há erro na resposta
                 if(data.error) {
                     throw new Error(data.error);
+                }
+                
+                // Verificar se a Eupago retornou erro
+                if(data.sucesso === false && data.mensagem) {
+                    throw new Error(`Eupago: ${data.mensagem}`);
                 }
                 
                 return data;
                 
             } catch (error) {
-                console.error('Erro completo:', error);
+                console.error('=== FRONTEND: Erro completo ===', error);
                 throw error;
             }
         }
@@ -765,6 +804,10 @@
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
             
+            // Esconder erro anterior
+            const errorDiv = document.getElementById('payment-error');
+            if(errorDiv) errorDiv.classList.add('hidden');
+            
             btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A processar...</span>';
             btn.disabled = true;
             
@@ -772,7 +815,7 @@
                 if(selectedPaymentMethod === 'mbway') {
                     const mbwayPhone = document.getElementById('mbway-phone').value;
                     if(!mbwayPhone || mbwayPhone.length !== 9) {
-                        alert('Introduz um número de telemóvel válido (9 dígitos)');
+                        showError('Introduz um número de telemóvel válido (9 dígitos)');
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                         return;
@@ -837,16 +880,32 @@
                 
                 if(orderError) {
                     console.error('Erro Supabase:', orderError);
-                    throw orderError;
+                    throw new Error(`Erro ao criar encomenda: ${orderError.message}`);
                 }
                 
                 savedOrderId = orderRecord[0].id;
                 console.log('Encomenda criada:', savedOrderId);
                 
+                // Guardar dados no localStorage para as páginas de retorno
+                localStorage.setItem('lastOrderId', orderNumber);
+                localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
+                localStorage.setItem('lastCart', btoa(JSON.stringify(cart)));
+                
                 const eupagoResponse = await createEupagoPayment(orderNumber, total, orderData.shipping);
                 
-                if(eupagoResponse.sucesso !== true && !eupagoResponse.referencia) {
-                    throw new Error(eupagoResponse.mensagem || 'Erro ao criar pagamento na Eupago');
+                console.log('=== FRONTEND: Verificando resposta Eupago ===');
+                console.log('sucesso:', eupagoResponse.sucesso);
+                console.log('referencia:', eupagoResponse.referencia);
+                console.log('url:', eupagoResponse.url);
+                
+                // Verificar se a resposta é válida
+                const hasValidResponse = eupagoResponse.sucesso === true || 
+                                         eupagoResponse.referencia || 
+                                         eupagoResponse.url;
+                
+                if(!hasValidResponse) {
+                    console.error('Resposta inválida da Eupago:', eupagoResponse);
+                    throw new Error('Erro ao criar pagamento na Eupago. Verifica os logs.');
                 }
                 
                 eupagoTransactionId = eupagoResponse.referencia || eupagoResponse.id_transacao;
@@ -880,8 +939,8 @@
                 goToStep(4);
                 
             } catch(error) {
-                console.error('Erro no processamento:', error);
-                alert('Erro ao processar encomenda: ' + error.message);
+                console.error('=== FRONTEND: Erro no processamento ===', error);
+                showError('Erro ao processar encomenda: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
