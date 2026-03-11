@@ -219,7 +219,7 @@
                 <!-- Step 3: Pay by Link -->
                 <div id="step-3" class="hidden">
                     <!-- Resumo antes de pagar -->
-                    <div class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
+                    <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
                         <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
                         
                         <div class="space-y-4 mb-6">
@@ -391,8 +391,8 @@
         const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d';
         const EUPAGO_SANDBOX = true;
     
-        // URL DA EDGE FUNCTION (atualizada para Pay by Link)
-        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/eupago-proxy';
+        // URL DA EDGE FUNCTION (usando o nome original)
+        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/smooth-processor';
     
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
@@ -670,31 +670,37 @@
             const expiryStr = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
             
             const payload = {
-                payment: {
-                    amount: {
-                        value: total.toFixed(2),
-                        currency: "EUR"
-                    },
-                    shipping: {
-                        value: "0.00",
-                        currency: "EUR"
-                    },
-                    lang: "PT",
-                    expirationDate: expiryStr,
-                    identifier: orderNumber,
-                    description: `Encomenda NUCA ${orderNumber}`,
-                    customer: {
-                        name: `${customerData.firstName} ${customerData.lastName}`,
-                        email: customerData.email,
-                        phone: customerData.phone,
-                        address: customerData.address,
-                        city: customerData.city,
-                        zip: customerData.postal
+                type: 'paybylink',
+                api_key: EUPAGO_API_KEY,
+                sandbox: EUPAGO_SANDBOX,
+                payload: {
+                    payment: {
+                        amount: {
+                            value: total.toFixed(2),
+                            currency: "EUR"
+                        },
+                        shipping: {
+                            value: "0.00",
+                            currency: "EUR"
+                        },
+                        lang: "PT",
+                        expirationDate: expiryStr,
+                        identifier: orderNumber,
+                        description: `Encomenda NUCA ${orderNumber}`,
+                        customer: {
+                            name: `${customerData.firstName} ${customerData.lastName}`,
+                            email: customerData.email,
+                            phone: customerData.phone,
+                            address: customerData.address,
+                            city: customerData.city,
+                            zip: customerData.postal
+                        }
                     }
                 }
             };
     
             console.log('=== CRIAR PAY BY LINK ===');
+            console.log('URL:', EUPAGO_PROXY_URL);
             console.log('Payload:', payload);
     
             try {
@@ -704,12 +710,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${SUPABASE_KEY}`
                     },
-                    body: JSON.stringify({
-                        type: 'paybylink',
-                        api_key: EUPAGO_API_KEY,
-                        sandbox: EUPAGO_SANDBOX,
-                        payload: payload
-                    })
+                    body: JSON.stringify(payload)
                 });
     
                 console.log('Status:', response.status);
@@ -825,13 +826,13 @@
                         eupago_response: eupagoResponse
                     }]);
                 
+                // Esconder secção de confirmação
+                document.getElementById('confirm-section').classList.add('hidden');
+                
                 // Mostrar link de pagamento
                 document.getElementById('pay-link-btn').href = eupagoResponse.url;
                 document.getElementById('pay-link-amount').textContent = total.toFixed(2);
                 document.getElementById('payment-link-section').classList.remove('hidden');
-                
-                // Esconder formulário de confirmação
-                document.querySelector('#step-3 > div:first-child').classList.add('hidden');
                 
                 // Mostrar comprovativo
                 orderData.orderNumber = orderNumber;
