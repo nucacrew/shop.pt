@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Cancelado - NUCA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .error-icon {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .pulse-ring {
+            animation: pulse-ring 2s ease-out infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <div class="grain-overlay"></div>
+
+    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
+            <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Pagamento Seguro</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-2xl mx-auto px-6 lg:px-12 py-16">
+        
+        <!-- Error Message -->
+        <div class="text-center mb-10">
+            <div class="relative inline-block mb-6">
+                <div class="pulse-ring absolute inset-0 rounded-full border-4 border-red-400"></div>
+                <div class="error-icon w-24 h-24 bg-red-100 rounded-full flex items-center justify-center relative z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+            </div>
+            <h1 class="font-display text-4xl font-bold text-nuca-green mb-4">Pagamento Não Concluído</h1>
+            <p class="text-nuca-green/70 text-lg">Ocorreu um problema ao processar o teu pagamento.</p>
+        </div>
+
+        <!-- Error Details Card -->
+        <div class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </div>
+                <div>
+                    <h2 class="font-display text-xl font-bold text-nuca-green">O que pode ter acontecido?</h2>
+                    <p class="text-nuca-green/60 text-sm">Várias situações podem causar isto</p>
+                </div>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex items-start gap-4 p-4 bg-nuca-light/30 rounded-2xl">
+                    <div class="w-8 h-8 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-nuca-green font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-nuca-green mb-1">Cancelaste o pagamento</h4>
+                        <p class="text-sm text-nuca-green/60">Selecionaste "Cancelar" na app MB WAY ou no ambiente de pagamento.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4 p-4 bg-nuca-light/30 rounded-2xl">
+                    <div class="w-8 h-8 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-nuca-green font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-nuca-green mb-1">Tempo expirado</h4>
+                        <p class="text-sm text-nuca-green/60">O pagamento MB WAY ou a referência Multibanco expirou.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4 p-4 bg-nuca-light/30 rounded-2xl">
+                    <div class="w-8 h-8 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-nuca-green font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-nuca-green mb-1">Erro técnico</h4>
+                        <p class="text-sm text-nuca-green/60">Problema temporário com o processador de pagamentos.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-4 p-4 bg-nuca-light/30 rounded-2xl">
+                    <div class="w-8 h-8 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span class="text-nuca-green font-bold text-sm">4</span>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-nuca-green mb-1">Saldo insuficiente</h4>
+                        <p class="text-sm text-nuca-green/60">A conta associada não tinha fundos suficientes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info (if available) -->
+        <div id="order-info" class="bg-nuca-light/30 rounded-2xl p-6 border border-nuca-green/10 mb-8 hidden">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-nuca-green/60 mb-1">Número da Encomenda</p>
+                    <p id="order-number" class="font-mono font-bold text-nuca-green text-lg">---</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-nuca-green/60 mb-1">Estado</p>
+                    <span class="px-4 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">Pendente</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <a href="checkout.html" id="retry-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors text-center flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                <span>Tentar Novamente</span>
+            </a>
+            <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Voltar à Loja</span>
+            </a>
+        </div>
+
+        <!-- Help Box -->
+        <div class="mt-8 bg-white/50 rounded-2xl p-6 border border-nuca-green/10">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-nuca-green mb-2">Precisas de ajuda?</h4>
+                    <p class="text-sm text-nuca-green/70 mb-3">Se continuas com problemas, entra em contacto connosco.</p>
+                    <a href="mailto:nuca.crew@gmail.com" class="inline-flex items-center gap-2 text-nuca-green font-medium hover:underline">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        nuca.crew@gmail.com
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full px-6 lg:px-12 py-8 border-t border-nuca-green/10 mt-auto">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="nuca-logo text-2xl text-nuca-green mb-2">NUCA</p>
+            <p class="text-sm text-nuca-green/50">Moda minimalista, feita em Portugal</p>
+        </div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                orderId: params.get('order_id') || params.get('id'),
+                error: params.get('erro') || params.get('error'),
+                message: params.get('mensagem') || params.get('message')
+            };
+        }
+
+        async function loadOrderInfo() {
+            const params = getUrlParams();
+            const orderId = params.orderId || localStorage.getItem('lastOrderId');
+            
+            if (orderId) {
+                document.getElementById('order-info').classList.remove('hidden');
+                document.getElementById('order-number').textContent = orderId;
+                
+                // Atualizar link de retry com o carrinho
+                const retryBtn = document.getElementById('retry-btn');
+                const cartData = localStorage.getItem('lastCart');
+                if (cartData && retryBtn) {
+                    retryBtn.href = `checkout.html?cart=${cartData}`;
+                }
+
+                // Atualizar status na base de dados
+                try {
+                    await supabaseClient
+                        .from('orders')
+                        .update({ status: 'payment_failed' })
+                        .eq('order_number', orderId);
+                } catch (e) {
+                    console.error('Erro ao atualizar status:', e);
+                }
+            }
+        }
+
+        window.onload = function() {
+            loadOrderInfo();
+        };
+    </script>
+</body>
+</html>
