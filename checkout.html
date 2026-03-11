@@ -342,62 +342,72 @@
         let currentStep = 1;
         let orderData = {};
 
-        // === CORREÇÃO PRINCIPAL: Função de decodificação Base64 com suporte UTF-8 ===
-        // O problema é que atob() retorna uma string binária (Latin1), não UTF-8
-        // Precisamos converter para Uint8Array e depois usar TextDecoder
-        function safeBase64Decode(str) {
+        // === FUNÇÃO DE DECODIFICAÇÃO BASE64 TOTALMENTE REESCRITA ===
+        // Esta função NÃO usa atob() - usa um algoritmo próprio que funciona com UTF-8
+        function base64Decode(str) {
             try {
                 if (!str || typeof str !== 'string') {
-                    console.error('String Base64 inválida:', str);
+                    console.error('Input inválido:', str);
                     return null;
                 }
-                
-                console.log('Input string length:', str.length);
-                console.log('First 50 chars:', str.substring(0, 50));
+
+                // Limpar a string - remover espaços e caracteres inválidos
+                str = str.trim();
                 
                 // Converter Base64URL para Base64 padrão
-                let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+                str = str.replace(/-/g, '+').replace(/_/g, '/');
                 
                 // Adicionar padding se necessário
-                while (base64.length % 4) {
-                    base64 += '=';
+                while (str.length % 4) {
+                    str += '=';
                 }
-                
-                console.log('After padding length:', base64.length);
-                
-                // Usar TextDecoder é a forma moderna e correta de lidar com UTF-8
-                // Primeiro, converter Base64 para Uint8Array (bytes)
-                const binaryString = atob(base64);
-                const bytes = new Uint8Array(binaryString.length);
-                for (let i = 0; i < binaryString.length; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
+
+                // Alfabeto Base64
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                const lookup = new Uint8Array(256);
+                for (let i = 0; i < chars.length; i++) {
+                    lookup[chars.charCodeAt(i)] = i;
                 }
-                
-                // Agora usar TextDecoder para converter bytes UTF-8 para string
+
+                const len = str.length;
+                let bufferLength = str.length * 0.75;
+                let p = 0;
+                let encoded1, encoded2, encoded3, encoded4;
+
+                if (str[str.length - 1] === '=') {
+                    bufferLength--;
+                    if (str[str.length - 2] === '=') {
+                        bufferLength--;
+                    }
+                }
+
+                const bytes = new Uint8Array(bufferLength);
+
+                for (let i = 0; i < len; i += 4) {
+                    encoded1 = lookup[str.charCodeAt(i)];
+                    encoded2 = lookup[str.charCodeAt(i + 1)];
+                    encoded3 = lookup[str.charCodeAt(i + 2)];
+                    encoded4 = lookup[str.charCodeAt(i + 3)];
+
+                    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+                    if (encoded3 !== 64) {
+                        bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+                    }
+                    if (encoded4 !== 64) {
+                        bytes[p++] = ((encoded3 & 3) << 6) | encoded4;
+                    }
+                }
+
+                // Converter bytes para string UTF-8
                 const decoder = new TextDecoder('utf-8');
                 const decoded = decoder.decode(bytes);
                 
-                console.log('Decoded successfully, length:', decoded.length);
-                console.log('First 100 chars of decoded:', decoded.substring(0, 100));
-                
-                // Parse JSON
-                const parsed = JSON.parse(decoded);
-                console.log('JSON parsed successfully:', parsed);
-                return parsed;
-                
+                console.log('Decodificado com sucesso, length:', decoded.length);
+                return JSON.parse(decoded);
+
             } catch (e) {
-                console.error('Erro completo na decodificação:', e);
-                // Tentar método fallback antigo se o novo falhar
-                try {
-                    console.log('Tentando método fallback...');
-                    let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-                    while (base64.length % 4) base64 += '=';
-                    const decoded = decodeURIComponent(escape(atob(base64)));
-                    return JSON.parse(decoded);
-                } catch (e2) {
-                    console.error('Fallback também falhou:', e2);
-                    return null;
-                }
+                console.error('Erro na decodificação Base64:', e);
+                return null;
             }
         }
 
@@ -407,11 +417,12 @@
                 const cartData = urlParams.get('cart');
                 
                 console.log('URL completa:', window.location.href);
-                console.log('Parâmetro cart (primeiros 100 chars):', cartData ? cartData.substring(0, 100) : 'null');
+                console.log('Parâmetro cart encontrado:', cartData ? 'SIM' : 'NÃO');
                 
                 if (cartData) {
-                    const parsed = safeBase64Decode(cartData);
+                    const parsed = base64Decode(cartData);
                     if (parsed && Array.isArray(parsed)) {
+                        console.log('Carrinho parseado com sucesso:', parsed.length, 'itens');
                         return parsed;
                     }
                 }
