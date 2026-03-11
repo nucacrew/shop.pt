@@ -664,15 +664,19 @@
         // === PAY BY LINK VIA EDGE FUNCTION ===
     
         async function createPayByLink(orderNumber, total, customerData) {
-            // Calcular data de expiração (3 dias)
             const expiryDate = new Date();
             expiryDate.setDate(expiryDate.getDate() + 3);
             const expiryStr = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
             
-            // Payload EXATO conforme esperado pela Edge Function
+            // Garantir que amount é número
+            const amountNum = parseFloat(total);
+            if (isNaN(amountNum) || amountNum <= 0) {
+                throw new Error(`Amount inválido: ${total}`);
+            }
+            
             const payload = {
                 type: 'paybylink',
-                amount: total.toFixed(2),
+                amount: amountNum,  // Enviar como número, a Edge Function converte
                 currency: "EUR",
                 lang: "PT",
                 expirationDate: expiryStr,
@@ -690,7 +694,8 @@
         
             console.log('=== CRIAR PAY BY LINK ===');
             console.log('URL:', EUPAGO_PROXY_URL);
-            console.log('Payload:', JSON.stringify(payload, null, 2));
+            console.log('Payload:', JSON.stringify(payload, null, 2)); // Usar JSON.stringify para ver o objeto completo
+            console.log('Amount type:', typeof payload.amount, 'Value:', payload.amount);
         
             try {
                 const response = await fetch(EUPAGO_PROXY_URL, {
@@ -702,25 +707,23 @@
                     body: JSON.stringify(payload)
                 });
         
-                console.log('Status:', response.status);
-        
-                // Ler o texto da resposta primeiro para debug
                 const responseText = await response.text();
-                console.log('Resposta raw:', responseText);
+                console.log('Resposta status:', response.status);
+                console.log('Resposta body:', responseText);
         
                 let data;
                 try {
                     data = JSON.parse(responseText);
                 } catch (e) {
-                    throw new Error(`Resposta inválida da Edge Function: ${responseText}`);
+                    throw new Error(`Resposta inválida: ${responseText}`);
                 }
         
-                if(!response.ok) {
+                if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${data.error || responseText}`);
                 }
         
-                if(!data.url) {
-                    throw new Error(data.error || 'Resposta sem URL de pagamento');
+                if (!data.url) {
+                    throw new Error(data.error || 'Sem URL na resposta');
                 }
                 
                 return {
