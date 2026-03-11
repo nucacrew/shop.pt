@@ -352,7 +352,8 @@
                     return null;
                 }
                 
-                console.log('Input string:', str.substring(0, 50) + '...');
+                console.log('Input string length:', str.length);
+                console.log('First 50 chars:', str.substring(0, 50));
                 
                 // Converter Base64URL para Base64 padrão
                 let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -362,24 +363,22 @@
                     base64 += '=';
                 }
                 
-                console.log('After padding:', base64.substring(0, 50) + '...');
+                console.log('After padding length:', base64.length);
                 
-                // Decodificar Base64 para string binária (Latin1)
+                // Usar TextDecoder é a forma moderna e correta de lidar com UTF-8
+                // Primeiro, converter Base64 para Uint8Array (bytes)
                 const binaryString = atob(base64);
-                console.log('atob decoded, length:', binaryString.length);
-                
-                // Converter string binária para Uint8Array (bytes)
                 const bytes = new Uint8Array(binaryString.length);
                 for (let i = 0; i < binaryString.length; i++) {
                     bytes[i] = binaryString.charCodeAt(i);
                 }
                 
-                // Usar TextDecoder para converter bytes UTF-8 para string
+                // Agora usar TextDecoder para converter bytes UTF-8 para string
                 const decoder = new TextDecoder('utf-8');
                 const decoded = decoder.decode(bytes);
                 
-                console.log('UTF-8 decoded, length:', decoded.length);
-                console.log('First 100 chars:', decoded.substring(0, 100));
+                console.log('Decoded successfully, length:', decoded.length);
+                console.log('First 100 chars of decoded:', decoded.substring(0, 100));
                 
                 // Parse JSON
                 const parsed = JSON.parse(decoded);
