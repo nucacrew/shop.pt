@@ -669,6 +669,7 @@
             expiryDate.setDate(expiryDate.getDate() + 3);
             const expiryStr = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
             
+            // Payload conforme documentação oficial Eupago
             const payload = {
                 type: 'paybylink',
                 api_key: EUPAGO_API_KEY,
@@ -677,10 +678,6 @@
                     payment: {
                         amount: {
                             value: total.toFixed(2),
-                            currency: "EUR"
-                        },
-                        shipping: {
-                            value: "0.00",
                             currency: "EUR"
                         },
                         lang: "PT",
@@ -698,31 +695,32 @@
                     }
                 }
             };
-    
+        
             console.log('=== CRIAR PAY BY LINK ===');
             console.log('URL:', EUPAGO_PROXY_URL);
             console.log('Payload:', payload);
-    
+        
             try {
                 const response = await fetch(EUPAGO_PROXY_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                        'Authorization': `Bearer ${SUPABASE_KEY}`  // Auth do Supabase (mantém)
                     },
                     body: JSON.stringify(payload)
                 });
-    
+        
                 console.log('Status:', response.status);
-    
+        
                 if(!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
-    
+        
                 const data = await response.json();
-                console.log('Resposta:', data);
+                console.log('Resposta Eupago:', data);
                 
+                // Verificar se tem URL na resposta
                 if(!data.success && !data.url) {
                     throw new Error(data.message || 'Erro ao criar link de pagamento');
                 }
