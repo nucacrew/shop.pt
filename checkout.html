@@ -408,6 +408,26 @@
         let savedOrderId = null;
         let eupagoTransactionId = null;
     
+        // === FUNÇÃO PARA DECODIFICAR BASE64 SEGURO ===
+        function safeBase64Decode(str) {
+            try {
+                // Substituir caracteres URL-safe de volta para Base64 padrão
+                let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+                
+                // Adicionar padding se necessário
+                while (base64.length % 4) {
+                    base64 += '=';
+                }
+                
+                // Decodificar
+                const decoded = atob(base64);
+                return JSON.parse(decoded);
+            } catch (e) {
+                console.error('Erro na decodificação Base64:', e);
+                return null;
+            }
+        }
+    
         // === OBTÉM CARRINHO DA URL (BASE64) ===
         function getCartFromURL() {
             try {
@@ -415,9 +435,14 @@
                 const cartData = urlParams.get('cart');
                 
                 if (cartData) {
-                    const decoded = atob(cartData);
-                    const parsed = JSON.parse(decoded);
-                    return parsed;
+                    // Usar função segura de decodificação
+                    const parsed = safeBase64Decode(cartData);
+                    if (parsed && Array.isArray(parsed)) {
+                        return parsed;
+                    } else {
+                        console.error('Dados do carrinho inválidos após decodificação');
+                        return null;
+                    }
                 }
             } catch (e) {
                 console.error('Erro ao carregar carrinho:', e);
