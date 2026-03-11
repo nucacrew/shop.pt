@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado - NUCA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .success-check {
+            animation: scaleIn 0.5s ease-out;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .receipt-stamp {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            border: 3px solid #556B4F; color: #556B4F;
+            padding: 1rem 2rem; font-family: 'Syne', sans-serif;
+            font-weight: 800; font-size: 1.5rem; opacity: 0.3;
+            pointer-events: none; border-radius: 8px;
+        }
+        .receipt-paper { 
+            background: white; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.6s ease-out 0.3s both;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #556B4F;
+            position: absolute;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <div class="grain-overlay"></div>
+
+    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
+            <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>Pagamento Seguro</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-3xl mx-auto px-6 lg:px-12 py-12">
+        
+        <!-- Success Message -->
+        <div class="text-center mb-10">
+            <div class="success-check w-24 h-24 bg-nuca-green rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h1 class="font-display text-4xl font-bold text-nuca-green mb-4">Pagamento Confirmado!</h1>
+            <p class="text-nuca-green/70 text-lg">A tua encomenda foi processada com sucesso.</p>
+            <p class="text-nuca-green/50 mt-2">Receberás um email de confirmação em breve.</p>
+        </div>
+
+        <!-- Order Details Card -->
+        <div class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-display text-xl font-bold text-nuca-green">Detalhes da Encomenda</h2>
+                <span id="order-status" class="px-4 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">Pago</span>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex justify-between items-center py-3 border-b border-nuca-green/10">
+                    <span class="text-nuca-green/60">Número da Encomenda</span>
+                    <span id="order-number" class="font-mono font-bold text-nuca-green text-lg">---</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-nuca-green/10">
+                    <span class="text-nuca-green/60">Data</span>
+                    <span id="order-date" class="text-nuca-green">---</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-nuca-green/10">
+                    <span class="text-nuca-green/60">Método de Pagamento</span>
+                    <span id="payment-method" class="text-nuca-green">---</span>
+                </div>
+                <div class="flex justify-between items-center py-3 border-b border-nuca-green/10">
+                    <span class="text-nuca-green/60">Estado do Pagamento</span>
+                    <span class="text-green-600 font-medium flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Confirmado
+                    </span>
+                </div>
+                <div class="flex justify-between items-center py-4">
+                    <span class="text-nuca-green font-bold text-xl">Total Pago</span>
+                    <span id="order-total" class="font-display font-bold text-nuca-green text-2xl">---</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipt Preview -->
+        <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden mb-8">
+            <div class="receipt-stamp">PAGO</div>
+            
+            <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
+                <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
+                <p class="text-nuca-green/60 text-sm">Moda minimalista, feita em Portugal</p>
+            </div>
+
+            <div class="space-y-4 mb-6 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-nuca-green/60">Nº Encomenda:</span>
+                    <span class="font-mono font-bold text-nuca-green" id="receipt-order-number">---</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-nuca-green/60">Data:</span>
+                    <span class="text-nuca-green" id="receipt-date">---</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-nuca-green/60">Cliente:</span>
+                    <span class="text-nuca-green font-medium" id="receipt-customer">---</span>
+                </div>
+            </div>
+
+            <div class="border-t border-b border-nuca-green/10 py-4 mb-6">
+                <h4 class="font-bold text-nuca-green mb-3 text-xs uppercase tracking-wider">Itens</h4>
+                <div id="receipt-items" class="space-y-2 text-sm">
+                    <p class="text-nuca-green/40 text-center">A carregar...</p>
+                </div>
+            </div>
+
+            <div class="flex justify-between text-lg font-bold text-nuca-green mb-8">
+                <span>TOTAL</span>
+                <span id="receipt-total">---</span>
+            </div>
+
+            <div class="text-center space-y-2 text-xs text-nuca-green/40 border-t border-dashed border-nuca-green/20 pt-4">
+                <p>Este documento serve como comprovativo de compra.</p>
+                <p>Para trocas: nuca.crew@gmail.com</p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <button onclick="downloadReceipt()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>Download PDF</span>
+            </button>
+            <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span>Voltar à Loja</span>
+            </a>
+        </div>
+
+        <!-- Info Box -->
+        <div class="mt-8 bg-nuca-light/30 rounded-2xl p-6 border border-nuca-green/10">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-nuca-green mb-2">O que acontece agora?</h4>
+                    <ul class="text-sm text-nuca-green/70 space-y-2">
+                        <li class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><polyline points="20 6 9 17 4 12"/></svg>
+                            Receberás um email de confirmação com os detalhes
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><polyline points="20 6 9 17 4 12"/></svg>
+                            A encomenda será processada em 1-2 dias úteis
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><polyline points="20 6 9 17 4 12"/></svg>
+                            Receberás o tracking quando for enviada
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full px-6 lg:px-12 py-8 border-t border-nuca-green/10 mt-auto">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="nuca-logo text-2xl text-nuca-green mb-2">NUCA</p>
+            <p class="text-sm text-nuca-green/50">Moda minimalista, feita em Portugal</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Obter parâmetros da URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                orderId: params.get('order_id') || params.get('id'),
+                reference: params.get('referencia'),
+                status: params.get('estado') || params.get('status')
+            };
+        }
+
+        async function loadOrderDetails() {
+            const params = getUrlParams();
+            console.log('URL Params:', params);
+
+            // Tentar obter order_id do localStorage se não estiver na URL
+            let orderId = params.orderId || localStorage.getItem('lastOrderId');
+            
+            if (!orderId) {
+                document.getElementById('receipt-items').innerHTML = '<p class="text-nuca-green/40 text-center">Não foi possível carregar os detalhes da encomenda.</p>';
+                return;
+            }
+
+            try {
+                // Buscar detalhes da encomenda
+                const { data: order, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('order_number', orderId)
+                    .single();
+
+                if (error || !order) {
+                    console.error('Erro ao carregar encomenda:', error);
+                    // Tentar buscar por ID
+                    const { data: orderById, error: idError } = await supabaseClient
+                        .from('orders')
+                        .select('*')
+                        .eq('id', orderId)
+                        .single();
+                    
+                    if (idError || !orderById) {
+                        throw new Error('Encomenda não encontrada');
+                    }
+                    
+                    displayOrderDetails(orderById);
+                } else {
+                    displayOrderDetails(order);
+                }
+
+                // Atualizar status do pagamento se necessário
+                if (params.status === 'success' || params.status === '1') {
+                    await updatePaymentStatus(orderId, 'completed');
+                }
+
+            } catch (err) {
+                console.error('Erro:', err);
+                document.getElementById('receipt-items').innerHTML = '<p class="text-nuca-green/40 text-center">Erro ao carregar detalhes.</p>';
+            }
+        }
+
+        function displayOrderDetails(order) {
+            // Preencher informações
+            document.getElementById('order-number').textContent = order.order_number;
+            document.getElementById('receipt-order-number').textContent = order.order_number;
+            
+            const date = new Date(order.created_at).toLocaleDateString('pt-PT');
+            document.getElementById('order-date').textContent = date;
+            document.getElementById('receipt-date').textContent = date;
+            
+            document.getElementById('payment-method').textContent = (order.payment_method || '---').toUpperCase();
+            document.getElementById('order-total').textContent = `€${order.total?.toFixed(2) || '0.00'}`;
+            document.getElementById('receipt-total').textContent = `€${order.total?.toFixed(2) || '0.00'}`;
+            
+            document.getElementById('receipt-customer').textContent = order.customer_name || '---';
+
+            // Renderizar itens
+            const items = order.items || [];
+            const itemsHtml = items.map(item => `
+                <div class="flex justify-between py-2 border-b border-nuca-green/5 last:border-0">
+                    <div>
+                        <span class="text-nuca-green font-medium">${item.name}</span>
+                        <span class="text-xs text-nuca-green/40 block">x${item.quantity} • ${item.size || 'M'}</span>
+                    </div>
+                    <span class="text-nuca-green font-medium">€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('receipt-items').innerHTML = itemsHtml || '<p class="text-nuca-green/40 text-center">Sem itens</p>';
+        }
+
+        async function updatePaymentStatus(orderId, status) {
+            try {
+                await supabaseClient
+                    .from('orders')
+                    .update({ status: status })
+                    .eq('order_number', orderId);
+                
+                await supabaseClient
+                    .from('payments')
+                    .update({ status: status })
+                    .eq('order_id', orderId);
+            } catch (e) {
+                console.error('Erro ao atualizar status:', e);
+            }
+        }
+
+        function downloadReceipt() {
+            const element = document.getElementById('receipt-container');
+            const orderNumber = document.getElementById('order-number').textContent;
+            
+            const opt = {
+                margin: 10,
+                filename: `NUCA_${orderNumber}_RECIBO.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            element.classList.remove('receipt-paper');
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.classList.add('receipt-paper');
+            });
+        }
+
+        // Criar confetti
+        function createConfetti() {
+            const colors = ['#556B4F', '#2C3328', '#D8C6A5', '#E8DCC4'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 50);
+            }
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadOrderDetails();
+            createConfetti();
+        };
+    </script>
+</body>
+</html>
