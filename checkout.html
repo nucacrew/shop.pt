@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - NUCA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <title>Finalizar - NUCA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -13,9 +13,12 @@
                 extend: {
                     colors: {
                         'nuca-beige': '#D8C6A5',
+                        'nuca-beige-dark': '#C4B090',
                         'nuca-green': '#556B4F',
+                        'nuca-green-light': '#6B8264',
                         'nuca-dark': '#2C3328',
                         'nuca-light': '#E8DCC4',
+                        'nuca-cream': '#F5F0E8',
                     },
                     fontFamily: {
                         'display': ['Syne', 'sans-serif'],
@@ -26,286 +29,633 @@
         }
     </script>
     <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
         body {
             background-color: #D8C6A5;
-            color: #556B4F;
+            color: #2C3328;
             font-family: 'Space Grotesk', sans-serif;
         }
-        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 50; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        
+        .nuca-logo { 
+            font-family: 'Syne', sans-serif; 
+            font-weight: 800; 
+            letter-spacing: -0.03em;
         }
-        .step-active { background-color: #556B4F; color: #D8C6A5; }
-        .step-completed { background-color: #2C3328; color: #D8C6A5; }
-        .step-pending { background-color: transparent; color: #556B4F; border: 2px solid #556B4F; }
-        .input-field {
-            background-color: rgba(255,255,255,0.5);
-            border: 2px solid transparent;
-            transition: all 0.3s;
+        
+        /* Textura sutil de papel */
+        .paper-texture {
+            background-color: #F5F0E8;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(85, 107, 79, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(212, 184, 144, 0.05) 0%, transparent 50%);
         }
-        .input-field:focus { outline: none; border-color: #556B4F; background-color: white; }
-        .loading-spinner {
-            border: 3px solid rgba(85, 107, 79, 0.3);
-            border-top: 3px solid #556B4F;
-            border-radius: 50%; width: 24px; height: 24px;
-            animation: spin 1s linear infinite;
+        
+        /* Linha decorativa */
+        .deco-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #556B4F 50%, transparent 100%);
+            opacity: 0.3;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .whatsapp-box {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-            color: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-        }
-        .whatsapp-btn {
-            background: white;
-            color: #128C7E;
-            padding: 1rem 2rem;
-            border-radius: 9999px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-        .whatsapp-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .success-check {
-            width: 80px;
-            height: 80px;
-            background: rgba(255,255,255,0.2);
+        
+        /* Steps elegantes */
+        .step-circle {
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-active {
+            background-color: #556B4F;
+            color: #F5F0E8;
+            box-shadow: 0 4px 20px rgba(85, 107, 79, 0.3);
+        }
+        
+        .step-completed {
+            background-color: #2C3328;
+            color: #D8C6A5;
+        }
+        
+        .step-pending {
+            background-color: transparent;
+            color: #556B4F;
+            border: 2px solid rgba(85, 107, 79, 0.3);
+        }
+        
+        .step-label {
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+        
+        /* Cards flutuantes */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(85, 107, 79, 0.1);
+            box-shadow: 
+                0 20px 40px -15px rgba(44, 51, 40, 0.1),
+                0 1px 3px rgba(44, 51, 40, 0.05);
+        }
+        
+        /* Inputs artesanais */
+        .artisan-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            border-bottom: 2px solid rgba(85, 107, 79, 0.2);
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .artisan-input:focus {
+            outline: none;
+            border-bottom-color: #556B4F;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .artisan-input::placeholder {
+            color: rgba(85, 107, 79, 0.4);
+        }
+        
+        /* Botões primários */
+        .btn-primary {
+            background-color: #556B4F;
+            color: #F5F0E8;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2C3328;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(85, 107, 79, 0.3);
+        }
+        
+        /* Botão outline */
+        .btn-outline {
+            border: 2px solid #556B4F;
+            color: #556B4F;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background-color: #556B4F;
+            color: #F5F0E8;
+        }
+        
+        /* Item do carrinho - estilo editorial */
+        .cart-item {
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .cart-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .cart-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #556B4F;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .cart-item:hover::before {
+            opacity: 1;
+        }
+        
+        /* Badge pack */
+        .pack-badge {
+            background: #2C3328;
+            color: #D8C6A5;
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            font-weight: 700;
+        }
+        
+        /* Animação de loading elegante */
+        .elegant-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(85, 107, 79, 0.2);
+            border-top-color: #556B4F;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Seção de sucesso - estilo certificado */
+        .success-certificate {
+            background: linear-gradient(135deg, #F5F0E8 0%, #E8DCC4 100%);
+            border: 1px solid rgba(85, 107, 79, 0.15);
+            position: relative;
+        }
+        
+        .success-certificate::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px solid rgba(85, 107, 79, 0.1);
+            pointer-events: none;
+        }
+        
+        /* Selo de confirmação */
+        .seal {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #556B4F;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: sealStamp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        @keyframes sealStamp {
+            0% { transform: scale(2); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .seal-inner {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #556B4F;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        /* Botão WhatsApp estilizado */
+        .wa-btn {
+            background: #F5F0E8;
+            color: #128C7E;
+            border: 2px solid #128C7E;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .wa-btn:hover {
+            background: #128C7E;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(18, 140, 126, 0.2);
+        }
+        
+        /* Número de encomenda - estilo vintage */
+        .order-number {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.15em;
+            font-size: 14px;
+            color: #556B4F;
+            background: rgba(85, 107, 79, 0.1);
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        
+        /* Resumo lateral sticky */
+        .sticky-summary {
+            position: sticky;
+            top: 120px;
+        }
+        
+        /* Linha divisória decorativa */
+        .divider-ornament {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #556B4F;
+            opacity: 0.4;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+        
+        .divider-ornament::before,
+        .divider-ornament::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #556B4F, transparent);
+        }
+        
+        /* Responsivo */
+        @media (max-width: 1024px) {
+            .sticky-summary {
+                position: relative;
+                top: 0;
+            }
+        }
+        
+        /* Animação de entrada suave */
+        .fade-up {
+            animation: fadeUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body class="min-h-screen">
 
-    <div class="grain-overlay"></div>
-
-    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
-            <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Checkout</span>
+    <!-- Header minimalista -->
+    <header class="w-full px-8 py-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="nuca-logo text-3xl text-nuca-dark hover:opacity-70 transition-opacity">
+                NUCA
+            </a>
+            <div class="text-xs tracking-widest uppercase text-nuca-green opacity-60">
+                Checkout
             </div>
         </div>
     </header>
 
-    <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
+    <main class="w-full max-w-6xl mx-auto px-8 pb-20">
         
-        <!-- Steps -->
-        <div class="mb-12">
-            <div class="flex items-center justify-center gap-4 md:gap-8">
-                <div class="flex items-center gap-3" id="step-1-indicator">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-active transition-all">1</div>
-                    <span class="hidden md:block font-medium">Carrinho</span>
+        <!-- Steps elegantes -->
+        <div class="flex justify-center mb-16 mt-8">
+            <div class="flex items-start gap-8 md:gap-16">
+                <!-- Step 1 -->
+                <div class="flex flex-col items-center" id="step-1-indicator">
+                    <div class="step-circle step-active">1</div>
+                    <span class="step-label text-nuca-green">Revisão</span>
                 </div>
-                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
-                <div class="flex items-center gap-3" id="step-2-indicator">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">2</div>
-                    <span class="hidden md:block font-medium text-nuca-green/60">Envio</span>
+                
+                <!-- Conector -->
+                <div class="mt-6 w-16 md:w-24 h-px bg-gradient-to-r from-nuca-green/30 to-nuca-green/10"></div>
+                
+                <!-- Step 2 -->
+                <div class="flex flex-col items-center" id="step-2-indicator">
+                    <div class="step-circle step-pending">2</div>
+                    <span class="step-label text-nuca-green/50">Envio</span>
                 </div>
-                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
-                <div class="flex items-center gap-3" id="step-3-indicator">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">3</div>
-                    <span class="hidden md:block font-medium text-nuca-green/60">Confirmação</span>
+                
+                <!-- Conector -->
+                <div class="mt-6 w-16 md:w-24 h-px bg-gradient-to-r from-nuca-green/10 to-nuca-green/10"></div>
+                
+                <!-- Step 3 -->
+                <div class="flex flex-col items-center" id="step-3-indicator">
+                    <div class="step-circle step-pending">3</div>
+                    <span class="step-label text-nuca-green/50">Confirmação</span>
                 </div>
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-2 gap-12">
+        <div class="grid lg:grid-cols-5 gap-12">
             
-            <!-- Coluna Esquerda -->
-            <div class="space-y-8" id="checkout-forms">
+            <!-- Coluna Principal -->
+            <div class="lg:col-span-3 space-y-8">
                 
-                <!-- Step 1: Carrinho -->
-                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
-                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Resumo do Pedido</h2>
-                    <div id="checkout-items" class="space-y-4 mb-6">
-                        <p class="text-center text-nuca-green/60 py-8">A carregar carrinho...</p>
-                    </div>
-                    <div class="border-t border-nuca-green/10 pt-4 space-y-2 text-sm">
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Subtotal</span>
-                            <span id="checkout-subtotal">€0.00</span>
+                <!-- STEP 1: Carrinho -->
+                <div id="step-1" class="fade-up">
+                    <div class="glass-card rounded-2xl p-8 md:p-10">
+                        <div class="flex items-center justify-between mb-8">
+                            <h2 class="font-display text-2xl font-bold text-nuca-dark">O Teu Pedido</h2>
+                            <a href="index.html" class="text-sm text-nuca-green hover:text-nuca-dark underline decoration-nuca-green/30 hover:decoration-nuca-green transition-all">
+                                Editar
+                            </a>
                         </div>
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Desconto Pack</span>
-                            <span id="checkout-discount" class="text-green-600">-€0.00</span>
-                        </div>
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Envio</span>
-                            <span id="checkout-shipping">€0.00</span>
-                        </div>
-                        <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
-                            <span>Total</span>
-                            <span id="checkout-total">€0.00</span>
-                        </div>
-                    </div>
-                    <button onclick="goToStep(2)" id="btn-continuar" class="w-full mt-6 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
-                        Continuar para Envio
-                    </button>
-                </div>
-
-                <!-- Step 2: Envio -->
-                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
-                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Dados de Envio</h2>
-                    <form id="shipping-form" class="space-y-4">
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Nome *</label>
-                                <input type="text" name="firstName" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Primeiro nome">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Apelido *</label>
-                                <input type="text" name="lastName" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Último nome">
+                        
+                        <div id="checkout-items" class="space-y-6">
+                            <div class="flex justify-center py-12">
+                                <div class="elegant-spinner"></div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Email *</label>
-                            <input type="email" name="email" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="email@exemplo.com">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Telemóvel *</label>
-                            <input type="tel" name="phone" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912345678">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Morada *</label>
-                            <input type="text" name="address" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Rua, número, andar">
-                        </div>
-                        <div class="grid md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Código Postal *</label>
-                                <input type="text" name="postal" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="1000-001">
+                        
+                        <div class="mt-8 pt-6 border-t border-nuca-green/10">
+                            <div class="flex justify-between items-center mb-6">
+                                <div class="text-sm text-nuca-green/60">
+                                    <div>Subtotal</div>
+                                    <div class="text-xs mt-1">Desconto Pack</div>
+                                    <div class="text-xs">Envio</div>
+                                </div>
+                                <div class="text-right text-sm">
+                                    <div class="text-nuca-dark font-medium" id="checkout-subtotal">€0.00</div>
+                                    <div class="text-green-600 text-xs mt-1" id="checkout-discount">-€0.00</div>
+                                    <div class="text-nuca-green/60 text-xs" id="checkout-shipping">€0.00</div>
+                                </div>
                             </div>
-                            <div class="md:col-span-2">
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Cidade *</label>
-                                <input type="text" name="city" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="Lisboa">
+                            
+                            <div class="deco-line mb-6"></div>
+                            
+                            <div class="flex justify-between items-baseline">
+                                <span class="font-display text-lg font-bold text-nuca-dark">Total</span>
+                                <span class="font-display text-3xl font-bold text-nuca-green" id="checkout-total">€0.00</span>
                             </div>
+                            
+                            <p class="text-xs text-nuca-green/50 mt-2 text-right">
+                                IVA incluído • Envio calculado no próximo passo
+                            </p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Notas (opcional)</label>
-                            <textarea name="notes" rows="3" class="input-field w-full px-4 py-3 rounded-xl" placeholder="Instruções especiais..."></textarea>
-                        </div>
-                    </form>
-                    <div class="flex gap-4 mt-6">
-                        <button onclick="goToStep(1)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
-                            Voltar
-                        </button>
-                        <button onclick="validateShipping()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                        
+                        <button onclick="goToStep(2)" id="btn-continuar" class="btn-primary w-full mt-8 py-4 rounded-full text-sm uppercase tracking-wider">
                             Continuar
                         </button>
                     </div>
                 </div>
 
-                <!-- Step 3: Confirmação WhatsApp -->
-                <div id="step-3" class="hidden">
-                    
-                    <!-- Resumo final -->
-                    <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
-                        <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
+                <!-- STEP 2: Dados de Envio -->
+                <div id="step-2" class="hidden fade-up">
+                    <div class="glass-card rounded-2xl p-8 md:p-10">
+                        <h2 class="font-display text-2xl font-bold text-nuca-dark mb-2">Dados de Envio</h2>
+                        <p class="text-sm text-nuca-green/60 mb-8">Preenche os teus dados para entrega</p>
                         
-                        <div class="space-y-4 mb-6">
-                            <div class="bg-nuca-light/30 rounded-2xl p-4">
-                                <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
-                                <div id="confirm-items" class="space-y-2 text-sm mb-4"></div>
-                                <div class="border-t border-nuca-green/20 pt-3">
-                                    <div class="flex justify-between text-lg font-bold text-nuca-green">
-                                        <span>Total a pagar</span>
-                                        <span id="confirm-total">€0.00</span>
-                                    </div>
+                        <form id="shipping-form" class="space-y-6">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Nome</label>
+                                    <input type="text" name="firstName" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="Primeiro nome">
+                                </div>
+                                <div>
+                                    <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Apelido</label>
+                                    <input type="text" name="lastName" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="Último nome">
                                 </div>
                             </div>
                             
-                            <div class="bg-nuca-light/30 rounded-2xl p-4">
-                                <h3 class="font-bold text-nuca-green mb-2">Dados de Envio</h3>
-                                <div id="confirm-shipping" class="text-sm text-nuca-green/80"></div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Email</label>
+                                <input type="email" name="email" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="email@exemplo.com">
                             </div>
-                        </div>
-
-                        <div class="bg-nuca-green/10 rounded-2xl p-4 mb-6">
-                            <div class="flex items-start gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                                <p class="text-sm text-nuca-green">Ao confirmares, serás redirecionado para o WhatsApp com os detalhes do teu pedido pré-preenchidos. O pagamento será coordenado diretamente por lá.</p>
+                            
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Telemóvel</label>
+                                <input type="tel" name="phone" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="912 345 678">
                             </div>
-                        </div>
-
-                        <div class="flex gap-4">
-                            <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
+                            
+                            <div class="deco-line my-6"></div>
+                            
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Morada</label>
+                                <input type="text" name="address" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="Rua, número, andar">
+                            </div>
+                            
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Código Postal</label>
+                                    <input type="text" name="postal" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="1000-001">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Cidade</label>
+                                    <input type="text" name="city" required class="artisan-input w-full px-0 py-3 text-nuca-dark" placeholder="Lisboa">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs uppercase tracking-wider text-nuca-green/60 mb-2 font-medium">Notas (opcional)</label>
+                                <textarea name="notes" rows="3" class="artisan-input w-full px-0 py-3 text-nuca-dark resize-none" placeholder="Instruções especiais de entrega..."></textarea>
+                            </div>
+                        </form>
+                        
+                        <div class="flex gap-4 mt-10">
+                            <button onclick="goToStep(1)" class="btn-outline flex-1 py-4 rounded-full text-sm uppercase tracking-wider">
                                 Voltar
                             </button>
-                            <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                                <span>Confirmar e Abrir WhatsApp</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            <button onclick="validateShipping()" class="btn-primary flex-1 py-4 rounded-full text-sm uppercase tracking-wider">
+                                Revisar Pedido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Confirmação -->
+                <div id="step-3" class="hidden fade-up">
+                    
+                    <!-- Estado: Revisão Final -->
+                    <div id="review-section" class="glass-card rounded-2xl p-8 md:p-10">
+                        <div class="text-center mb-8">
+                            <div class="divider-ornament mb-6">Revisão Final</div>
+                            <h2 class="font-display text-2xl font-bold text-nuca-dark">Confirma a tua Encomenda</h2>
+                        </div>
+                        
+                        <!-- Resumo dos Itens -->
+                        <div class="bg-nuca-cream/50 rounded-xl p-6 mb-6">
+                            <h3 class="text-xs uppercase tracking-wider text-nuca-green/60 mb-4 font-medium">Itens</h3>
+                            <div id="confirm-items" class="space-y-3 text-sm"></div>
+                            <div class="mt-4 pt-4 border-t border-nuca-green/10 flex justify-between items-baseline">
+                                <span class="text-nuca-green/60">Total</span>
+                                <span class="font-display text-xl font-bold text-nuca-green" id="confirm-total">€0.00</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Dados de Envio -->
+                        <div class="bg-nuca-cream/50 rounded-xl p-6 mb-6">
+                            <h3 class="text-xs uppercase tracking-wider text-nuca-green/60 mb-4 font-medium">Envio para</h3>
+                            <div id="confirm-shipping" class="text-sm text-nuca-dark leading-relaxed"></div>
+                        </div>
+                        
+                        <!-- Nota importante -->
+                        <div class="flex items-start gap-4 bg-nuca-green/5 rounded-xl p-4 mb-8">
+                            <svg class="w-5 h-5 text-nuca-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm text-nuca-green/80 leading-relaxed">
+                                Ao confirmares, serás redirecionado para o WhatsApp onde poderás finalizar o pagamento diretamente connosco.
+                            </p>
+                        </div>
+                        
+                        <div class="flex gap-4">
+                            <button onclick="goToStep(2)" class="btn-outline flex-1 py-4 rounded-full text-sm uppercase tracking-wider">
+                                Alterar Dados
+                            </button>
+                            <button onclick="processOrder()" id="confirm-btn" class="btn-primary flex-1 py-4 rounded-full text-sm uppercase tracking-wider flex items-center justify-center gap-2">
+                                <span>Confirmar & Abrir WhatsApp</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Sucesso - WhatsApp Link -->
-                    <div id="success-section" class="hidden whatsapp-box">
-                        <div class="success-check">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <!-- Estado: Sucesso (escondido inicialmente) -->
+                    <div id="success-section" class="hidden">
+                        <div class="success-certificate rounded-2xl p-10 md:p-16 text-center">
+                            
+                            <!-- Selo -->
+                            <div class="flex justify-center mb-8">
+                                <div class="seal">
+                                    <div class="seal-inner">
+                                        <svg class="w-8 h-8 mx-auto mb-1 text-nuca-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <div>OK</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="divider-ornament mb-6">Encomenda Registada</div>
+                            
+                            <h2 class="font-display text-3xl font-bold text-nuca-dark mb-4">
+                                Obrigado!
+                            </h2>
+                            
+                            <p class="text-nuca-green/70 mb-6 max-w-md mx-auto leading-relaxed">
+                                A tua encomenda foi guardada com sucesso. Aguardamos o teu contacto via WhatsApp para finalizar o pagamento.
+                            </p>
+                            
+                            <!-- Número da encomenda -->
+                            <div class="mb-8">
+                                <div class="text-xs uppercase tracking-wider text-nuca-green/50 mb-2">Nº da Encomenda</div>
+                                <div class="order-number inline-block" id="success-order-number">---</div>
+                            </div>
+                            
+                            <!-- Botão WhatsApp -->
+                            <a id="whatsapp-link" href="#" target="_blank" class="wa-btn inline-flex items-center gap-3 px-8 py-4 rounded-full text-sm uppercase tracking-wider mb-6">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                <span>Enviar pedido por WhatsApp</span>
+                            </a>
+                            
+                            <p class="text-xs text-nuca-green/40 mb-8">
+                                Se não abrir automaticamente, clica no botão acima
+                            </p>
+                            
+                            <a href="index.html" class="text-sm text-nuca-green hover:text-nuca-dark underline decoration-nuca-green/30 hover:decoration-nuca-green transition-all">
+                                ← Voltar à loja
+                            </a>
                         </div>
-                        <h3 class="font-display text-2xl font-bold mb-2">Pedido Registado!</h3>
-                        <p class="text-white/90 mb-6">A tua encomenda foi guardada. Clica no botão abaixo para enviar os detalhes via WhatsApp e finalizar o pagamento.</p>
-                        
-                        <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                            <span>Enviar pedido por WhatsApp</span>
-                        </a>
-                        
-                        <p class="text-xs text-white/70 mb-6">Se não abrir automaticamente, clica no botão acima</p>
-                        
-                        <a href="index.html" class="inline-block text-white/80 hover:text-white text-sm underline">
-                            Voltar à loja →
-                        </a>
                     </div>
 
                 </div>
 
             </div>
 
-            <!-- Coluna Direita - Resumo -->
-            <div class="hidden lg:block">
-                <div class="sticky top-32 space-y-6">
-                    <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
-                        <h3 class="font-display text-xl font-bold text-nuca-green mb-4">Resumo</h3>
-                        <div id="summary-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
-                            <p class="text-center text-nuca-green/60">A carregar...</p>
+            <!-- Coluna Lateral - Resumo -->
+            <div class="lg:col-span-2">
+                <div class="sticky-summary">
+                    <div class="glass-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-display text-lg font-bold text-nuca-dark mb-6">Resumo</h3>
+                        
+                        <div id="summary-items" class="space-y-4 mb-6 max-h-80 overflow-y-auto pr-2">
+                            <div class="flex justify-center py-8">
+                                <div class="elegant-spinner"></div>
+                            </div>
                         </div>
-                        <div class="border-t border-nuca-green/10 pt-4 space-y-2">
-                            <div class="flex justify-between text-sm text-nuca-green/60">
+                        
+                        <div class="border-t border-nuca-green/10 pt-4 space-y-2 text-sm">
+                            <div class="flex justify-between text-nuca-green/60">
                                 <span>Subtotal</span>
                                 <span id="summary-subtotal">€0.00</span>
                             </div>
-                            <div class="flex justify-between text-sm text-nuca-green/60">
+                            <div class="flex justify-between text-nuca-green/60">
                                 <span>Envio</span>
-                                <span id="summary-shipping">Calculado...</span>
+                                <span id="summary-shipping">—</span>
                             </div>
-                            <div class="flex justify-between text-xl font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
+                            <div class="flex justify-between text-lg font-bold text-nuca-dark pt-2 border-t border-nuca-green/10">
                                 <span>Total</span>
                                 <span id="summary-total">€0.00</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
-                        <div class="flex items-center gap-3 mb-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <h4 class="font-bold text-nuca-green">Pagamento via WhatsApp</h4>
+                    <!-- Info box -->
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-nuca-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <div>
+                                <h4 class="font-medium text-nuca-dark text-sm mb-1">Pagamento Manual</h4>
+                                <p class="text-xs text-nuca-green/60 leading-relaxed">
+                                    Finaliza o teu pedido via WhatsApp. Coordenaremos o pagamento de forma personalizada.
+                                </p>
+                            </div>
                         </div>
-                        <p class="text-sm text-nuca-green/60">Finaliza o teu pedido através do WhatsApp. Coordenaremos o pagamento diretamente contigo.</p>
                     </div>
                 </div>
             </div>
@@ -318,8 +668,7 @@
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
-        // CONFIGURAÇÃO DO WHATSAPP - ALTERAR PARA O NÚMERO DA LOJA
-        const WHATSAPP_NUMBER = '351912345678'; // Formato internacional sem + (Portugal: 351 + número)
+        const WHATSAPP_NUMBER = '351912345678'; // ALTERAR
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
@@ -327,31 +676,23 @@
         let currentStep = 1;
         let orderData = {};
 
-        // === FUNÇÃO PARA DECODIFICAR BASE64 SEGURO ===
         function safeBase64Decode(str) {
             try {
                 let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-                while (base64.length % 4) {
-                    base64 += '=';
-                }
-                const decoded = atob(base64);
-                return JSON.parse(decoded);
+                while (base64.length % 4) base64 += '=';
+                return JSON.parse(atob(base64));
             } catch (e) {
-                console.error('Erro na decodificação Base64:', e);
                 return null;
             }
         }
 
         function getCartFromURL() {
             try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const cartData = urlParams.get('cart');
-                
+                const params = new URLSearchParams(window.location.search);
+                const cartData = params.get('cart');
                 if (cartData) {
                     const parsed = safeBase64Decode(cartData);
-                    if (parsed && Array.isArray(parsed)) {
-                        return parsed;
-                    }
+                    if (parsed && Array.isArray(parsed)) return parsed;
                 }
             } catch (e) {
                 console.error('Erro ao carregar carrinho:', e);
@@ -360,10 +701,9 @@
         }
 
         window.onload = function() {
-            const loadedCart = getCartFromURL();
-            
-            if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
-                cart = loadedCart;
+            const loaded = getCartFromURL();
+            if (loaded && loaded.length > 0) {
+                cart = loaded;
                 renderAll();
             } else {
                 showEmptyCart();
@@ -371,17 +711,21 @@
         };
 
         function showEmptyCart() {
-            const msg = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio. <a href="index.html" class="underline text-nuca-green">Voltar à loja</a></p>';
+            const msg = `
+                <div class="text-center py-12">
+                    <p class="text-nuca-green/60 mb-4">O teu carrinho está vazio</p>
+                    <a href="index.html" class="text-nuca-green hover:text-nuca-dark underline">Voltar à loja →</a>
+                </div>
+            `;
             document.getElementById('checkout-items').innerHTML = msg;
-            document.getElementById('summary-items').innerHTML = '<p class="text-center text-nuca-green/60">Carrinho vazio</p>';
+            document.getElementById('summary-items').innerHTML = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio</p>';
             
             const btn = document.getElementById('btn-continuar');
-            if(btn) {
+            if (btn) {
                 btn.disabled = true;
                 btn.classList.add('opacity-50', 'cursor-not-allowed');
                 btn.textContent = 'Carrinho Vazio';
             }
-            
             updateDisplayValues(0, 0, 0, 0);
         }
 
@@ -392,90 +736,85 @@
 
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
-            const summaryContainer = document.getElementById('summary-items');
+            const summary = document.getElementById('summary-items');
             
-            if(!cart || cart.length === 0) {
+            if (!cart || cart.length === 0) {
                 showEmptyCart();
                 return;
             }
             
             let html = '';
-            let summaryHtml = '';
+            let sumHtml = '';
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
-                
-                // Verificar se é pack (propriedade isPack ou packItems/items existente)
                 const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
-                const originalPrice = parseFloat(item.originalPrice) || 0;
+                const packCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const original = parseFloat(item.originalPrice) || 0;
                 
-                // HTML para o checkout principal
+                // Item principal
                 html += `
-                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPack ? 'border-l-4 border-nuca-green' : ''}">
-                        <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name || 'Produto'}" class="w-20 h-20 object-cover rounded-xl">
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-bold text-nuca-green ${isPack ? 'flex items-center gap-2' : ''}">
-                                        ${item.name || 'Produto'}
-                                        ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                    <div class="cart-item flex gap-4 pb-6 border-b border-nuca-green/10 last:border-0">
+                        <div class="w-20 h-20 flex-shrink-0">
+                            <img src="${item.image || 'https://via.placeholder.com/80'}" 
+                                 alt="${item.name}" 
+                                 class="w-full h-full object-cover rounded-lg">
+                        </div>
+                        <div class="flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-start justify-between gap-2">
+                                    <h4 class="font-display font-bold text-nuca-dark text-sm leading-tight">
+                                        ${item.name}
                                     </h4>
-                                    ${isPack ? `
-                                        <p class="text-xs text-nuca-green/60 mt-1">${packItemCount} peças • Tamanho ${item.size || 'M'}</p>
-                                    ` : `
-                                        <p class="text-sm text-nuca-green/60">Tamanho: ${item.size || 'M'}</p>
-                                    `}
+                                    <span class="font-display font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
                                 </div>
-                                <span class="font-bold text-nuca-green">€${total.toFixed(2)}</span>
+                                ${isPack ? `<span class="pack-badge inline-block mt-1">Pack ${packCount} peças</span>` : ''}
+                                <p class="text-xs text-nuca-green/50 mt-1">Tamanho ${item.size || 'M'} • Qtd: ${qty}</p>
                             </div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="text-xs text-nuca-green/40">Qtd: ${qty}</span>
-                                ${isPack && originalPrice > 0 ? `
-                                    <span class="text-xs text-green-600">Poupas €${((originalPrice - price) * qty).toFixed(2)}</span>
-                                ` : ''}
-                            </div>
+                            ${isPack && original > 0 ? `
+                                <p class="text-xs text-green-600">Poupas €${((original - price) * qty).toFixed(2)}</p>
+                            ` : ''}
                         </div>
                     </div>
                 `;
                 
-                // HTML para o resumo lateral (mais compacto)
-                summaryHtml += `
-                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPack ? 'border-l-2 border-nuca-green' : ''}">
-                        <img src="${item.image || 'https://via.placeholder.com/60'}" alt="${item.name || 'Produto'}" class="w-12 h-12 object-cover rounded-lg">
+                // Resumo lateral
+                sumHtml += `
+                    <div class="flex gap-3 items-center">
+                        <img src="${item.image || 'https://via.placeholder.com/60'}" 
+                             class="w-12 h-12 object-cover rounded-lg flex-shrink-0">
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">PACK</span>' : ''}</h4>
-                            <p class="text-xs text-nuca-green/60">${isPack ? packItemCount + ' peças • ' : ''}${item.size || 'M'} • x${qty}</p>
+                            <h4 class="font-medium text-nuca-dark text-sm truncate">${item.name}</h4>
+                            <p class="text-xs text-nuca-green/50">${isPack ? packCount + ' peças • ' : ''}${item.size || 'M'} • x${qty}</p>
                         </div>
-                        <span class="font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
+                        <span class="font-display font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
                     </div>
                 `;
             });
             
             container.innerHTML = html;
-            summaryContainer.innerHTML = summaryHtml;
+            summary.innerHTML = sumHtml;
         }
 
         function calculateAndDisplayTotals() {
-            let subtotal = 0;
-            let discount = 0;
+            let subtotal = 0, discount = 0;
             
             if (!cart || cart.length === 0) {
                 updateDisplayValues(0, 0, 0, 0);
                 return;
             }
             
-            cart.forEach((item) => {
+            cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const isPack = item.isPack === true || item.packItems || item.items;
-                const originalPrice = parseFloat(item.originalPrice) || 0;
+                const original = parseFloat(item.originalPrice) || 0;
                 
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
+                if (isPack && original > 0) {
+                    subtotal += original * qty;
+                    discount += (original - price) * qty;
                 } else {
                     subtotal += price * qty;
                 }
@@ -501,47 +840,102 @@
         // === NAVEGAÇÃO ===
 
         function goToStep(step) {
-            if(step > currentStep && !validateCurrentStep()) {
-                return;
-            }
+            if (step > currentStep && !validateCurrentStep()) return;
             
+            // Esconder step atual
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
             
-            if (step === 3) {
-                document.getElementById(`step-${step}`).classList.remove('hidden');
-                renderConfirmStep();
-            } else {
-                document.getElementById(`step-${step}`).classList.remove('hidden');
+            // Mostrar novo step
+            const nextEl = document.getElementById(`step-${step}`);
+            nextEl.classList.remove('hidden');
+            nextEl.classList.add('fade-up');
+            
+            // Atualizar indicadores
+            updateStepIndicators(step);
+            
+            // Se for step 3, renderizar confirmação
+            if (step === 3) renderConfirmStep();
+            
+            currentStep = step;
+            
+            // Scroll suave para topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateStepIndicators(active) {
+            for (let i = 1; i <= 3; i++) {
+                const circle = document.querySelector(`#step-${i}-indicator .step-circle`);
+                const label = document.querySelector(`#step-${i}-indicator .step-label`);
+                
+                circle.classList.remove('step-active', 'step-completed', 'step-pending');
+                label.classList.remove('text-nuca-green', 'text-nuca-green/50');
+                
+                if (i < active) {
+                    circle.classList.add('step-completed');
+                    circle.innerHTML = '✓';
+                    label.classList.add('text-nuca-green');
+                } else if (i === active) {
+                    circle.classList.add('step-active');
+                    circle.innerHTML = i;
+                    label.classList.add('text-nuca-green');
+                } else {
+                    circle.classList.add('step-pending');
+                    circle.innerHTML = i;
+                    label.classList.add('text-nuca-green/50');
+                }
+            }
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 2) return validateShippingOnly();
+            return true;
+        }
+
+        function validateShippingOnly() {
+            const form = document.getElementById('shipping-form');
+            const data = Object.fromEntries(new FormData(form));
+            
+            if (!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
+                // Shake animation no formulário
+                form.classList.add('animate-pulse');
+                setTimeout(() => form.classList.remove('animate-pulse'), 500);
+                return false;
             }
             
-            updateStepIndicators(step);
-            currentStep = step;
+            orderData.shipping = data;
+            return true;
+        }
+
+        function validateShipping() {
+            if (validateShippingOnly()) goToStep(3);
         }
 
         function renderConfirmStep() {
-            let itemsHtml = '';
-            let subtotal = 0;
-            let discount = 0;
+            let itemsHtml = '', subtotal = 0, discount = 0;
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
-                const originalPrice = parseFloat(item.originalPrice) || 0;
+                const packCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const original = parseFloat(item.originalPrice) || 0;
                 
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
+                if (isPack && original > 0) {
+                    subtotal += original * qty;
+                    discount += (original - price) * qty;
                 } else {
                     subtotal += price * qty;
                 }
                 
                 itemsHtml += `
-                    <div class="flex justify-between py-1">
-                        <span class="text-nuca-green">${item.name} ${isPack ? `(${packItemCount} peças)` : ''} x${qty}</span>
-                        <span class="text-nuca-green">€${total.toFixed(2)}</span>
+                    <div class="flex justify-between items-center py-2 border-b border-nuca-green/5 last:border-0">
+                        <div>
+                            <span class="text-nuca-dark font-medium">${item.name}</span>
+                            ${isPack ? `<span class="text-xs text-nuca-green/60 ml-2">(${packCount} peças)</span>` : ''}
+                            <span class="text-xs text-nuca-green/40 block">x${qty} • ${item.size || 'M'}</span>
+                        </div>
+                        <span class="font-display font-bold text-nuca-green">€${total.toFixed(2)}</span>
                     </div>
                 `;
             });
@@ -554,124 +948,74 @@
             
             const s = orderData.shipping;
             document.getElementById('confirm-shipping').innerHTML = `
-                ${s.firstName} ${s.lastName}<br>
+                <strong class="text-nuca-dark">${s.firstName} ${s.lastName}</strong><br>
                 ${s.address}<br>
                 ${s.postal} ${s.city}<br>
-                ${s.email}<br>
-                ${s.phone}
+                <span class="text-nuca-green/60">${s.email} • ${s.phone}</span>
+                ${s.notes ? `<br><span class="text-nuca-green/50 text-xs mt-2 inline-block">Nota: ${s.notes}</span>` : ''}
             `;
         }
 
-        function validateCurrentStep() {
-            if(currentStep === 2) {
-                return validateShippingOnly();
-            }
-            return true;
-        }
-
-        function validateShippingOnly() {
-            const form = document.getElementById('shipping-form');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-            
-            if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
-                alert('Preenche todos os campos obrigatórios.');
-                return false;
-            }
-            
-            orderData.shipping = data;
-            return true;
-        }
-
-        function validateShipping() {
-            if(validateShippingOnly()) {
-                goToStep(3);
-            }
-        }
-
-        function updateStepIndicators(activeStep) {
-            for(let i = 1; i <= 3; i++) {
-                const indicator = document.getElementById(`step-${i}-indicator`);
-                const circle = indicator.querySelector('div');
-                
-                circle.classList.remove('step-active', 'step-completed', 'step-pending');
-                
-                if(i < activeStep) {
-                    circle.classList.add('step-completed');
-                    circle.innerHTML = '✓';
-                } else if(i === activeStep) {
-                    circle.classList.add('step-active');
-                    circle.innerHTML = i;
-                } else {
-                    circle.classList.add('step-pending');
-                    circle.innerHTML = i;
-                }
-            }
-        }
-
-        // === PROCESSAR PEDIDO E GERAR LINK WHATSAPP ===
+        // === PROCESSAR PEDIDO ===
 
         function generateWhatsAppMessage(orderNumber, total, customerData) {
-            let itemsList = '';
-            let subtotal = 0;
-            let discount = 0;
+            let itemsList = '', subtotal = 0, discount = 0;
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
-                const originalPrice = parseFloat(item.originalPrice) || 0;
+                const packCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const original = parseFloat(item.originalPrice) || 0;
                 
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
+                if (isPack && original > 0) {
+                    subtotal += original * qty;
+                    discount += (original - price) * qty;
                 } else {
                     subtotal += price * qty;
                 }
                 
-                itemsList += `- ${item.name} ${isPack ? `(${packItemCount} peças)` : ''} | Tamanho: ${item.size || 'M'} | Qtd: ${qty} | €${(price * qty).toFixed(2)}%0A`;
+                itemsList += `• ${item.name}${isPack ? ` (${packCount} peças)` : ''} — ${item.size || 'M'} — x${qty} — €${(price * qty).toFixed(2)}%0A`;
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
             const finalTotal = subtotal - discount + shipping;
             
-            const message = `Olá! Gostaria de efetuar o pagamento do meu pedido NUCA.%0A%0A` +
-                `*Nº Encomenda:* ${orderNumber}%0A` +
+            const msg = `*NOVO PEDIDO NUCA*%0A%0A` +
+                `*Encomenda:* ${orderNumber}%0A` +
                 `*Cliente:* ${customerData.firstName} ${customerData.lastName}%0A` +
-                `*Email:* ${customerData.email}%0A` +
-                `*Telemóvel:* ${customerData.phone}%0A%0A` +
-                `*Itens do Pedido:*%0A${itemsList}%0A` +
+                `*Contacto:* ${customerData.phone}%0A` +
+                `*Email:* ${customerData.email}%0A%0A` +
+                `*ITENS:*%0A${itemsList}%0A` +
                 `*Subtotal:* €${subtotal.toFixed(2)}%0A` +
                 `${discount > 0 ? `*Desconto:* -€${discount.toFixed(2)}%0A` : ''}` +
                 `*Envio:* ${shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`}%0A` +
                 `*TOTAL:* €${finalTotal.toFixed(2)}%0A%0A` +
-                `*Morada de Envio:*%0A${customerData.address}%0A${customerData.postal} ${customerData.city}%0A%0A` +
-                `Aguardo instruções para pagamento. Obrigado!`;
+                `*MORADA:*%0A${customerData.address}%0A${customerData.postal} ${customerData.city}%0A%0A` +
+                `Quero proceder ao pagamento desta encomenda. Obrigado!`;
             
-            return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+            return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
         }
 
         async function processOrder() {
             const btn = document.getElementById('confirm-btn');
-            const originalText = btn.innerHTML;
+            const original = btn.innerHTML;
             
-            btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A processar...</span>';
+            btn.innerHTML = '<div class="elegant-spinner"></div>';
             btn.disabled = true;
             
             try {
-                let subtotal = 0;
-                let discount = 0;
+                let subtotal = 0, discount = 0;
                 
                 cart.forEach(item => {
                     const price = parseFloat(item.price) || 0;
                     const qty = parseInt(item.quantity) || 1;
                     const isPack = item.isPack === true || item.packItems || item.items;
-                    const originalPrice = parseFloat(item.originalPrice) || 0;
+                    const original = parseFloat(item.originalPrice) || 0;
                     
-                    if(isPack && originalPrice > 0) {
-                        subtotal += originalPrice * qty;
-                        discount += (originalPrice - price) * qty;
+                    if (isPack && original > 0) {
+                        subtotal += original * qty;
+                        discount += (original - price) * qty;
                     } else {
                         subtotal += price * qty;
                     }
@@ -679,11 +1023,10 @@
                 
                 const shipping = subtotal > 50 ? 0 : 3.99;
                 const total = subtotal - discount + shipping;
+                const orderNumber = 'NC' + Date.now().toString(36).toUpperCase().slice(-6);
                 
-                const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
-                
-                // Criar encomenda na base de dados
-                const orderPayload = {
+                // Guardar na base de dados
+                const payload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
                     customer_name: `${orderData.shipping.firstName} ${orderData.shipping.lastName}`,
@@ -704,44 +1047,35 @@
                         packItems: item.packItems || item.items || null
                     })),
                     payment_method: 'whatsapp',
-                    payment_provider: 'manual',
-                    subtotal: subtotal,
-                    discount: discount,
-                    shipping: shipping,
-                    total: total,
+                    subtotal, discount, shipping, total,
                     status: 'pending_payment'
                 };
                 
-                const { data: orderRecord, error: orderError } = await supabaseClient
-                    .from('orders')
-                    .insert([orderPayload])
-                    .select();
+                const { error } = await supabaseClient.from('orders').insert([payload]);
+                if (error) throw new Error(`Erro ao guardar: ${error.message}`);
                 
-                if(orderError) {
-                    throw new Error(`Erro ao criar encomenda: ${orderError.message}`);
-                }
+                // Guardar localmente
+                localStorage.setItem('lastOrder', JSON.stringify(payload));
                 
-                // Guardar no localStorage para referência
-                localStorage.setItem('lastOrderId', orderNumber);
-                localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
+                // Gerar link WhatsApp
+                const waLink = generateWhatsAppMessage(orderNumber, total, orderData.shipping);
                 
-                // Gerar link do WhatsApp
-                const whatsappLink = generateWhatsAppMessage(orderNumber, total, orderData.shipping);
+                // Transição para sucesso
+                document.getElementById('review-section').classList.add('hidden');
+                document.getElementById('success-order-number').textContent = orderNumber;
+                document.getElementById('whatsapp-link').href = waLink;
                 
-                // Esconder secção de confirmação e mostrar sucesso
-                document.getElementById('confirm-section').classList.add('hidden');
-                document.getElementById('whatsapp-link').href = whatsappLink;
-                document.getElementById('success-section').classList.remove('hidden');
+                const successSection = document.getElementById('success-section');
+                successSection.classList.remove('hidden');
+                successSection.classList.add('fade-up');
                 
-                // Abrir WhatsApp automaticamente
-                setTimeout(() => {
-                    window.open(whatsappLink, '_blank');
-                }, 1500);
+                // Abrir WhatsApp
+                setTimeout(() => window.open(waLink, '_blank'), 1000);
                 
-            } catch(error) {
-                console.error('Erro:', error);
-                alert('Erro: ' + error.message);
-                btn.innerHTML = originalText;
+            } catch (err) {
+                console.error(err);
+                alert('Erro: ' + err.message);
+                btn.innerHTML = original;
                 btn.disabled = false;
             }
         }
