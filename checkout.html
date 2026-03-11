@@ -47,7 +47,6 @@
             transition: all 0.3s;
         }
         .input-field:focus { outline: none; border-color: #556B4F; background-color: white; }
-        .payment-method.selected { border-color: #556B4F; background-color: rgba(85, 107, 79, 0.1); }
         .receipt-paper { 
             background: white; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -87,40 +86,14 @@
             border-radius: 0.75rem;
             margin-bottom: 1rem;
         }
-        /* Estilos específicos para PDF */
-        .pdf-content {
-            background: white;
-            color: #556B4F;
-            font-family: 'Space Grotesk', sans-serif;
-            padding: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .pdf-content .nuca-logo {
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 48px;
-            color: #556B4F;
+        .pay-link-box {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            color: #D8C6A5;
+            border-radius: 1rem;
+            padding: 2rem;
             text-align: center;
-            margin-bottom: 8px;
-        }
-        .pdf-content .receipt-stamp-pdf {
-            position: absolute;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            border: 4px solid #556B4F;
-            color: #556B4F;
-            padding: 20px 40px;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 32px;
-            opacity: 0.2;
-            border-radius: 8px;
-            pointer-events: none;
         }
     </style>
-<base target="_blank">
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
@@ -154,11 +127,6 @@
                 <div class="flex items-center gap-3" id="step-3-indicator">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">3</div>
                     <span class="hidden md:block font-medium text-nuca-green/60">Pagamento</span>
-                </div>
-                <div class="w-12 h-0.5 bg-nuca-green/20"></div>
-                <div class="flex items-center gap-3" id="step-4-indicator">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">4</div>
-                    <span class="hidden md:block font-medium text-nuca-green/60">Confirmação</span>
                 </div>
             </div>
         </div>
@@ -217,7 +185,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-nuca-green mb-2">Telemóvel *</label>
-                            <input type="tel" name="phone" id="phone-input" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912345678">
+                            <input type="tel" name="phone" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912345678">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-nuca-green mb-2">Morada *</label>
@@ -248,149 +216,128 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Pagamento Eupago (Apenas Multibanco) -->
-                <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
-                    <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Método de Pagamento</h2>
-                    
-                    <!-- Área de erro -->
-                    <div id="payment-error" class="error-message hidden"></div>
-                    
-                    <div class="space-y-3 mb-6">
-                        <!-- Apenas Multibanco -->
-                        <div class="payment-method selected border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4">
-                            <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <h4 class="font-bold text-nuca-green">Multibanco</h4>
-                                <p class="text-sm text-nuca-green/60">Referência para ATM ou homebanking</p>
-                            </div>
-                            <div class="w-6 h-6 rounded-full border-2 border-nuca-green flex items-center justify-center check-icon">
-                                <div class="w-3 h-3 rounded-full bg-nuca-green"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Info Multibanco -->
-                    <div class="bg-nuca-light/30 rounded-2xl p-6 mb-6">
-                        <p class="text-sm text-nuca-green/80 text-center">Após confirmar, serão geradas as referências Multibanco para pagamento em qualquer ATM ou homebanking.</p>
-                    </div>
-
-                    <div class="flex gap-4">
-                        <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
-                            Voltar
-                        </button>
-                        <button onclick="processPayment()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                            <span>Confirmar Encomenda</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Step 4: Confirmação -->
-                <div id="step-4" class="hidden">
-                    <div class="bg-nuca-green text-nuca-beige rounded-3xl p-8 text-center mb-8 no-print">
-                        <div class="w-20 h-20 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </div>
-                        <h2 class="font-display text-3xl font-bold mb-4">Encomenda Registada!</h2>
-                        <p class="text-nuca-beige/80 mb-2" id="success-message">Referência Multibanco gerada com sucesso.</p>
-                        <p class="text-sm text-nuca-beige/60">Número: <span id="order-number" class="font-mono font-bold text-nuca-beige"></span></p>
-                    </div>
-
-                    <!-- Detalhes do pagamento Multibanco -->
-                    <div id="eupago-payment-details" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
-                        <h3 class="font-display text-xl font-bold text-nuca-green mb-4 text-center">Detalhes do Pagamento</h3>
+                <!-- Step 3: Pay by Link -->
+                <div id="step-3" class="hidden">
+                    <!-- Resumo antes de pagar -->
+                    <div class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
+                        <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
                         
-                        <div class="text-center">
-                            <div class="bg-nuca-light/30 rounded-2xl p-6">
-                                <p class="text-sm text-nuca-green/60 mb-4">Usa estas referências para pagar em qualquer ATM ou Homebanking</p>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
-                                        <span class="text-nuca-green/60">Entidade</span>
-                                        <span class="font-mono text-2xl font-bold text-nuca-green" id="mb-entity"></span>
-                                    </div>
-                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
-                                        <span class="text-nuca-green/60">Referência</span>
-                                        <span class="font-mono text-2xl font-bold text-nuca-green" id="mb-reference"></span>
-                                    </div>
-                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
-                                        <span class="text-nuca-green/60">Montante</span>
-                                        <span class="font-mono text-xl font-bold text-nuca-green" id="mb-amount"></span>
+                        <div class="space-y-4 mb-6">
+                            <div class="bg-nuca-light/30 rounded-2xl p-4">
+                                <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
+                                <div id="confirm-items" class="space-y-2 text-sm mb-4"></div>
+                                <div class="border-t border-nuca-green/20 pt-3">
+                                    <div class="flex justify-between text-lg font-bold text-nuca-green">
+                                        <span>Total a pagar</span>
+                                        <span id="confirm-total">€0.00</span>
                                     </div>
                                 </div>
-                                <p class="text-xs text-nuca-green/40 mt-4">Válido até: <span id="mb-expiry"></span></p>
                             </div>
+                            
+                            <div class="bg-nuca-light/30 rounded-2xl p-4">
+                                <h3 class="font-bold text-nuca-green mb-2">Dados de Envio</h3>
+                                <div id="confirm-shipping" class="text-sm text-nuca-green/80"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-nuca-green/10 rounded-2xl p-4 mb-6">
+                            <div class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <p class="text-sm text-nuca-green">Serás redirecionado para uma página segura da Eupago onde podes escolher como pagar (Multibanco, MB WAY, Cartão, etc.)</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4">
+                            <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
+                                Voltar
+                            </button>
+                            <button onclick="processPayment()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                                <span>Ir para Pagamento</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Comprovativo -->
-                    <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
-                        <div class="receipt-stamp">PENDENTE</div>
+                    <!-- Link de pagamento gerado -->
+                    <div id="payment-link-section" class="hidden pay-link-box mb-8">
+                        <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        </div>
+                        <h3 class="font-display text-2xl font-bold mb-2">Link de Pagamento Gerado!</h3>
+                        <p class="text-nuca-beige/80 mb-4">Clica no botão abaixo para completar o pagamento de forma segura.</p>
                         
-                        <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
-                            <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
-                            <p class="text-nuca-green/60 text-sm">Moda minimalista, feita em Portugal</p>
-                        </div>
-
-                        <div class="space-y-4 mb-6 text-sm">
-                            <div class="flex justify-between">
-                                <span class="text-nuca-green/60">Nº Encomenda:</span>
-                                <span class="font-mono font-bold text-nuca-green" id="receipt-order-number"></span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-nuca-green/60">Data:</span>
-                                <span class="text-nuca-green" id="receipt-date"></span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-nuca-green/60">Cliente:</span>
-                                <span class="text-nuca-green font-medium" id="receipt-customer"></span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-nuca-green/60">Pagamento:</span>
-                                <span class="text-nuca-green" id="receipt-payment"></span>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-b border-nuca-green/10 py-4 mb-6">
-                            <h4 class="font-bold text-nuca-green mb-3 text-xs uppercase tracking-wider">Itens</h4>
-                            <div id="receipt-items" class="space-y-2 text-sm"></div>
-                        </div>
-
-                        <div class="space-y-2 text-sm border-b border-nuca-green/10 pb-4 mb-4">
-                            <div class="flex justify-between text-nuca-green/60">
-                                <span>Subtotal</span>
-                                <span id="receipt-subtotal"></span>
-                            </div>
-                            <div class="flex justify-between text-nuca-green/60">
-                                <span>Desconto</span>
-                                <span id="receipt-discount" class="text-green-600"></span>
-                            </div>
-                            <div class="flex justify-between text-nuca-green/60">
-                                <span>Envio</span>
-                                <span id="receipt-shipping"></span>
-                            </div>
-                        </div>
-
-                        <div class="flex justify-between text-lg font-bold text-nuca-green mb-8">
-                            <span>TOTAL</span>
-                            <span id="receipt-total"></span>
-                        </div>
-
-                        <div class="text-center space-y-2 text-xs text-nuca-green/40 border-t border-dashed border-nuca-green/20 pt-4">
-                            <p>Este documento serve como comprovativo de compra.</p>
-                            <p>Para trocas: nuca.crew@gmail.com</p>
-                        </div>
+                        <a id="pay-link-btn" href="#" target="_blank" class="inline-block bg-nuca-beige text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-white transition-colors mb-4">
+                            Pagar €<span id="pay-link-amount">0.00</span> →
+                        </a>
+                        
+                        <p class="text-xs text-nuca-beige/60">O link foi também enviado para o teu email</p>
                     </div>
 
-                    <div class="flex gap-4 mt-8 no-print">
-                        <button onclick="downloadReceipt()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            <span>Download PDF</span>
-                        </button>
-                        <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center">
-                            Voltar à Loja
-                        </a>
+                    <!-- Comprovativo (aparece após criar link) -->
+                    <div id="receipt-section" class="hidden">
+                        <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
+                            <div class="receipt-stamp">PENDENTE</div>
+                            
+                            <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
+                                <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
+                                <p class="text-nuca-green/60 text-sm">Moda minimalista, feita em Portugal</p>
+                            </div>
+
+                            <div class="space-y-4 mb-6 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-nuca-green/60">Nº Encomenda:</span>
+                                    <span class="font-mono font-bold text-nuca-green" id="receipt-order-number"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-nuca-green/60">Data:</span>
+                                    <span class="text-nuca-green" id="receipt-date"></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-nuca-green/60">Cliente:</span>
+                                    <span class="text-nuca-green font-medium" id="receipt-customer"></span>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-b border-nuca-green/10 py-4 mb-6">
+                                <h4 class="font-bold text-nuca-green mb-3 text-xs uppercase tracking-wider">Itens</h4>
+                                <div id="receipt-items" class="space-y-2 text-sm"></div>
+                            </div>
+
+                            <div class="space-y-2 text-sm border-b border-nuca-green/10 pb-4 mb-4">
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Subtotal</span>
+                                    <span id="receipt-subtotal"></span>
+                                </div>
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Desconto</span>
+                                    <span id="receipt-discount" class="text-green-600"></span>
+                                </div>
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Envio</span>
+                                    <span id="receipt-shipping"></span>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between text-lg font-bold text-nuca-green mb-8">
+                                <span>TOTAL</span>
+                                <span id="receipt-total"></span>
+                            </div>
+
+                            <div class="text-center space-y-2 text-xs text-nuca-green/40 border-t border-dashed border-nuca-green/20 pt-4">
+                                <p>Este documento serve como comprovativo de compra.</p>
+                                <p>Para trocas: nuca.crew@gmail.com</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 mt-8 no-print">
+                            <button onclick="downloadReceipt()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <span>Download PDF</span>
+                            </button>
+                            <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center">
+                                Voltar à Loja
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -420,13 +367,12 @@
                         </div>
                     </div>
                     
-                    <!-- Segurança Eupago -->
                     <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
                         <div class="flex items-center gap-3 mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             <h4 class="font-bold text-nuca-green">Pagamento Seguro</h4>
                         </div>
-                        <p class="text-sm text-nuca-green/60">Processado pela Eupago, instituição de pagamento supervisionada pelo Banco de Portugal.</p>
+                        <p class="text-sm text-nuca-green/60">Processado pela Eupago. Escolhe o método preferido no link de pagamento.</p>
                     </div>
                 </div>
             </div>
@@ -442,12 +388,8 @@
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
     
-        // CONFIGURAÇÃO EUPAGO - DEMO KEY
         const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d';
-        const EUPAGO_SANDBOX = true; // Mantém true para testes
-    
-        // URL DA TUA EDGE FUNCTION
-        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/smooth-processor';
+        const EUPAGO_SANDBOX = true;
     
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
@@ -455,20 +397,14 @@
         let currentStep = 1;
         let orderData = {};
         let savedOrderId = null;
-        let eupagoTransactionId = null;
     
         // === FUNÇÃO PARA DECODIFICAR BASE64 SEGURO ===
         function safeBase64Decode(str) {
             try {
-                // Substituir caracteres URL-safe de volta para Base64 padrão
                 let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-                
-                // Adicionar padding se necessário
                 while (base64.length % 4) {
                     base64 += '=';
                 }
-                
-                // Decodificar
                 const decoded = atob(base64);
                 return JSON.parse(decoded);
             } catch (e) {
@@ -477,20 +413,15 @@
             }
         }
     
-        // === OBTÉM CARRINHO DA URL (BASE64) ===
         function getCartFromURL() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const cartData = urlParams.get('cart');
                 
                 if (cartData) {
-                    // Usar função segura de decodificação
                     const parsed = safeBase64Decode(cartData);
                     if (parsed && Array.isArray(parsed)) {
                         return parsed;
-                    } else {
-                        console.error('Dados do carrinho inválidos após decodificação');
-                        return null;
                     }
                 }
             } catch (e) {
@@ -618,7 +549,7 @@
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
         }
     
-        // === NAVEGAÇÃO ENTRE STEPS ===
+        // === NAVEGAÇÃO ===
     
         function goToStep(step) {
             if(step > currentStep && !validateCurrentStep()) {
@@ -626,13 +557,60 @@
             }
             
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
-            document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            if (step === 3) {
+                document.getElementById(`step-${step}`).classList.remove('hidden');
+                renderConfirmStep();
+            } else {
+                document.getElementById(`step-${step}`).classList.remove('hidden');
+            }
+            
             updateStepIndicators(step);
             currentStep = step;
+        }
+    
+        function renderConfirmStep() {
+            // Renderizar itens na confirmação
+            let itemsHtml = '';
+            let subtotal = 0;
+            let discount = 0;
             
-            if(step === 4) {
-                generateReceipt();
-            }
+            cart.forEach(item => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseInt(item.quantity) || 1;
+                const total = price * qty;
+                
+                if(item.isPack && item.originalPrice) {
+                    const original = parseFloat(item.originalPrice) || 0;
+                    subtotal += original * qty;
+                    discount += (original - price) * qty;
+                } else {
+                    subtotal += price * qty;
+                }
+                
+                itemsHtml += `
+                    <div class="flex justify-between py-1">
+                        <span class="text-nuca-green">${item.name} x${qty}</span>
+                        <span class="text-nuca-green">€${total.toFixed(2)}</span>
+                    </div>
+                `;
+            });
+            
+            const shipping = subtotal > 50 ? 0 : 3.99;
+            const total = subtotal - discount + shipping;
+            
+            document.getElementById('confirm-items').innerHTML = itemsHtml;
+            document.getElementById('confirm-total').textContent = `€${total.toFixed(2)}`;
+            
+            // Dados de envio
+            const s = orderData.shipping;
+            document.getElementById('confirm-shipping').innerHTML = `
+                ${s.firstName} ${s.lastName}<br>
+                ${s.address}<br>
+                ${s.postal} ${s.city}<br>
+                ${s.email}<br>
+                ${s.phone}
+            `;
         }
     
         function validateCurrentStep() {
@@ -653,7 +631,6 @@
             }
             
             orderData.shipping = data;
-            
             return true;
         }
     
@@ -664,7 +641,7 @@
         }
     
         function updateStepIndicators(activeStep) {
-            for(let i = 1; i <= 4; i++) {
+            for(let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
                 const circle = indicator.querySelector('div');
                 
@@ -683,86 +660,77 @@
             }
         }
     
-        function showError(message) {
-            const errorDiv = document.getElementById('payment-error');
-            if(errorDiv) {
-                errorDiv.textContent = message;
-                errorDiv.classList.remove('hidden');
-                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
+        // === PAY BY LINK ===
     
-        // === FUNÇÕES EUPAGO VIA EDGE FUNCTION ===
-    
-        async function createEupagoPayment(orderNumber, total, customerData) {
-            const endpoint = '/multibanco/create';
-            
-            // Determinar URL base (remover path, manter apenas origin)
+        async function createPayByLink(orderNumber, total, customerData) {
             const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
             
+            // Calcular data de expiração (3 dias)
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 3);
+            const expiryStr = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
+            
             const payload = {
-                chave: EUPAGO_API_KEY,
-                valor: total.toFixed(2),
-                id: orderNumber,
-                descricao: `Encomenda NUCA ${orderNumber}`,
-                contacto: customerData.phone,
-                email: customerData.email,
-                nome: `${customerData.firstName} ${customerData.lastName}`,
-                morada: customerData.address,
-                codigopostal: customerData.postal,
-                localidade: customerData.city,
-                pais: 'PT',
-                base_url: baseUrl,
-                url_confirmacao: window.location.href
+                payment: {
+                    amount: {
+                        value: total.toFixed(2),
+                        currency: "EUR"
+                    },
+                    shipping: {
+                        value: "0.00",
+                        currency: "EUR"
+                    },
+                    lang: "PT",
+                    expirationDate: expiryStr,
+                    identifier: orderNumber,
+                    description: `Encomenda NUCA ${orderNumber}`,
+                    customer: {
+                        name: `${customerData.firstName} ${customerData.lastName}`,
+                        email: customerData.email,
+                        phone: customerData.phone,
+                        address: customerData.address,
+                        city: customerData.city,
+                        zip: customerData.postal
+                    }
+                }
             };
     
-            console.log('=== FRONTEND: A enviar para Edge Function ===');
-            console.log('URL:', EUPAGO_PROXY_URL);
-            console.log('Endpoint:', endpoint);
+            console.log('=== CRIAR PAY BY LINK ===');
             console.log('Payload:', payload);
     
             try {
-                const response = await fetch(EUPAGO_PROXY_URL, {
+                const eupagoUrl = EUPAGO_SANDBOX 
+                    ? 'https://sandbox.eupago.pt/api/v1.02/paybylink/create'
+                    : 'https://clientes.eupago.pt/api/v1.02/paybylink/create';
+                
+                const response = await fetch(eupagoUrl, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                        'Authorization': EUPAGO_API_KEY,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        endpoint: endpoint,
-                        payload: payload,
-                        sandbox: EUPAGO_SANDBOX,
-                        method: 'multibanco'
-                    })
+                    body: JSON.stringify(payload)
                 });
     
-                console.log('=== FRONTEND: Resposta HTTP ===');
                 console.log('Status:', response.status);
     
                 if(!response.ok) {
                     const errorText = await response.text();
-                    console.error('Erro HTTP:', response.status, errorText);
                     throw new Error(`HTTP ${response.status}: ${errorText}`);
                 }
     
                 const data = await response.json();
-                console.log('=== FRONTEND: Resposta da Edge Function ===');
-                console.log('Data:', data);
+                console.log('Resposta:', data);
                 
-                // Verificar se há erro na resposta
-                if(data.error) {
-                    throw new Error(data.error);
-                }
-                
-                // Verificar se a Eupago retornou erro
-                if(data.sucesso === false && data.mensagem) {
-                    throw new Error(`Eupago: ${data.mensagem}`);
+                if(!data.success && !data.url) {
+                    throw new Error(data.message || 'Erro ao criar link de pagamento');
                 }
                 
                 return data;
                 
             } catch (error) {
-                console.error('=== FRONTEND: Erro completo ===', error);
+                console.error('Erro:', error);
                 throw error;
             }
         }
@@ -771,11 +739,7 @@
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
             
-            // Esconder erro anterior
-            const errorDiv = document.getElementById('payment-error');
-            if(errorDiv) errorDiv.classList.add('hidden');
-            
-            btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A processar...</span>';
+            btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A gerar link...</span>';
             btn.disabled = true;
             
             try {
@@ -800,6 +764,7 @@
                 
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
+                // Criar encomenda na base de dados
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -819,7 +784,7 @@
                         size: item.size || 'M',
                         isPack: item.isPack || false
                     })),
-                    payment_method: 'multibanco',
+                    payment_method: 'paybylink',
                     payment_provider: 'eupago',
                     subtotal: subtotal,
                     discount: discount,
@@ -828,78 +793,65 @@
                     status: 'pending_payment'
                 };
                 
-                console.log('A criar encomenda:', orderPayload);
-                
                 const { data: orderRecord, error: orderError } = await supabaseClient
                     .from('orders')
                     .insert([orderPayload])
                     .select();
                 
                 if(orderError) {
-                    console.error('Erro Supabase:', orderError);
                     throw new Error(`Erro ao criar encomenda: ${orderError.message}`);
                 }
                 
                 savedOrderId = orderRecord[0].id;
-                console.log('Encomenda criada:', savedOrderId);
                 
-                // Guardar dados no localStorage para as páginas de retorno
+                // Guardar no localStorage
                 localStorage.setItem('lastOrderId', orderNumber);
                 localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
                 localStorage.setItem('lastCart', btoa(JSON.stringify(cart)));
                 
-                const eupagoResponse = await createEupagoPayment(orderNumber, total, orderData.shipping);
+                // Criar Pay by Link na Eupago
+                const eupagoResponse = await createPayByLink(orderNumber, total, orderData.shipping);
                 
-                console.log('=== FRONTEND: Verificando resposta Eupago ===');
-                console.log('sucesso:', eupagoResponse.sucesso);
-                console.log('referencia:', eupagoResponse.referencia);
-                
-                // Verificar se a resposta é válida
-                const hasValidResponse = eupagoResponse.sucesso === true || 
-                                         eupagoResponse.referencia;
-                
-                if(!hasValidResponse) {
-                    console.error('Resposta inválida da Eupago:', eupagoResponse);
-                    throw new Error('Erro ao criar pagamento na Eupago. Verifica os logs.');
-                }
-                
-                eupagoTransactionId = eupagoResponse.referencia;
-                console.log('Pagamento criado:', eupagoTransactionId);
-                
-                // Guardar detalhes do pagamento
-                const { error: paymentError } = await supabaseClient
+                // Guardar pagamento na base de dados
+                await supabaseClient
                     .from('payments')
                     .insert([{
                         order_id: savedOrderId,
                         provider: 'eupago',
-                        method: 'multibanco',
-                        transaction_id: eupagoTransactionId,
+                        method: 'paybylink',
+                        transaction_id: eupagoResponse.identifier || orderNumber,
                         amount: total,
                         status: 'pending',
+                        payment_url: eupagoResponse.url,
                         eupago_response: eupagoResponse
                     }]);
-                    
-                if(paymentError) {
-                    console.error('Erro ao guardar pagamento:', paymentError);
-                }
                 
+                // Mostrar link de pagamento
+                document.getElementById('pay-link-btn').href = eupagoResponse.url;
+                document.getElementById('pay-link-amount').textContent = total.toFixed(2);
+                document.getElementById('payment-link-section').classList.remove('hidden');
+                
+                // Esconder formulário de confirmação
+                document.querySelector('#step-3 > div:first-child').classList.add('hidden');
+                
+                // Mostrar comprovativo
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
-                orderData.payment = 'MULTIBANCO';
+                orderData.payment = 'PAY BY LINK';
                 orderData.totals = { subtotal, discount, shipping, total };
-                orderData.eupago = eupagoResponse;
+                orderData.payUrl = eupagoResponse.url;
                 
-                // Mostrar detalhes Multibanco
-                document.getElementById('mb-entity').textContent = eupagoResponse.entidade || '00000';
-                document.getElementById('mb-reference').textContent = eupagoResponse.referencia || '000 000 000';
-                document.getElementById('mb-amount').textContent = `€${eupagoResponse.valor || total.toFixed(2)}`;
-                document.getElementById('mb-expiry').textContent = eupagoResponse.data_fim || '48 horas';
+                generateReceipt();
+                document.getElementById('receipt-section').classList.remove('hidden');
                 
-                goToStep(4);
+                // Redirecionar automaticamente após 3 segundos
+                setTimeout(() => {
+                    window.open(eupagoResponse.url, '_blank');
+                }, 3000);
                 
             } catch(error) {
-                console.error('=== FRONTEND: Erro no processamento ===', error);
-                showError('Erro ao processar encomenda: ' + error.message);
+                console.error('Erro:', error);
+                alert('Erro: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -907,7 +859,6 @@
         }
     
         function generateReceipt() {
-            document.getElementById('order-number').textContent = orderData.orderNumber;
             document.getElementById('receipt-order-number').textContent = orderData.orderNumber;
             document.getElementById('receipt-date').textContent = orderData.date;
             document.getElementById('receipt-customer').textContent = `${orderData.shipping.firstName} ${orderData.shipping.lastName}`;
@@ -937,10 +888,8 @@
         }
     
         function downloadReceipt() {
-            // Criar conteúdo HTML específico para PDF
             const pdfContainer = document.getElementById('pdf-container');
             
-            // Gerar HTML do recibo
             const itemsHtml = cart.map(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
@@ -958,18 +907,15 @@
             
             pdfContainer.innerHTML = `
                 <div style="font-family: 'Space Grotesk', sans-serif; color: #556B4F; padding: 40px; max-width: 800px; margin: 0 auto; background: white; position: relative;">
-                    <!-- Selo -->
                     <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 4px solid #556B4F; color: #556B4F; padding: 20px 40px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; opacity: 0.2; border-radius: 8px; pointer-events: none;">
                         PENDENTE
                     </div>
                     
-                    <!-- Cabeçalho -->
                     <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px dashed #E8DCC4;">
                         <div style="font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: #556B4F; margin-bottom: 8px;">NUCA</div>
                         <div style="color: #556B4F; opacity: 0.6; font-size: 14px;">Moda minimalista, feita em Portugal</div>
                     </div>
                     
-                    <!-- Info -->
                     <div style="margin-bottom: 24px; font-size: 14px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
                             <span style="color: #556B4F; opacity: 0.6;">Nº Encomenda:</span>
@@ -989,13 +935,11 @@
                         </div>
                     </div>
                     
-                    <!-- Itens -->
                     <div style="border-top: 1px solid #E8DCC4; border-bottom: 1px solid #E8DCC4; padding: 16px 0; margin-bottom: 24px;">
                         <div style="font-weight: bold; color: #556B4F; margin-bottom: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Itens</div>
                         ${itemsHtml}
                     </div>
                     
-                    <!-- Totais -->
                     <div style="margin-bottom: 24px; font-size: 14px; border-bottom: 1px solid #E8DCC4; padding-bottom: 16px;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                             <span style="color: #556B4F; opacity: 0.6;">Subtotal</span>
@@ -1011,13 +955,11 @@
                         </div>
                     </div>
                     
-                    <!-- Total -->
                     <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #556B4F; margin-bottom: 32px;">
                         <span>TOTAL</span>
                         <span>€${orderData.totals.total.toFixed(2)}</span>
                     </div>
                     
-                    <!-- Rodapé -->
                     <div style="text-align: center; font-size: 12px; color: #556B4F; opacity: 0.4; border-top: 1px dashed #E8DCC4; padding-top: 16px;">
                         <p style="margin-bottom: 4px;">Este documento serve como comprovativo de compra.</p>
                         <p>Para trocas: nuca.crew@gmail.com</p>
@@ -1025,7 +967,6 @@
                 </div>
             `;
             
-            // Configurações do PDF
             const opt = {
                 margin: 0,
                 filename: `NUCA_${orderData.orderNumber}.pdf`,
@@ -1044,20 +985,12 @@
                 }
             };
             
-            // Gerar PDF
             html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                // Limpar container após gerar
                 pdfContainer.innerHTML = '';
-                console.log('PDF gerado com sucesso');
             }).catch(err => {
                 console.error('Erro ao gerar PDF:', err);
-                alert('Erro ao gerar PDF. Tenta usar a função de impressão do browser (Ctrl+P).');
+                alert('Erro ao gerar PDF. Tenta usar Ctrl+P.');
             });
-        }
-        
-        // Função alternativa usando print
-        function printReceipt() {
-            window.print();
         }
     </script>
 </body>
