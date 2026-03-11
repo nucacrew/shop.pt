@@ -48,8 +48,22 @@
         }
         .input-field:focus { outline: none; border-color: #556B4F; background-color: white; }
         .payment-method.selected { border-color: #556B4F; background-color: rgba(85, 107, 79, 0.1); }
-        .receipt-paper { background: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        @media print { .no-print { display: none !important; } .receipt-paper { box-shadow: none; } }
+        .receipt-paper { 
+            background: white; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        @media print { 
+            .no-print { display: none !important; } 
+            .receipt-paper { 
+                box-shadow: none !important; 
+                background: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .grain-overlay { display: none !important; }
+            body { background: white !important; }
+        }
         .receipt-stamp {
             position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
@@ -73,6 +87,38 @@
             border-radius: 0.75rem;
             margin-bottom: 1rem;
         }
+        /* Estilos específicos para PDF */
+        .pdf-content {
+            background: white;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .pdf-content .nuca-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 48px;
+            color: #556B4F;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .pdf-content .receipt-stamp-pdf {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            border: 4px solid #556B4F;
+            color: #556B4F;
+            padding: 20px 40px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 32px;
+            opacity: 0.2;
+            border-radius: 8px;
+            pointer-events: none;
+        }
     </style>
 <base target="_blank">
 </head>
@@ -80,7 +126,7 @@
 
     <div class="grain-overlay"></div>
 
-    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
+    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40 no-print">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
             <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
@@ -93,7 +139,7 @@
     <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
         
         <!-- Steps -->
-        <div class="mb-12">
+        <div class="mb-12 no-print">
             <div class="flex items-center justify-center gap-4 md:gap-8">
                 <div class="flex items-center gap-3" id="step-1-indicator">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-active transition-all">1</div>
@@ -123,7 +169,7 @@
             <div class="space-y-8" id="checkout-forms">
                 
                 <!-- Step 1: Carrinho -->
-                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Resumo do Pedido</h2>
                     <div id="checkout-items" class="space-y-4 mb-6">
                         <p class="text-center text-nuca-green/60 py-8">A carregar carrinho...</p>
@@ -152,7 +198,7 @@
                 </div>
 
                 <!-- Step 2: Envio -->
-                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Dados de Envio</h2>
                     <form id="shipping-form" class="space-y-4">
                         <div class="grid md:grid-cols-2 gap-4">
@@ -203,7 +249,7 @@
                 </div>
 
                 <!-- Step 3: Pagamento Eupago (Apenas Multibanco) -->
-                <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
+                <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Método de Pagamento</h2>
                     
                     <!-- Área de erro -->
@@ -243,7 +289,7 @@
 
                 <!-- Step 4: Confirmação -->
                 <div id="step-4" class="hidden">
-                    <div class="bg-nuca-green text-nuca-beige rounded-3xl p-8 text-center mb-8">
+                    <div class="bg-nuca-green text-nuca-beige rounded-3xl p-8 text-center mb-8 no-print">
                         <div class="w-20 h-20 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
@@ -253,7 +299,7 @@
                     </div>
 
                     <!-- Detalhes do pagamento Multibanco -->
-                    <div id="eupago-payment-details" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
+                    <div id="eupago-payment-details" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
                         <h3 class="font-display text-xl font-bold text-nuca-green mb-4 text-center">Detalhes do Pagamento</h3>
                         
                         <div class="text-center">
@@ -351,7 +397,7 @@
             </div>
 
             <!-- Coluna Direita - Resumo -->
-            <div class="hidden lg:block">
+            <div class="hidden lg:block no-print">
                 <div class="sticky top-32 space-y-6">
                     <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
                         <h3 class="font-display text-xl font-bold text-nuca-green mb-4">Resumo</h3>
@@ -387,6 +433,9 @@
 
         </div>
     </main>
+
+    <!-- Container oculto para gerar PDF -->
+    <div id="pdf-container" style="position: absolute; left: -9999px; top: 0; width: 210mm; min-height: 297mm; background: white;"></div>
 
     <script>
         // === CONFIGURAÇÃO ===
@@ -888,19 +937,127 @@
         }
     
         function downloadReceipt() {
-            const element = document.getElementById('receipt-container');
+            // Criar conteúdo HTML específico para PDF
+            const pdfContainer = document.getElementById('pdf-container');
+            
+            // Gerar HTML do recibo
+            const itemsHtml = cart.map(item => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseInt(item.quantity) || 1;
+                return `
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E8DCC4;">
+                        <div style="flex: 1;">
+                            <div style="color: #556B4F; font-weight: 500;">${item.name}</div>
+                            ${item.isPack ? `<div style="color: #556B4F; font-size: 12px; opacity: 0.6;">${(item.items || []).length} peças</div>` : ''}
+                            <div style="color: #556B4F; font-size: 12px; opacity: 0.4;">x${qty} • ${item.size || 'M'}</div>
+                        </div>
+                        <div style="color: #556B4F; font-weight: 500;">€${(price * qty).toFixed(2)}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            pdfContainer.innerHTML = `
+                <div style="font-family: 'Space Grotesk', sans-serif; color: #556B4F; padding: 40px; max-width: 800px; margin: 0 auto; background: white; position: relative;">
+                    <!-- Selo -->
+                    <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 4px solid #556B4F; color: #556B4F; padding: 20px 40px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; opacity: 0.2; border-radius: 8px; pointer-events: none;">
+                        PENDENTE
+                    </div>
+                    
+                    <!-- Cabeçalho -->
+                    <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px dashed #E8DCC4;">
+                        <div style="font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: #556B4F; margin-bottom: 8px;">NUCA</div>
+                        <div style="color: #556B4F; opacity: 0.6; font-size: 14px;">Moda minimalista, feita em Portugal</div>
+                    </div>
+                    
+                    <!-- Info -->
+                    <div style="margin-bottom: 24px; font-size: 14px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #556B4F; opacity: 0.6;">Nº Encomenda:</span>
+                            <span style="font-family: monospace; font-weight: bold; color: #556B4F;">${orderData.orderNumber}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #556B4F; opacity: 0.6;">Data:</span>
+                            <span style="color: #556B4F;">${orderData.date}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #556B4F; opacity: 0.6;">Cliente:</span>
+                            <span style="color: #556B4F; font-weight: 500;">${orderData.shipping.firstName} ${orderData.shipping.lastName}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #556B4F; opacity: 0.6;">Pagamento:</span>
+                            <span style="color: #556B4F;">${orderData.payment}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Itens -->
+                    <div style="border-top: 1px solid #E8DCC4; border-bottom: 1px solid #E8DCC4; padding: 16px 0; margin-bottom: 24px;">
+                        <div style="font-weight: bold; color: #556B4F; margin-bottom: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Itens</div>
+                        ${itemsHtml}
+                    </div>
+                    
+                    <!-- Totais -->
+                    <div style="margin-bottom: 24px; font-size: 14px; border-bottom: 1px solid #E8DCC4; padding-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #556B4F; opacity: 0.6;">Subtotal</span>
+                            <span style="color: #556B4F;">€${orderData.totals.subtotal.toFixed(2)}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #556B4F; opacity: 0.6;">Desconto</span>
+                            <span style="color: #16a34a;">${orderData.totals.discount > 0 ? `-€${orderData.totals.discount.toFixed(2)}` : '€0.00'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="color: #556B4F; opacity: 0.6;">Envio</span>
+                            <span style="color: #556B4F;">${orderData.totals.shipping === 0 ? 'Grátis' : `€${orderData.totals.shipping.toFixed(2)}`}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total -->
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #556B4F; margin-bottom: 32px;">
+                        <span>TOTAL</span>
+                        <span>€${orderData.totals.total.toFixed(2)}</span>
+                    </div>
+                    
+                    <!-- Rodapé -->
+                    <div style="text-align: center; font-size: 12px; color: #556B4F; opacity: 0.4; border-top: 1px dashed #E8DCC4; padding-top: 16px;">
+                        <p style="margin-bottom: 4px;">Este documento serve como comprovativo de compra.</p>
+                        <p>Para trocas: nuca.crew@gmail.com</p>
+                    </div>
+                </div>
+            `;
+            
+            // Configurações do PDF
             const opt = {
-                margin: 10,
+                margin: 0,
                 filename: `NUCA_${orderData.orderNumber}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: true
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                }
             };
             
-            element.classList.remove('receipt-paper');
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.classList.add('receipt-paper');
+            // Gerar PDF
+            html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                // Limpar container após gerar
+                pdfContainer.innerHTML = '';
+                console.log('PDF gerado com sucesso');
+            }).catch(err => {
+                console.error('Erro ao gerar PDF:', err);
+                alert('Erro ao gerar PDF. Tenta usar a função de impressão do browser (Ctrl+P).');
             });
+        }
+        
+        // Função alternativa usando print
+        function printReceipt() {
+            window.print();
         }
     </script>
 </body>
