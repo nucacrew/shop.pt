@@ -370,7 +370,8 @@
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ALTERAÇÃO: Usar supabaseClient em vez de supabase para evitar conflito
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         // Carrinho - variável global
         let cart = [];
@@ -665,7 +666,8 @@
                     status: 'pending'
                 };
                 
-                const { data, error } = await supabase
+                // ALTERAÇÃO: Usar supabaseClient em vez de supabase
+                const { data, error } = await supabaseClient
                     .from('orders')
                     .insert([orderPayload])
                     .select();
