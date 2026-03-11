@@ -436,15 +436,14 @@
         // === CONFIGURAÇÃO ===
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
-        
-        // CONFIGURAÇÃO EUPAGO - SUBSTITUIR PELAS TUAS CREDENCIAIS
-        const EUPAGO_API_KEY = 'xxxx-xxxx-xxxx-xxxx-xxxx'; // Substituir pela tua API Key
-        const EUPAGO_SANDBOX = true; // Mudar para false em produção
-        
-        const EUPAGO_BASE_URL = EUPAGO_SANDBOX 
-            ? 'https://sandbox.eupago.pt/clientes/rest_api' 
-            : 'https://clientes.eupago.pt/clientes/rest_api';
-        
+    
+        // CONFIGURAÇÃO EUPAGO - DEMO KEY
+        const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d';
+        const EUPAGO_SANDBOX = true; // Mantém true para testes
+    
+        // URL DA TUA EDGE FUNCTION
+        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/smooth-processor';
+    
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let cart = [];
@@ -590,27 +589,18 @@
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
         }
     
-        // === NAVEGAÇÃO ENTRE STEPS (CORRIGIDO) ===
+        // === NAVEGAÇÃO ENTRE STEPS ===
     
         function goToStep(step) {
-            // Só valida se estivermos a avançar para um step superior
             if(step > currentStep && !validateCurrentStep()) {
-                return; // Para aqui se validação falhar
+                return;
             }
             
-            // Esconde step atual
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
-            
-            // Mostra novo step
             document.getElementById(`step-${step}`).classList.remove('hidden');
-            
-            // Atualiza indicadores visuais
             updateStepIndicators(step);
-            
-            // Atualiza variável global
             currentStep = step;
             
-            // Gera recibo se chegou ao fim
             if(step === 4) {
                 generateReceipt();
             }
@@ -618,28 +608,23 @@
     
         function validateCurrentStep() {
             if(currentStep === 2) {
-                // Retorna true/false sem navegar
                 return validateShippingOnly();
             }
             return true;
         }
     
-        // Função auxiliar - só valida, não navega
         function validateShippingOnly() {
             const form = document.getElementById('shipping-form');
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
             
-            // Validação dos campos
             if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
                 alert('Preenche todos os campos obrigatórios.');
                 return false;
             }
             
-            // Guarda dados globalmente
             orderData.shipping = data;
             
-            // Preenche telefone MB WAY
             const mbwayInput = document.getElementById('mbway-phone');
             if(mbwayInput) {
                 mbwayInput.value = data.phone.replace(/\D/g, '');
@@ -648,7 +633,6 @@
             return true;
         }
     
-        // Chamada pelo botão "Continuar"
         function validateShipping() {
             if(validateShippingOnly()) {
                 goToStep(3);
@@ -686,7 +670,6 @@
             event.currentTarget.classList.add('selected');
             event.currentTarget.querySelector('.check-icon div').classList.remove('hidden');
             
-            // Mostra/esconde campos específicos
             document.getElementById('mbway-input').classList.add('hidden');
             document.getElementById('multibanco-info').classList.add('hidden');
             document.getElementById('card-info').classList.add('hidden');
@@ -700,9 +683,23 @@
             }
         }
     
-        // === FUNÇÕES EUPAGO ===
+        // === FUNÇÕES EUPAGO VIA EDGE FUNCTION ===
     
         async function createEupagoPayment(orderNumber, total, customerData) {
+            let endpoint = '';
+            let methodType = '';
+            
+            if(selectedPaymentMethod === 'mbway') {
+                endpoint = '/mbway/create';
+                methodType = 'mbway';
+            } else if(selectedPaymentMethod === 'multibanco') {
+                endpoint = '/multibanco/create';
+                methodType = 'multibanco';
+            } else if(selectedPaymentMethod === 'card') {
+                endpoint = '/cartao/create';
+                methodType = 'card';
+            }
+    
             const payload = {
                 chave: EUPAGO_API_KEY,
                 valor: total.toFixed(2),
@@ -719,32 +716,47 @@
                 url_confirmacao: window.location.href
             };
     
-            let endpoint = '';
-            
             if(selectedPaymentMethod === 'mbway') {
-                endpoint = '/mbway/create';
                 payload.telefone = document.getElementById('mbway-phone').value;
-            } else if(selectedPaymentMethod === 'multibanco') {
-                endpoint = '/multibanco/create';
-            } else if(selectedPaymentMethod === 'card') {
-                endpoint = '/cartao/create';
             }
     
             try {
-                const response = await fetch(EUPAGO_BASE_URL + endpoint, {
+                console.log('A enviar para Edge Function:', EUPAGO_PROXY_URL);
+                console.log('Payload:', { endpoint, methodType, sandbox: EUPAGO_SANDBOX });
+    
+                const response = await fetch(EUPAGO_PROXY_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        endpoint: endpoint,
+                        payload: payload,
+                        sandbox: EUPAGO_SANDBOX,
+                        method: methodType
+                    })
                 });
     
+                console.log('Resposta status:', response.status);
+    
+                if(!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Erro HTTP:', response.status, errorText);
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+    
                 const data = await response.json();
+                console.log('Resposta Eupago:', data);
+                
+                if(data.error) {
+                    throw new Error(data.error);
+                }
+                
                 return data;
                 
             } catch (error) {
-                console.error('Erro Eupago:', error);
+                console.error('Erro completo:', error);
                 throw error;
             }
         }
@@ -757,7 +769,6 @@
             btn.disabled = true;
             
             try {
-                // Valida MB WAY
                 if(selectedPaymentMethod === 'mbway') {
                     const mbwayPhone = document.getElementById('mbway-phone').value;
                     if(!mbwayPhone || mbwayPhone.length !== 9) {
@@ -768,7 +779,6 @@
                     }
                 }
     
-                // Calcula totais
                 let subtotal = 0;
                 let discount = 0;
                 
@@ -790,7 +800,6 @@
                 
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
-                // 1. Criar encomenda na base de dados (status: pending)
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -819,26 +828,32 @@
                     status: 'pending_payment'
                 };
                 
+                console.log('A criar encomenda:', orderPayload);
+                
                 const { data: orderRecord, error: orderError } = await supabaseClient
                     .from('orders')
                     .insert([orderPayload])
                     .select();
                 
-                if(orderError) throw orderError;
+                if(orderError) {
+                    console.error('Erro Supabase:', orderError);
+                    throw orderError;
+                }
                 
                 savedOrderId = orderRecord[0].id;
+                console.log('Encomenda criada:', savedOrderId);
                 
-                // 2. Criar pagamento na Eupago
                 const eupagoResponse = await createEupagoPayment(orderNumber, total, orderData.shipping);
                 
-                if(eupagoResponse.sucesso !== true) {
-                    throw new Error(eupagoResponse.mensagem || 'Erro ao criar pagamento');
+                if(eupagoResponse.sucesso !== true && !eupagoResponse.referencia) {
+                    throw new Error(eupagoResponse.mensagem || 'Erro ao criar pagamento na Eupago');
                 }
                 
                 eupagoTransactionId = eupagoResponse.referencia || eupagoResponse.id_transacao;
+                console.log('Pagamento criado:', eupagoTransactionId);
                 
-                // 3. Guardar detalhes do pagamento Eupago
-                await supabaseClient
+                // Guardar detalhes do pagamento
+                const { error: paymentError } = await supabaseClient
                     .from('payments')
                     .insert([{
                         order_id: savedOrderId,
@@ -849,21 +864,23 @@
                         status: 'pending',
                         eupago_response: eupagoResponse
                     }]);
+                    
+                if(paymentError) {
+                    console.error('Erro ao guardar pagamento:', paymentError);
+                }
                 
-                // 4. Preparar dados para confirmação
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
                 orderData.payment = selectedPaymentMethod.toUpperCase();
                 orderData.totals = { subtotal, discount, shipping, total };
                 orderData.eupago = eupagoResponse;
                 
-                // 5. Mostrar interface de confirmação com detalhes Eupago
                 showPaymentConfirmation(eupagoResponse);
                 
                 goToStep(4);
                 
             } catch(error) {
-                console.error('Erro:', error);
+                console.error('Erro no processamento:', error);
                 alert('Erro ao processar encomenda: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
@@ -873,25 +890,28 @@
     
         function showPaymentConfirmation(eupagoData) {
             const eupagoContainer = document.getElementById('eupago-payment-details');
-            eupagoContainer.classList.remove('hidden');
+            if(eupagoContainer) {
+                eupagoContainer.classList.remove('hidden');
+            }
             
             if(selectedPaymentMethod === 'mbway') {
-                document.getElementById('mbway-status').classList.remove('hidden');
+                const mbwayStatus = document.getElementById('mbway-status');
+                if(mbwayStatus) mbwayStatus.classList.remove('hidden');
                 document.getElementById('success-message').textContent = 'Pedido de pagamento MB WAY enviado!';
-                
-                // Iniciar polling para verificar status (simulação)
                 startPaymentStatusCheck(eupagoData.referencia);
                 
             } else if(selectedPaymentMethod === 'multibanco') {
-                document.getElementById('multibanco-ref').classList.remove('hidden');
-                document.getElementById('mb-entity').textContent = eupagoData.entidade;
-                document.getElementById('mb-reference').textContent = eupagoData.referencia;
-                document.getElementById('mb-amount').textContent = `€${eupagoData.valor}`;
+                const multibancoRef = document.getElementById('multibanco-ref');
+                if(multibancoRef) multibancoRef.classList.remove('hidden');
+                document.getElementById('mb-entity').textContent = eupagoData.entidade || '00000';
+                document.getElementById('mb-reference').textContent = eupagoData.referencia || '000 000 000';
+                document.getElementById('mb-amount').textContent = `€${eupagoData.valor || orderData.totals.total.toFixed(2)}`;
                 document.getElementById('mb-expiry').textContent = eupagoData.data_fim || '48 horas';
                 document.getElementById('success-message').textContent = 'Referência Multibanco gerada com sucesso!';
                 
             } else if(selectedPaymentMethod === 'card') {
-                document.getElementById('card-payment').classList.remove('hidden');
+                const cardPayment = document.getElementById('card-payment');
+                if(cardPayment) cardPayment.classList.remove('hidden');
                 if(eupagoData.url) {
                     document.getElementById('eupago-iframe').src = eupagoData.url;
                 }
@@ -901,6 +921,7 @@
     
         async function startPaymentStatusCheck(reference) {
             console.log('A verificar status do pagamento:', reference);
+            // Implementar polling se necessário
         }
     
         function generateReceipt() {
