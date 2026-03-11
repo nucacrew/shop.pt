@@ -327,8 +327,14 @@
 
         function safeBase64Decode(str) {
             try {
+                // Limpar a string Base64URL (substituir - por + e _ por /)
                 let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-                while (base64.length % 4) base64 += '=';
+                
+                // Adicionar padding se necessário
+                while (base64.length % 4) {
+                    base64 += '=';
+                }
+                
                 const decoded = atob(base64);
                 return JSON.parse(decoded);
             } catch (e) {
@@ -343,7 +349,9 @@
                 const cartData = urlParams.get('cart');
                 
                 if (cartData) {
+                    console.log('Cart data recebida:', cartData);
                     const parsed = safeBase64Decode(cartData);
+                    console.log('Cart parsed:', parsed);
                     if (parsed && Array.isArray(parsed)) {
                         return parsed;
                     }
@@ -359,6 +367,7 @@
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
                 cart = loadedCart;
+                console.log('Carrinho carregado:', cart);
                 renderAll();
             } else {
                 showEmptyCart();
@@ -385,6 +394,7 @@
             calculateAndDisplayTotals();
         }
 
+        // FUNÇÃO CORRIGIDA - Verifica múltiplas formas de identificar packs
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -397,20 +407,38 @@
             let html = '';
             let summaryHtml = '';
             
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
+                console.log('Processando item:', index, item);
+                
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
-                // Verificar se é pack (propriedade isPack ou packItems/items existente)
-                const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                // VERIFICAÇÃO MELHORADA DO PACK
+                // O index.html envia: isPack: true, items: [...]
+                // Verificamos: isPack === true, ou existência de items array, ou propriedade packItems
+                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
+                
+                // Contar itens do pack - verificar tanto items quanto packItems
+                let packItemCount = 0;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
+                }
+                
                 const originalPrice = parseFloat(item.originalPrice) || 0;
+                
+                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount, 'items:', item.items);
                 
                 // HTML para o checkout principal
                 html += `
                     <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPack ? 'border-l-4 border-nuca-green' : ''}">
-                        <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name || 'Produto'}" class="w-20 h-20 object-cover rounded-xl">
+                        <img src="${item.image || (isPack && item.items && item.items[0] ? item.items[0].image : 'https://via.placeholder.com/80')}" 
+                             alt="${item.name || 'Produto'}" 
+                             class="w-20 h-20 object-cover rounded-xl">
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <div>
@@ -439,7 +467,9 @@
                 // HTML para o resumo lateral (mais compacto)
                 summaryHtml += `
                     <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPack ? 'border-l-2 border-nuca-green' : ''}">
-                        <img src="${item.image || 'https://via.placeholder.com/60'}" alt="${item.name || 'Produto'}" class="w-12 h-12 object-cover rounded-lg">
+                        <img src="${item.image || (isPack && item.items && item.items[0] ? item.items[0].image : 'https://via.placeholder.com/60')}" 
+                             alt="${item.name || 'Produto'}" 
+                             class="w-12 h-12 object-cover rounded-lg">
                         <div class="flex-1 min-w-0">
                             <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">PACK</span>' : ''}</h4>
                             <p class="text-xs text-nuca-green/60">${isPack ? packItemCount + ' peças • ' : ''}${item.size || 'M'} • x${qty}</p>
@@ -465,7 +495,9 @@
             cart.forEach((item) => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
-                const isPack = item.isPack === true || item.packItems || item.items;
+                
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
                 if(isPack && originalPrice > 0) {
@@ -522,8 +554,18 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
-                const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
+                let packItemCount = 0;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
+                }
+                
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
                 if(isPack && originalPrice > 0) {
@@ -614,8 +656,18 @@
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
-                const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
+                let packItemCount = 0;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
+                }
+                
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
                 if(isPack && originalPrice > 0) {
@@ -661,7 +713,9 @@
                 cart.forEach(item => {
                     const price = parseFloat(item.price) || 0;
                     const qty = parseInt(item.quantity) || 1;
-                    const isPack = item.isPack === true || item.packItems || item.items;
+                    
+                    // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                    const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                     const originalPrice = parseFloat(item.originalPrice) || 0;
                     
                     if(isPack && originalPrice > 0) {
@@ -689,15 +743,20 @@
                         city: orderData.shipping.city,
                         notes: orderData.shipping.notes || null
                     },
-                    items: cart.map(item => ({
-                        id: item.id,
-                        name: item.name,
-                        price: parseFloat(item.price) || 0,
-                        quantity: parseInt(item.quantity) || 1,
-                        size: item.size || 'M',
-                        isPack: item.isPack === true || item.packItems || item.items,
-                        packItems: item.packItems || item.items || null
-                    })),
+                    items: cart.map(item => {
+                        // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                        const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
+                        
+                        return {
+                            id: item.id,
+                            name: item.name,
+                            price: parseFloat(item.price) || 0,
+                            quantity: parseInt(item.quantity) || 1,
+                            size: item.size || 'M',
+                            isPack: isPack,
+                            packItems: item.items || item.packItems || null
+                        };
+                    }),
                     payment_method: 'whatsapp',
                     payment_provider: 'manual',
                     subtotal: subtotal,
