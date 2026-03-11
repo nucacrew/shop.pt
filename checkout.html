@@ -5,14 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- SVG principal -->
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    
-    <!-- Fallback PNG para browsers antigos -->
-    <link rel="alternate icon" type="image/png" href="favicon.png">
-    
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -73,6 +65,7 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .eupago-iframe { width: 100%; height: 400px; border: none; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -84,7 +77,7 @@
             <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
             <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Checkout Seguro</span>
+                <span>Checkout Seguro via Eupago</span>
             </div>
         </div>
     </header>
@@ -170,7 +163,7 @@
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-nuca-green mb-2">Telemóvel *</label>
-                            <input type="tel" name="phone" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912 345 678">
+                            <input type="tel" name="phone" id="phone-input" required class="input-field w-full px-4 py-3 rounded-xl" placeholder="912345678">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-nuca-green mb-2">Morada *</label>
@@ -201,11 +194,12 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Pagamento -->
+                <!-- Step 3: Pagamento Eupago -->
                 <div id="step-3" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Método de Pagamento</h2>
                     
                     <div class="space-y-3 mb-6">
+                        <!-- MB WAY -->
                         <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40 selected" onclick="selectPayment('mbway')">
                             <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
@@ -219,6 +213,7 @@
                             </div>
                         </div>
 
+                        <!-- Multibanco -->
                         <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40" onclick="selectPayment('multibanco')">
                             <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -232,13 +227,14 @@
                             </div>
                         </div>
 
+                        <!-- Cartão -->
                         <div class="payment-method cursor-pointer border-2 border-nuca-green/20 rounded-2xl p-4 flex items-center gap-4 transition-all hover:border-nuca-green/40" onclick="selectPayment('card')">
                             <div class="w-12 h-12 bg-nuca-green/10 rounded-full flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
                             </div>
                             <div class="flex-1">
-                                <h4 class="font-bold text-nuca-green">Cartão</h4>
-                                <p class="text-sm text-nuca-green/60">Visa, Mastercard</p>
+                                <h4 class="font-bold text-nuca-green">Cartão de Crédito</h4>
+                                <p class="text-sm text-nuca-green/60">Visa, Mastercard via Eupago</p>
                             </div>
                             <div class="w-6 h-6 rounded-full border-2 border-nuca-green/30 flex items-center justify-center check-icon">
                                 <div class="w-3 h-3 rounded-full bg-nuca-green hidden"></div>
@@ -246,8 +242,21 @@
                         </div>
                     </div>
 
+                    <!-- Área de detalhes do pagamento -->
                     <div id="payment-details" class="bg-nuca-light/30 rounded-2xl p-6 mb-6">
-                        <p class="text-sm text-nuca-green/80 text-center">Serás redirecionado para o ambiente seguro após confirmar.</p>
+                        <div id="mbway-input" class="block">
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Número MB WAY</label>
+                            <input type="tel" id="mbway-phone" class="input-field w-full px-4 py-3 rounded-xl" placeholder="912345678" maxlength="9">
+                            <p class="text-xs text-nuca-green/60 mt-2">Será enviado um pedido de pagamento para a app MB WAY</p>
+                        </div>
+                        
+                        <div id="multibanco-info" class="hidden text-center">
+                            <p class="text-sm text-nuca-green/80">Após confirmar, serão geradas as referências Multibanco.</p>
+                        </div>
+
+                        <div id="card-info" class="hidden">
+                            <p class="text-sm text-nuca-green/80 mb-4">Serás redirecionado para o ambiente seguro da Eupago.</p>
+                        </div>
                     </div>
 
                     <div class="flex gap-4">
@@ -267,14 +276,55 @@
                         <div class="w-20 h-20 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
-                        <h2 class="font-display text-3xl font-bold mb-4">Encomenda Confirmada!</h2>
-                        <p class="text-nuca-beige/80 mb-2">Obrigado pela tua compra. Receberás um email de confirmação.</p>
+                        <h2 class="font-display text-3xl font-bold mb-4">Encomenda Registada!</h2>
+                        <p class="text-nuca-beige/80 mb-2" id="success-message">Processamento de pagamento iniciado.</p>
                         <p class="text-sm text-nuca-beige/60">Número: <span id="order-number" class="font-mono font-bold text-nuca-beige"></span></p>
+                    </div>
+
+                    <!-- Detalhes do pagamento Eupago -->
+                    <div id="eupago-payment-details" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 hidden">
+                        <h3 class="font-display text-xl font-bold text-nuca-green mb-4 text-center">Detalhes do Pagamento</h3>
+                        
+                        <!-- MB WAY Status -->
+                        <div id="mbway-status" class="hidden text-center">
+                            <div class="bg-nuca-light/30 rounded-2xl p-6">
+                                <p class="text-nuca-green font-medium mb-2">Pedido MB WAY enviado</p>
+                                <p class="text-sm text-nuca-green/60 mb-4">Confirma o pagamento na app MB WAY</p>
+                                <div class="loading-spinner mx-auto"></div>
+                            </div>
+                        </div>
+
+                        <!-- Multibanco Referência -->
+                        <div id="multibanco-ref" class="hidden text-center">
+                            <div class="bg-nuca-light/30 rounded-2xl p-6">
+                                <p class="text-sm text-nuca-green/60 mb-4">Usa estas referências para pagar em qualquer ATM ou Homebanking</p>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
+                                        <span class="text-nuca-green/60">Entidade</span>
+                                        <span class="font-mono text-2xl font-bold text-nuca-green" id="mb-entity"></span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
+                                        <span class="text-nuca-green/60">Referência</span>
+                                        <span class="font-mono text-2xl font-bold text-nuca-green" id="mb-reference"></span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-white rounded-xl p-4">
+                                        <span class="text-nuca-green/60">Montante</span>
+                                        <span class="font-mono text-xl font-bold text-nuca-green" id="mb-amount"></span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-nuca-green/40 mt-4">Válido até: <span id="mb-expiry"></span></p>
+                            </div>
+                        </div>
+
+                        <!-- Cartão iframe -->
+                        <div id="card-payment" class="hidden">
+                            <iframe id="eupago-iframe" class="eupago-iframe rounded-2xl"></iframe>
+                        </div>
                     </div>
 
                     <!-- Comprovativo -->
                     <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
-                        <div class="receipt-stamp">PAGO</div>
+                        <div class="receipt-stamp">PENDENTE</div>
                         
                         <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
                             <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
@@ -367,6 +417,15 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Segurança Eupago -->
+                    <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
+                        <div class="flex items-center gap-3 mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <h4 class="font-bold text-nuca-green">Pagamento Seguro</h4>
+                        </div>
+                        <p class="text-sm text-nuca-green/60">Processado pela Eupago, instituição de pagamento supervisionada pelo Banco de Portugal.</p>
+                    </div>
                 </div>
             </div>
 
@@ -374,20 +433,26 @@
     </main>
 
     <script>
-        // === CONFIGURAÇÃO SUPABASE ===
+        // === CONFIGURAÇÃO ===
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
-        // ALTERAÇÃO: Usar supabaseClient em vez de supabase para evitar conflito
+        // CONFIGURAÇÃO EUPAGO - SUBSTITUIR PELAS TUAS CREDENCIAIS
+        const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d'; // Substituir pela tua API Key
+        const EUPAGO_SANDBOX = true; // Mudar para false em produção
+        
+        const EUPAGO_BASE_URL = EUPAGO_SANDBOX 
+            ? 'https://sandbox.eupago.pt/clientes/rest_api' 
+            : 'https://clientes.eupago.pt/clientes/rest_api';
+        
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        // Carrinho - variável global
         let cart = [];
-        
         let currentStep = 1;
         let selectedPaymentMethod = 'mbway';
         let orderData = {};
         let savedOrderId = null;
+        let eupagoTransactionId = null;
 
         // === OBTÉM CARRINHO DA URL (BASE64) ===
         function getCartFromURL() {
@@ -395,35 +460,24 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const cartData = urlParams.get('cart');
                 
-                console.log('URL completa:', window.location.href);
-                console.log('Param cart:', cartData);
-                
                 if (cartData) {
-                    // Decodificar Base64
                     const decoded = atob(cartData);
-                    console.log('Decoded:', decoded);
                     const parsed = JSON.parse(decoded);
-                    console.log('Parsed:', parsed);
                     return parsed;
                 }
             } catch (e) {
                 console.error('Erro ao carregar carrinho:', e);
-                alert('Erro ao carregar carrinho: ' + e.message);
             }
             return null;
         }
 
-        // === INICIALIZAÇÃO IMEDIATA ===
         window.onload = function() {
-            console.log('Página carregada');
             const loadedCart = getCartFromURL();
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
                 cart = loadedCart;
-                console.log('Carrinho carregado:', cart);
                 renderAll();
             } else {
-                console.log('Carrinho vazio ou inválido');
                 showEmptyCart();
             }
         };
@@ -501,19 +555,14 @@
             let subtotal = 0;
             let discount = 0;
             
-            console.log('Calculando totais para:', cart);
-            
             if (!cart || cart.length === 0) {
                 updateDisplayValues(0, 0, 0, 0);
                 return;
             }
             
-            cart.forEach((item, index) => {
-                console.log(`Item ${index}:`, item);
+            cart.forEach((item) => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
-                
-                console.log(`  Price: ${price}, Qty: ${qty}`);
                 
                 if(item.isPack && item.originalPrice) {
                     const original = parseFloat(item.originalPrice) || 0;
@@ -524,24 +573,18 @@
                 }
             });
             
-            console.log(`Subtotal: ${subtotal}, Discount: ${discount}`);
-            
             const shipping = subtotal > 50 ? 0 : 3.99;
             const total = subtotal - discount + shipping;
-            
-            console.log(`Shipping: ${shipping}, Total: ${total}`);
             
             updateDisplayValues(subtotal, discount, shipping, total);
         }
 
         function updateDisplayValues(subtotal, discount, shipping, total) {
-            // Checkout
             document.getElementById('checkout-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('checkout-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
             document.getElementById('checkout-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('checkout-total').textContent = `€${total.toFixed(2)}`;
             
-            // Resumo lateral
             document.getElementById('summary-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
@@ -593,6 +636,9 @@
                 return false;
             }
             
+            // Preenche automaticamente o telemóvel MB WAY
+            document.getElementById('mbway-phone').value = data.phone.replace(/\D/g, '');
+            
             orderData.shipping = data;
             goToStep(3);
             return true;
@@ -609,12 +655,69 @@
             event.currentTarget.classList.add('selected');
             event.currentTarget.querySelector('.check-icon div').classList.remove('hidden');
             
-            const texts = {
-                'mbway': 'Serás redirecionado para o ambiente seguro do MB WAY.',
-                'multibanco': 'Receberás referência por email. Prazo: 24h.',
-                'card': 'Serás redirecionado para o Stripe.'
+            // Mostra/esconde campos específicos
+            document.getElementById('mbway-input').classList.add('hidden');
+            document.getElementById('multibanco-info').classList.add('hidden');
+            document.getElementById('card-info').classList.add('hidden');
+            
+            if(method === 'mbway') {
+                document.getElementById('mbway-input').classList.remove('hidden');
+            } else if(method === 'multibanco') {
+                document.getElementById('multibanco-info').classList.remove('hidden');
+            } else if(method === 'card') {
+                document.getElementById('card-info').classList.remove('hidden');
+            }
+        }
+
+        // === FUNÇÕES EUPAGO ===
+
+        async function createEupagoPayment(orderNumber, total, customerData) {
+            const payload = {
+                chave: EUPAGO_API_KEY,
+                valor: total.toFixed(2),
+                id: orderNumber,
+                descricao: `Encomenda NUCA ${orderNumber}`,
+                contacto: customerData.phone,
+                email: customerData.email,
+                nome: `${customerData.firstName} ${customerData.lastName}`,
+                morada: customerData.address,
+                codigopostal: customerData.postal,
+                localidade: customerData.city,
+                pais: 'PT',
+                // URL para callback (opcional - para atualizar status automaticamente)
+                url_retorno: window.location.origin + '/callback/eupago',
+                // URL para redirecionamento após pagamento
+                url_confirmacao: window.location.href
             };
-            document.getElementById('payment-details').innerHTML = `<p class="text-sm text-nuca-green/80 text-center">${texts[method]}</p>`;
+
+            let endpoint = '';
+            
+            if(selectedPaymentMethod === 'mbway') {
+                endpoint = '/mbway/create';
+                payload.telefone = document.getElementById('mbway-phone').value;
+            } else if(selectedPaymentMethod === 'multibanco') {
+                endpoint = '/multibanco/create';
+            } else if(selectedPaymentMethod === 'card') {
+                endpoint = '/cartao/create';
+            }
+
+            try {
+                const response = await fetch(EUPAGO_BASE_URL + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                return data;
+                
+            } catch (error) {
+                console.error('Erro Eupago:', error);
+                throw error;
+            }
         }
 
         async function processPayment() {
@@ -625,7 +728,18 @@
             btn.disabled = true;
             
             try {
-                // Recalcular totais
+                // Valida MB WAY
+                if(selectedPaymentMethod === 'mbway') {
+                    const mbwayPhone = document.getElementById('mbway-phone').value;
+                    if(!mbwayPhone || mbwayPhone.length !== 9) {
+                        alert('Introduz um número de telemóvel válido (9 dígitos)');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return;
+                    }
+                }
+
+                // Calcula totais
                 let subtotal = 0;
                 let discount = 0;
                 
@@ -647,6 +761,7 @@
                 
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
+                // 1. Criar encomenda na base de dados (status: pending)
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -667,36 +782,98 @@
                         isPack: item.isPack || false
                     })),
                     payment_method: selectedPaymentMethod,
+                    payment_provider: 'eupago',
                     subtotal: subtotal,
                     discount: discount,
                     shipping: shipping,
                     total: total,
-                    status: 'pending'
+                    status: 'pending_payment'
                 };
                 
-                // ALTERAÇÃO: Usar supabaseClient em vez de supabase
-                const { data, error } = await supabaseClient
+                const { data: orderRecord, error: orderError } = await supabaseClient
                     .from('orders')
                     .insert([orderPayload])
                     .select();
                 
-                if(error) throw error;
+                if(orderError) throw orderError;
                 
-                savedOrderId = data[0].id;
+                savedOrderId = orderRecord[0].id;
+                
+                // 2. Criar pagamento na Eupago
+                const eupagoResponse = await createEupagoPayment(orderNumber, total, orderData.shipping);
+                
+                if(eupagoResponse.sucesso !== true) {
+                    throw new Error(eupagoResponse.mensagem || 'Erro ao criar pagamento');
+                }
+                
+                eupagoTransactionId = eupagoResponse.referencia || eupagoResponse.id_transacao;
+                
+                // 3. Guardar detalhes do pagamento Eupago
+                await supabaseClient
+                    .from('payments')
+                    .insert([{
+                        order_id: savedOrderId,
+                        provider: 'eupago',
+                        method: selectedPaymentMethod,
+                        transaction_id: eupagoTransactionId,
+                        amount: total,
+                        status: 'pending',
+                        eupago_response: eupagoResponse
+                    }]);
+                
+                // 4. Preparar dados para confirmação
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
                 orderData.payment = selectedPaymentMethod.toUpperCase();
                 orderData.totals = { subtotal, discount, shipping, total };
+                orderData.eupago = eupagoResponse;
+                
+                // 5. Mostrar interface de confirmação com detalhes Eupago
+                showPaymentConfirmation(eupagoResponse);
                 
                 goToStep(4);
                 
             } catch(error) {
-                console.error('Erro ao guardar:', error);
-                alert('Erro ao processar encomenda. Tenta novamente.\n\nDetalhe: ' + error.message);
+                console.error('Erro:', error);
+                alert('Erro ao processar encomenda: ' + error.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
+        }
+
+        function showPaymentConfirmation(eupagoData) {
+            const eupagoContainer = document.getElementById('eupago-payment-details');
+            eupagoContainer.classList.remove('hidden');
+            
+            if(selectedPaymentMethod === 'mbway') {
+                document.getElementById('mbway-status').classList.remove('hidden');
+                document.getElementById('success-message').textContent = 'Pedido de pagamento MB WAY enviado!';
+                
+                // Iniciar polling para verificar status (simulação)
+                startPaymentStatusCheck(eupagoData.referencia);
+                
+            } else if(selectedPaymentMethod === 'multibanco') {
+                document.getElementById('multibanco-ref').classList.remove('hidden');
+                document.getElementById('mb-entity').textContent = eupagoData.entidade;
+                document.getElementById('mb-reference').textContent = eupagoData.referencia;
+                document.getElementById('mb-amount').textContent = `€${eupagoData.valor}`;
+                document.getElementById('mb-expiry').textContent = eupagoData.data_fim || '48 horas';
+                document.getElementById('success-message').textContent = 'Referência Multibanco gerada com sucesso!';
+                
+            } else if(selectedPaymentMethod === 'card') {
+                document.getElementById('card-payment').classList.remove('hidden');
+                if(eupagoData.url) {
+                    document.getElementById('eupago-iframe').src = eupagoData.url;
+                }
+                document.getElementById('success-message').textContent = 'Completa o pagamento no formulário abaixo.';
+            }
+        }
+
+        async function startPaymentStatusCheck(reference) {
+            // Função para verificar status do pagamento (a implementar com backend)
+            // Por segurança, isto deve ser feito via webhook/callback da Eupago
+            console.log('A verificar status do pagamento:', reference);
         }
 
         function generateReceipt() {
