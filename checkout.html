@@ -70,20 +70,6 @@
             background-color: #D8C6A5;
             color: #2C3328;
         }
-        
-        /* Debug info */
-        .debug-info {
-            background: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -101,9 +87,6 @@
     </header>
 
     <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
-        
-        <!-- Debug info (remover em produção) -->
-        <div id="debug-info" class="debug-info hidden"></div>
 
         <!-- Steps -->
         <div class="mb-12">
@@ -434,18 +417,6 @@
 
         window.onload = function() {
             const loadedCart = getCartFromURL();
-            
-            // Mostrar debug info
-            const debugDiv = document.getElementById('debug-info');
-            if (debugDiv) {
-                debugDiv.classList.remove('hidden');
-                let debugText = 'URL: ' + window.location.href + '\n\n';
-                debugText += 'Carrinho carregado: ' + (loadedCart ? 'SIM (' + loadedCart.length + ' itens)' : 'NÃO (null)') + '\n\n';
-                if (loadedCart && loadedCart.length > 0) {
-                    debugText += 'Primeiro item: ' + JSON.stringify(loadedCart[0], null, 2).substring(0, 500);
-                }
-                debugDiv.textContent = debugText;
-            }
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
                 cart = loadedCart;
