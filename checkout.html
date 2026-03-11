@@ -86,12 +86,28 @@
             border-radius: 0.75rem;
             margin-bottom: 1rem;
         }
-        .pay-link-box {
-            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
-            color: #D8C6A5;
+        .whatsapp-box {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
             border-radius: 1rem;
             padding: 2rem;
             text-align: center;
+        }
+        .whatsapp-btn {
+            background: white;
+            color: #128C7E;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
     </style>
 </head>
@@ -104,7 +120,7 @@
             <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
             <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Checkout Seguro via Eupago</span>
+                <span>Checkout Seguro</span>
             </div>
         </div>
     </header>
@@ -216,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- Step 3: Pay by Link -->
+                <!-- Step 3: WhatsApp Payment -->
                 <div id="step-3" class="hidden">
                     <!-- Resumo antes de pagar -->
                     <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
@@ -240,40 +256,34 @@
                             </div>
                         </div>
 
-                        <div class="bg-nuca-green/10 rounded-2xl p-4 mb-6">
-                            <div class="flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                                <p class="text-sm text-nuca-green">Serás redirecionado para uma página segura da Eupago onde podes escolher como pagar (Multibanco, MB WAY, Cartão, etc.)</p>
-                            </div>
-                        </div>
-
                         <div class="flex gap-4">
                             <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
                                 Voltar
                             </button>
-                            <button onclick="processPayment()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                                <span>Ir para Pagamento</span>
+                            <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                                <span>Confirmar Pedido</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Link de pagamento gerado -->
-                    <div id="payment-link-section" class="hidden pay-link-box mb-8">
-                        <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <!-- WhatsApp Link gerado -->
+                    <div id="whatsapp-section" class="hidden whatsapp-box mb-8">
+                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                         </div>
-                        <h3 class="font-display text-2xl font-bold mb-2">Link de Pagamento Gerado!</h3>
-                        <p class="text-nuca-beige/80 mb-4">Clica no botão abaixo para completar o pagamento de forma segura.</p>
+                        <h3 class="font-display text-2xl font-bold mb-2">Pedido Registado!</h3>
+                        <p class="text-white/90 mb-4">Clica no botão abaixo para enviar os detalhes do pedido via WhatsApp e finalizar o pagamento.</p>
                         
-                        <a id="pay-link-btn" href="#" target="_blank" class="inline-block bg-nuca-beige text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-white transition-colors mb-4">
-                            Pagar €<span id="pay-link-amount">0.00</span> →
+                        <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                            <span>Enviar pedido por WhatsApp</span>
                         </a>
                         
-                        <p class="text-xs text-nuca-beige/60">O link foi também enviado para o teu email</p>
+                        <p class="text-xs text-white/70">Serás redirecionado para o WhatsApp com uma mensagem pré-preenchida</p>
                     </div>
 
-                    <!-- Comprovativo (aparece após criar link) -->
+                    <!-- Comprovativo -->
                     <div id="receipt-section" class="hidden">
                         <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
                             <div class="receipt-stamp">PENDENTE</div>
@@ -370,9 +380,9 @@
                     <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
                         <div class="flex items-center gap-3 mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <h4 class="font-bold text-nuca-green">Pagamento Seguro</h4>
+                            <h4 class="font-bold text-nuca-green">Pagamento via WhatsApp</h4>
                         </div>
-                        <p class="text-sm text-nuca-green/60">Processado pela Eupago. Escolhe o método preferido no link de pagamento.</p>
+                        <p class="text-sm text-nuca-green/60">Finaliza o teu pedido através do WhatsApp. Enviaremos os detalhes e instruções de pagamento.</p>
                     </div>
                 </div>
             </div>
@@ -387,20 +397,17 @@
         // === CONFIGURAÇÃO ===
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
-    
-        const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d';
-        const EUPAGO_SANDBOX = true;
-    
-        // URL DA EDGE FUNCTION (usando o nome original)
-        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/smooth-processor';
-    
+        
+        // CONFIGURAÇÃO DO WHATSAPP - ALTERAR PARA O NÚMERO DA LOJA
+        const WHATSAPP_NUMBER = '351912345678'; // Formato internacional sem + (Portugal: 351 + número)
+        
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let cart = [];
         let currentStep = 1;
         let orderData = {};
         let savedOrderId = null;
-    
+
         // === FUNÇÃO PARA DECODIFICAR BASE64 SEGURO ===
         function safeBase64Decode(str) {
             try {
@@ -415,7 +422,7 @@
                 return null;
             }
         }
-    
+
         function getCartFromURL() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -432,7 +439,7 @@
             }
             return null;
         }
-    
+
         window.onload = function() {
             const loadedCart = getCartFromURL();
             
@@ -443,7 +450,7 @@
                 showEmptyCart();
             }
         };
-    
+
         function showEmptyCart() {
             const msg = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio. <a href="index.html" class="underline text-nuca-green">Voltar à loja</a></p>';
             document.getElementById('checkout-items').innerHTML = msg;
@@ -458,12 +465,12 @@
             
             updateDisplayValues(0, 0, 0, 0);
         }
-    
+
         function renderAll() {
             renderCheckoutItems();
             calculateAndDisplayTotals();
         }
-    
+
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -474,24 +481,31 @@
             }
             
             let html = '';
+            let summaryHtml = '';
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
+                // Verificar se é pack (propriedade isPack ou packItems/items existente)
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const originalPrice = parseFloat(item.originalPrice) || 0;
+                
+                // HTML para o checkout principal
                 html += `
-                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${item.isPack ? 'border-l-4 border-nuca-green' : ''}">
+                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPack ? 'border-l-4 border-nuca-green' : ''}">
                         <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name || 'Produto'}" class="w-20 h-20 object-cover rounded-xl">
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-nuca-green ${item.isPack ? 'flex items-center gap-2' : ''}">
+                                    <h4 class="font-bold text-nuca-green ${isPack ? 'flex items-center gap-2' : ''}">
                                         ${item.name || 'Produto'}
-                                        ${item.isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                                        ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
                                     </h4>
-                                    ${item.isPack ? `
-                                        <p class="text-xs text-nuca-green/60 mt-1">${(item.items || []).length} peças • Tamanho ${item.size || 'M'}</p>
+                                    ${isPack ? `
+                                        <p class="text-xs text-nuca-green/60 mt-1">${packItemCount} peças • Tamanho ${item.size || 'M'}</p>
                                     ` : `
                                         <p class="text-sm text-nuca-green/60">Tamanho: ${item.size || 'M'}</p>
                                     `}
@@ -500,19 +514,31 @@
                             </div>
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="text-xs text-nuca-green/40">Qtd: ${qty}</span>
-                                ${item.isPack && item.originalPrice ? `
-                                    <span class="text-xs text-green-600">Poupas €${((item.originalPrice - price) * qty).toFixed(2)}</span>
+                                ${isPack && originalPrice > 0 ? `
+                                    <span class="text-xs text-green-600">Poupas €${((originalPrice - price) * qty).toFixed(2)}</span>
                                 ` : ''}
                             </div>
                         </div>
                     </div>
                 `;
+                
+                // HTML para o resumo lateral (mais compacto)
+                summaryHtml += `
+                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPack ? 'border-l-2 border-nuca-green' : ''}">
+                        <img src="${item.image || 'https://via.placeholder.com/60'}" alt="${item.name || 'Produto'}" class="w-12 h-12 object-cover rounded-lg">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">PACK</span>' : ''}</h4>
+                            <p class="text-xs text-nuca-green/60">${isPack ? packItemCount + ' peças • ' : ''}${item.size || 'M'} • x${qty}</p>
+                        </div>
+                        <span class="font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
+                    </div>
+                `;
             });
             
             container.innerHTML = html;
-            summaryContainer.innerHTML = html;
+            summaryContainer.innerHTML = summaryHtml;
         }
-    
+
         function calculateAndDisplayTotals() {
             let subtotal = 0;
             let discount = 0;
@@ -525,11 +551,12 @@
             cart.forEach((item) => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const originalPrice = parseFloat(item.originalPrice) || 0;
                 
-                if(item.isPack && item.originalPrice) {
-                    const original = parseFloat(item.originalPrice) || 0;
-                    subtotal += original * qty;
-                    discount += (original - price) * qty;
+                if(isPack && originalPrice > 0) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
                 } else {
                     subtotal += price * qty;
                 }
@@ -540,7 +567,7 @@
             
             updateDisplayValues(subtotal, discount, shipping, total);
         }
-    
+
         function updateDisplayValues(subtotal, discount, shipping, total) {
             document.getElementById('checkout-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('checkout-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
@@ -551,9 +578,9 @@
             document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
         }
-    
+
         // === NAVEGAÇÃO ===
-    
+
         function goToStep(step) {
             if(step > currentStep && !validateCurrentStep()) {
                 return;
@@ -571,7 +598,7 @@
             updateStepIndicators(step);
             currentStep = step;
         }
-    
+
         function renderConfirmStep() {
             let itemsHtml = '';
             let subtotal = 0;
@@ -581,18 +608,20 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const originalPrice = parseFloat(item.originalPrice) || 0;
                 
-                if(item.isPack && item.originalPrice) {
-                    const original = parseFloat(item.originalPrice) || 0;
-                    subtotal += original * qty;
-                    discount += (original - price) * qty;
+                if(isPack && originalPrice > 0) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
                 } else {
                     subtotal += price * qty;
                 }
                 
                 itemsHtml += `
                     <div class="flex justify-between py-1">
-                        <span class="text-nuca-green">${item.name} x${qty}</span>
+                        <span class="text-nuca-green">${item.name} ${isPack ? `(${packItemCount} peças)` : ''} x${qty}</span>
                         <span class="text-nuca-green">€${total.toFixed(2)}</span>
                     </div>
                 `;
@@ -613,14 +642,14 @@
                 ${s.phone}
             `;
         }
-    
+
         function validateCurrentStep() {
             if(currentStep === 2) {
                 return validateShippingOnly();
             }
             return true;
         }
-    
+
         function validateShippingOnly() {
             const form = document.getElementById('shipping-form');
             const formData = new FormData(form);
@@ -634,13 +663,13 @@
             orderData.shipping = data;
             return true;
         }
-    
+
         function validateShipping() {
             if(validateShippingOnly()) {
                 goToStep(3);
             }
         }
-    
+
         function updateStepIndicators(activeStep) {
             for(let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
@@ -660,89 +689,55 @@
                 }
             }
         }
-    
-        // === PAY BY LINK VIA EDGE FUNCTION ===
-    
-        async function createPayByLink(orderNumber, total, customerData) {
-            const expiryDate = new Date();
-            expiryDate.setDate(expiryDate.getDate() + 3);
-            const expiryStr = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
+
+        // === PROCESSAR PEDIDO E GERAR LINK WHATSAPP ===
+
+        function generateWhatsAppMessage(orderNumber, total, customerData) {
+            let itemsList = '';
+            let subtotal = 0;
+            let discount = 0;
             
-            // Garantir que amount é número
-            const amountNum = parseFloat(total);
-            if (isNaN(amountNum) || amountNum <= 0) {
-                throw new Error(`Amount inválido: ${total}`);
-            }
-            
-            const payload = {
-                type: 'paybylink',
-                amount: amountNum,  // Enviar como número, a Edge Function converte
-                currency: "EUR",
-                lang: "PT",
-                expirationDate: expiryStr,
-                identifier: orderNumber,
-                description: `Encomenda NUCA ${orderNumber}`,
-                customer: {
-                    name: `${customerData.firstName} ${customerData.lastName}`,
-                    email: customerData.email,
-                    phone: customerData.phone || '',
-                    address: customerData.address || '',
-                    city: customerData.city || '',
-                    zip: customerData.postal || ''
-                }
-            };
-        
-            console.log('=== CRIAR PAY BY LINK ===');
-            console.log('URL:', EUPAGO_PROXY_URL);
-            console.log('Payload:', JSON.stringify(payload, null, 2)); // Usar JSON.stringify para ver o objeto completo
-            console.log('Amount type:', typeof payload.amount, 'Value:', payload.amount);
-        
-            try {
-                const response = await fetch(EUPAGO_PROXY_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-        
-                const responseText = await response.text();
-                console.log('Resposta status:', response.status);
-                console.log('Resposta body:', responseText);
-        
-                let data;
-                try {
-                    data = JSON.parse(responseText);
-                } catch (e) {
-                    throw new Error(`Resposta inválida: ${responseText}`);
-                }
-        
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${data.error || responseText}`);
-                }
-        
-                if (!data.url) {
-                    throw new Error(data.error || 'Sem URL na resposta');
+            cart.forEach(item => {
+                const price = parseFloat(item.price) || 0;
+                const qty = parseInt(item.quantity) || 1;
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                const originalPrice = parseFloat(item.originalPrice) || 0;
+                
+                if(isPack && originalPrice > 0) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
+                } else {
+                    subtotal += price * qty;
                 }
                 
-                return {
-                    url: data.url,
-                    identifier: data.identifier || orderNumber,
-                    success: true
-                };
-                
-            } catch (error) {
-                console.error('Erro completo:', error);
-                throw error;
-            }
+                itemsList += `- ${item.name} ${isPack ? `(${packItemCount} peças)` : ''} | Tamanho: ${item.size || 'M'} | Qtd: ${qty} | €${(price * qty).toFixed(2)}%0A`;
+            });
+            
+            const shipping = subtotal > 50 ? 0 : 3.99;
+            const finalTotal = subtotal - discount + shipping;
+            
+            const message = `Olá! Gostaria de efetuar o pagamento do meu pedido NUCA.%0A%0A` +
+                `*Nº Encomenda:* ${orderNumber}%0A` +
+                `*Cliente:* ${customerData.firstName} ${customerData.lastName}%0A` +
+                `*Email:* ${customerData.email}%0A` +
+                `*Telemóvel:* ${customerData.phone}%0A%0A` +
+                `*Itens do Pedido:*%0A${itemsList}%0A` +
+                `*Subtotal:* €${subtotal.toFixed(2)}%0A` +
+                `${discount > 0 ? `*Desconto:* -€${discount.toFixed(2)}%0A` : ''}` +
+                `*Envio:* ${shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`}%0A` +
+                `*TOTAL:* €${finalTotal.toFixed(2)}%0A%0A` +
+                `*Morada de Envio:*%0A${customerData.address}%0A${customerData.postal} ${customerData.city}%0A%0A` +
+                `Aguardo instruções para pagamento. Obrigado!`;
+            
+            return `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
         }
-    
-        async function processPayment() {
+
+        async function processOrder() {
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
             
-            btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A gerar link...</span>';
+            btn.innerHTML = '<div class="loading-spinner"></div><span class="ml-2">A processar...</span>';
             btn.disabled = true;
             
             try {
@@ -752,11 +747,12 @@
                 cart.forEach(item => {
                     const price = parseFloat(item.price) || 0;
                     const qty = parseInt(item.quantity) || 1;
+                    const isPack = item.isPack === true || item.packItems || item.items;
+                    const originalPrice = parseFloat(item.originalPrice) || 0;
                     
-                    if(item.isPack && item.originalPrice) {
-                        const original = parseFloat(item.originalPrice) || 0;
-                        subtotal += original * qty;
-                        discount += (original - price) * qty;
+                    if(isPack && originalPrice > 0) {
+                        subtotal += originalPrice * qty;
+                        discount += (originalPrice - price) * qty;
                     } else {
                         subtotal += price * qty;
                     }
@@ -785,10 +781,11 @@
                         price: parseFloat(item.price) || 0,
                         quantity: parseInt(item.quantity) || 1,
                         size: item.size || 'M',
-                        isPack: item.isPack || false
+                        isPack: item.isPack === true || item.packItems || item.items,
+                        packItems: item.packItems || item.items || null
                     })),
-                    payment_method: 'paybylink',
-                    payment_provider: 'eupago',
+                    payment_method: 'whatsapp',
+                    payment_provider: 'manual',
                     subtotal: subtotal,
                     discount: discount,
                     shipping: shipping,
@@ -812,45 +809,30 @@
                 localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
                 localStorage.setItem('lastCart', btoa(JSON.stringify(cart)));
                 
-                // Criar Pay by Link via Edge Function
-                const eupagoResponse = await createPayByLink(orderNumber, total, orderData.shipping);
-                
-                // Guardar pagamento na base de dados
-                await supabaseClient
-                    .from('payments')
-                    .insert([{
-                        order_id: savedOrderId,
-                        provider: 'eupago',
-                        method: 'paybylink',
-                        transaction_id: eupagoResponse.identifier || orderNumber,
-                        amount: total,
-                        status: 'pending',
-                        payment_url: eupagoResponse.url,
-                        eupago_response: eupagoResponse
-                    }]);
+                // Gerar link do WhatsApp
+                const whatsappLink = generateWhatsAppMessage(orderNumber, total, orderData.shipping);
                 
                 // Esconder secção de confirmação
                 document.getElementById('confirm-section').classList.add('hidden');
                 
-                // Mostrar link de pagamento
-                document.getElementById('pay-link-btn').href = eupagoResponse.url;
-                document.getElementById('pay-link-amount').textContent = total.toFixed(2);
-                document.getElementById('payment-link-section').classList.remove('hidden');
+                // Mostrar link do WhatsApp
+                document.getElementById('whatsapp-link').href = whatsappLink;
+                document.getElementById('whatsapp-section').classList.remove('hidden');
                 
                 // Mostrar comprovativo
                 orderData.orderNumber = orderNumber;
                 orderData.date = new Date().toLocaleDateString('pt-PT');
-                orderData.payment = 'PAY BY LINK';
+                orderData.payment = 'WhatsApp';
                 orderData.totals = { subtotal, discount, shipping, total };
-                orderData.payUrl = eupagoResponse.url;
+                orderData.whatsappUrl = whatsappLink;
                 
                 generateReceipt();
                 document.getElementById('receipt-section').classList.remove('hidden');
                 
-                // Redirecionar automaticamente após 3 segundos
+                // Abrir WhatsApp automaticamente após 2 segundos
                 setTimeout(() => {
-                    window.open(eupagoResponse.url, '_blank');
-                }, 3000);
+                    window.open(whatsappLink, '_blank');
+                }, 2000);
                 
             } catch(error) {
                 console.error('Erro:', error);
@@ -860,21 +842,23 @@
                 btn.disabled = false;
             }
         }
-    
+
         function generateReceipt() {
             document.getElementById('receipt-order-number').textContent = orderData.orderNumber;
             document.getElementById('receipt-date').textContent = orderData.date;
             document.getElementById('receipt-customer').textContent = `${orderData.shipping.firstName} ${orderData.shipping.lastName}`;
-            document.getElementById('receipt-payment').textContent = orderData.payment;
             
             const itemsHtml = cart.map(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                
                 return `
                     <div class="flex justify-between py-1 border-b border-nuca-green/5 last:border-0">
                         <div class="flex-1">
                             <span class="text-nuca-green font-medium">${item.name}</span>
-                            ${item.isPack ? `<span class="text-xs text-nuca-green/60 block">${(item.items || []).length} peças</span>` : ''}
+                            ${isPack ? `<span class="text-xs text-nuca-green/60 block">${packItemCount} peças</span>` : ''}
                             <span class="text-xs text-nuca-green/40">x${qty} • ${item.size || 'M'}</span>
                         </div>
                         <span class="text-nuca-green font-medium">€${(price * qty).toFixed(2)}</span>
@@ -889,18 +873,21 @@
             document.getElementById('receipt-shipping').textContent = orderData.totals.shipping === 0 ? 'Grátis' : `€${orderData.totals.shipping.toFixed(2)}`;
             document.getElementById('receipt-total').textContent = `€${orderData.totals.total.toFixed(2)}`;
         }
-    
+
         function downloadReceipt() {
             const pdfContainer = document.getElementById('pdf-container');
             
             const itemsHtml = cart.map(item => {
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
+                const isPack = item.isPack === true || item.packItems || item.items;
+                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
+                
                 return `
                     <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E8DCC4;">
                         <div style="flex: 1;">
                             <div style="color: #556B4F; font-weight: 500;">${item.name}</div>
-                            ${item.isPack ? `<div style="color: #556B4F; font-size: 12px; opacity: 0.6;">${(item.items || []).length} peças</div>` : ''}
+                            ${isPack ? `<div style="color: #556B4F; font-size: 12px; opacity: 0.6;">${packItemCount} peças</div>` : ''}
                             <div style="color: #556B4F; font-size: 12px; opacity: 0.4;">x${qty} • ${item.size || 'M'}</div>
                         </div>
                         <div style="color: #556B4F; font-weight: 500;">€${(price * qty).toFixed(2)}</div>
