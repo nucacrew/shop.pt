@@ -70,20 +70,6 @@
             background-color: #D8C6A5;
             color: #2C3328;
         }
-        
-        /* Debug info */
-        .debug-info {
-            background: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            font-family: monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -102,9 +88,6 @@
 
     <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
         
-        <!-- Debug info (remover em produção) -->
-        <div id="debug-info" class="debug-info hidden"></div>
-
         <!-- Steps -->
         <div class="mb-12">
             <div class="flex items-center justify-center gap-4 md:gap-8">
@@ -213,7 +196,7 @@
                 <!-- Step 3: Confirmação -->
                 <div id="step-3" class="hidden">
                     
-                    <!-- Revisão Final -->
+                    <!-- Revisão Final - MELHORADO -->
                     <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
                         <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
                         
@@ -253,7 +236,7 @@
                         </div>
                     </div>
 
-                    <!-- Sucesso - Estilo NUCA -->
+                    <!-- Sucesso - Estilo NUCA (sem verde WhatsApp) -->
                     <div id="success-section" class="hidden success-card-nuca rounded-3xl p-8 md:p-12 text-center">
                         
                         <!-- Ícone check -->
@@ -342,69 +325,18 @@
         let currentStep = 1;
         let orderData = {};
 
-        // === FUNÇÃO DE DECODIFICAÇÃO BASE64 TOTALMENTE REESCRITA ===
-        // Esta função NÃO usa atob() - usa um algoritmo próprio que funciona com UTF-8
-        function base64Decode(str) {
+        function safeBase64Decode(str) {
             try {
-                if (!str || typeof str !== 'string') {
-                    console.error('Input inválido:', str);
-                    return null;
-                }
-
-                // Limpar a string - remover espaços e caracteres inválidos
-                str = str.trim();
-                
-                // Converter Base64URL para Base64 padrão
-                str = str.replace(/-/g, '+').replace(/_/g, '/');
+                // Limpar a string Base64URL (substituir - por + e _ por /)
+                let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
                 
                 // Adicionar padding se necessário
-                while (str.length % 4) {
-                    str += '=';
+                while (base64.length % 4) {
+                    base64 += '=';
                 }
-
-                // Alfabeto Base64
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-                const lookup = new Uint8Array(256);
-                for (let i = 0; i < chars.length; i++) {
-                    lookup[chars.charCodeAt(i)] = i;
-                }
-
-                const len = str.length;
-                let bufferLength = str.length * 0.75;
-                let p = 0;
-                let encoded1, encoded2, encoded3, encoded4;
-
-                if (str[str.length - 1] === '=') {
-                    bufferLength--;
-                    if (str[str.length - 2] === '=') {
-                        bufferLength--;
-                    }
-                }
-
-                const bytes = new Uint8Array(bufferLength);
-
-                for (let i = 0; i < len; i += 4) {
-                    encoded1 = lookup[str.charCodeAt(i)];
-                    encoded2 = lookup[str.charCodeAt(i + 1)];
-                    encoded3 = lookup[str.charCodeAt(i + 2)];
-                    encoded4 = lookup[str.charCodeAt(i + 3)];
-
-                    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-                    if (encoded3 !== 64) {
-                        bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-                    }
-                    if (encoded4 !== 64) {
-                        bytes[p++] = ((encoded3 & 3) << 6) | encoded4;
-                    }
-                }
-
-                // Converter bytes para string UTF-8
-                const decoder = new TextDecoder('utf-8');
-                const decoded = decoder.decode(bytes);
                 
-                console.log('Decodificado com sucesso, length:', decoded.length);
+                const decoded = atob(base64);
                 return JSON.parse(decoded);
-
             } catch (e) {
                 console.error('Erro na decodificação Base64:', e);
                 return null;
@@ -416,13 +348,11 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const cartData = urlParams.get('cart');
                 
-                console.log('URL completa:', window.location.href);
-                console.log('Parâmetro cart encontrado:', cartData ? 'SIM' : 'NÃO');
-                
                 if (cartData) {
-                    const parsed = base64Decode(cartData);
+                    console.log('Cart data recebida:', cartData);
+                    const parsed = safeBase64Decode(cartData);
+                    console.log('Cart parsed:', parsed);
                     if (parsed && Array.isArray(parsed)) {
-                        console.log('Carrinho parseado com sucesso:', parsed.length, 'itens');
                         return parsed;
                     }
                 }
@@ -434,18 +364,6 @@
 
         window.onload = function() {
             const loadedCart = getCartFromURL();
-            
-            // Mostrar debug info
-            const debugDiv = document.getElementById('debug-info');
-            if (debugDiv) {
-                debugDiv.classList.remove('hidden');
-                let debugText = 'URL: ' + window.location.href + '\n\n';
-                debugText += 'Carrinho carregado: ' + (loadedCart ? 'SIM (' + loadedCart.length + ' itens)' : 'NÃO (null)') + '\n\n';
-                if (loadedCart && loadedCart.length > 0) {
-                    debugText += 'Primeiro item: ' + JSON.stringify(loadedCart[0], null, 2).substring(0, 500);
-                }
-                debugDiv.textContent = debugText;
-            }
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
                 cart = loadedCart;
@@ -498,17 +416,22 @@
                 
                 // VERIFICAÇÃO MELHORADA DO PACK
                 // O index.html envia: isPack: true, items: [...]
+                // Verificamos: isPack === true, ou existência de items array, ou propriedade packItems
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 
-                // Contar itens do pack
+                // Contar itens do pack - verificar tanto items quanto packItems
                 let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
-                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount);
+                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount, 'items:', item.items);
                 
                 // HTML para o checkout principal
                 html += `
@@ -573,7 +496,7 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // VERIFICAÇÃO DO PACK
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
@@ -632,11 +555,15 @@
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
-                // VERIFICAÇÃO DO PACK
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
@@ -730,11 +657,15 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // VERIFICAÇÃO DO PACK
+                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
+                if (isPack) {
+                    if (item.items && Array.isArray(item.items)) {
+                        packItemCount = item.items.length;
+                    } else if (item.packItems && Array.isArray(item.packItems)) {
+                        packItemCount = item.packItems.length;
+                    }
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
@@ -783,7 +714,7 @@
                     const price = parseFloat(item.price) || 0;
                     const qty = parseInt(item.quantity) || 1;
                     
-                    // VERIFICAÇÃO DO PACK
+                    // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
                     const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                     const originalPrice = parseFloat(item.originalPrice) || 0;
                     
@@ -813,7 +744,7 @@
                         notes: orderData.shipping.notes || null
                     },
                     items: cart.map(item => {
-                        // VERIFICAÇÃO DO PACK
+                        // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
                         const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                         
                         return {
@@ -823,7 +754,7 @@
                             quantity: parseInt(item.quantity) || 1,
                             size: item.size || 'M',
                             isPack: isPack,
-                            packItems: item.items || null
+                            packItems: item.items || item.packItems || null
                         };
                     }),
                     payment_method: 'whatsapp',
