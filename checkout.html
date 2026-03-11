@@ -438,7 +438,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
         // CONFIGURAÇÃO EUPAGO - SUBSTITUIR PELAS TUAS CREDENCIAIS
-        const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d'; // Substituir pela tua API Key
+        const EUPAGO_API_KEY = 'xxxx-xxxx-xxxx-xxxx-xxxx'; // Substituir pela tua API Key
         const EUPAGO_SANDBOX = true; // Mudar para false em produção
         
         const EUPAGO_BASE_URL = EUPAGO_SANDBOX 
@@ -453,7 +453,7 @@
         let orderData = {};
         let savedOrderId = null;
         let eupagoTransactionId = null;
-
+    
         // === OBTÉM CARRINHO DA URL (BASE64) ===
         function getCartFromURL() {
             try {
@@ -470,7 +470,7 @@
             }
             return null;
         }
-
+    
         window.onload = function() {
             const loadedCart = getCartFromURL();
             
@@ -481,7 +481,7 @@
                 showEmptyCart();
             }
         };
-
+    
         function showEmptyCart() {
             const msg = '<p class="text-center text-nuca-green/60 py-8">Carrinho vazio. <a href="index.html" class="underline text-nuca-green">Voltar à loja</a></p>';
             document.getElementById('checkout-items').innerHTML = msg;
@@ -496,12 +496,12 @@
             
             updateDisplayValues(0, 0, 0, 0);
         }
-
+    
         function renderAll() {
             renderCheckoutItems();
             calculateAndDisplayTotals();
         }
-
+    
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -550,7 +550,7 @@
             container.innerHTML = html;
             summaryContainer.innerHTML = html;
         }
-
+    
         function calculateAndDisplayTotals() {
             let subtotal = 0;
             let discount = 0;
@@ -578,7 +578,7 @@
             
             updateDisplayValues(subtotal, discount, shipping, total);
         }
-
+    
         function updateDisplayValues(subtotal, discount, shipping, total) {
             document.getElementById('checkout-subtotal').textContent = `€${subtotal.toFixed(2)}`;
             document.getElementById('checkout-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
@@ -589,18 +589,72 @@
             document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Grátis' : `€${shipping.toFixed(2)}`;
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
         }
-
+    
+        // === NAVEGAÇÃO ENTRE STEPS (CORRIGIDO) ===
+    
         function goToStep(step) {
-            if(step > currentStep && !validateCurrentStep()) return;
+            // Só valida se estivermos a avançar para um step superior
+            if(step > currentStep && !validateCurrentStep()) {
+                return; // Para aqui se validação falhar
+            }
             
+            // Esconde step atual
             document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            
+            // Mostra novo step
             document.getElementById(`step-${step}`).classList.remove('hidden');
+            
+            // Atualiza indicadores visuais
             updateStepIndicators(step);
+            
+            // Atualiza variável global
             currentStep = step;
             
-            if(step === 4) generateReceipt();
+            // Gera recibo se chegou ao fim
+            if(step === 4) {
+                generateReceipt();
+            }
         }
-
+    
+        function validateCurrentStep() {
+            if(currentStep === 2) {
+                // Retorna true/false sem navegar
+                return validateShippingOnly();
+            }
+            return true;
+        }
+    
+        // Função auxiliar - só valida, não navega
+        function validateShippingOnly() {
+            const form = document.getElementById('shipping-form');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Validação dos campos
+            if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
+                alert('Preenche todos os campos obrigatórios.');
+                return false;
+            }
+            
+            // Guarda dados globalmente
+            orderData.shipping = data;
+            
+            // Preenche telefone MB WAY
+            const mbwayInput = document.getElementById('mbway-phone');
+            if(mbwayInput) {
+                mbwayInput.value = data.phone.replace(/\D/g, '');
+            }
+            
+            return true;
+        }
+    
+        // Chamada pelo botão "Continuar"
+        function validateShipping() {
+            if(validateShippingOnly()) {
+                goToStep(3);
+            }
+        }
+    
         function updateStepIndicators(activeStep) {
             for(let i = 1; i <= 4; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
@@ -620,30 +674,7 @@
                 }
             }
         }
-
-        function validateCurrentStep() {
-            if(currentStep === 2) return validateShipping();
-            return true;
-        }
-
-        function validateShipping() {
-            const form = document.getElementById('shipping-form');
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
-            
-            if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
-                alert('Preenche todos os campos obrigatórios.');
-                return false;
-            }
-            
-            // Preenche automaticamente o telemóvel MB WAY
-            document.getElementById('mbway-phone').value = data.phone.replace(/\D/g, '');
-            
-            orderData.shipping = data;
-            goToStep(3);
-            return true;
-        }
-
+    
         function selectPayment(method) {
             selectedPaymentMethod = method;
             
@@ -668,9 +699,9 @@
                 document.getElementById('card-info').classList.remove('hidden');
             }
         }
-
+    
         // === FUNÇÕES EUPAGO ===
-
+    
         async function createEupagoPayment(orderNumber, total, customerData) {
             const payload = {
                 chave: EUPAGO_API_KEY,
@@ -684,12 +715,10 @@
                 codigopostal: customerData.postal,
                 localidade: customerData.city,
                 pais: 'PT',
-                // URL para callback (opcional - para atualizar status automaticamente)
                 url_retorno: window.location.origin + '/callback/eupago',
-                // URL para redirecionamento após pagamento
                 url_confirmacao: window.location.href
             };
-
+    
             let endpoint = '';
             
             if(selectedPaymentMethod === 'mbway') {
@@ -700,7 +729,7 @@
             } else if(selectedPaymentMethod === 'card') {
                 endpoint = '/cartao/create';
             }
-
+    
             try {
                 const response = await fetch(EUPAGO_BASE_URL + endpoint, {
                     method: 'POST',
@@ -710,7 +739,7 @@
                     },
                     body: JSON.stringify(payload)
                 });
-
+    
                 const data = await response.json();
                 return data;
                 
@@ -719,7 +748,7 @@
                 throw error;
             }
         }
-
+    
         async function processPayment() {
             const btn = document.getElementById('confirm-btn');
             const originalText = btn.innerHTML;
@@ -738,7 +767,7 @@
                         return;
                     }
                 }
-
+    
                 // Calcula totais
                 let subtotal = 0;
                 let discount = 0;
@@ -841,7 +870,7 @@
                 btn.disabled = false;
             }
         }
-
+    
         function showPaymentConfirmation(eupagoData) {
             const eupagoContainer = document.getElementById('eupago-payment-details');
             eupagoContainer.classList.remove('hidden');
@@ -869,13 +898,11 @@
                 document.getElementById('success-message').textContent = 'Completa o pagamento no formulário abaixo.';
             }
         }
-
+    
         async function startPaymentStatusCheck(reference) {
-            // Função para verificar status do pagamento (a implementar com backend)
-            // Por segurança, isto deve ser feito via webhook/callback da Eupago
             console.log('A verificar status do pagamento:', reference);
         }
-
+    
         function generateReceipt() {
             document.getElementById('order-number').textContent = orderData.orderNumber;
             document.getElementById('receipt-order-number').textContent = orderData.orderNumber;
@@ -905,7 +932,7 @@
             document.getElementById('receipt-shipping').textContent = orderData.totals.shipping === 0 ? 'Grátis' : `€${orderData.totals.shipping.toFixed(2)}`;
             document.getElementById('receipt-total').textContent = `€${orderData.totals.total.toFixed(2)}`;
         }
-
+    
         function downloadReceipt() {
             const element = document.getElementById('receipt-container');
             const opt = {
