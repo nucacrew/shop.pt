@@ -54,21 +54,21 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Botão WhatsApp no estilo NUCA */
-        .nuca-btn {
-            background-color: #556B4F;
-            color: #D8C6A5;
-            transition: all 0.3s;
-        }
-        .nuca-btn:hover {
+        /* Card de sucesso estilo NUCA - bege escuro */
+        .success-card-nuca {
             background-color: #2C3328;
             color: #E8DCC4;
         }
         
-        /* Card de sucesso no estilo NUCA */
-        .success-card {
-            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
-            color: #D8C6A5;
+        /* Botão WhatsApp estilo NUCA */
+        .wa-btn-nuca {
+            background-color: #E8DCC4;
+            color: #2C3328;
+            transition: all 0.3s;
+        }
+        .wa-btn-nuca:hover {
+            background-color: #D8C6A5;
+            color: #2C3328;
         }
     </style>
 </head>
@@ -196,7 +196,7 @@
                 <!-- Step 3: Confirmação -->
                 <div id="step-3" class="hidden">
                     
-                    <!-- Revisão Final -->
+                    <!-- Revisão Final - MELHORADO -->
                     <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
                         <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
                         
@@ -225,40 +225,48 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-4">
+                        <div class="flex flex-col sm:flex-row gap-4">
                             <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
                                 Voltar
                             </button>
-                            <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                            <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
                                 <span>Confirmar e Abrir WhatsApp</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Sucesso - Estilo NUCA -->
-                    <div id="success-section" class="hidden success-card rounded-3xl p-8 text-center">
-                        <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <!-- Sucesso - Estilo NUCA (sem verde WhatsApp) -->
+                    <div id="success-section" class="hidden success-card-nuca rounded-3xl p-8 md:p-12 text-center">
+                        
+                        <!-- Ícone check -->
+                        <div class="w-20 h-20 bg-nuca-green/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E8DCC4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         </div>
                         
-                        <h3 class="font-display text-2xl font-bold mb-2 text-nuca-beige">Pedido Registado!</h3>
-                        <p class="text-nuca-beige/80 mb-6">A tua encomenda foi guardada com sucesso. Clica no botão abaixo para enviar os detalhes via WhatsApp.</p>
+                        <h3 class="font-display text-3xl font-bold mb-3 text-nuca-light">Pedido Registado!</h3>
+                        <p class="text-nuca-light/80 mb-8 max-w-sm mx-auto leading-relaxed">
+                            A tua encomenda foi guardada com sucesso. Clica no botão abaixo para enviar os detalhes via WhatsApp.
+                        </p>
                         
-                        <div class="bg-nuca-beige/10 rounded-xl p-4 mb-6">
-                            <div class="text-xs text-nuca-beige/60 uppercase tracking-wider mb-1">Nº da Encomenda</div>
-                            <div class="font-mono text-lg font-bold text-nuca-beige" id="success-order-number">---</div>
+                        <!-- Número da encomenda -->
+                        <div class="bg-nuca-green/10 rounded-xl p-4 mb-8 inline-block w-full max-w-xs">
+                            <div class="text-xs text-nuca-light/60 uppercase tracking-wider mb-1">Nº da Encomenda</div>
+                            <div class="font-mono text-xl font-bold text-nuca-light" id="success-order-number">---</div>
                         </div>
                         
-                        <a id="whatsapp-link" href="#" target="_blank" class="inline-flex items-center gap-3 bg-nuca-beige text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-white transition-colors mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-                            <span>Enviar pedido por WhatsApp</span>
-                        </a>
+                        <!-- Botão WhatsApp estilo NUCA -->
+                        <div class="mb-6">
+                            <a id="whatsapp-link" href="#" target="_blank" class="wa-btn-nuca inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                                <span>Enviar pedido por WhatsApp</span>
+                            </a>
+                        </div>
                         
-                        <p class="text-xs text-nuca-beige/60 mb-6">Se não abrir automaticamente, clica no botão acima</p>
+                        <p class="text-xs text-nuca-light/50 mb-8">Se não abrir automaticamente, clica no botão acima</p>
                         
-                        <a href="index.html" class="text-nuca-beige/80 hover:text-nuca-beige text-sm underline decoration-nuca-beige/30 hover:decoration-nuca-beige transition-all">
-                            Voltar à loja →
+                        <a href="index.html" class="text-nuca-light/70 hover:text-nuca-light text-sm underline decoration-nuca-light/30 hover:decoration-nuca-light transition-all">
+                            ← Voltar à loja
                         </a>
                     </div>
 
