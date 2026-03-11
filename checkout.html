@@ -391,6 +391,9 @@
         const EUPAGO_API_KEY = 'demo-0fca-ec78-7285-50d';
         const EUPAGO_SANDBOX = true;
     
+        // URL DA EDGE FUNCTION (atualizada para Pay by Link)
+        const EUPAGO_PROXY_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co/functions/v1/eupago-proxy';
+    
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let cart = [];
@@ -570,7 +573,6 @@
         }
     
         function renderConfirmStep() {
-            // Renderizar itens na confirmação
             let itemsHtml = '';
             let subtotal = 0;
             let discount = 0;
@@ -602,7 +604,6 @@
             document.getElementById('confirm-items').innerHTML = itemsHtml;
             document.getElementById('confirm-total').textContent = `€${total.toFixed(2)}`;
             
-            // Dados de envio
             const s = orderData.shipping;
             document.getElementById('confirm-shipping').innerHTML = `
                 ${s.firstName} ${s.lastName}<br>
@@ -660,11 +661,9 @@
             }
         }
     
-        // === PAY BY LINK ===
+        // === PAY BY LINK VIA EDGE FUNCTION ===
     
         async function createPayByLink(orderNumber, total, customerData) {
-            const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
-            
             // Calcular data de expiração (3 dias)
             const expiryDate = new Date();
             expiryDate.setDate(expiryDate.getDate() + 3);
@@ -699,18 +698,18 @@
             console.log('Payload:', payload);
     
             try {
-                const eupagoUrl = EUPAGO_SANDBOX 
-                    ? 'https://sandbox.eupago.pt/api/v1.02/paybylink/create'
-                    : 'https://clientes.eupago.pt/api/v1.02/paybylink/create';
-                
-                const response = await fetch(eupagoUrl, {
+                const response = await fetch(EUPAGO_PROXY_URL, {
                     method: 'POST',
                     headers: {
-                        'Authorization': EUPAGO_API_KEY,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        type: 'paybylink',
+                        api_key: EUPAGO_API_KEY,
+                        sandbox: EUPAGO_SANDBOX,
+                        payload: payload
+                    })
                 });
     
                 console.log('Status:', response.status);
@@ -809,7 +808,7 @@
                 localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
                 localStorage.setItem('lastCart', btoa(JSON.stringify(cart)));
                 
-                // Criar Pay by Link na Eupago
+                // Criar Pay by Link via Edge Function
                 const eupagoResponse = await createPayByLink(orderNumber, total, orderData.shipping);
                 
                 // Guardar pagamento na base de dados
