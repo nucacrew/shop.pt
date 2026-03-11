@@ -6,7 +6,6 @@
     <title>Checkout - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
@@ -47,30 +46,6 @@
             transition: all 0.3s;
         }
         .input-field:focus { outline: none; border-color: #556B4F; background-color: white; }
-        .receipt-paper { 
-            background: white; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        @media print { 
-            .no-print { display: none !important; } 
-            .receipt-paper { 
-                box-shadow: none !important; 
-                background: white !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .grain-overlay { display: none !important; }
-            body { background: white !important; }
-        }
-        .receipt-stamp {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            border: 3px solid #556B4F; color: #556B4F;
-            padding: 1rem 2rem; font-family: 'Syne', sans-serif;
-            font-weight: 800; font-size: 1.5rem; opacity: 0.3;
-            pointer-events: none; border-radius: 8px;
-        }
         .loading-spinner {
             border: 3px solid rgba(85, 107, 79, 0.3);
             border-top: 3px solid #556B4F;
@@ -78,14 +53,6 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .error-message {
-            background-color: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            margin-bottom: 1rem;
-        }
         .whatsapp-box {
             background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
@@ -109,18 +76,28 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
+        .success-check {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
     <div class="grain-overlay"></div>
 
-    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40 no-print">
+    <header class="w-full px-6 lg:px-12 py-6 border-b border-nuca-green/10 bg-nuca-beige/90 backdrop-blur-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
             <div class="flex items-center gap-2 text-sm font-medium text-nuca-green/60">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span>Checkout Seguro</span>
+                <span>Checkout</span>
             </div>
         </div>
     </header>
@@ -128,7 +105,7 @@
     <main class="flex-1 w-full max-w-7xl mx-auto px-6 lg:px-12 py-12">
         
         <!-- Steps -->
-        <div class="mb-12 no-print">
+        <div class="mb-12">
             <div class="flex items-center justify-center gap-4 md:gap-8">
                 <div class="flex items-center gap-3" id="step-1-indicator">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-active transition-all">1</div>
@@ -142,7 +119,7 @@
                 <div class="w-12 h-0.5 bg-nuca-green/20"></div>
                 <div class="flex items-center gap-3" id="step-3-indicator">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm step-pending transition-all">3</div>
-                    <span class="hidden md:block font-medium text-nuca-green/60">Pagamento</span>
+                    <span class="hidden md:block font-medium text-nuca-green/60">Confirmação</span>
                 </div>
             </div>
         </div>
@@ -153,7 +130,7 @@
             <div class="space-y-8" id="checkout-forms">
                 
                 <!-- Step 1: Carrinho -->
-                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
+                <div id="step-1" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Resumo do Pedido</h2>
                     <div id="checkout-items" class="space-y-4 mb-6">
                         <p class="text-center text-nuca-green/60 py-8">A carregar carrinho...</p>
@@ -182,7 +159,7 @@
                 </div>
 
                 <!-- Step 2: Envio -->
-                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10 no-print">
+                <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Dados de Envio</h2>
                     <form id="shipping-form" class="space-y-4">
                         <div class="grid md:grid-cols-2 gap-4">
@@ -232,10 +209,11 @@
                     </div>
                 </div>
 
-                <!-- Step 3: WhatsApp Payment -->
+                <!-- Step 3: Confirmação WhatsApp -->
                 <div id="step-3" class="hidden">
-                    <!-- Resumo antes de pagar -->
-                    <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8 no-print">
+                    
+                    <!-- Resumo final -->
+                    <div id="confirm-section" class="bg-white/50 rounded-3xl p-8 border border-nuca-green/10 mb-8">
                         <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Confirmar Encomenda</h2>
                         
                         <div class="space-y-4 mb-6">
@@ -256,105 +234,50 @@
                             </div>
                         </div>
 
+                        <div class="bg-nuca-green/10 rounded-2xl p-4 mb-6">
+                            <div class="flex items-start gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <p class="text-sm text-nuca-green">Ao confirmares, serás redirecionado para o WhatsApp com os detalhes do teu pedido pré-preenchidos. O pagamento será coordenado diretamente por lá.</p>
+                            </div>
+                        </div>
+
                         <div class="flex gap-4">
                             <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">
                                 Voltar
                             </button>
                             <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                                <span>Confirmar Pedido</span>
+                                <span>Confirmar e Abrir WhatsApp</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <!-- WhatsApp Link gerado -->
-                    <div id="whatsapp-section" class="hidden whatsapp-box mb-8">
-                        <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    <!-- Sucesso - WhatsApp Link -->
+                    <div id="success-section" class="hidden whatsapp-box">
+                        <div class="success-check">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                         </div>
                         <h3 class="font-display text-2xl font-bold mb-2">Pedido Registado!</h3>
-                        <p class="text-white/90 mb-4">Clica no botão abaixo para enviar os detalhes do pedido via WhatsApp e finalizar o pagamento.</p>
+                        <p class="text-white/90 mb-6">A tua encomenda foi guardada. Clica no botão abaixo para enviar os detalhes via WhatsApp e finalizar o pagamento.</p>
                         
                         <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                             <span>Enviar pedido por WhatsApp</span>
                         </a>
                         
-                        <p class="text-xs text-white/70">Serás redirecionado para o WhatsApp com uma mensagem pré-preenchida</p>
+                        <p class="text-xs text-white/70 mb-6">Se não abrir automaticamente, clica no botão acima</p>
+                        
+                        <a href="index.html" class="inline-block text-white/80 hover:text-white text-sm underline">
+                            Voltar à loja →
+                        </a>
                     </div>
 
-                    <!-- Comprovativo -->
-                    <div id="receipt-section" class="hidden">
-                        <div id="receipt-container" class="receipt-paper rounded-3xl p-8 relative overflow-hidden">
-                            <div class="receipt-stamp">PENDENTE</div>
-                            
-                            <div class="text-center mb-8 border-b-2 border-dashed border-nuca-green/20 pb-6">
-                                <h3 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h3>
-                                <p class="text-nuca-green/60 text-sm">Moda minimalista, feita em Portugal</p>
-                            </div>
-
-                            <div class="space-y-4 mb-6 text-sm">
-                                <div class="flex justify-between">
-                                    <span class="text-nuca-green/60">Nº Encomenda:</span>
-                                    <span class="font-mono font-bold text-nuca-green" id="receipt-order-number"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-nuca-green/60">Data:</span>
-                                    <span class="text-nuca-green" id="receipt-date"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-nuca-green/60">Cliente:</span>
-                                    <span class="text-nuca-green font-medium" id="receipt-customer"></span>
-                                </div>
-                            </div>
-
-                            <div class="border-t border-b border-nuca-green/10 py-4 mb-6">
-                                <h4 class="font-bold text-nuca-green mb-3 text-xs uppercase tracking-wider">Itens</h4>
-                                <div id="receipt-items" class="space-y-2 text-sm"></div>
-                            </div>
-
-                            <div class="space-y-2 text-sm border-b border-nuca-green/10 pb-4 mb-4">
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Subtotal</span>
-                                    <span id="receipt-subtotal"></span>
-                                </div>
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Desconto</span>
-                                    <span id="receipt-discount" class="text-green-600"></span>
-                                </div>
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Envio</span>
-                                    <span id="receipt-shipping"></span>
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between text-lg font-bold text-nuca-green mb-8">
-                                <span>TOTAL</span>
-                                <span id="receipt-total"></span>
-                            </div>
-
-                            <div class="text-center space-y-2 text-xs text-nuca-green/40 border-t border-dashed border-nuca-green/20 pt-4">
-                                <p>Este documento serve como comprovativo de compra.</p>
-                                <p>Para trocas: nuca.crew@gmail.com</p>
-                            </div>
-                        </div>
-
-                        <div class="flex gap-4 mt-8 no-print">
-                            <button onclick="downloadReceipt()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                <span>Download PDF</span>
-                            </button>
-                            <a href="index.html" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-center">
-                                Voltar à Loja
-                            </a>
-                        </div>
-                    </div>
                 </div>
 
             </div>
 
             <!-- Coluna Direita - Resumo -->
-            <div class="hidden lg:block no-print">
+            <div class="hidden lg:block">
                 <div class="sticky top-32 space-y-6">
                     <div class="bg-white/30 rounded-3xl p-6 border border-nuca-green/10">
                         <h3 class="font-display text-xl font-bold text-nuca-green mb-4">Resumo</h3>
@@ -382,16 +305,13 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-nuca-green"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             <h4 class="font-bold text-nuca-green">Pagamento via WhatsApp</h4>
                         </div>
-                        <p class="text-sm text-nuca-green/60">Finaliza o teu pedido através do WhatsApp. Enviaremos os detalhes e instruções de pagamento.</p>
+                        <p class="text-sm text-nuca-green/60">Finaliza o teu pedido através do WhatsApp. Coordenaremos o pagamento diretamente contigo.</p>
                     </div>
                 </div>
             </div>
 
         </div>
     </main>
-
-    <!-- Container oculto para gerar PDF -->
-    <div id="pdf-container" style="position: absolute; left: -9999px; top: 0; width: 210mm; min-height: 297mm; background: white;"></div>
 
     <script>
         // === CONFIGURAÇÃO ===
@@ -406,7 +326,6 @@
         let cart = [];
         let currentStep = 1;
         let orderData = {};
-        let savedOrderId = null;
 
         // === FUNÇÃO PARA DECODIFICAR BASE64 SEGURO ===
         function safeBase64Decode(str) {
@@ -802,185 +721,29 @@
                     throw new Error(`Erro ao criar encomenda: ${orderError.message}`);
                 }
                 
-                savedOrderId = orderRecord[0].id;
-                
-                // Guardar no localStorage
+                // Guardar no localStorage para referência
                 localStorage.setItem('lastOrderId', orderNumber);
                 localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
-                localStorage.setItem('lastCart', btoa(JSON.stringify(cart)));
                 
                 // Gerar link do WhatsApp
                 const whatsappLink = generateWhatsAppMessage(orderNumber, total, orderData.shipping);
                 
-                // Esconder secção de confirmação
+                // Esconder secção de confirmação e mostrar sucesso
                 document.getElementById('confirm-section').classList.add('hidden');
-                
-                // Mostrar link do WhatsApp
                 document.getElementById('whatsapp-link').href = whatsappLink;
-                document.getElementById('whatsapp-section').classList.remove('hidden');
+                document.getElementById('success-section').classList.remove('hidden');
                 
-                // Mostrar comprovativo
-                orderData.orderNumber = orderNumber;
-                orderData.date = new Date().toLocaleDateString('pt-PT');
-                orderData.payment = 'WhatsApp';
-                orderData.totals = { subtotal, discount, shipping, total };
-                orderData.whatsappUrl = whatsappLink;
-                
-                generateReceipt();
-                document.getElementById('receipt-section').classList.remove('hidden');
-                
-                // Abrir WhatsApp automaticamente após 2 segundos
+                // Abrir WhatsApp automaticamente
                 setTimeout(() => {
                     window.open(whatsappLink, '_blank');
-                }, 2000);
+                }, 1500);
                 
             } catch(error) {
                 console.error('Erro:', error);
                 alert('Erro: ' + error.message);
-            } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
-        }
-
-        function generateReceipt() {
-            document.getElementById('receipt-order-number').textContent = orderData.orderNumber;
-            document.getElementById('receipt-date').textContent = orderData.date;
-            document.getElementById('receipt-customer').textContent = `${orderData.shipping.firstName} ${orderData.shipping.lastName}`;
-            
-            const itemsHtml = cart.map(item => {
-                const price = parseFloat(item.price) || 0;
-                const qty = parseInt(item.quantity) || 1;
-                const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
-                
-                return `
-                    <div class="flex justify-between py-1 border-b border-nuca-green/5 last:border-0">
-                        <div class="flex-1">
-                            <span class="text-nuca-green font-medium">${item.name}</span>
-                            ${isPack ? `<span class="text-xs text-nuca-green/60 block">${packItemCount} peças</span>` : ''}
-                            <span class="text-xs text-nuca-green/40">x${qty} • ${item.size || 'M'}</span>
-                        </div>
-                        <span class="text-nuca-green font-medium">€${(price * qty).toFixed(2)}</span>
-                    </div>
-                `;
-            }).join('');
-            
-            document.getElementById('receipt-items').innerHTML = itemsHtml;
-            
-            document.getElementById('receipt-subtotal').textContent = `€${orderData.totals.subtotal.toFixed(2)}`;
-            document.getElementById('receipt-discount').textContent = orderData.totals.discount > 0 ? `-€${orderData.totals.discount.toFixed(2)}` : '€0.00';
-            document.getElementById('receipt-shipping').textContent = orderData.totals.shipping === 0 ? 'Grátis' : `€${orderData.totals.shipping.toFixed(2)}`;
-            document.getElementById('receipt-total').textContent = `€${orderData.totals.total.toFixed(2)}`;
-        }
-
-        function downloadReceipt() {
-            const pdfContainer = document.getElementById('pdf-container');
-            
-            const itemsHtml = cart.map(item => {
-                const price = parseFloat(item.price) || 0;
-                const qty = parseInt(item.quantity) || 1;
-                const isPack = item.isPack === true || item.packItems || item.items;
-                const packItemCount = isPack ? (item.packItems?.length || item.items?.length || 0) : 0;
-                
-                return `
-                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #E8DCC4;">
-                        <div style="flex: 1;">
-                            <div style="color: #556B4F; font-weight: 500;">${item.name}</div>
-                            ${isPack ? `<div style="color: #556B4F; font-size: 12px; opacity: 0.6;">${packItemCount} peças</div>` : ''}
-                            <div style="color: #556B4F; font-size: 12px; opacity: 0.4;">x${qty} • ${item.size || 'M'}</div>
-                        </div>
-                        <div style="color: #556B4F; font-weight: 500;">€${(price * qty).toFixed(2)}</div>
-                    </div>
-                `;
-            }).join('');
-            
-            pdfContainer.innerHTML = `
-                <div style="font-family: 'Space Grotesk', sans-serif; color: #556B4F; padding: 40px; max-width: 800px; margin: 0 auto; background: white; position: relative;">
-                    <div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); border: 4px solid #556B4F; color: #556B4F; padding: 20px 40px; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; opacity: 0.2; border-radius: 8px; pointer-events: none;">
-                        PENDENTE
-                    </div>
-                    
-                    <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px dashed #E8DCC4;">
-                        <div style="font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: #556B4F; margin-bottom: 8px;">NUCA</div>
-                        <div style="color: #556B4F; opacity: 0.6; font-size: 14px;">Moda minimalista, feita em Portugal</div>
-                    </div>
-                    
-                    <div style="margin-bottom: 24px; font-size: 14px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                            <span style="color: #556B4F; opacity: 0.6;">Nº Encomenda:</span>
-                            <span style="font-family: monospace; font-weight: bold; color: #556B4F;">${orderData.orderNumber}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                            <span style="color: #556B4F; opacity: 0.6;">Data:</span>
-                            <span style="color: #556B4F;">${orderData.date}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                            <span style="color: #556B4F; opacity: 0.6;">Cliente:</span>
-                            <span style="color: #556B4F; font-weight: 500;">${orderData.shipping.firstName} ${orderData.shipping.lastName}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #556B4F; opacity: 0.6;">Pagamento:</span>
-                            <span style="color: #556B4F;">${orderData.payment}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="border-top: 1px solid #E8DCC4; border-bottom: 1px solid #E8DCC4; padding: 16px 0; margin-bottom: 24px;">
-                        <div style="font-weight: bold; color: #556B4F; margin-bottom: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Itens</div>
-                        ${itemsHtml}
-                    </div>
-                    
-                    <div style="margin-bottom: 24px; font-size: 14px; border-bottom: 1px solid #E8DCC4; padding-bottom: 16px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #556B4F; opacity: 0.6;">Subtotal</span>
-                            <span style="color: #556B4F;">€${orderData.totals.subtotal.toFixed(2)}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span style="color: #556B4F; opacity: 0.6;">Desconto</span>
-                            <span style="color: #16a34a;">${orderData.totals.discount > 0 ? `-€${orderData.totals.discount.toFixed(2)}` : '€0.00'}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="color: #556B4F; opacity: 0.6;">Envio</span>
-                            <span style="color: #556B4F;">${orderData.totals.shipping === 0 ? 'Grátis' : `€${orderData.totals.shipping.toFixed(2)}`}</span>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: #556B4F; margin-bottom: 32px;">
-                        <span>TOTAL</span>
-                        <span>€${orderData.totals.total.toFixed(2)}</span>
-                    </div>
-                    
-                    <div style="text-align: center; font-size: 12px; color: #556B4F; opacity: 0.4; border-top: 1px dashed #E8DCC4; padding-top: 16px;">
-                        <p style="margin-bottom: 4px;">Este documento serve como comprovativo de compra.</p>
-                        <p>Para trocas: nuca.crew@gmail.com</p>
-                    </div>
-                </div>
-            `;
-            
-            const opt = {
-                margin: 0,
-                filename: `NUCA_${orderData.orderNumber}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2, 
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: true
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait',
-                    compress: true
-                }
-            };
-            
-            html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                pdfContainer.innerHTML = '';
-            }).catch(err => {
-                console.error('Erro ao gerar PDF:', err);
-                alert('Erro ao gerar PDF. Tenta usar Ctrl+P.');
-            });
         }
     </script>
 </body>
