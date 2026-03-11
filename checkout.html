@@ -342,7 +342,9 @@
         let currentStep = 1;
         let orderData = {};
 
-        // Função SIMPLIFICADA para decodificar Base64 - sem validação regex problemática
+        // === CORREÇÃO PRINCIPAL: Função de decodificação Base64 com suporte UTF-8 ===
+        // O problema é que atob() retorna uma string binária (Latin1), não UTF-8
+        // Precisamos converter para Uint8Array e depois usar TextDecoder
         function safeBase64Decode(str) {
             try {
                 if (!str || typeof str !== 'string') {
@@ -362,30 +364,41 @@
                 
                 console.log('After padding:', base64.substring(0, 50) + '...');
                 
-                // Decodificar
-                let decoded;
-                try {
-                    decoded = atob(base64);
-                    console.log('Decoded successfully, length:', decoded.length);
-                } catch (e) {
-                    console.error('atob failed:', e);
-                    // Tentar com decodeURIComponent se for URL encoded
-                    try {
-                        decoded = decodeURIComponent(escape(atob(base64)));
-                    } catch (e2) {
-                        console.error('decodeURIComponent also failed:', e2);
-                        return null;
-                    }
+                // Decodificar Base64 para string binária (Latin1)
+                const binaryString = atob(base64);
+                console.log('atob decoded, length:', binaryString.length);
+                
+                // Converter string binária para Uint8Array (bytes)
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
                 }
+                
+                // Usar TextDecoder para converter bytes UTF-8 para string
+                const decoder = new TextDecoder('utf-8');
+                const decoded = decoder.decode(bytes);
+                
+                console.log('UTF-8 decoded, length:', decoded.length);
+                console.log('First 100 chars:', decoded.substring(0, 100));
                 
                 // Parse JSON
                 const parsed = JSON.parse(decoded);
-                console.log('Parsed successfully:', parsed);
+                console.log('JSON parsed successfully:', parsed);
                 return parsed;
                 
             } catch (e) {
                 console.error('Erro completo na decodificação:', e);
-                return null;
+                // Tentar método fallback antigo se o novo falhar
+                try {
+                    console.log('Tentando método fallback...');
+                    let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+                    while (base64.length % 4) base64 += '=';
+                    const decoded = decodeURIComponent(escape(atob(base64)));
+                    return JSON.parse(decoded);
+                } catch (e2) {
+                    console.error('Fallback também falhou:', e2);
+                    return null;
+                }
             }
         }
 
