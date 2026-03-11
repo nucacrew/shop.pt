@@ -342,7 +342,7 @@
         let currentStep = 1;
         let orderData = {};
 
-        // Função melhorada para decodificar Base64 com tratamento de erros
+        // Função SIMPLIFICADA para decodificar Base64 - sem validação regex problemática
         function safeBase64Decode(str) {
             try {
                 if (!str || typeof str !== 'string') {
@@ -350,7 +350,9 @@
                     return null;
                 }
                 
-                // Limpar a string Base64URL (substituir - por + e _ por /)
+                console.log('Input string:', str.substring(0, 50) + '...');
+                
+                // Converter Base64URL para Base64 padrão
                 let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
                 
                 // Adicionar padding se necessário
@@ -358,20 +360,31 @@
                     base64 += '=';
                 }
                 
-                // Verificar se é Base64 válido
-                const isValidBase64 = /^[A-Za-z0-9+/]*={0,2}$/.test(base64);
-                if (!isValidBase64) {
-                    console.error('String não é Base64 válida:', base64);
-                    return null;
+                console.log('After padding:', base64.substring(0, 50) + '...');
+                
+                // Decodificar
+                let decoded;
+                try {
+                    decoded = atob(base64);
+                    console.log('Decoded successfully, length:', decoded.length);
+                } catch (e) {
+                    console.error('atob failed:', e);
+                    // Tentar com decodeURIComponent se for URL encoded
+                    try {
+                        decoded = decodeURIComponent(escape(atob(base64)));
+                    } catch (e2) {
+                        console.error('decodeURIComponent also failed:', e2);
+                        return null;
+                    }
                 }
                 
-                const decoded = atob(base64);
+                // Parse JSON
                 const parsed = JSON.parse(decoded);
-                
-                console.log('Base64 decodificado com sucesso:', parsed);
+                console.log('Parsed successfully:', parsed);
                 return parsed;
+                
             } catch (e) {
-                console.error('Erro na decodificação Base64:', e);
+                console.error('Erro completo na decodificação:', e);
                 return null;
             }
         }
@@ -382,7 +395,7 @@
                 const cartData = urlParams.get('cart');
                 
                 console.log('URL completa:', window.location.href);
-                console.log('Parâmetro cart:', cartData);
+                console.log('Parâmetro cart (primeiros 100 chars):', cartData ? cartData.substring(0, 100) : 'null');
                 
                 if (cartData) {
                     const parsed = safeBase64Decode(cartData);
@@ -403,7 +416,12 @@
             const debugDiv = document.getElementById('debug-info');
             if (debugDiv) {
                 debugDiv.classList.remove('hidden');
-                debugDiv.textContent = 'URL: ' + window.location.href + '\n\nCarrinho carregado: ' + JSON.stringify(loadedCart, null, 2);
+                let debugText = 'URL: ' + window.location.href + '\n\n';
+                debugText += 'Carrinho carregado: ' + (loadedCart ? 'SIM (' + loadedCart.length + ' itens)' : 'NÃO (null)') + '\n\n';
+                if (loadedCart && loadedCart.length > 0) {
+                    debugText += 'Primeiro item: ' + JSON.stringify(loadedCart[0], null, 2).substring(0, 500);
+                }
+                debugDiv.textContent = debugText;
             }
             
             if (loadedCart && Array.isArray(loadedCart) && loadedCart.length > 0) {
@@ -457,22 +475,17 @@
                 
                 // VERIFICAÇÃO MELHORADA DO PACK
                 // O index.html envia: isPack: true, items: [...]
-                // Verificamos: isPack === true, ou existência de items array, ou propriedade packItems
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 
-                // Contar itens do pack - verificar tanto items quanto packItems
+                // Contar itens do pack
                 let packItemCount = 0;
-                if (isPack) {
-                    if (item.items && Array.isArray(item.items)) {
-                        packItemCount = item.items.length;
-                    } else if (item.packItems && Array.isArray(item.packItems)) {
-                        packItemCount = item.packItems.length;
-                    }
+                if (isPack && item.items && Array.isArray(item.items)) {
+                    packItemCount = item.items.length;
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
-                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount, 'items:', item.items);
+                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount);
                 
                 // HTML para o checkout principal
                 html += `
@@ -537,7 +550,7 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                // VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 const originalPrice = parseFloat(item.originalPrice) || 0;
                 
@@ -596,15 +609,11 @@
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
-                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                // VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 let packItemCount = 0;
-                if (isPack) {
-                    if (item.items && Array.isArray(item.items)) {
-                        packItemCount = item.items.length;
-                    } else if (item.packItems && Array.isArray(item.packItems)) {
-                        packItemCount = item.packItems.length;
-                    }
+                if (isPack && item.items && Array.isArray(item.items)) {
+                    packItemCount = item.items.length;
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
@@ -698,15 +707,11 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                // VERIFICAÇÃO DO PACK
                 const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                 let packItemCount = 0;
-                if (isPack) {
-                    if (item.items && Array.isArray(item.items)) {
-                        packItemCount = item.items.length;
-                    } else if (item.packItems && Array.isArray(item.packItems)) {
-                        packItemCount = item.packItems.length;
-                    }
+                if (isPack && item.items && Array.isArray(item.items)) {
+                    packItemCount = item.items.length;
                 }
                 
                 const originalPrice = parseFloat(item.originalPrice) || 0;
@@ -755,7 +760,7 @@
                     const price = parseFloat(item.price) || 0;
                     const qty = parseInt(item.quantity) || 1;
                     
-                    // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                    // VERIFICAÇÃO DO PACK
                     const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                     const originalPrice = parseFloat(item.originalPrice) || 0;
                     
@@ -785,7 +790,7 @@
                         notes: orderData.shipping.notes || null
                     },
                     items: cart.map(item => {
-                        // MESMA LÓGICA DE VERIFICAÇÃO DO PACK
+                        // VERIFICAÇÃO DO PACK
                         const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
                         
                         return {
@@ -795,7 +800,7 @@
                             quantity: parseInt(item.quantity) || 1,
                             size: item.size || 'M',
                             isPack: isPack,
-                            packItems: item.items || item.packItems || null
+                            packItems: item.items || null
                         };
                     }),
                     payment_method: 'whatsapp',
