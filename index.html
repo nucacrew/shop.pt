@@ -5,16 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- SVG principal -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    
-    <!-- Fallback PNG para browsers antigos -->
     <link rel="alternate icon" type="image/png" href="favicon.png">
-    
-    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    
-    <!-- Tema do browser (mobile) -->
     <meta name="theme-color" content="#556B4F">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -167,6 +160,9 @@
         .quantity-btn:active {
             transform: scale(0.95);
         }
+        .pack-badge {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+        }
     </style>
 </head>
 <body class="smooth-scroll antialiased overflow-x-hidden">
@@ -239,7 +235,6 @@
                 <span>Total</span>
                 <span id="cart-total">€0.00</span>
             </div>
-            <!-- ALTERAÇÃO 1: Adicionei onclick="goToCheckout()" aqui -->
             <button onclick="goToCheckout()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
                 Finalizar Compra
             </button>
@@ -320,7 +315,7 @@
         </div>
     </section>
 
-    <!-- Packs Section - NOVO -->
+    <!-- Packs Section -->
     <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-nuca-light/30 to-transparent"></div>
         
@@ -496,7 +491,6 @@
         </div>
         <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-nuca-beige/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/40">
             <p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p>
-        </div>
             <div class="flex gap-6">
                 <a href="#" class="hover:text-nuca-beige transition-colors">Política de Privacidade</a>
                 <a href="#" class="hover:text-nuca-beige transition-colors">Termos de Uso</a>
@@ -556,7 +550,7 @@
         </div>
     </div>
 
-    <!-- Pack Modal - NOVO -->
+    <!-- Pack Modal -->
     <div id="pack-modal" class="fixed inset-0 z-50 hidden">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePackModal()"></div>
         <div class="absolute inset-4 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col shadow-2xl transform transition-transform scale-95 opacity-0" id="pack-modal-content">
@@ -597,6 +591,7 @@
                                     <button onclick="selectPackSize('M')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige" data-size="M">M</button>
                                     <button onclick="selectPackSize('L')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="L">L</button>
                                     <button onclick="selectPackSize('XL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XL">XL</button>
+                                    <button onclick="selectPackSize('XXL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XXL">XXL</button>
                                 </div>
                             </div>
                             
@@ -616,7 +611,7 @@
     </div>
 
     <script>
-        // Products Data
+        // Products Data - TODOS COM XXL
         const products = [
             {
                 id: 1,
@@ -625,7 +620,7 @@
                 price: 25,
                 image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
                 description: "T-shirt em algodão orgânico de 180gsm, cor bege. Corte regular, perfeita para o dia-a-dia. Produzida em Portugal.",
-                sizes: ["S", "M", "L", "XL"],
+                sizes: ["S", "M", "L", "XL", "XXL"],
                 badge: null
             },
             {
@@ -635,7 +630,7 @@
                 price: 55,
                 image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80",
                 description: "Hoodie confortável em tom verde oliva. Interior felpudo, ideal para os dias mais frescos de Lisboa. 80% algodão, 20% poliéster.",
-                sizes: ["S", "M", "L", "XL"],
+                sizes: ["S", "M", "L", "XL", "XXL"],
                 badge: null
             },
             {
@@ -655,7 +650,7 @@
                 price: 25,
                 image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80",
                 description: "T-shirt na nossa cor verde característica. 100% algodão orgânico, tingimento sustentável. Corte unissexo.",
-                sizes: ["S", "M", "L", "XL"],
+                sizes: ["S", "M", "L", "XL", "XXL"],
                 badge: null
             },
             {
@@ -680,14 +675,14 @@
             }
         ];
 
-        // Packs Data - NOVO
+        // Packs Data
         const packs = [
             {
                 id: "pack-1",
                 name: "Pack Essentials",
                 description: "O básico que não pode faltar no teu guarda-roupa. As nossas peças mais icónicas num pack especial.",
-                items: [1, 4, 6], // IDs dos produtos
-                discount: 15, // % de desconto
+                items: [1, 4, 6],
+                discount: 15,
                 image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&q=80",
                 badge: "POPULAR"
             },
@@ -695,8 +690,8 @@
                 id: "pack-2",
                 name: "Pack Completo",
                 description: "Tudo o que precisas para um look completo NUCA. Do topo à base, incluindo acessórios.",
-                items: [1, 2, 3, 5], // IDs dos produtos
-                discount: 20, // % de desconto
+                items: [1, 2, 3, 5],
+                discount: 20,
                 image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
                 badge: "MAIOR POUPANÇA"
             },
@@ -704,8 +699,8 @@
                 id: "pack-3",
                 name: "Pack Verão",
                 description: "Ideal para os dias quentes de Lisboa. Leve, confortável e com o estilo NUCA.",
-                items: [1, 4, 3], // IDs dos produtos
-                discount: 12, // % de desconto
+                items: [1, 4, 3],
+                discount: 12,
                 image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
                 badge: "TEMPORADA"
             }
@@ -755,7 +750,7 @@
             `).join('');
         }
 
-        // Render Packs - NOVO
+        // Render Packs
         function renderPacks() {
             const grid = document.getElementById('packs-grid');
             
@@ -824,7 +819,7 @@
             }, 300);
         }
 
-        // Filter from Footer - NOVO
+        // Filter from Footer
         function filterFromFooter(category) {
             filterProducts(category);
             setTimeout(() => {
@@ -888,7 +883,7 @@
             });
         }
 
-        // Pack Modal Functions - NOVO
+        // Pack Modal Functions
         function openPackModal(packId) {
             currentPack = packs.find(p => p.id === packId);
             selectedPackSize = 'M';
@@ -914,7 +909,6 @@
                 </div>
             `).join('');
             
-            // Reset size selection
             document.querySelectorAll('.pack-size-btn').forEach(btn => {
                 if(btn.dataset.size === 'M') {
                     btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
@@ -963,23 +957,30 @@
             });
         }
 
+        // CORREÇÃO PRINCIPAL: Adicionar pack como itens individuais com desconto distribuído
         function addPackToCart() {
             if(!currentPack) return;
             
             const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
             const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
             const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
+            const discountPerItem = (totalPrice - discountedPrice) / packProducts.length;
             
-            // Adicionar como um item de pack
-            cart.push({
-                id: currentPack.id,
-                name: currentPack.name,
-                price: discountedPrice,
-                size: selectedPackSize,
-                quantity: 1,
-                isPack: true,
-                originalPrice: totalPrice,
-                items: packProducts
+            // Adicionar cada item do pack individualmente com preço ajustado
+            packProducts.forEach(product => {
+                const adjustedPrice = Math.max(0.01, product.price - discountPerItem); // Garantir preço positivo
+                
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: adjustedPrice,
+                    originalPrice: product.price,
+                    size: selectedPackSize,
+                    quantity: 1,
+                    isPackItem: true, // Marcar como item de pack
+                    packName: currentPack.name,
+                    packDiscount: currentPack.discount
+                });
             });
             
             updateCart();
@@ -991,7 +992,6 @@
             closePackModal();
             const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
             
-            // Abrir o primeiro produto
             if(packProducts.length > 0) {
                 openProductModal(packProducts[0].id);
             }
@@ -1001,7 +1001,7 @@
         function addToCartFromModal() {
             if(!currentProduct || !selectedSize) return;
             
-            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize && !item.isPack);
+            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize && !item.isPackItem);
             
             if(existingItem) {
                 existingItem.quantity++;
@@ -1010,7 +1010,7 @@
                     ...currentProduct,
                     size: selectedSize,
                     quantity: 1,
-                    isPack: false
+                    isPackItem: false
                 });
             }
             
@@ -1029,7 +1029,7 @@
             let discount = 0;
             
             cart.forEach(item => {
-                if(item.isPack) {
+                if(item.isPackItem) {
                     subtotal += item.originalPrice * item.quantity;
                     discount += (item.originalPrice - item.price) * item.quantity;
                 } else {
@@ -1049,21 +1049,19 @@
             }
             
             container.innerHTML = cart.map((item, index) => `
-                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl ${item.isPack ? 'border-2 border-nuca-green/20' : ''}">
-                    <img src="${item.isPack ? item.items[0].image : item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
+                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl ${item.isPackItem ? 'border-2 border-nuca-green/20' : ''}">
+                    <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
                     <div class="flex-1">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h4 class="font-bold text-nuca-green ${item.isPack ? 'flex items-center gap-2' : ''}">
+                                <h4 class="font-bold text-nuca-green ${item.isPackItem ? 'flex items-center gap-2' : ''}">
                                     ${item.name}
-                                    ${item.isPack ? '<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK</span>' : ''}
+                                    ${item.isPackItem ? `<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK ${item.packName}</span>` : ''}
                                 </h4>
-                                ${item.isPack ? `
-                                    <p class="text-xs text-nuca-green/60 mt-1">${item.items.length} peças • Tamanho ${item.size}</p>
-                                    <p class="text-xs text-green-600 font-medium">Poupaste €${(item.originalPrice - item.price).toFixed(2)}</p>
-                                ` : `
-                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
-                                `}
+                                <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
+                                ${item.isPackItem ? `
+                                    <p class="text-xs text-green-600 font-medium">Poupas €${(item.originalPrice - item.price).toFixed(2)}</p>
+                                ` : ''}
                             </div>
                             <button onclick="removeFromCart(${index})" class="text-nuca-green/40 hover:text-nuca-green">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1136,43 +1134,35 @@
             });
         }
 
-        // Verificar filtro do localStorage ao carregar
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedFilter = localStorage.getItem('filter');
-            if(savedFilter && window.location.hash === '#shop') {
-                filterProducts(savedFilter);
-                localStorage.removeItem('filter');
-            }
-        });
-        // Ano dos Direitos da pagina
-        document.getElementById("year").textContent = new Date().getFullYear();
-
-        // ALTERAÇÃO 2: Função para ir para o checkout
+        // CORREÇÃO CRÍTICA: Usar encodeURIComponent em vez de btoa para evitar problemas com UTF-8
         function goToCheckout() {
             if(cart.length === 0) {
                 alert('O teu carrinho está vazio!');
                 return;
             }
             
-            // Mostrar no console o que vai ser enviado
-            console.log('Carrinho a enviar:', cart);
+            // Criar versão simplificada do carrinho para URL
+            const simplifiedCart = cart.map(item => ({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                originalPrice: item.originalPrice || item.price,
+                size: item.size,
+                quantity: item.quantity,
+                image: item.image,
+                isPackItem: item.isPackItem || false,
+                packName: item.packName || null
+            }));
             
-            // Converter carrinho para JSON e depois Base64
-            const cartJson = JSON.stringify(cart);
-            const cartBase64 = btoa(cartJson);
-            
-            console.log('Base64:', cartBase64);
-            
-            // Criar URL
-            const url = `checkout.html?cart=${cartBase64}`;
-            console.log('URL:', url);
+            // Usar encodeURIComponent em vez de btoa (que falha com UTF-8)
+            const cartJson = JSON.stringify(simplifiedCart);
+            const cartEncoded = encodeURIComponent(cartJson);
             
             // Navegar para checkout
-            window.location.href = url;
+            window.location.href = `checkout.html?cart=${cartEncoded}`;
         }
+
+        document.getElementById("year").textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
-
-
-
