@@ -54,13 +54,11 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Card de sucesso estilo NUCA - bege escuro */
         .success-card-nuca {
             background-color: #2C3328;
             color: #E8DCC4;
         }
         
-        /* Botão WhatsApp estilo NUCA */
         .wa-btn-nuca {
             background-color: #E8DCC4;
             color: #2C3328;
@@ -312,11 +310,10 @@
     </main>
 
     <script>
-        // === CONFIGURAÇÃO ===
+        // CONFIGURAÇÃO
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         
-        // CONFIGURAÇÃO DO WHATSAPP - ALTERAR PARA O NÚMERO DA LOJA
         const WHATSAPP_NUMBER = '351912345678';
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -325,75 +322,7 @@
         let currentStep = 1;
         let orderData = {};
 
-        // === FUNÇÃO DE DECODIFICAÇÃO BASE64 TOTALMENTE REESCRITA ===
-        // Esta função NÃO usa atob() - usa um algoritmo próprio que funciona com UTF-8
-        function base64Decode(str) {
-            try {
-                if (!str || typeof str !== 'string') {
-                    console.error('Input inválido:', str);
-                    return null;
-                }
-
-                // Limpar a string - remover espaços e caracteres inválidos
-                str = str.trim();
-                
-                // Converter Base64URL para Base64 padrão
-                str = str.replace(/-/g, '+').replace(/_/g, '/');
-                
-                // Adicionar padding se necessário
-                while (str.length % 4) {
-                    str += '=';
-                }
-
-                // Alfabeto Base64
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-                const lookup = new Uint8Array(256);
-                for (let i = 0; i < chars.length; i++) {
-                    lookup[chars.charCodeAt(i)] = i;
-                }
-
-                const len = str.length;
-                let bufferLength = str.length * 0.75;
-                let p = 0;
-                let encoded1, encoded2, encoded3, encoded4;
-
-                if (str[str.length - 1] === '=') {
-                    bufferLength--;
-                    if (str[str.length - 2] === '=') {
-                        bufferLength--;
-                    }
-                }
-
-                const bytes = new Uint8Array(bufferLength);
-
-                for (let i = 0; i < len; i += 4) {
-                    encoded1 = lookup[str.charCodeAt(i)];
-                    encoded2 = lookup[str.charCodeAt(i + 1)];
-                    encoded3 = lookup[str.charCodeAt(i + 2)];
-                    encoded4 = lookup[str.charCodeAt(i + 3)];
-
-                    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-                    if (encoded3 !== 64) {
-                        bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-                    }
-                    if (encoded4 !== 64) {
-                        bytes[p++] = ((encoded3 & 3) << 6) | encoded4;
-                    }
-                }
-
-                // Converter bytes para string UTF-8
-                const decoder = new TextDecoder('utf-8');
-                const decoded = decoder.decode(bytes);
-                
-                console.log('Decodificado com sucesso, length:', decoded.length);
-                return JSON.parse(decoded);
-
-            } catch (e) {
-                console.error('Erro na decodificação Base64:', e);
-                return null;
-            }
-        }
-
+        // CORREÇÃO CRÍTICA: Usar decodeURIComponent em vez de Base64
         function getCartFromURL() {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -403,7 +332,10 @@
                 console.log('Parâmetro cart encontrado:', cartData ? 'SIM' : 'NÃO');
                 
                 if (cartData) {
-                    const parsed = base64Decode(cartData);
+                    // Usar decodeURIComponent em vez de Base64
+                    const decoded = decodeURIComponent(cartData);
+                    const parsed = JSON.parse(decoded);
+                    
                     if (parsed && Array.isArray(parsed)) {
                         console.log('Carrinho parseado com sucesso:', parsed.length, 'itens');
                         return parsed;
@@ -447,7 +379,6 @@
             calculateAndDisplayTotals();
         }
 
-        // FUNÇÃO CORRIGIDA - Verifica múltiplas formas de identificar packs
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -466,45 +397,31 @@
                 const price = parseFloat(item.price) || 0;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
+                const originalPrice = parseFloat(item.originalPrice) || price;
+                const isPackItem = item.isPackItem || false;
                 
-                // VERIFICAÇÃO MELHORADA DO PACK
-                // O index.html envia: isPack: true, items: [...]
-                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                
-                // Contar itens do pack
-                let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
-                }
-                
-                const originalPrice = parseFloat(item.originalPrice) || 0;
-                
-                console.log('Item', index, '- isPack:', isPack, 'packItemCount:', packItemCount);
+                console.log('Item', index, '- isPackItem:', isPackItem);
                 
                 // HTML para o checkout principal
                 html += `
-                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPack ? 'border-l-4 border-nuca-green' : ''}">
-                        <img src="${item.image || (isPack && item.items && item.items[0] ? item.items[0].image : 'https://via.placeholder.com/80')}" 
+                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPackItem ? 'border-l-4 border-nuca-green' : ''}">
+                        <img src="${item.image || 'https://via.placeholder.com/80'}" 
                              alt="${item.name || 'Produto'}" 
                              class="w-20 h-20 object-cover rounded-xl">
                         <div class="flex-1">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-nuca-green ${isPack ? 'flex items-center gap-2' : ''}">
+                                    <h4 class="font-bold text-nuca-green ${isPackItem ? 'flex items-center gap-2' : ''}">
                                         ${item.name || 'Produto'}
-                                        ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                                        ${isPackItem ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
                                     </h4>
-                                    ${isPack ? `
-                                        <p class="text-xs text-nuca-green/60 mt-1">${packItemCount} peças • Tamanho ${item.size || 'M'}</p>
-                                    ` : `
-                                        <p class="text-sm text-nuca-green/60">Tamanho: ${item.size || 'M'}</p>
-                                    `}
+                                    <p class="text-sm text-nuca-green/60">Tamanho: ${item.size || 'M'}</p>
                                 </div>
                                 <span class="font-bold text-nuca-green">€${total.toFixed(2)}</span>
                             </div>
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="text-xs text-nuca-green/40">Qtd: ${qty}</span>
-                                ${isPack && originalPrice > 0 ? `
+                                ${isPackItem && originalPrice > price ? `
                                     <span class="text-xs text-green-600">Poupas €${((originalPrice - price) * qty).toFixed(2)}</span>
                                 ` : ''}
                             </div>
@@ -514,13 +431,13 @@
                 
                 // HTML para o resumo lateral (mais compacto)
                 summaryHtml += `
-                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPack ? 'border-l-2 border-nuca-green' : ''}">
-                        <img src="${item.image || (isPack && item.items && item.items[0] ? item.items[0].image : 'https://via.placeholder.com/60')}" 
+                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPackItem ? 'border-l-2 border-nuca-green' : ''}">
+                        <img src="${item.image || 'https://via.placeholder.com/60'}" 
                              alt="${item.name || 'Produto'}" 
                              class="w-12 h-12 object-cover rounded-lg">
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPack ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">PACK</span>' : ''}</h4>
-                            <p class="text-xs text-nuca-green/60">${isPack ? packItemCount + ' peças • ' : ''}${item.size || 'M'} • x${qty}</p>
+                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPackItem ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">PACK</span>' : ''}</h4>
+                            <p class="text-xs text-nuca-green/60">${item.size || 'M'} • x${qty}</p>
                         </div>
                         <span class="font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
                     </div>
@@ -542,18 +459,11 @@
             
             cart.forEach((item) => {
                 const price = parseFloat(item.price) || 0;
+                const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // VERIFICAÇÃO DO PACK
-                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                const originalPrice = parseFloat(item.originalPrice) || 0;
-                
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
-                } else {
-                    subtotal += price * qty;
-                }
+                subtotal += originalPrice * qty;
+                discount += (originalPrice - price) * qty;
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
@@ -573,7 +483,7 @@
             document.getElementById('summary-total').textContent = `€${total.toFixed(2)}`;
         }
 
-        // === NAVEGAÇÃO ===
+        // NAVEGAÇÃO
 
         function goToStep(step) {
             if(step > currentStep && !validateCurrentStep()) {
@@ -600,28 +510,16 @@
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
+                const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
                 
-                // VERIFICAÇÃO DO PACK
-                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
-                }
-                
-                const originalPrice = parseFloat(item.originalPrice) || 0;
-                
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
-                } else {
-                    subtotal += price * qty;
-                }
+                subtotal += originalPrice * qty;
+                discount += (originalPrice - price) * qty;
                 
                 itemsHtml += `
                     <div class="flex justify-between py-1">
-                        <span class="text-nuca-green">${item.name} ${isPack ? `(${packItemCount} peças)` : ''} x${qty}</span>
+                        <span class="text-nuca-green">${item.name} x${qty}</span>
                         <span class="text-nuca-green">€${total.toFixed(2)}</span>
                     </div>
                 `;
@@ -690,7 +588,7 @@
             }
         }
 
-        // === PROCESSAR PEDIDO ===
+        // PROCESSAR PEDIDO
 
         function generateWhatsAppMessage(orderNumber, total, customerData) {
             let itemsList = '';
@@ -699,25 +597,13 @@
             
             cart.forEach(item => {
                 const price = parseFloat(item.price) || 0;
+                const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
                 
-                // VERIFICAÇÃO DO PACK
-                const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                let packItemCount = 0;
-                if (isPack && item.items && Array.isArray(item.items)) {
-                    packItemCount = item.items.length;
-                }
+                subtotal += originalPrice * qty;
+                discount += (originalPrice - price) * qty;
                 
-                const originalPrice = parseFloat(item.originalPrice) || 0;
-                
-                if(isPack && originalPrice > 0) {
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
-                } else {
-                    subtotal += price * qty;
-                }
-                
-                itemsList += `- ${item.name} ${isPack ? `(${packItemCount} peças)` : ''} | Tamanho: ${item.size || 'M'} | Qtd: ${qty} | €${(price * qty).toFixed(2)}%0A`;
+                itemsList += `- ${item.name} | Tamanho: ${item.size || 'M'} | Qtd: ${qty} | €${(price * qty).toFixed(2)}%0A`;
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
@@ -752,18 +638,11 @@
                 
                 cart.forEach(item => {
                     const price = parseFloat(item.price) || 0;
+                    const originalPrice = parseFloat(item.originalPrice) || price;
                     const qty = parseInt(item.quantity) || 1;
                     
-                    // VERIFICAÇÃO DO PACK
-                    const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                    const originalPrice = parseFloat(item.originalPrice) || 0;
-                    
-                    if(isPack && originalPrice > 0) {
-                        subtotal += originalPrice * qty;
-                        discount += (originalPrice - price) * qty;
-                    } else {
-                        subtotal += price * qty;
-                    }
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
                 });
                 
                 const shipping = subtotal > 50 ? 0 : 3.99;
@@ -783,20 +662,16 @@
                         city: orderData.shipping.city,
                         notes: orderData.shipping.notes || null
                     },
-                    items: cart.map(item => {
-                        // VERIFICAÇÃO DO PACK
-                        const isPack = item.isPack === true || (item.items && Array.isArray(item.items) && item.items.length > 0);
-                        
-                        return {
-                            id: item.id,
-                            name: item.name,
-                            price: parseFloat(item.price) || 0,
-                            quantity: parseInt(item.quantity) || 1,
-                            size: item.size || 'M',
-                            isPack: isPack,
-                            packItems: item.items || null
-                        };
-                    }),
+                    items: cart.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: parseFloat(item.price) || 0,
+                        original_price: parseFloat(item.originalPrice) || item.price,
+                        quantity: parseInt(item.quantity) || 1,
+                        size: item.size || 'M',
+                        is_pack_item: item.isPackItem || false,
+                        pack_name: item.packName || null
+                    })),
                     payment_method: 'whatsapp',
                     payment_provider: 'manual',
                     subtotal: subtotal,
