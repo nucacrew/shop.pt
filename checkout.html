@@ -378,7 +378,7 @@
             calculateAndDisplayTotals();
         }
 
-        // ATUALIZADO: Mostrar cor e tamanho de calçado
+        // ATUALIZADO: Mostrar cor, estação e tamanho de calçado
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -399,10 +399,12 @@
                 const total = price * qty;
                 const originalPrice = parseFloat(item.originalPrice) || price;
                 const isPackItem = item.isPackItem || false;
+                const isFree = item.isFree || false;
                 
-                // Construir detalhes do item (cor, tamanho, etc)
+                // Construir detalhes do item (cor, estação, tamanho, etc)
                 let details = [];
                 if (item.color) details.push(`Cor: ${item.color}`);
+                if (item.season) details.push(`Estação: ${item.season}`);
                 if (item.size) details.push(`Tamanho: ${item.size}`);
                 if (item.shoeSize) details.push(`Calçado: ${item.shoeSize}`);
                 
@@ -410,7 +412,7 @@
                 
                 // HTML para o checkout principal
                 html += `
-                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPackItem ? 'border-l-4 border-nuca-green' : ''}">
+                    <div class="flex gap-4 bg-nuca-light/30 p-4 rounded-2xl ${isPackItem ? 'border-l-4 border-nuca-green' : ''} ${isFree ? 'bg-yellow-100/50 border-2 border-yellow-400' : ''}">
                         <img src="${item.image || 'https://via.placeholder.com/80'}" 
                              alt="${item.name || 'Produto'}" 
                              class="w-20 h-20 object-cover rounded-xl">
@@ -419,15 +421,16 @@
                                 <div>
                                     <h4 class="font-bold text-nuca-green ${isPackItem ? 'flex items-center gap-2' : ''}">
                                         ${item.name || 'Produto'}
-                                        ${isPackItem ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                                        ${isPackItem && !isFree ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-2 py-0.5 rounded-full">PACK</span>' : ''}
+                                        ${isFree ? '<span class="text-[10px] bg-yellow-400 text-nuca-dark px-2 py-0.5 rounded-full">OFERTA</span>' : ''}
                                     </h4>
                                     <p class="text-sm text-nuca-green/60">${detailsText}</p>
                                 </div>
-                                <span class="font-bold text-nuca-green">€${total.toFixed(2)}</span>
+                                <span class="font-bold text-nuca-green">${isFree ? 'GRÁTIS' : '€' + total.toFixed(2)}</span>
                             </div>
                             <div class="flex items-center gap-2 mt-2">
                                 <span class="text-xs text-nuca-green/40">Qtd: ${qty}</span>
-                                ${isPackItem && originalPrice > price ? `
+                                ${isPackItem && !isFree && originalPrice > price ? `
                                     <span class="text-xs text-green-600">Poupas €${((originalPrice - price) * qty).toFixed(2)}</span>
                                 ` : ''}
                             </div>
@@ -437,15 +440,15 @@
                 
                 // HTML para o resumo lateral (mais compacto)
                 summaryHtml += `
-                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPackItem ? 'border-l-2 border-nuca-green' : ''}">
+                    <div class="flex gap-3 bg-white/50 p-3 rounded-xl ${isPackItem ? 'border-l-2 border-nuca-green' : ''} ${isFree ? 'bg-yellow-100/50' : ''}">
                         <img src="${item.image || 'https://via.placeholder.com/60'}" 
                              alt="${item.name || 'Produto'}" 
                              class="w-12 h-12 object-cover rounded-lg">
                         <div class="flex-1 min-w-0">
-                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPackItem ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">P</span>' : ''}</h4>
+                            <h4 class="font-bold text-nuca-green text-sm truncate">${item.name || 'Produto'} ${isPackItem ? '<span class="text-[10px] bg-nuca-green text-nuca-beige px-1.5 py-0.5 rounded-full ml-1">P</span>' : ''} ${isFree ? '<span class="text-[10px] bg-yellow-400 text-nuca-dark px-1.5 py-0.5 rounded-full ml-1">O</span>' : ''}</h4>
                             <p class="text-xs text-nuca-green/60 truncate">${detailsText} • x${qty}</p>
                         </div>
-                        <span class="font-bold text-nuca-green text-sm">€${total.toFixed(2)}</span>
+                        <span class="font-bold text-nuca-green text-sm">${isFree ? 'GRÁTIS' : '€' + total.toFixed(2)}</span>
                     </div>
                 `;
             });
@@ -468,8 +471,11 @@
                 const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
                 
-                subtotal += originalPrice * qty;
-                discount += (originalPrice - price) * qty;
+                // Não contabilizar itens gratuitos no subtotal
+                if (!item.isFree) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
+                }
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
@@ -509,7 +515,7 @@
             currentStep = step;
         }
 
-        // ATUALIZADO: Mostrar detalhes completos na confirmação
+        // ATUALIZADO: Mostrar detalhes completos na confirmação (com estação)
         function renderConfirmStep() {
             let itemsHtml = '';
             let subtotal = 0;
@@ -520,13 +526,17 @@
                 const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
                 const total = price * qty;
+                const isFree = item.isFree || false;
                 
-                subtotal += originalPrice * qty;
-                discount += (originalPrice - price) * qty;
+                if (!isFree) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
+                }
                 
                 // Detalhes do item
                 let details = [];
                 if (item.color) details.push(item.color);
+                if (item.season) details.push(item.season);
                 if (item.size) details.push(item.size);
                 if (item.shoeSize) details.push(`Calçado ${item.shoeSize}`);
                 
@@ -534,8 +544,8 @@
                 
                 itemsHtml += `
                     <div class="flex justify-between py-1">
-                        <span class="text-nuca-green">${item.name} x${qty} <span class="text-nuca-green/60 text-xs">${detailsText}</span></span>
-                        <span class="text-nuca-green">€${total.toFixed(2)}</span>
+                        <span class="text-nuca-green">${item.name} x${qty} <span class="text-nuca-green/60 text-xs">${detailsText}</span> ${isFree ? '<span class="text-xs text-yellow-600 font-bold">[OFERTA]</span>' : ''}</span>
+                        <span class="text-nuca-green">${isFree ? 'GRÁTIS' : '€' + total.toFixed(2)}</span>
                     </div>
                 `;
             });
@@ -603,7 +613,7 @@
             }
         }
 
-        // PROCESSAR PEDIDO - ATUALIZADO COM NOVOS CAMPOS
+        // PROCESSAR PEDIDO - ATUALIZADO COM SEASON E IS_FREE
 
         function generateWhatsAppMessage(orderNumber, total, customerData) {
             let itemsList = '';
@@ -614,19 +624,24 @@
                 const price = parseFloat(item.price) || 0;
                 const originalPrice = parseFloat(item.originalPrice) || price;
                 const qty = parseInt(item.quantity) || 1;
+                const isFree = item.isFree || false;
                 
-                subtotal += originalPrice * qty;
-                discount += (originalPrice - price) * qty;
+                if (!isFree) {
+                    subtotal += originalPrice * qty;
+                    discount += (originalPrice - price) * qty;
+                }
                 
                 // Detalhes para WhatsApp
                 let details = [];
                 if (item.color) details.push(item.color);
+                if (item.season) details.push(item.season);
                 if (item.size) details.push(item.size);
                 if (item.shoeSize) details.push(`Calçado ${item.shoeSize}`);
                 
                 const detailsText = details.length > 0 ? ` [${details.join(', ')}]` : '';
+                const freeTag = isFree ? ' [OFERTA]' : '';
                 
-                itemsList += `- ${item.name}${detailsText} | Qtd: ${qty} | €${(price * qty).toFixed(2)}%0A`;
+                itemsList += `- ${item.name}${detailsText}${freeTag} | Qtd: ${qty} | ${isFree ? 'GRÁTIS' : '€' + (price * qty).toFixed(2)}%0A`;
             });
             
             const shipping = subtotal > 50 ? 0 : 3.99;
@@ -664,8 +679,10 @@
                     const originalPrice = parseFloat(item.originalPrice) || price;
                     const qty = parseInt(item.quantity) || 1;
                     
-                    subtotal += originalPrice * qty;
-                    discount += (originalPrice - price) * qty;
+                    if (!item.isFree) {
+                        subtotal += originalPrice * qty;
+                        discount += (originalPrice - price) * qty;
+                    }
                 });
                 
                 const shipping = subtotal > 50 ? 0 : 3.99;
@@ -673,7 +690,7 @@
                 
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
-                // ATUALIZADO: Incluir color e shoeSize nos itens
+                // ATUALIZADO: Incluir season e is_free nos itens
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -693,9 +710,11 @@
                         quantity: parseInt(item.quantity) || 1,
                         size: item.size || null,
                         color: item.color || null,
+                        season: item.season || null,  // NOVO CAMPO
                         shoe_size: item.shoeSize || null,
                         is_pack_item: item.isPackItem || false,
-                        pack_name: item.packName || null
+                        pack_name: item.packName || null,
+                        is_free: item.isFree || false  // NOVO CAMPO
                     })),
                     payment_method: 'whatsapp',
                     payment_provider: 'manual',
