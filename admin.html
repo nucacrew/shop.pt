@@ -101,16 +101,37 @@
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Chart containers with fixed heights */
-        .chart-container {
+        /* CRITICAL FIX: Section containers */
+        .section-content {
+            display: none;
+            min-height: 0;
+            min-width: 0;
+        }
+        .section-content.active {
+            display: block;
+        }
+        
+        /* CRITICAL FIX: Grid containers */
+        .grid-container {
+            display: grid;
+            min-width: 0;
+            min-height: 0;
+        }
+        
+        /* CRITICAL FIX: Chart containers with strict dimensions */
+        .chart-wrapper {
             position: relative;
             height: 300px;
             width: 100%;
+            overflow: hidden;
+            min-width: 0;
         }
-        .chart-container-sm {
+        .chart-wrapper-sm {
             position: relative;
             height: 250px;
             width: 100%;
+            overflow: hidden;
+            min-width: 0;
         }
         
         /* Mobile sidebar styles */
@@ -122,6 +143,12 @@
             aside.mobile-open {
                 transform: translateX(0);
             }
+        }
+        
+        /* Ensure canvas doesn't overflow */
+        canvas {
+            max-width: 100% !important;
+            max-height: 100% !important;
         }
     </style>
 </head>
@@ -205,7 +232,7 @@
         <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleMobileSidebar()"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 lg:ml-64">
+        <main class="flex-1 lg:ml-64 min-w-0">
             <!-- Header -->
             <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
                 <div class="px-6 lg:px-12 py-4">
@@ -248,10 +275,10 @@
             </div>
 
             <!-- Content Sections -->
-            <div class="p-6 lg:p-12">
+            <div class="p-6 lg:p-12 min-w-0">
                 
                 <!-- Dashboard Section -->
-                <div id="section-dashboard" class="fade-in">
+                <div id="section-dashboard" class="section-content active fade-in">
                     <!-- Stats Overview -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="admin-card rounded-2xl p-6 stats-card">
@@ -319,9 +346,9 @@
                         </div>
                     </div>
 
-                    <!-- Charts Section -->
-                    <div class="grid lg:grid-cols-3 gap-6 mb-8">
-                        <div class="lg:col-span-2 admin-card rounded-2xl p-6">
+                    <!-- Charts Section - FIXED STRUCTURE -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" style="min-width: 0;">
+                        <div class="lg:col-span-2 admin-card rounded-2xl p-6" style="min-width: 0;">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Últimos 7 dias)</h3>
                                 <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
@@ -330,13 +357,13 @@
                                     <option value="90">3 meses</option>
                                 </select>
                             </div>
-                            <div class="chart-container">
+                            <div class="chart-wrapper">
                                 <canvas id="salesChart"></canvas>
                             </div>
                         </div>
-                        <div class="admin-card rounded-2xl p-6">
+                        <div class="admin-card rounded-2xl p-6" style="min-width: 0;">
                             <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
-                            <div class="chart-container-sm">
+                            <div class="chart-wrapper-sm">
                                 <canvas id="statusChart"></canvas>
                             </div>
                         </div>
@@ -368,7 +395,7 @@
                 </div>
 
                 <!-- Orders Section -->
-                <div id="section-orders" class="hidden fade-in">
+                <div id="section-orders" class="section-content fade-in">
                     <!-- Filters -->
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
@@ -433,7 +460,7 @@
                 </div>
 
                 <!-- Products Section -->
-                <div id="section-products" class="hidden fade-in">
+                <div id="section-products" class="section-content fade-in">
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <div class="flex justify-between items-center">
                             <h3 class="font-display text-xl font-bold text-nuca-green">Gestão de Produtos</h3>
@@ -453,7 +480,7 @@
                 </div>
 
                 <!-- Customers Section -->
-                <div id="section-customers" class="hidden fade-in">
+                <div id="section-customers" class="section-content fade-in">
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <h3 class="font-display text-xl font-bold text-nuca-green">Clientes</h3>
                     </div>
@@ -467,20 +494,20 @@
                 </div>
 
                 <!-- Analytics Section -->
-                <div id="section-analytics" class="hidden fade-in">
+                <div id="section-analytics" class="section-content fade-in">
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <h3 class="font-display text-xl font-bold text-nuca-green">Análises Detalhadas</h3>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="min-width: 0;">
                         <div class="admin-card rounded-2xl p-6">
                             <h4 class="font-bold text-nuca-green mb-4">Produtos Mais Vendidos</h4>
                             <div class="space-y-4" id="top-products">
                                 <p class="text-nuca-green/60 text-sm">Dados em processamento...</p>
                             </div>
                         </div>
-                        <div class="admin-card rounded-2xl p-6">
+                        <div class="admin-card rounded-2xl p-6" style="min-width: 0;">
                             <h4 class="font-bold text-nuca-green mb-4">Vendas por Categoria</h4>
-                            <div class="chart-container-sm">
+                            <div class="chart-wrapper-sm">
                                 <canvas id="categoryChart"></canvas>
                             </div>
                         </div>
@@ -488,11 +515,11 @@
                 </div>
 
                 <!-- Settings Section -->
-                <div id="section-settings" class="hidden fade-in">
+                <div id="section-settings" class="section-content fade-in">
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <h3 class="font-display text-xl font-bold text-nuca-green">Configurações</h3>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="admin-card rounded-2xl p-6">
                             <h4 class="font-bold text-nuca-green mb-4 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -554,7 +581,7 @@
                 </div>
             </div>
             <div class="flex-1 overflow-y-auto p-6">
-                <div class="grid md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div class="bg-white/50 rounded-2xl p-4">
                             <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
@@ -641,6 +668,7 @@
         let categoryChart = null;
         let notifications = [];
         let currentUser = null;
+        let chartsInitialized = false;
 
         // ============================================
         // INITIALIZATION
@@ -731,7 +759,10 @@
         async function initDashboard() {
             await loadOrders();
             setupRealtimeSubscription();
-            initCharts();
+            // Initialize charts only when dashboard is visible
+            if (currentSection === 'dashboard') {
+                initCharts();
+            }
         }
 
         // ============================================
@@ -758,11 +789,14 @@
             };
             document.getElementById('page-title').textContent = titles[section];
             
-            // Show/hide sections
-            document.querySelectorAll('[id^="section-"]').forEach(el => {
-                el.classList.add('hidden');
+            // Show/hide sections using CSS classes
+            document.querySelectorAll('.section-content').forEach(el => {
+                el.classList.remove('active');
             });
-            document.getElementById(`section-${section}`).classList.remove('hidden');
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
             
             // Close mobile sidebar
             closeMobileSidebar();
@@ -770,13 +804,22 @@
             // Update URL hash without scrolling
             history.pushState(null, null, `#${section}`);
             
-            // Re-render charts if entering dashboard or analytics to ensure proper sizing
-            if (section === 'dashboard' || section === 'analytics') {
+            // Handle charts initialization based on section
+            if (section === 'dashboard') {
+                // Small delay to ensure DOM is visible
                 setTimeout(() => {
-                    if (salesChart) salesChart.resize();
-                    if (statusChart) statusChart.resize();
-                    if (categoryChart) categoryChart.resize();
-                }, 100);
+                    if (!chartsInitialized) {
+                        initCharts();
+                    } else {
+                        // Resize existing charts
+                        if (salesChart) salesChart.resize();
+                        if (statusChart) statusChart.resize();
+                    }
+                }, 50);
+            } else if (section === 'analytics') {
+                setTimeout(() => {
+                    initAnalyticsCharts();
+                }, 50);
             }
         }
 
@@ -831,7 +874,7 @@
                 updateStats();
                 renderOrders();
                 renderRecentOrders();
-                updateCharts();
+                updateChartsData();
                 checkNewOrders();
                 updatePendingBadge();
 
@@ -861,7 +904,7 @@
             }
             applyFilters();
             updateStats();
-            updateCharts();
+            updateChartsData();
             updatePendingBadge();
         }
 
@@ -1126,15 +1169,28 @@
         }
 
         // ============================================
-        // CHARTS
+        // CHARTS - CRITICAL FIXES
         // ============================================
         function initCharts() {
             // Destroy existing charts if they exist
-            if (salesChart) salesChart.destroy();
-            if (statusChart) statusChart.destroy();
-            if (categoryChart) categoryChart.destroy();
+            if (salesChart) {
+                salesChart.destroy();
+                salesChart = null;
+            }
+            if (statusChart) {
+                statusChart.destroy();
+                statusChart = null;
+            }
 
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            const salesCanvas = document.getElementById('salesChart');
+            const statusCanvas = document.getElementById('statusChart');
+            
+            if (!salesCanvas || !statusCanvas) return;
+
+            // Ensure canvases have proper dimensions
+            const salesCtx = salesCanvas.getContext('2d');
+            const statusCtx = statusCanvas.getContext('2d');
+
             salesChart = new Chart(salesCtx, {
                 type: 'line',
                 data: { 
@@ -1145,17 +1201,27 @@
                         borderColor: '#556B4F', 
                         backgroundColor: 'rgba(85, 107, 79, 0.1)', 
                         tension: 0.4, 
-                        fill: true 
+                        fill: true,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#556B4F'
                     }] 
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }, 
+                    plugins: { 
+                        legend: { display: false } 
+                    }, 
                     scales: { 
                         y: { 
                             beginAtZero: true, 
-                            grid: { color: 'rgba(85, 107, 79, 0.1)' } 
+                            grid: { color: 'rgba(85, 107, 79, 0.1)' },
+                            ticks: {
+                                callback: function(value) {
+                                    return '€' + value;
+                                }
+                            }
                         }, 
                         x: { 
                             grid: { display: false } 
@@ -1164,7 +1230,6 @@
                 }
             });
 
-            const statusCtx = document.getElementById('statusChart').getContext('2d');
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: { 
@@ -1172,56 +1237,75 @@
                     datasets: [{ 
                         data: [0, 0, 0, 0, 0], 
                         backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], 
-                        borderWidth: 0 
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }] 
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
+                    cutout: '60%',
                     plugins: { 
                         legend: { 
                             position: 'bottom', 
                             labels: { 
                                 usePointStyle: true, 
-                                padding: 20,
-                                font: { size: 11 }
+                                padding: 15,
+                                font: { size: 11 },
+                                boxWidth: 8
                             } 
                         } 
                     } 
                 }
             });
 
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                categoryChart = new Chart(categoryCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: { 
-                        labels: ['T-shirts', 'Hoodies', 'Acessórios'], 
-                        datasets: [{ 
-                            label: 'Vendas', 
-                            data: [0, 0, 0], 
-                            backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'] 
-                        }] 
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }, 
-                        scales: { 
-                            y: { 
-                                beginAtZero: true,
-                                grid: { color: 'rgba(85, 107, 79, 0.1)' }
-                            },
-                            x: {
-                                grid: { display: false }
-                            }
-                        } 
-                    }
-                });
-            }
+            chartsInitialized = true;
+            updateChartsData();
         }
 
-        function updateCharts() {
+        function initAnalyticsCharts() {
+            // Destroy existing category chart if exists
+            if (categoryChart) {
+                categoryChart.destroy();
+                categoryChart = null;
+            }
+
+            const categoryCanvas = document.getElementById('categoryChart');
+            if (!categoryCanvas) return;
+
+            const categoryCtx = categoryCanvas.getContext('2d');
+
+            categoryChart = new Chart(categoryCtx, {
+                type: 'bar',
+                data: { 
+                    labels: ['T-shirts', 'Hoodies', 'Acessórios'], 
+                    datasets: [{ 
+                        label: 'Vendas', 
+                        data: [12, 8, 5], 
+                        backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'],
+                        borderRadius: 4
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false } 
+                    }, 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            grid: { color: 'rgba(85, 107, 79, 0.1)' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    } 
+                }
+            });
+        }
+
+        function updateChartsData() {
             if (!salesChart || !statusChart) return;
             
             const days = parseInt(document.getElementById('chart-period').value) || 7;
@@ -1259,7 +1343,7 @@
         }
 
         function updateChart() {
-            updateCharts();
+            updateChartsData();
         }
 
         // ============================================
