@@ -101,6 +101,18 @@
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
+        /* Chart containers with fixed heights */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .chart-container-sm {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        
         /* Mobile sidebar styles */
         @media (max-width: 1024px) {
             aside {
@@ -318,11 +330,15 @@
                                     <option value="90">3 meses</option>
                                 </select>
                             </div>
-                            <canvas id="salesChart" height="200"></canvas>
+                            <div class="chart-container">
+                                <canvas id="salesChart"></canvas>
+                            </div>
                         </div>
                         <div class="admin-card rounded-2xl p-6">
                             <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
-                            <canvas id="statusChart" height="200"></canvas>
+                            <div class="chart-container-sm">
+                                <canvas id="statusChart"></canvas>
+                            </div>
                         </div>
                     </div>
 
@@ -464,7 +480,9 @@
                         </div>
                         <div class="admin-card rounded-2xl p-6">
                             <h4 class="font-bold text-nuca-green mb-4">Vendas por Categoria</h4>
-                            <canvas id="categoryChart" height="200"></canvas>
+                            <div class="chart-container-sm">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -751,6 +769,15 @@
             
             // Update URL hash without scrolling
             history.pushState(null, null, `#${section}`);
+            
+            // Re-render charts if entering dashboard or analytics to ensure proper sizing
+            if (section === 'dashboard' || section === 'analytics') {
+                setTimeout(() => {
+                    if (salesChart) salesChart.resize();
+                    if (statusChart) statusChart.resize();
+                    if (categoryChart) categoryChart.resize();
+                }, 100);
+            }
         }
 
         function toggleMobileSidebar() {
@@ -772,7 +799,7 @@
             const overlay = document.getElementById('mobile-overlay');
             
             sidebar.classList.remove('fixed', 'inset-0', 'z-50', 'w-full', 'mobile-open');
-            if (!window.innerWidth >= 1024) {
+            if (window.innerWidth < 1024) {
                 sidebar.classList.add('hidden');
             }
             overlay.classList.add('hidden');
@@ -1102,26 +1129,94 @@
         // CHARTS
         // ============================================
         function initCharts() {
+            // Destroy existing charts if they exist
+            if (salesChart) salesChart.destroy();
+            if (statusChart) statusChart.destroy();
+            if (categoryChart) categoryChart.destroy();
+
             const salesCtx = document.getElementById('salesChart').getContext('2d');
             salesChart = new Chart(salesCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Vendas (€)', data: [], borderColor: '#556B4F', backgroundColor: 'rgba(85, 107, 79, 0.1)', tension: 0.4, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } }, x: { grid: { display: false } } } }
+                data: { 
+                    labels: [], 
+                    datasets: [{ 
+                        label: 'Vendas (€)', 
+                        data: [], 
+                        borderColor: '#556B4F', 
+                        backgroundColor: 'rgba(85, 107, 79, 0.1)', 
+                        tension: 0.4, 
+                        fill: true 
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }, 
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(85, 107, 79, 0.1)' } 
+                        }, 
+                        x: { 
+                            grid: { display: false } 
+                        } 
+                    } 
+                }
             });
 
             const statusCtx = document.getElementById('statusChart').getContext('2d');
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
-                data: { labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], datasets: [{ data: [0, 0, 0, 0, 0], backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
+                data: { 
+                    labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], 
+                    datasets: [{ 
+                        data: [0, 0, 0, 0, 0], 
+                        backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], 
+                        borderWidth: 0 
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                usePointStyle: true, 
+                                padding: 20,
+                                font: { size: 11 }
+                            } 
+                        } 
+                    } 
+                }
             });
 
             const categoryCtx = document.getElementById('categoryChart');
             if (categoryCtx) {
                 categoryChart = new Chart(categoryCtx.getContext('2d'), {
                     type: 'bar',
-                    data: { labels: ['T-shirts', 'Hoodies', 'Acessórios'], datasets: [{ label: 'Vendas', data: [0, 0, 0], backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                    data: { 
+                        labels: ['T-shirts', 'Hoodies', 'Acessórios'], 
+                        datasets: [{ 
+                            label: 'Vendas', 
+                            data: [0, 0, 0], 
+                            backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'] 
+                        }] 
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }, 
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                grid: { color: 'rgba(85, 107, 79, 0.1)' }
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        } 
+                    }
                 });
             }
         }
@@ -1139,7 +1234,10 @@
                 const dateStr = days > 30 ? date.toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }) : date.toLocaleDateString('pt-PT', { weekday: 'short' });
                 labels.push(dateStr);
                 const dayTotal = allOrders
-                    .filter(o => { const orderDate = new Date(o.created_at); return orderDate.toDateString() === date.toDateString() && ['paid', 'shipped', 'delivered'].includes(o.status); })
+                    .filter(o => { 
+                        const orderDate = new Date(o.created_at); 
+                        return orderDate.toDateString() === date.toDateString() && ['paid', 'shipped', 'delivered'].includes(o.status); 
+                    })
                     .reduce((sum, o) => sum + (o.total || 0), 0);
                 data.push(dayTotal);
             }
@@ -1150,7 +1248,13 @@
 
             const statusCounts = { 'pending_payment': 0, 'paid': 0, 'shipped': 0, 'delivered': 0, 'cancelled': 0 };
             allOrders.forEach(o => { if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; });
-            statusChart.data.datasets[0].data = [statusCounts['pending_payment'], statusCounts['paid'], statusCounts['shipped'], statusCounts['delivered'], statusCounts['cancelled']];
+            statusChart.data.datasets[0].data = [
+                statusCounts['pending_payment'], 
+                statusCounts['paid'], 
+                statusCounts['shipped'], 
+                statusCounts['delivered'], 
+                statusCounts['cancelled']
+            ];
             statusChart.update();
         }
 
