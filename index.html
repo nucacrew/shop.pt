@@ -6,9 +6,6 @@
     <title>NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="alternate icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <meta name="theme-color" content="#556B4F">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -19,6 +16,10 @@
                         'nuca-green': '#556B4F',
                         'nuca-dark': '#2C3328',
                         'nuca-light': '#E8DCC4',
+                        'spring': '#90EE90',
+                        'summer': '#FFD700',
+                        'autumn': '#FF8C00',
+                        'winter': '#87CEEB',
                     },
                     fontFamily: {
                         'display': ['Syne', 'sans-serif'],
@@ -28,7 +29,6 @@
                         'float': 'float 6s ease-in-out infinite',
                         'fade-in': 'fadeIn 1s ease-out forwards',
                         'slide-up': 'slideUp 0.8s ease-out forwards',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         float: {
@@ -95,6 +95,11 @@
             ring-color: #556B4F;
             transform: scale(1.1);
         }
+        .season-btn.active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+            transform: scale(1.05);
+        }
         .cart-sidebar {
             transform: translateX(100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -148,26 +153,6 @@
             0% { transform: translate(0, 0); }
             100% { transform: translate(50px, 50px); }
         }
-        .tab-active {
-            background-color: #556B4F;
-            color: #D8C6A5;
-        }
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .quantity-btn {
-            transition: all 0.2s;
-        }
-        .quantity-btn:active {
-            transform: scale(0.95);
-        }
-        .pack-badge {
-            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
-        }
         .color-selector {
             transition: all 0.2s ease;
         }
@@ -178,11 +163,72 @@
             transform: scale(1.15);
             box-shadow: 0 0 0 3px #556B4F;
         }
+        .season-selector {
+            transition: all 0.2s ease;
+        }
+        .season-selector:hover {
+            transform: scale(1.1);
+        }
+        .season-selector.active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+        }
+        /* Carrossel Styles */
+        .carousel-container {
+            overflow: hidden;
+            position: relative;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            padding: 0 1rem;
+        }
+        @media (min-width: 768px) {
+            .carousel-slide {
+                min-width: 50%;
+            }
+        }
+        @media (min-width: 1024px) {
+            .carousel-slide {
+                min-width: 33.333%;
+            }
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(85, 107, 79, 0.9);
+            color: #D8C6A5;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        .carousel-btn:hover {
+            background: #556B4F;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .carousel-btn.prev { left: 0; }
+        .carousel-btn.next { right: 0; }
+        .carousel-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .collection-badge {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+        }
     </style>
 </head>
 <body class="smooth-scroll antialiased overflow-x-hidden">
 
-    <!-- Grain Overlay -->
     <div class="grain-overlay"></div>
 
     <!-- Navigation -->
@@ -192,6 +238,7 @@
             
             <div class="hidden md:flex items-center gap-8">
                 <a href="#shop" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Loja</a>
+                <a href="#seasons-collection" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Coleção Estações</a>
                 <a href="#packs" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Packs</a>
                 <a href="#about" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Sobre</a>
                 <a href="#contact" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Contacto</a>
@@ -219,6 +266,7 @@
         </div>
         <div class="flex flex-col p-6 gap-6 text-2xl font-display">
             <a href="#shop" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Loja</a>
+            <a href="#seasons-collection" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Coleção Estações</a>
             <a href="#packs" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Packs</a>
             <a href="#about" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Sobre</a>
             <a href="#contact" onclick="toggleMobileMenu()" class="border-b border-nuca-green/10 pb-4">Contacto</a>
@@ -253,7 +301,6 @@
             <button onclick="goToCheckout()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
                 Finalizar Compra
             </button>
-            <p class="text-xs text-center text-nuca-green/60">Pagamentos disponíveis em breve</p>
         </div>
     </div>
 
@@ -285,8 +332,8 @@
                     Ver Peças
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                 </a>
-                <a href="#packs" class="border-2 border-nuca-green text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-nuca-green hover:text-nuca-beige transition-all inline-flex items-center justify-center gap-2">
-                    Ver Packs
+                <a href="#seasons-collection" class="border-2 border-nuca-green text-nuca-green px-8 py-4 rounded-full font-bold hover:bg-nuca-green hover:text-nuca-beige transition-all inline-flex items-center justify-center gap-2">
+                    Coleção Estações
                 </a>
             </div>
         </div>
@@ -300,21 +347,21 @@
     <div class="bg-nuca-green text-nuca-beige py-4 overflow-hidden">
         <div class="marquee-container">
             <div class="marquee-content font-display text-xl font-bold tracking-wider">
-                ENVIO GRÁTIS EM COMPRAS ACIMA DE 50€ • PRODUZIDO EM PORTUGAL • DESDE LISBOA • ENVIO GRÁTIS EM COMPRAS ACIMA DE 50€ • PRODUZIDO EM PORTUGAL • DESDE LISBOA •
+                ENVIO GRÁTIS EM COMPRAS ACIMA DE 50€ • PRODUZIDO EM PORTUGAL • DESDE LISBOA • COLEÇÃO ESTAÇÕES DO ANO DISPONÍVEL •
             </div>
         </div>
     </div>
 
-    <!-- Shop Section -->
+    <!-- Shop Section - COLEÇÃO NUCA ORIGINAL -->
     <section id="shop" class="py-24 px-6 lg:px-12 bg-nuca-light/30">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                 <div>
+                    <span class="inline-block px-3 py-1 bg-nuca-green text-nuca-beige rounded-full text-xs font-bold tracking-wider uppercase mb-3">Coleção Principal</span>
                     <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">A Nossa Loja</h2>
-                    <p class="text-nuca-green/70">Peças cuidadosamente selecionadas, produzidas localmente em Portugal.</p>
+                    <p class="text-nuca-green/70">As peças essenciais NUCA, disponíveis todo o ano.</p>
                 </div>
                 
-                <!-- Filters -->
                 <div class="flex flex-wrap gap-2">
                     <button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige bg-nuca-green text-nuca-beige" data-filter="all">Tudo</button>
                     <button onclick="filterProducts('camisetas')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="camisetas">Camisetas</button>
@@ -323,25 +370,55 @@
                 </div>
             </div>
 
-            <!-- Products Grid -->
             <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Products will be injected by JS -->
             </div>
         </div>
     </section>
 
-    <!-- Packs Section -->
-    <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
+    <!-- Coleção Estações do Ano - COM CARROSSEL -->
+    <section id="seasons-collection" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
         <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-nuca-light/30 to-transparent"></div>
         
         <div class="max-w-7xl mx-auto relative z-10">
             <div class="text-center mb-16">
-                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Coleção Especial</span>
-                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Packs Exclusivos</h2>
-                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Compra as peças individuais ou o pack completo e poupa. Quantidades limitadas!</p>
+                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Edição Especial</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Coleção: Estações do Ano</h2>
+                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Cada peça inspirada numa estação. Escolhe a tua favorita ou colecciona todas!</p>
             </div>
 
-            <div id="packs-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Carrossel Container -->
+            <div class="carousel-container relative px-12">
+                <button onclick="moveCarousel(-1)" class="carousel-btn prev" id="carousel-prev">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                
+                <div class="carousel-track" id="seasons-track">
+                    <!-- Season products will be injected by JS -->
+                </div>
+                
+                <button onclick="moveCarousel(1)" class="carousel-btn next" id="carousel-next">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+
+            <!-- Indicadores -->
+            <div class="flex justify-center gap-2 mt-8" id="carousel-indicators">
+                <!-- Indicators injected by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Packs Section -->
+    <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-light/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Packs Especiais</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Packs NUCA</h2>
+                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Combinações perfeitas com descontos especiais. Incluímos ofertas em packs selecionados!</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8" id="packs-grid">
                 <!-- Packs will be injected by JS -->
             </div>
         </div>
@@ -358,7 +435,7 @@
                             A NUCA nasceu em Lisboa, da vontade de criar peças de roupa simples, confortáveis e atemporais. Acreditamos que menos é mais, e que a qualidade está nos detalhes.
                         </p>
                         <p>
-                            Somos uma loja 100% online, sem lojas físicas, o que nos permite focar totalmente na experiência digital e na proximidade com quem nos escolhe. Todas as peças são produzidas em Portugal, apoiando a indústria local.
+                            A nova Coleção Estações do Ano nasce da vontade de celebrar as quatro estações portuguesas, com cores e designs que refletem a natureza em constante mudança.
                         </p>
                         <div class="grid grid-cols-3 gap-8 pt-8 border-t border-nuca-green/10">
                             <div>
@@ -366,8 +443,8 @@
                                 <span class="text-sm text-nuca-green/60">Produção Nacional</span>
                             </div>
                             <div>
-                                <span class="block font-display text-3xl font-bold text-nuca-green">Online</span>
-                                <span class="text-sm text-nuca-green/60">Loja Digital</span>
+                                <span class="block font-display text-3xl font-bold text-nuca-green">2</span>
+                                <span class="text-sm text-nuca-green/60">Coleções</span>
                             </div>
                             <div>
                                 <span class="block font-display text-3xl font-bold text-nuca-green">Lisboa</span>
@@ -381,7 +458,7 @@
                         <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" alt="NUCA Concept" class="w-full h-full object-cover">
                     </div>
                     <div class="absolute -bottom-6 -left-6 bg-nuca-green text-nuca-beige p-8 rounded-2xl max-w-xs hidden md:block">
-                        <p class="font-display text-xl font-bold mb-2">"Simplicidade é sofisticação"</p>
+                        <p class="font-display text-xl font-bold mb-2">"Quatro estações, um estilo"</p>
                         <p class="text-sm opacity-80">— NUCA, Lisboa</p>
                     </div>
                 </div>
@@ -465,7 +542,7 @@
                     <li><a href="#shop" onclick="filterFromFooter('camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
                     <li><a href="#shop" onclick="filterFromFooter('hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
                     <li><a href="#shop" onclick="filterFromFooter('acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
-                    <li><a href="#shop" class="hover:text-nuca-beige transition-colors">Ver Tudo</a></li>
+                    <li><a href="#seasons-collection" class="hover:text-nuca-beige transition-colors">Coleção Estações</a></li>
                     <li><a href="#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li>
                 </ul>
             </div>
@@ -487,13 +564,6 @@
                             <rect x="2" y="2" width="20" height="20" rx="5"/>
                             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                        </svg>
-                    </a>
-                    <a href="#"
-                    class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                            fill="currentColor">
-                            <path d="M18.244 2H21l-6.5 7.43L22 22h-6.828l-5.34-6.99L3.5 22H1l7.01-8.01L2 2h6.828l4.86 6.37L18.244 2z"/>
                         </svg>
                     </a>
                 </div>
@@ -523,6 +593,9 @@
             
             <div class="w-full md:w-1/2 bg-nuca-light relative">
                 <img id="modal-image" src="" alt="" class="w-full h-full object-cover">
+                <div id="collection-badge" class="absolute top-4 left-4 hidden">
+                    <span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider"></span>
+                </div>
             </div>
             
             <div class="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto">
@@ -535,6 +608,14 @@
                     
                     <p id="modal-description" class="text-nuca-green/70 leading-relaxed"></p>
                     
+                    <!-- Season Selection (apenas para Coleção Estações) -->
+                    <div id="season-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-3">Estação</label>
+                        <div class="flex gap-3 flex-wrap" id="modal-seasons">
+                            <!-- Seasons injected by JS -->
+                        </div>
+                    </div>
+                    
                     <!-- Color Selection -->
                     <div id="color-section" class="hidden">
                         <label class="block text-sm font-bold text-nuca-green mb-3">Cor</label>
@@ -543,7 +624,7 @@
                         </div>
                     </div>
                     
-                    <!-- Size Selection (Regular or Shoe) -->
+                    <!-- Size Selection -->
                     <div id="size-section">
                         <label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label>
                         <div class="flex gap-3 flex-wrap" id="modal-sizes">
@@ -556,18 +637,6 @@
                             Adicionar ao Carrinho
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         </button>
-                        <div class="flex items-center gap-2 text-sm text-nuca-green/60 justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            <span>Envio grátis em compras acima de €50</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-nuca-light/50 p-6 rounded-2xl">
-                        <h4 class="font-bold text-nuca-green mb-2 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                            Informação Importante
-                        </h4>
-                        <p class="text-sm text-nuca-green/70">Como somos uma loja online em crescimento, os envios podem levar 2-3 dias úteis. Agradecemos a tua paciência e confiança!</p>
                     </div>
                 </div>
             </div>
@@ -589,7 +658,7 @@
                             <div class="absolute top-0 left-0 w-full h-full" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);"></div>
                         </div>
                         <div class="relative z-10">
-                            <span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4">Pack Exclusivo</span>
+                            <span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4" id="pack-type-badge">Pack</span>
                             <h2 id="pack-modal-title" class="font-display text-4xl md:text-5xl font-bold mb-4"></h2>
                             <p id="pack-modal-description" class="text-nuca-beige/80 text-lg mb-6"></p>
                             <div class="flex items-baseline gap-3 mb-2">
@@ -597,7 +666,9 @@
                                 <span id="pack-modal-original" class="text-xl line-through text-nuca-beige/50"></span>
                                 <span id="pack-modal-savings" class="text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span>
                             </div>
-                            <p class="text-sm text-nuca-beige/60 mt-4">Economiza ao comprar o pack completo em vez de peças individuais</p>
+                            <div id="pack-free-items" class="mt-4 hidden">
+                                <span class="inline-block bg-yellow-400 text-nuca-dark px-3 py-1 rounded-full text-xs font-bold">+ OFERTAS INCLUÍDAS</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -609,7 +680,7 @@
                         
                         <div class="space-y-4 pt-6 border-t border-nuca-green/10">
                             <div class="bg-nuca-light/50 p-4 rounded-xl">
-                                <label class="block text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho para todas as peças:</label>
+                                <label class="block text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho base:</label>
                                 <div class="flex gap-2 flex-wrap" id="pack-modal-sizes">
                                     <button onclick="selectPackSize('S')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="S">S</button>
                                     <button onclick="selectPackSize('M')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige" data-size="M">M</button>
@@ -619,13 +690,23 @@
                                 </div>
                             </div>
                             
+                            <div id="pack-season-selector" class="hidden bg-nuca-light/50 p-4 rounded-xl">
+                                <label class="block text-sm font-bold text-nuca-green mb-3">Estação da Coleção:</label>
+                                <select id="pack-season-select" onchange="selectPackSeason(this.value)" class="w-full px-4 py-3 rounded-xl border-2 border-nuca-green/20 bg-white/50 text-nuca-green font-medium">
+                                    <option value="Primavera">🌸 Primavera</option>
+                                    <option value="Verão">☀️ Verão</option>
+                                    <option value="Outono">🍂 Outono</option>
+                                    <option value="Inverno">❄️ Inverno</option>
+                                </select>
+                            </div>
+                            
                             <button onclick="addPackToCart()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
                                 Adicionar Pack ao Carrinho
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                             </button>
                             
                             <button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-sm">
-                                Preferes escolher tamanhos diferentes? Compra individualmente
+                                Preferes escolher detalhes individualmente? Compra separadamente
                             </button>
                         </div>
                     </div>
@@ -635,8 +716,23 @@
     </div>
 
     <script>
-        // Products Data - NOVA ESTRUTURA COM CORES
-        const products = [
+        // ICONS DAS ESTAÇÕES (SVG)
+        const seasonIcons = {
+            'Primavera': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/><circle cx="12" cy="12" r="3"/></svg>',
+            'Verão': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>',
+            'Outono': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22l10-10M12 12l8-8M12 12l-4-4M12 12l4 4M12 12l-8 8"/></svg>',
+            'Inverno': '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M12 2l-2 4M12 2l2 4M12 22l-2-4M12 22l2-4M2 12h20M2 12l4-2M2 12l4 2M22 12l-4-2M22 12l-4 2"/></svg>'
+        };
+
+        const seasonColors = {
+            'Primavera': '#90EE90',
+            'Verão': '#FFD700',
+            'Outono': '#FF8C00',
+            'Inverno': '#87CEEB'
+        };
+
+        // PRODUTOS NUCA ORIGINAL
+        const nucaProducts = [
             {
                 id: 1,
                 name: "T-shirt NUCA",
@@ -650,6 +746,7 @@
                     { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80" },
                     { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80" }
                 ],
+                collection: "NUCA Original",
                 badge: null
             },
             {
@@ -657,7 +754,7 @@
                 name: "Hoodie NUCA",
                 category: "hoodies",
                 basePrice: 55,
-                description: "Hoodie confortável com interior felpudo, ideal para os dias mais frescos de Lisboa. 80% algodão, 20% poliéster.",
+                description: "Hoodie confortável com interior felpudo. 80% algodão, 20% poliéster.",
                 sizes: ["S", "M", "L", "XL", "XXL"],
                 hasColors: true,
                 colors: [
@@ -665,6 +762,7 @@
                     { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&sat=-100" },
                     { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80" }
                 ],
+                collection: "NUCA Original",
                 badge: null
             },
             {
@@ -672,7 +770,7 @@
                 name: "Boné NUCA",
                 category: "acessorios",
                 basePrice: 20,
-                description: "Boné clássico em algodão com logo bordado. Ajustável, tamanho único.",
+                description: "Boné clássico em algodão com logo bordado. Ajustável.",
                 sizes: ["Único"],
                 hasColors: true,
                 colors: [
@@ -680,6 +778,7 @@
                     { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&sat=-100" },
                     { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&sepia=50" }
                 ],
+                collection: "NUCA Original",
                 badge: null
             },
             {
@@ -687,10 +786,11 @@
                 name: "Tote Bag NUCA",
                 category: "acessorios",
                 basePrice: 15,
-                description: "Tote bag em algodão cru, resistente e espaçosa. Perfeita para as compras ou um dia na praia.",
+                description: "Tote bag em algodão cru, resistente e espaçosa.",
                 sizes: ["Único"],
                 hasColors: false,
                 colors: null,
+                collection: "NUCA Original",
                 badge: null
             },
             {
@@ -698,10 +798,11 @@
                 name: "Chaveiro NUCA",
                 category: "acessorios",
                 basePrice: 8,
-                description: "Chaveiro metálico com logo NUCA. Acabamento em mate.",
+                description: "Chaveiro metálico com logo NUCA. Acabamento mate.",
                 sizes: null,
                 hasColors: false,
                 colors: null,
+                collection: "NUCA Original",
                 badge: null
             },
             {
@@ -718,38 +819,170 @@
                     { name: "Branco", hex: "#FFFFFF", image: "https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80" },
                     { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&sat=-100" }
                 ],
+                collection: "NUCA Original",
                 badge: null
             }
         ];
 
-        // Packs Data - ATUALIZADO PARA NOVOS PRODUTOS
+        // PRODUTOS COLEÇÃO ESTAÇÕES DO ANO
+        const seasonsProducts = [
+            // T-SHIRTS ESTAÇÕES
+            {
+                id: 101,
+                name: "T-shirt NUCA",
+                category: "camisetas",
+                basePrice: 28,
+                description: "T-shirt da Coleção Estações do Ano. Design exclusivo inspirado na Primavera.",
+                sizes: ["S", "M", "L", "XL", "XXL"],
+                hasSeasons: true,
+                seasons: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                seasonColors: {
+                    'Primavera': { name: 'Verde Menta', hex: '#98FB98', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&tint=green' },
+                    'Verão': { name: 'Amarelo Sol', hex: '#FFD700', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&tint=yellow' },
+                    'Outono': { name: 'Laranja Queimado', hex: '#FF8C00', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&tint=orange' },
+                    'Inverno': { name: 'Azul Gelo', hex: '#87CEEB', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80&tint=blue' }
+                },
+                collection: "Estações do Ano",
+                badge: "EDIÇÃO ESPECIAL"
+            },
+            // HOODIES ESTAÇÕES
+            {
+                id: 102,
+                name: "Hoodie NUCA",
+                category: "hoodies",
+                basePrice: 60,
+                description: "Hoodie da Coleção Estações do Ano. Conforto para todas as estações.",
+                sizes: ["S", "M", "L", "XL", "XXL"],
+                hasSeasons: true,
+                seasons: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                seasonColors: {
+                    'Primavera': { name: 'Verde Menta', hex: '#98FB98', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&tint=green' },
+                    'Verão': { name: 'Amarelo Sol', hex: '#FFD700', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&tint=yellow' },
+                                        'Outono': { name: 'Laranja Queimado', hex: '#FF8C00', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&tint=orange' },
+                    'Inverno': { name: 'Azul Gelo', hex: '#87CEEB', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&tint=blue' }
+                },
+                collection: "Estações do Ano",
+                badge: "EDIÇÃO ESPECIAL"
+            },
+            // BONÉS ESTAÇÕES
+            {
+                id: 103,
+                name: "Boné NUCA",
+                category: "acessorios",
+                basePrice: 22,
+                description: "Boné da Coleção Estações do Ano. Estilo para todo o ano.",
+                sizes: ["Único"],
+                hasSeasons: true,
+                seasons: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                seasonColors: {
+                    'Primavera': { name: 'Verde Menta', hex: '#98FB98', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&tint=green' },
+                    'Verão': { name: 'Amarelo Sol', hex: '#FFD700', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&tint=yellow' },
+                    'Outono': { name: 'Laranja Queimado', hex: '#FF8C00', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&tint=orange' },
+                    'Inverno': { name: 'Azul Gelo', hex: '#87CEEB', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&tint=blue' }
+                },
+                collection: "Estações do Ano",
+                badge: "EDIÇÃO ESPECIAL"
+            },
+            // MEIAS ESTAÇÕES
+            {
+                id: 104,
+                name: "Meias NUCA",
+                category: "acessorios",
+                basePrice: 14,
+                description: "Meias da Coleção Estações do Ano. Conforto em todas as estações.",
+                sizes: null,
+                hasShoeSizes: true,
+                shoeSizes: ["35-37", "38-40", "41-43", "44-46"],
+                hasSeasons: true,
+                seasons: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                seasonColors: {
+                    'Primavera': { name: 'Verde Menta', hex: '#98FB98', image: 'https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&tint=green' },
+                    'Verão': { name: 'Amarelo Sol', hex: '#FFD700', image: 'https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&tint=yellow' },
+                    'Outono': { name: 'Laranja Queimado', hex: '#FF8C00', image: 'https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&tint=orange' },
+                    'Inverno': { name: 'Azul Gelo', hex: '#87CEEB', image: 'https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&tint=blue' }
+                },
+                collection: "Estações do Ano",
+                badge: "EDIÇÃO ESPECIAL"
+            }
+        ];
+
+        // TODOS OS PRODUTOS
+        const allProducts = [...nucaProducts, ...seasonsProducts];
+
+        // PACKS ATUALIZADOS
         const packs = [
+            // PACKS NUCA ORIGINAL
             {
-                id: "pack-1",
-                name: "Pack Essentials",
-                description: "O básico que não pode faltar no teu guarda-roupa. T-shirt + Hoodie no teu estilo preferido.",
-                items: [1, 2], // T-shirt + Hoodie (cliente escolhe cor depois)
-                discount: 15,
+                id: "pack-nuca-complete",
+                name: "PACK NUCA - Completo",
+                description: "Tudo o que precisas da coleção NUCA. T-shirt, Hoodie, Chaveiro, Boné, Meia e Tote Bag.",
+                items: [1, 2, 3, 4, 5, 6], // Todos os produtos NUCA
+                discount: 25,
                 image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&q=80",
-                badge: "POPULAR"
+                badge: "MAIOR POUPANÇA",
+                type: "nuca",
+                freeItems: []
             },
             {
-                id: "pack-2",
-                name: "Pack Completo",
-                description: "Tudo o que precisas para um look completo NUCA. Do topo à base, incluindo acessórios.",
-                items: [1, 2, 3, 4], // T-shirt + Hoodie + Boné + Tote
+                id: "pack-nuca-accessories",
+                name: "PACK NUCA - Acessórios",
+                description: "Todos os acessórios essenciais. Chaveiro, Boné, Meia e Tote Bag.",
+                items: [3, 4, 5, 6], // Acessórios NUCA
                 discount: 20,
-                image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
-                badge: "MAIOR POUPANÇA"
+                image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
+                badge: "POPULAR",
+                type: "nuca",
+                freeItems: []
+            },
+            // PACKS ESTAÇÕES DO ANO
+            {
+                id: "pack-seasons-tshirts",
+                name: "PACK Estações - T-shirts",
+                description: "As 4 T-shirts das estações do ano. Primavera, Verão, Outono e Inverno + Chaveiro OFERTA!",
+                items: [101], // T-shirt (será multiplicada por 4 estações)
+                discount: 20,
+                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80",
+                badge: "4 ESTAÇÕES",
+                type: "seasons",
+                seasonItems: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                freeItems: [{ id: 5, name: "Chaveiro NUCA", price: 0 }]
             },
             {
-                id: "pack-3",
-                name: "Pack Acessórios",
-                description: "Os detalhes que fazem a diferença. Boné, Tote Bag, Chaveiro e Meias.",
-                items: [3, 4, 5, 6],
-                discount: 12,
+                id: "pack-seasons-hoodies",
+                name: "PACK Estações - Hoodies",
+                description: "Os 4 Hoodies das estações + Boné + Meias + Chaveiro OFERTA!",
+                items: [102], // Hoodie (será multiplicado por 4 estações)
+                discount: 25,
+                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80",
+                badge: "COMPLETO",
+                type: "seasons",
+                seasonItems: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                extraItems: [103, 104], // Boné e Meias (1 de cada)
+                freeItems: [{ id: 5, name: "Chaveiro NUCA", price: 0 }]
+            },
+            {
+                id: "pack-seasons-accessories",
+                name: "PACK Estações - Acessórios",
+                description: "Todos os acessórios das estações: 4 Bonés + 4 Meias + Chaveiro OFERTA!",
+                items: [103, 104], // Boné e Meias (4 de cada estação)
+                discount: 30,
                 image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
-                badge: "TEMPORADA"
+                badge: "ACESSÓRIOS",
+                type: "seasons",
+                seasonItems: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                freeItems: [{ id: 5, name: "Chaveiro NUCA", price: 0 }]
+            },
+            {
+                id: "pack-seasons-all",
+                name: "PACK Estações - All In One",
+                description: "COLEÇÃO COMPLETA! 4 T-shirts + 4 Hoodies + 4 Bonés + 4 Meias + Chaveiro OFERTA!",
+                items: [101, 102, 103, 104], // Todos os produtos estações
+                discount: 35,
+                image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
+                badge: "COLEÇÃO COMPLETA",
+                type: "seasons",
+                seasonItems: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                freeItems: [{ id: 5, name: "Chaveiro NUCA", price: 0 }]
             }
         ];
 
@@ -758,24 +991,29 @@
         let selectedSize = null;
         let selectedColor = null;
         let selectedShoeSize = null;
+        let selectedSeason = null;
         let currentPack = null;
         let selectedPackSize = 'M';
+        let selectedPackSeason = 'Primavera';
+        let carouselPosition = 0;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             renderProducts('all');
+            renderSeasonsCarousel();
             renderPacks();
             setupScrollListener();
             document.getElementById("year").textContent = new Date().getFullYear();
         });
 
-        // Render Products
+        // RENDER PRODUTOS NUCA ORIGINAL
         function renderProducts(filter) {
             const grid = document.getElementById('products-grid');
-            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            const filtered = filter === 'all' 
+                ? nucaProducts 
+                : nucaProducts.filter(p => p.category === filter);
             
             grid.innerHTML = filtered.map(product => {
-                // Mostrar badge de cores se aplicável
                 let colorBadge = '';
                 if (product.hasColors && product.colors) {
                     colorBadge = `<div class="absolute top-4 right-4 flex gap-1">` + 
@@ -801,33 +1039,165 @@
                     </div>
                     <div class="space-y-2">
                         <div class="flex justify-between items-start">
-                            <h3 class="font-display text-xl font-bold text-nuca-green group-hover:opacity-70 transition-opacity">${product.name}</h3>
+                            <div>
+                                <h3 class="font-display text-xl font-bold text-nuca-green group-hover:opacity-70 transition-opacity">${product.name}</h3>
+                                <p class="text-xs text-nuca-green/40">${product.collection}</p>
+                            </div>
                             <span class="font-bold text-nuca-green">€${product.basePrice}</span>
                         </div>
                         <p class="text-sm text-nuca-green/60 capitalize">${product.category}</p>
-                        ${product.hasColors ? `<p class="text-xs text-nuca-green/40">${product.colors.length} cores disponíveis</p>` : ''}
+                        ${product.hasColors ? `<p class="text-xs text-nuca-green/40">${product.colors.length} cores</p>` : ''}
                     </div>
                 </div>
             `}).join('');
         }
 
-        // Render Packs
+        // RENDER CARROSSEL COLEÇÃO ESTAÇÕES
+        function renderSeasonsCarousel() {
+            const track = document.getElementById('seasons-track');
+            const indicators = document.getElementById('carousel-indicators');
+            
+            track.innerHTML = seasonsProducts.map((product, index) => {
+                // Para cada produto, mostrar preview das 4 estações
+                const seasonPreviews = product.seasons.map(season => `
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs" 
+                             style="background-color: ${seasonColors[season]}">
+                            ${seasonIcons[season]}
+                        </div>
+                        <span class="text-[10px] text-nuca-green/60">${season.substring(0, 3)}</span>
+                    </div>
+                `).join('');
+                
+                return `
+                <div class="carousel-slide px-2">
+                    <div class="product-card group cursor-pointer h-full" onclick="openProductModal(${product.id})">
+                        <div class="aspect-[3/4] bg-nuca-light rounded-2xl overflow-hidden mb-4 relative">
+                            <img src="${product.seasonColors['Primavera'].image}" 
+                                 alt="${product.name}" 
+                                 class="product-image w-full h-full object-cover transition-transform duration-500"
+                                 id="season-img-${product.id}">
+                            <div class="absolute top-4 left-4 collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold">
+                                ${product.badge}
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-xl p-2">
+                                <div class="flex justify-around">
+                                    ${seasonPreviews}
+                                </div>
+                            </div>
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                <span class="bg-nuca-beige text-nuca-green px-6 py-3 rounded-full font-bold">
+                                    Escolher Estação
+                                </span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-display text-xl font-bold text-nuca-green">${product.name}</h3>
+                                    <p class="text-xs text-nuca-green/60">${product.collection}</p>
+                                </div>
+                                <span class="font-bold text-nuca-green">€${product.basePrice}</span>
+                            </div>
+                            <p class="text-sm text-nuca-green/60 capitalize">${product.category}</p>
+                            <p class="text-xs text-nuca-green/40">4 estações disponíveis</p>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+            
+            // Criar indicadores
+            const totalSlides = seasonsProducts.length;
+            const visibleSlides = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+            const maxPosition = Math.max(0, totalSlides - visibleSlides);
+            
+            indicators.innerHTML = Array.from({ length: maxPosition + 1 }, (_, i) => `
+                <button onclick="goToSlide(${i})" 
+                        class="w-3 h-3 rounded-full transition-all ${i === 0 ? 'bg-nuca-green scale-125' : 'bg-nuca-green/30'}"
+                        data-index="${i}">
+                </button>
+            `).join('');
+            
+            updateCarouselButtons(maxPosition);
+        }
+
+        // CONTROLES DO CARROSSEL
+        function moveCarousel(direction) {
+            const track = document.getElementById('seasons-track');
+            const totalSlides = seasonsProducts.length;
+            const visibleSlides = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+            const maxPosition = Math.max(0, totalSlides - visibleSlides);
+            
+            carouselPosition += direction;
+            carouselPosition = Math.max(0, Math.min(carouselPosition, maxPosition));
+            
+            const slideWidth = 100 / visibleSlides;
+            track.style.transform = `translateX(-${carouselPosition * slideWidth}%)`;
+            
+            // Atualizar indicadores
+            document.querySelectorAll('#carousel-indicators button').forEach((btn, idx) => {
+                if (idx === carouselPosition) {
+                    btn.classList.add('bg-nuca-green', 'scale-125');
+                    btn.classList.remove('bg-nuca-green/30');
+                } else {
+                    btn.classList.remove('bg-nuca-green', 'scale-125');
+                    btn.classList.add('bg-nuca-green/30');
+                }
+            });
+            
+            updateCarouselButtons(maxPosition);
+        }
+
+        function goToSlide(index) {
+            carouselPosition = index;
+            moveCarousel(0);
+        }
+
+        function updateCarouselButtons(maxPosition) {
+            const prevBtn = document.getElementById('carousel-prev');
+            const nextBtn = document.getElementById('carousel-next');
+            
+            prevBtn.disabled = carouselPosition === 0;
+            nextBtn.disabled = carouselPosition >= maxPosition;
+        }
+
+        // RENDER PACKS
         function renderPacks() {
             const grid = document.getElementById('packs-grid');
             
             grid.innerHTML = packs.map(pack => {
-                const packProducts = pack.items.map(id => products.find(p => p.id === id));
-                const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
+                const packProducts = pack.items.map(id => allProducts.find(p => p.id === id));
+                let totalPrice = 0;
+                
+                // Calcular preço base
+                if (pack.type === 'seasons' && pack.seasonItems) {
+                    // Multiplicar por número de estações
+                    packProducts.forEach(p => {
+                        totalPrice += p.basePrice * pack.seasonItems.length;
+                    });
+                    // Adicionar extras se houver
+                    if (pack.extraItems) {
+                        pack.extraItems.forEach(id => {
+                            const extra = allProducts.find(p => p.id === id);
+                            totalPrice += extra.basePrice;
+                        });
+                    }
+                } else {
+                    totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
+                }
+                
                 const discountedPrice = Math.round(totalPrice * (1 - pack.discount / 100));
+                const hasFreeItems = pack.freeItems && pack.freeItems.length > 0;
                 
                 return `
                     <div class="pack-card rounded-3xl p-8 text-nuca-beige relative group cursor-pointer transform transition-all hover:scale-[1.02]" onclick="openPackModal('${pack.id}')">
                         <div class="relative z-10">
-                            ${pack.badge ? `
-                                <span class="inline-block px-3 py-1 bg-nuca-beige text-nuca-green rounded-full text-xs font-bold tracking-wider mb-4">${pack.badge}</span>
-                            ` : ''}
-                            <h3 class="font-display text-3xl font-bold mb-2">${pack.name}</h3>
-                            <p class="text-nuca-beige/80 mb-6 line-clamp-2">${pack.description}</p>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="inline-block px-3 py-1 bg-nuca-beige text-nuca-green rounded-full text-xs font-bold tracking-wider">${pack.badge}</span>
+                                ${hasFreeItems ? '<span class="text-yellow-400 text-2xl">🎁</span>' : ''}
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-2">${pack.name}</h3>
+                            <p class="text-nuca-beige/80 mb-4 text-sm line-clamp-2">${pack.description}</p>
                             
                             <div class="flex items-baseline gap-3 mb-4">
                                 <span class="text-3xl font-bold">€${discountedPrice}</span>
@@ -835,13 +1205,21 @@
                                 <span class="text-sm bg-nuca-beige text-nuca-green px-2 py-1 rounded-full font-bold">-${pack.discount}%</span>
                             </div>
                             
-                            <div class="flex -space-x-3 mb-6">
-                                ${packProducts.slice(0, 4).map(p => `
-                                    <img src="${p.colors ? p.colors[0].image : p.image || 'https://via.placeholder.com/50'}" alt="${p.name}" class="w-12 h-12 rounded-full border-2 border-nuca-green object-cover">
+                            ${hasFreeItems ? `
+                                <div class="bg-yellow-400/20 rounded-lg p-2 mb-4">
+                                    <p class="text-xs text-yellow-200 font-bold">🎁 INCLUI: ${pack.freeItems.map(i => i.name).join(', ')}</p>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="flex -space-x-3 mb-4">
+                                ${packProducts.slice(0, 3).map(p => `
+                                    <img src="${p.seasonColors ? p.seasonColors['Primavera'].image : (p.colors ? p.colors[0].image : 'https://via.placeholder.com/50')}" 
+                                         alt="${p.name}" 
+                                         class="w-12 h-12 rounded-full border-2 border-nuca-green object-cover">
                                 `).join('')}
-                                ${packProducts.length > 4 ? `
+                                ${pack.type === 'seasons' ? `
                                     <div class="w-12 h-12 rounded-full border-2 border-nuca-green bg-nuca-beige/20 flex items-center justify-center text-xs font-bold">
-                                        +${packProducts.length - 4}
+                                        x4
                                     </div>
                                 ` : ''}
                             </div>
@@ -856,7 +1234,7 @@
             }).join('');
         }
 
-        // Filter Products
+        // FILTER PRODUCTS
         function filterProducts(category) {
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.dataset.filter === category) {
@@ -880,7 +1258,6 @@
             }, 300);
         }
 
-        // Filter from Footer
         function filterFromFooter(category) {
             filterProducts(category);
             setTimeout(() => {
@@ -888,39 +1265,62 @@
             }, 100);
         }
 
-        // Product Modal - ATUALIZADO COM CORES
+        // PRODUCT MODAL - ATUALIZADO COM ESTAÇÕES
         function openProductModal(productId) {
-            currentProduct = products.find(p => p.id === productId);
+            currentProduct = allProducts.find(p => p.id === productId);
             
             // Reset selections
-            if (currentProduct.sizes) {
-                selectedSize = currentProduct.sizes[0];
-            } else {
-                selectedSize = null;
-            }
+            selectedSize = currentProduct.sizes ? currentProduct.sizes[0] : null;
+            selectedShoeSize = currentProduct.hasShoeSizes ? currentProduct.shoeSizes[0] : null;
+            selectedSeason = currentProduct.hasSeasons ? currentProduct.seasons[0] : null;
             
-            if (currentProduct.hasColors && currentProduct.colors) {
+            // Determinar cor baseada na estação ou padrão
+            if (currentProduct.hasSeasons) {
+                selectedColor = currentProduct.seasonColors[selectedSeason];
+            } else if (currentProduct.hasColors) {
                 selectedColor = currentProduct.colors[0];
             } else {
                 selectedColor = null;
             }
             
-            if (currentProduct.hasShoeSizes && currentProduct.shoeSizes) {
-                selectedShoeSize = currentProduct.shoeSizes[0];
-            } else {
-                selectedShoeSize = null;
-            }
-            
             // Update modal content
-            document.getElementById('modal-image').src = selectedColor ? selectedColor.image : (currentProduct.image || currentProduct.colors[0].image);
+            document.getElementById('modal-image').src = selectedColor ? selectedColor.image : (currentProduct.image || '');
             document.getElementById('modal-category').textContent = currentProduct.category;
             document.getElementById('modal-title').textContent = currentProduct.name;
             document.getElementById('modal-price').textContent = `€${currentProduct.basePrice}`;
             document.getElementById('modal-description').textContent = currentProduct.description;
             
-            // Render Colors
+            // Badge de coleção
+            const badgeEl = document.getElementById('collection-badge');
+            if (currentProduct.collection === "Estações do Ano") {
+                badgeEl.classList.remove('hidden');
+                badgeEl.querySelector('span').textContent = "Coleção: Estações do Ano";
+            } else {
+                badgeEl.classList.add('hidden');
+            }
+            
+            // Render Seasons (se aplicável)
+            const seasonSection = document.getElementById('season-section');
+            if (currentProduct.hasSeasons) {
+                seasonSection.classList.remove('hidden');
+                const seasonsContainer = document.getElementById('modal-seasons');
+                seasonsContainer.innerHTML = currentProduct.seasons.map((season, idx) => `
+                    <button onclick="selectSeason('${season}')" 
+                            class="season-selector flex items-center gap-2 px-4 py-3 rounded-full border-2 border-nuca-green font-bold transition-all ${idx === 0 ? 'active bg-nuca-green text-nuca-beige' : 'text-nuca-green hover:bg-nuca-green/10'}" 
+                            data-season="${season}">
+                        <span style="color: ${idx === 0 ? 'currentColor' : seasonColors[season]}">
+                            ${seasonIcons[season]}
+                        </span>
+                        <span>${season}</span>
+                    </button>
+                `).join('');
+            } else {
+                seasonSection.classList.add('hidden');
+            }
+            
+            // Render Colors (se aplicável e não for coleção estações)
             const colorSection = document.getElementById('color-section');
-            if (currentProduct.hasColors && currentProduct.colors) {
+            if (currentProduct.hasColors && !currentProduct.hasSeasons) {
                 colorSection.classList.remove('hidden');
                 const colorsContainer = document.getElementById('modal-colors');
                 colorsContainer.innerHTML = currentProduct.colors.map((color, idx) => `
@@ -935,13 +1335,12 @@
                 colorSection.classList.add('hidden');
             }
             
-            // Render Sizes (Regular or Shoe)
+            // Render Sizes
             const sizeSection = document.getElementById('size-section');
             const sizeLabel = document.getElementById('size-label');
             const sizesContainer = document.getElementById('modal-sizes');
             
-            if (currentProduct.hasShoeSizes && currentProduct.shoeSizes) {
-                // Shoe sizes as dropdown
+            if (currentProduct.hasShoeSizes) {
                 sizeLabel.textContent = 'Tamanho (Calçado)';
                 sizesContainer.innerHTML = `
                     <select id="shoe-size-select" onchange="selectShoeSize(this.value)" 
@@ -953,8 +1352,7 @@
                 `;
                 sizeSection.classList.remove('hidden');
             } else if (currentProduct.sizes) {
-                // Regular sizes as buttons
-                sizeLabel.textContent = currentProduct.sizes[0] === 'Único' ? 'Tamanho' : 'Tamanho';
+                sizeLabel.textContent = 'Tamanho';
                 sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `
                     <button onclick="selectSize('${size}')" 
                             class="size-btn w-12 h-12 rounded-full border border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" 
@@ -993,32 +1391,41 @@
             }, 300);
         }
 
-        function selectColor(colorName) {
-            selectedColor = currentProduct.colors.find(c => c.name === colorName);
+        function selectSeason(season) {
+            selectedSeason = season;
+            selectedColor = currentProduct.seasonColors[season];
             
             // Update image
             document.getElementById('modal-image').src = selectedColor.image;
             
             // Update active state
-            document.querySelectorAll('.color-selector').forEach(btn => {
-                if(btn.dataset.color === colorName) {
-                    btn.classList.add('active');
+            document.querySelectorAll('.season-selector').forEach(btn => {
+                if(btn.dataset.season === season) {
+                    btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.remove('text-nuca-green');
+                    btn.querySelector('span:first-child').style.color = 'currentColor';
                 } else {
-                    btn.classList.remove('active');
+                    btn.classList.remove('active', 'bg-nuca-green', 'text-nuca-beige');
+                    btn.classList.add('text-nuca-green');
+                    btn.querySelector('span:first-child').style.color = seasonColors[btn.dataset.season];
                 }
+            });
+        }
+
+        function selectColor(colorName) {
+            selectedColor = currentProduct.colors.find(c => c.name === colorName);
+            document.getElementById('modal-image').src = selectedColor.image;
+            
+            document.querySelectorAll('.color-selector').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === colorName);
             });
         }
 
         function selectSize(size) {
             selectedSize = size;
             document.querySelectorAll('.size-btn').forEach(btn => {
-                if(btn.dataset.size === size) {
-                    btn.classList.add('active');
-                    btn.classList.remove('text-nuca-green');
-                } else {
-                    btn.classList.remove('active');
-                    btn.classList.add('text-nuca-green');
-                }
+                btn.classList.toggle('active', btn.dataset.size === size);
+                btn.classList.toggle('text-nuca-green', btn.dataset.size !== size);
             });
         }
 
@@ -1026,42 +1433,131 @@
             selectedShoeSize = size;
         }
 
-        // Pack Modal Functions
+        // PACK MODAL - ATUALIZADO
         function openPackModal(packId) {
             currentPack = packs.find(p => p.id === packId);
             selectedPackSize = 'M';
+            selectedPackSeason = 'Primavera';
             
-            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
-            const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
-            const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
+            // Update badge
+            document.getElementById('pack-type-badge').textContent = 
+                currentPack.type === 'seasons' ? 'Pack Estações' : 'Pack NUCA';
             
             document.getElementById('pack-modal-title').textContent = currentPack.name;
             document.getElementById('pack-modal-description').textContent = currentPack.description;
+            
+            // Calcular preços
+            let totalPrice = 0;
+            const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
+            
+            if (currentPack.type === 'seasons' && currentPack.seasonItems) {
+                packProducts.forEach(p => {
+                    totalPrice += p.basePrice * currentPack.seasonItems.length;
+                });
+                if (currentPack.extraItems) {
+                    currentPack.extraItems.forEach(id => {
+                        const extra = allProducts.find(p => p.id === id);
+                        totalPrice += extra.basePrice;
+                    });
+                }
+            } else {
+                totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
+            }
+            
+            const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
+            
             document.getElementById('pack-modal-price').textContent = `€${discountedPrice}`;
             document.getElementById('pack-modal-original').textContent = `€${totalPrice}`;
             document.getElementById('pack-modal-savings').textContent = `Poupas €${totalPrice - discountedPrice}`;
             
+            // Free items
+            const freeItemsEl = document.getElementById('pack-free-items');
+            if (currentPack.freeItems && currentPack.freeItems.length > 0) {
+                freeItemsEl.classList.remove('hidden');
+                freeItemsEl.querySelector('span').textContent = 
+                    `+ ${currentPack.freeItems.map(i => i.name).join(', ')} OFERTA!`;
+            } else {
+                freeItemsEl.classList.add('hidden');
+            }
+            
+            // Render items
             const itemsContainer = document.getElementById('pack-modal-items');
-            itemsContainer.innerHTML = packProducts.map(p => `
-                <div class="flex items-center gap-4 bg-nuca-light/50 p-4 rounded-xl">
-                    <img src="${p.colors ? p.colors[0].image : p.image || 'https://via.placeholder.com/60'}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
-                    <div class="flex-1">
-                        <h4 class="font-bold text-nuca-green">${p.name}</h4>
-                        <p class="text-sm text-nuca-green/60">€${p.basePrice}</p>
-                    </div>
-                </div>
-            `).join('');
+            let itemsHtml = '';
             
-            document.querySelectorAll('.pack-size-btn').forEach(btn => {
-                if(btn.dataset.size === 'M') {
-                    btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
-                    btn.classList.remove('text-nuca-green');
-                } else {
-                    btn.classList.remove('active', 'bg-nuca-green', 'text-nuca-beige');
-                    btn.classList.add('text-nuca-green');
+            if (currentPack.type === 'seasons' && currentPack.seasonItems) {
+                // Mostrar produtos por estação
+                currentPack.seasonItems.forEach(season => {
+                    itemsHtml += `<div class="bg-nuca-light/50 p-3 rounded-xl mb-2"><h4 class="font-bold text-nuca-green text-sm mb-2 flex items-center gap-2">${seasonIcons[season]} ${season}</h4><div class="space-y-2">`;
+                    packProducts.forEach(p => {
+                        itemsHtml += `
+                            <div class="flex items-center gap-3 bg-white/50 p-2 rounded-lg">
+                                <img src="${p.seasonColors[season].image}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-nuca-green">${p.name}</p>
+                                    <p class="text-xs text-nuca-green/60">${p.seasonColors[season].name}</p>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    itemsHtml += `</div></div>`;
+                });
+                
+                // Extras se houver
+                if (currentPack.extraItems) {
+                    currentPack.extraItems.forEach(id => {
+                        const extra = allProducts.find(p => p.id === id);
+                        itemsHtml += `
+                            <div class="flex items-center gap-3 bg-nuca-light/30 p-3 rounded-xl border-2 border-dashed border-nuca-green/30">
+                                <img src="${extra.seasonColors ? extra.seasonColors['Primavera'].image : (extra.colors ? extra.colors[0].image : '')}" alt="${extra.name}" class="w-12 h-12 object-cover rounded-lg">
+                                <div class="flex-1">
+                                    <p class="text-sm font-bold text-nuca-green">${extra.name}</p>
+                                    <p class="text-xs text-nuca-green/60">Extra</p>
+                                </div>
+                            </div>
+                        `;
+                    });
                 }
-            });
+            } else {
+                // Pack normal
+                packProducts.forEach(p => {
+                    itemsHtml += `
+                        <div class="flex items-center gap-4 bg-nuca-light/50 p-4 rounded-xl">
+                            <img src="${p.colors ? p.colors[0].image : p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-nuca-green">${p.name}</h4>
+                                <p class="text-sm text-nuca-green/60">€${p.basePrice}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
             
+            // Free items
+            if (currentPack.freeItems) {
+                currentPack.freeItems.forEach(item => {
+                    itemsHtml += `
+                        <div class="flex items-center gap-4 bg-yellow-100/50 p-4 rounded-xl border-2 border-yellow-400">
+                            <div class="w-16 h-16 rounded-lg bg-yellow-200 flex items-center justify-center text-2xl">🎁</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-nuca-green">${item.name}</h4>
+                                <p class="text-sm text-green-600 font-bold">OFERTA</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            itemsContainer.innerHTML = itemsHtml;
+            
+            // Season selector para packs de estações
+            const seasonSelector = document.getElementById('pack-season-selector');
+            if (currentPack.type === 'seasons') {
+                seasonSelector.classList.remove('hidden');
+            } else {
+                seasonSelector.classList.add('hidden');
+            }
+            
+            // Show modal
             const modal = document.getElementById('pack-modal');
             const content = document.getElementById('pack-modal-content');
             modal.classList.remove('hidden');
@@ -1090,43 +1586,125 @@
         function selectPackSize(size) {
             selectedPackSize = size;
             document.querySelectorAll('.pack-size-btn').forEach(btn => {
-                if(btn.dataset.size === size) {
-                    btn.classList.add('active', 'bg-nuca-green', 'text-nuca-beige');
-                    btn.classList.remove('text-nuca-green');
-                } else {
-                    btn.classList.remove('active', 'bg-nuca-green', 'text-nuca-beige');
-                    btn.classList.add('text-nuca-green');
-                }
+                btn.classList.toggle('active', btn.dataset.size === size);
+                btn.classList.toggle('bg-nuca-green', btn.dataset.size === size);
+                btn.classList.toggle('text-nuca-beige', btn.dataset.size === size);
+                btn.classList.toggle('text-nuca-green', btn.dataset.size !== size);
             });
         }
 
-        // CORREÇÃO: Adicionar pack como itens individuais com desconto distribuído
+        function selectPackSeason(season) {
+            selectedPackSeason = season;
+        }
+
+        // ADD PACK TO CART - ATUALIZADO
         function addPackToCart() {
             if(!currentPack) return;
             
-            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
-            const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
-            const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
-            const discountPerItem = (totalPrice - discountedPrice) / packProducts.length;
+            const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
+            let totalPrice = 0;
             
-            packProducts.forEach(product => {
-                const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
-                
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: adjustedPrice,
-                    originalPrice: product.basePrice,
-                    size: product.sizes ? (product.sizes[0] === 'Único' ? 'Único' : selectedPackSize) : null,
-                    color: product.hasColors ? product.colors[0].name : null,
-                    shoeSize: product.hasShoeSizes ? product.shoeSizes[0] : null,
-                    quantity: 1,
-                    image: product.colors ? product.colors[0].image : product.image,
-                    isPackItem: true,
-                    packName: currentPack.name,
-                    packDiscount: currentPack.discount
+            if (currentPack.type === 'seasons' && currentPack.seasonItems) {
+                // Calcular preço total
+                packProducts.forEach(p => {
+                    totalPrice += p.basePrice * currentPack.seasonItems.length;
                 });
-            });
+                if (currentPack.extraItems) {
+                    currentPack.extraItems.forEach(id => {
+                        const extra = allProducts.find(p => p.id === id);
+                        totalPrice += extra.basePrice;
+                    });
+                }
+            } else {
+                totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
+            }
+            
+            const discountedPrice = totalPrice * (1 - currentPack.discount / 100);
+            const discountPerItem = (totalPrice - discountedPrice) / (currentPack.type === 'seasons' ? 
+                (packProducts.length * currentPack.seasonItems.length + (currentPack.extraItems?.length || 0)) : 
+                packProducts.length);
+            
+            // Adicionar itens do pack
+            if (currentPack.type === 'seasons' && currentPack.seasonItems) {
+                // Adicionar para cada estação
+                currentPack.seasonItems.forEach(season => {
+                    packProducts.forEach(product => {
+                        const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
+                        cart.push({
+                            id: product.id,
+                            name: `${product.name} - ${season}`,
+                            price: adjustedPrice,
+                            originalPrice: product.basePrice,
+                            size: product.sizes ? (product.sizes[0] === 'Único' ? 'Único' : selectedPackSize) : null,
+                            color: product.seasonColors[season].name,
+                            season: season,
+                            quantity: 1,
+                            image: product.seasonColors[season].image,
+                            isPackItem: true,
+                            packName: currentPack.name,
+                            packDiscount: currentPack.discount
+                        });
+                    });
+                });
+                
+                // Adicionar extras
+                if (currentPack.extraItems) {
+                    currentPack.extraItems.forEach(id => {
+                        const extra = allProducts.find(p => p.id === id);
+                        cart.push({
+                            id: extra.id,
+                            name: extra.name,
+                            price: extra.basePrice,
+                            originalPrice: extra.basePrice,
+                            size: extra.sizes ? (extra.sizes[0] === 'Único' ? 'Único' : selectedPackSize) : null,
+                            color: extra.seasonColors ? extra.seasonColors[selectedPackSeason].name : (extra.colors ? extra.colors[0].name : null),
+                            season: extra.seasonColors ? selectedPackSeason : null,
+                            quantity: 1,
+                            image: extra.seasonColors ? extra.seasonColors[selectedPackSeason].image : (extra.colors ? extra.colors[0].image : ''),
+                            isPackItem: true,
+                            packName: currentPack.name,
+                            packDiscount: 0
+                        });
+                    });
+                }
+            } else {
+                // Pack normal
+                packProducts.forEach(product => {
+                    const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: adjustedPrice,
+                        originalPrice: product.basePrice,
+                        size: product.sizes ? (product.sizes[0] === 'Único' ? 'Único' : selectedPackSize) : null,
+                        color: product.colors ? product.colors[0].name : null,
+                        quantity: 1,
+                        image: product.colors ? product.colors[0].image : product.image,
+                        isPackItem: true,
+                        packName: currentPack.name,
+                        packDiscount: currentPack.discount
+                    });
+                });
+            }
+            
+            // Adicionar itens gratuitos
+            if (currentPack.freeItems) {
+                currentPack.freeItems.forEach(item => {
+                    cart.push({
+                        id: item.id,
+                        name: item.name,
+                        price: 0,
+                        originalPrice: 0,
+                        size: null,
+                        color: null,
+                        quantity: 1,
+                        image: 'https://via.placeholder.com/80?text=OFERTA',
+                        isPackItem: true,
+                        packName: currentPack.name,
+                        isFree: true
+                    });
+                });
+            }
             
             updateCart();
             closePackModal();
@@ -1135,28 +1713,27 @@
 
         function buyPackItemsIndividually() {
             closePackModal();
-            const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
+            const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
             
             if(packProducts.length > 0) {
                 openProductModal(packProducts[0].id);
             }
         }
 
-        // Cart Functions - ATUALIZADO COM CORES
+        // CART FUNCTIONS - ATUALIZADO
         function addToCartFromModal() {
             if(!currentProduct) return;
             
-            // Determine size display
             let sizeDisplay = selectedSize;
             if (currentProduct.hasShoeSizes) {
                 sizeDisplay = selectedShoeSize;
             }
             
-            // Check if item already exists (same product, size, color)
             const existingItem = cart.find(item => 
                 item.id === currentProduct.id && 
                 item.size === sizeDisplay && 
                 item.color === (selectedColor ? selectedColor.name : null) &&
+                item.season === selectedSeason &&
                 !item.isPackItem
             );
             
@@ -1165,14 +1742,15 @@
             } else {
                 cart.push({
                     id: currentProduct.id,
-                    name: currentProduct.name,
+                    name: selectedSeason ? `${currentProduct.name} - ${selectedSeason}` : currentProduct.name,
                     price: currentProduct.basePrice,
                     originalPrice: currentProduct.basePrice,
                     size: sizeDisplay,
                     color: selectedColor ? selectedColor.name : null,
+                    season: selectedSeason,
                     shoeSize: selectedShoeSize,
                     quantity: 1,
-                    image: selectedColor ? selectedColor.image : (currentProduct.image || currentProduct.colors[0].image),
+                    image: selectedColor ? selectedColor.image : '',
                     isPackItem: false,
                     packName: null
                 });
@@ -1193,10 +1771,10 @@
             let discount = 0;
             
             cart.forEach(item => {
-                if(item.isPackItem) {
+                if(item.isPackItem && !item.isFree) {
                     subtotal += item.originalPrice * item.quantity;
                     discount += (item.originalPrice - item.price) * item.quantity;
-                } else {
+                } else if (!item.isFree) {
                     subtotal += item.price * item.quantity;
                 }
             });
@@ -1213,20 +1791,22 @@
             }
             
             container.innerHTML = cart.map((item, index) => `
-                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl ${item.isPackItem ? 'border-2 border-nuca-green/20' : ''}">
+                <div class="flex gap-4 bg-nuca-light/50 p-4 rounded-2xl ${item.isPackItem ? 'border-2 border-nuca-green/20' : ''} ${item.isFree ? 'bg-yellow-100/50 border-2 border-yellow-400' : ''}">
                     <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl">
                     <div class="flex-1">
                         <div class="flex items-start justify-between">
                             <div>
                                 <h4 class="font-bold text-nuca-green ${item.isPackItem ? 'flex items-center gap-2' : ''}">
                                     ${item.name}
-                                    ${item.isPackItem ? `<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK ${item.packName}</span>` : ''}
+                                    ${item.isPackItem && !item.isFree ? '<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK</span>' : ''}
+                                    ${item.isFree ? '<span class="text-xs bg-yellow-400 text-nuca-dark px-2 py-1 rounded-full">OFERTA</span>' : ''}
                                 </h4>
                                 <p class="text-sm text-nuca-green/60">
                                     ${item.color ? `Cor: ${item.color}` : ''}
+                                    ${item.season ? `• Estação: ${item.season}` : ''}
                                     ${item.size ? `• Tamanho: ${item.size}` : ''}
                                 </p>
-                                ${item.isPackItem ? `
+                                ${item.isPackItem && !item.isFree && item.originalPrice > item.price ? `
                                     <p class="text-xs text-green-600 font-medium">Poupas €${(item.originalPrice - item.price).toFixed(2)}</p>
                                 ` : ''}
                             </div>
@@ -1235,12 +1815,14 @@
                             </button>
                         </div>
                         <div class="flex items-center justify-between mt-2">
-                            <div class="flex items-center gap-2">
-                                <button onclick="updateQuantity(${index}, -1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">-</button>
-                                <span class="text-sm font-bold w-4 text-center">${item.quantity}</span>
-                                <button onclick="updateQuantity(${index}, 1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">+</button>
-                            </div>
-                            <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
+                            ${!item.isFree ? `
+                                <div class="flex items-center gap-2">
+                                    <button onclick="updateQuantity(${index}, -1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">-</button>
+                                    <span class="text-sm font-bold w-4 text-center">${item.quantity}</span>
+                                    <button onclick="updateQuantity(${index}, 1)" class="quantity-btn w-6 h-6 rounded-full bg-nuca-green/10 hover:bg-nuca-green/20 flex items-center justify-center text-nuca-green">+</button>
+                                </div>
+                                <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
+                            ` : '<span class="text-sm text-green-600 font-bold">GRÁTIS</span>'}
                         </div>
                     </div>
                 </div>
@@ -1267,21 +1849,15 @@
             sidebar.classList.toggle('open');
             overlay.classList.toggle('active');
             
-            if(sidebar.classList.contains('open')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
-            }
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
         }
 
-        // Mobile Menu
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('translate-x-full');
             menu.classList.toggle('translate-x-0');
         }
 
-        // Scroll Listener for Navbar
         function setupScrollListener() {
             let lastScroll = 0;
             const navbar = document.getElementById('navbar');
@@ -1299,9 +1875,14 @@
                 
                 lastScroll = currentScroll;
             });
+            
+            // Resize listener para carrossel
+            window.addEventListener('resize', () => {
+                carouselPosition = 0;
+                renderSeasonsCarousel();
+            });
         }
 
-        // Checkout - ATUALIZADO COM NOVOS CAMPOS
         function goToCheckout() {
             if(cart.length === 0) {
                 alert('O teu carrinho está vazio!');
@@ -1315,11 +1896,13 @@
                 originalPrice: item.originalPrice || item.price,
                 size: item.size,
                 color: item.color,
+                season: item.season,
                 shoeSize: item.shoeSize,
                 quantity: item.quantity,
                 image: item.image,
                 isPackItem: item.isPackItem || false,
-                packName: item.packName || null
+                packName: item.packName || null,
+                isFree: item.isFree || false
             }));
             
             const cartJson = JSON.stringify(simplifiedCart);
