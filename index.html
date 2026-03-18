@@ -90,6 +90,11 @@
             background-color: #556B4F;
             color: #D8C6A5;
         }
+        .color-btn.active {
+            ring-width: 3px;
+            ring-color: #556B4F;
+            transform: scale(1.1);
+        }
         .cart-sidebar {
             transform: translateX(100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -162,6 +167,16 @@
         }
         .pack-badge {
             background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+        }
+        .color-selector {
+            transition: all 0.2s ease;
+        }
+        .color-selector:hover {
+            transform: scale(1.15);
+        }
+        .color-selector.active {
+            transform: scale(1.15);
+            box-shadow: 0 0 0 3px #556B4F;
         }
     </style>
 </head>
@@ -520,9 +535,18 @@
                     
                     <p id="modal-description" class="text-nuca-green/70 leading-relaxed"></p>
                     
-                    <div>
-                        <label class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label>
-                        <div class="flex gap-3" id="modal-sizes">
+                    <!-- Color Selection -->
+                    <div id="color-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-3">Cor</label>
+                        <div class="flex gap-3" id="modal-colors">
+                            <!-- Colors injected by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Size Selection (Regular or Shoe) -->
+                    <div id="size-section">
+                        <label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label>
+                        <div class="flex gap-3 flex-wrap" id="modal-sizes">
                             <!-- Sizes injected by JS -->
                         </div>
                     </div>
@@ -611,77 +635,100 @@
     </div>
 
     <script>
-        // Products Data - TODOS COM XXL
+        // Products Data - NOVA ESTRUTURA COM CORES
         const products = [
             {
                 id: 1,
-                name: "T-shirt NUCA Bege",
+                name: "T-shirt NUCA",
                 category: "camisetas",
-                price: 25,
-                image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80",
-                description: "T-shirt em algodão orgânico de 180gsm, cor bege. Corte regular, perfeita para o dia-a-dia. Produzida em Portugal.",
+                basePrice: 25,
+                description: "T-shirt em algodão orgânico de 180gsm. Corte regular, perfeita para o dia-a-dia. Produzida em Portugal.",
                 sizes: ["S", "M", "L", "XL", "XXL"],
+                hasColors: true,
+                colors: [
+                    { name: "Branco", hex: "#FFFFFF", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80" },
+                    { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80" },
+                    { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80" }
+                ],
                 badge: null
             },
             {
                 id: 2,
-                name: "Hoodie Verde Oliva",
+                name: "Hoodie NUCA",
                 category: "hoodies",
-                price: 55,
-                image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80",
-                description: "Hoodie confortável em tom verde oliva. Interior felpudo, ideal para os dias mais frescos de Lisboa. 80% algodão, 20% poliéster.",
+                basePrice: 55,
+                description: "Hoodie confortável com interior felpudo, ideal para os dias mais frescos de Lisboa. 80% algodão, 20% poliéster.",
                 sizes: ["S", "M", "L", "XL", "XXL"],
+                hasColors: true,
+                colors: [
+                    { name: "Branco", hex: "#FFFFFF", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80" },
+                    { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80&sat=-100" },
+                    { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80" }
+                ],
                 badge: null
             },
             {
                 id: 3,
                 name: "Boné NUCA",
                 category: "acessorios",
-                price: 20,
-                image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80",
-                description: "Boné clássico em algodão, cor bege com logo bordado. Ajustável, tamanho único.",
+                basePrice: 20,
+                description: "Boné clássico em algodão com logo bordado. Ajustável, tamanho único.",
                 sizes: ["Único"],
+                hasColors: true,
+                colors: [
+                    { name: "Branco", hex: "#FFFFFF", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80" },
+                    { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&sat=-100" },
+                    { name: "Bege", hex: "#D8C6A5", image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80&sepia=50" }
+                ],
                 badge: null
             },
             {
                 id: 4,
-                name: "T-shirt Verde",
-                category: "camisetas",
-                price: 25,
-                image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80",
-                description: "T-shirt na nossa cor verde característica. 100% algodão orgânico, tingimento sustentável. Corte unissexo.",
-                sizes: ["S", "M", "L", "XL", "XXL"],
+                name: "Tote Bag NUCA",
+                category: "acessorios",
+                basePrice: 15,
+                description: "Tote bag em algodão cru, resistente e espaçosa. Perfeita para as compras ou um dia na praia.",
+                sizes: ["Único"],
+                hasColors: false,
+                colors: null,
                 badge: null
             },
             {
                 id: 5,
-                name: "Tote Bag NUCA",
+                name: "Chaveiro NUCA",
                 category: "acessorios",
-                price: 15,
-                image: "https://images.unsplash.com/photo-1597484662317-c9253e609f9c?w=600&q=80",
-                description: "Tote bag em algodão cru, resistente e espaçosa. Perfeita para as compras ou um dia na praia.",
-                sizes: ["Único"],
+                basePrice: 8,
+                description: "Chaveiro metálico com logo NUCA. Acabamento em mate.",
+                sizes: null,
+                hasColors: false,
+                colors: null,
                 badge: null
             },
             {
                 id: 6,
-                name: "Hoodie Bege",
-                category: "hoodies",
-                price: 55,
-                image: "https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80",
-                description: "Hoodie na cor bege da marca, básico e versátil. Qualidade premium para usar e abusar.",
-                sizes: ["S", "M", "L", "XL", "XXL"],
+                name: "Meias NUCA",
+                category: "acessorios",
+                basePrice: 12,
+                description: "Meias em algodão premium, confortáveis e duradouras.",
+                sizes: null,
+                hasShoeSizes: true,
+                shoeSizes: ["35-37", "38-40", "41-43", "44-46"],
+                hasColors: true,
+                colors: [
+                    { name: "Branco", hex: "#FFFFFF", image: "https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80" },
+                    { name: "Preto", hex: "#1a1a1a", image: "https://images.unsplash.com/photo-1582966772680-860e372c2ce8?w=600&q=80&sat=-100" }
+                ],
                 badge: null
             }
         ];
 
-        // Packs Data
+        // Packs Data - ATUALIZADO PARA NOVOS PRODUTOS
         const packs = [
             {
                 id: "pack-1",
                 name: "Pack Essentials",
-                description: "O básico que não pode faltar no teu guarda-roupa. As nossas peças mais icónicas num pack especial.",
-                items: [1, 4, 6],
+                description: "O básico que não pode faltar no teu guarda-roupa. T-shirt + Hoodie no teu estilo preferido.",
+                items: [1, 2], // T-shirt + Hoodie (cliente escolhe cor depois)
                 discount: 15,
                 image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&q=80",
                 badge: "POPULAR"
@@ -690,16 +737,16 @@
                 id: "pack-2",
                 name: "Pack Completo",
                 description: "Tudo o que precisas para um look completo NUCA. Do topo à base, incluindo acessórios.",
-                items: [1, 2, 3, 5],
+                items: [1, 2, 3, 4], // T-shirt + Hoodie + Boné + Tote
                 discount: 20,
                 image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
                 badge: "MAIOR POUPANÇA"
             },
             {
                 id: "pack-3",
-                name: "Pack Verão",
-                description: "Ideal para os dias quentes de Lisboa. Leve, confortável e com o estilo NUCA.",
-                items: [1, 4, 3],
+                name: "Pack Acessórios",
+                description: "Os detalhes que fazem a diferença. Boné, Tote Bag, Chaveiro e Meias.",
+                items: [3, 4, 5, 6],
                 discount: 12,
                 image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
                 badge: "TEMPORADA"
@@ -709,6 +756,8 @@
         let cart = [];
         let currentProduct = null;
         let selectedSize = null;
+        let selectedColor = null;
+        let selectedShoeSize = null;
         let currentPack = null;
         let selectedPackSize = 'M';
 
@@ -717,6 +766,7 @@
             renderProducts('all');
             renderPacks();
             setupScrollListener();
+            document.getElementById("year").textContent = new Date().getFullYear();
         });
 
         // Render Products
@@ -724,15 +774,25 @@
             const grid = document.getElementById('products-grid');
             const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
             
-            grid.innerHTML = filtered.map(product => `
+            grid.innerHTML = filtered.map(product => {
+                // Mostrar badge de cores se aplicável
+                let colorBadge = '';
+                if (product.hasColors && product.colors) {
+                    colorBadge = `<div class="absolute top-4 right-4 flex gap-1">` + 
+                        product.colors.map(c => `<div class="w-4 h-4 rounded-full border border-nuca-green/20" style="background-color: ${c.hex}"></div>`).join('') + 
+                        `</div>`;
+                }
+                
+                return `
                 <div class="product-card group cursor-pointer" onclick="openProductModal(${product.id})">
                     <div class="aspect-[3/4] bg-nuca-light rounded-2xl overflow-hidden mb-4 relative">
-                        <img src="${product.image}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500">
+                        <img src="${product.colors ? product.colors[0].image : product.image || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80'}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500">
                         ${product.badge ? `
                             <div class="absolute top-4 left-4 bg-nuca-green text-nuca-beige px-3 py-1 rounded-full text-xs font-bold">
                                 ${product.badge}
                             </div>
                         ` : ''}
+                        ${colorBadge}
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                             <span class="bg-nuca-beige text-nuca-green px-6 py-3 rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform">
                                 Ver Detalhes
@@ -742,12 +802,13 @@
                     <div class="space-y-2">
                         <div class="flex justify-between items-start">
                             <h3 class="font-display text-xl font-bold text-nuca-green group-hover:opacity-70 transition-opacity">${product.name}</h3>
-                            <span class="font-bold text-nuca-green">€${product.price}</span>
+                            <span class="font-bold text-nuca-green">€${product.basePrice}</span>
                         </div>
                         <p class="text-sm text-nuca-green/60 capitalize">${product.category}</p>
+                        ${product.hasColors ? `<p class="text-xs text-nuca-green/40">${product.colors.length} cores disponíveis</p>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         // Render Packs
@@ -756,7 +817,7 @@
             
             grid.innerHTML = packs.map(pack => {
                 const packProducts = pack.items.map(id => products.find(p => p.id === id));
-                const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+                const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
                 const discountedPrice = Math.round(totalPrice * (1 - pack.discount / 100));
                 
                 return `
@@ -776,7 +837,7 @@
                             
                             <div class="flex -space-x-3 mb-6">
                                 ${packProducts.slice(0, 4).map(p => `
-                                    <img src="${p.image}" alt="${p.name}" class="w-12 h-12 rounded-full border-2 border-nuca-green object-cover">
+                                    <img src="${p.colors ? p.colors[0].image : p.image || 'https://via.placeholder.com/50'}" alt="${p.name}" class="w-12 h-12 rounded-full border-2 border-nuca-green object-cover">
                                 `).join('')}
                                 ${packProducts.length > 4 ? `
                                     <div class="w-12 h-12 rounded-full border-2 border-nuca-green bg-nuca-beige/20 flex items-center justify-center text-xs font-bold">
@@ -827,24 +888,86 @@
             }, 100);
         }
 
-        // Product Modal
+        // Product Modal - ATUALIZADO COM CORES
         function openProductModal(productId) {
             currentProduct = products.find(p => p.id === productId);
-            selectedSize = currentProduct.sizes[0];
             
-            document.getElementById('modal-image').src = currentProduct.image;
+            // Reset selections
+            if (currentProduct.sizes) {
+                selectedSize = currentProduct.sizes[0];
+            } else {
+                selectedSize = null;
+            }
+            
+            if (currentProduct.hasColors && currentProduct.colors) {
+                selectedColor = currentProduct.colors[0];
+            } else {
+                selectedColor = null;
+            }
+            
+            if (currentProduct.hasShoeSizes && currentProduct.shoeSizes) {
+                selectedShoeSize = currentProduct.shoeSizes[0];
+            } else {
+                selectedShoeSize = null;
+            }
+            
+            // Update modal content
+            document.getElementById('modal-image').src = selectedColor ? selectedColor.image : (currentProduct.image || currentProduct.colors[0].image);
             document.getElementById('modal-category').textContent = currentProduct.category;
             document.getElementById('modal-title').textContent = currentProduct.name;
-            document.getElementById('modal-price').textContent = `€${currentProduct.price}`;
+            document.getElementById('modal-price').textContent = `€${currentProduct.basePrice}`;
             document.getElementById('modal-description').textContent = currentProduct.description;
             
-            const sizesContainer = document.getElementById('modal-sizes');
-            sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `
-                <button onclick="selectSize('${size}')" class="size-btn w-12 h-12 rounded-full border border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" data-size="${size}">
-                    ${size}
-                </button>
-            `).join('');
+            // Render Colors
+            const colorSection = document.getElementById('color-section');
+            if (currentProduct.hasColors && currentProduct.colors) {
+                colorSection.classList.remove('hidden');
+                const colorsContainer = document.getElementById('modal-colors');
+                colorsContainer.innerHTML = currentProduct.colors.map((color, idx) => `
+                    <button onclick="selectColor('${color.name}')" 
+                            class="color-selector w-10 h-10 rounded-full border-2 border-nuca-green/20 ${idx === 0 ? 'active' : ''}" 
+                            data-color="${color.name}"
+                            style="background-color: ${color.hex};"
+                            title="${color.name}">
+                    </button>
+                `).join('');
+            } else {
+                colorSection.classList.add('hidden');
+            }
             
+            // Render Sizes (Regular or Shoe)
+            const sizeSection = document.getElementById('size-section');
+            const sizeLabel = document.getElementById('size-label');
+            const sizesContainer = document.getElementById('modal-sizes');
+            
+            if (currentProduct.hasShoeSizes && currentProduct.shoeSizes) {
+                // Shoe sizes as dropdown
+                sizeLabel.textContent = 'Tamanho (Calçado)';
+                sizesContainer.innerHTML = `
+                    <select id="shoe-size-select" onchange="selectShoeSize(this.value)" 
+                            class="w-full px-4 py-3 rounded-xl border-2 border-nuca-green/20 bg-white/50 text-nuca-green font-medium focus:outline-none focus:border-nuca-green">
+                        ${currentProduct.shoeSizes.map((size, idx) => `
+                            <option value="${size}" ${idx === 0 ? 'selected' : ''}>${size} (EU)</option>
+                        `).join('')}
+                    </select>
+                `;
+                sizeSection.classList.remove('hidden');
+            } else if (currentProduct.sizes) {
+                // Regular sizes as buttons
+                sizeLabel.textContent = currentProduct.sizes[0] === 'Único' ? 'Tamanho' : 'Tamanho';
+                sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `
+                    <button onclick="selectSize('${size}')" 
+                            class="size-btn w-12 h-12 rounded-full border border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" 
+                            data-size="${size}">
+                        ${size}
+                    </button>
+                `).join('');
+                sizeSection.classList.remove('hidden');
+            } else {
+                sizeSection.classList.add('hidden');
+            }
+            
+            // Show modal
             const modal = document.getElementById('product-modal');
             const content = document.getElementById('modal-content');
             modal.classList.remove('hidden');
@@ -870,6 +993,22 @@
             }, 300);
         }
 
+        function selectColor(colorName) {
+            selectedColor = currentProduct.colors.find(c => c.name === colorName);
+            
+            // Update image
+            document.getElementById('modal-image').src = selectedColor.image;
+            
+            // Update active state
+            document.querySelectorAll('.color-selector').forEach(btn => {
+                if(btn.dataset.color === colorName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
         function selectSize(size) {
             selectedSize = size;
             document.querySelectorAll('.size-btn').forEach(btn => {
@@ -883,13 +1022,17 @@
             });
         }
 
+        function selectShoeSize(size) {
+            selectedShoeSize = size;
+        }
+
         // Pack Modal Functions
         function openPackModal(packId) {
             currentPack = packs.find(p => p.id === packId);
             selectedPackSize = 'M';
             
             const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
-            const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+            const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
             const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
             
             document.getElementById('pack-modal-title').textContent = currentPack.name;
@@ -901,10 +1044,10 @@
             const itemsContainer = document.getElementById('pack-modal-items');
             itemsContainer.innerHTML = packProducts.map(p => `
                 <div class="flex items-center gap-4 bg-nuca-light/50 p-4 rounded-xl">
-                    <img src="${p.image}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
+                    <img src="${p.colors ? p.colors[0].image : p.image || 'https://via.placeholder.com/60'}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg">
                     <div class="flex-1">
                         <h4 class="font-bold text-nuca-green">${p.name}</h4>
-                        <p class="text-sm text-nuca-green/60">€${p.price}</p>
+                        <p class="text-sm text-nuca-green/60">€${p.basePrice}</p>
                     </div>
                 </div>
             `).join('');
@@ -957,27 +1100,29 @@
             });
         }
 
-        // CORREÇÃO PRINCIPAL: Adicionar pack como itens individuais com desconto distribuído
+        // CORREÇÃO: Adicionar pack como itens individuais com desconto distribuído
         function addPackToCart() {
             if(!currentPack) return;
             
             const packProducts = currentPack.items.map(id => products.find(p => p.id === id));
-            const totalPrice = packProducts.reduce((sum, p) => sum + p.price, 0);
+            const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
             const discountedPrice = Math.round(totalPrice * (1 - currentPack.discount / 100));
             const discountPerItem = (totalPrice - discountedPrice) / packProducts.length;
             
-            // Adicionar cada item do pack individualmente com preço ajustado
             packProducts.forEach(product => {
-                const adjustedPrice = Math.max(0.01, product.price - discountPerItem); // Garantir preço positivo
+                const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
                 
                 cart.push({
                     id: product.id,
                     name: product.name,
                     price: adjustedPrice,
-                    originalPrice: product.price,
-                    size: selectedPackSize,
+                    originalPrice: product.basePrice,
+                    size: product.sizes ? (product.sizes[0] === 'Único' ? 'Único' : selectedPackSize) : null,
+                    color: product.hasColors ? product.colors[0].name : null,
+                    shoeSize: product.hasShoeSizes ? product.shoeSizes[0] : null,
                     quantity: 1,
-                    isPackItem: true, // Marcar como item de pack
+                    image: product.colors ? product.colors[0].image : product.image,
+                    isPackItem: true,
                     packName: currentPack.name,
                     packDiscount: currentPack.discount
                 });
@@ -997,20 +1142,39 @@
             }
         }
 
-        // Cart Functions
+        // Cart Functions - ATUALIZADO COM CORES
         function addToCartFromModal() {
-            if(!currentProduct || !selectedSize) return;
+            if(!currentProduct) return;
             
-            const existingItem = cart.find(item => item.id === currentProduct.id && item.size === selectedSize && !item.isPackItem);
+            // Determine size display
+            let sizeDisplay = selectedSize;
+            if (currentProduct.hasShoeSizes) {
+                sizeDisplay = selectedShoeSize;
+            }
+            
+            // Check if item already exists (same product, size, color)
+            const existingItem = cart.find(item => 
+                item.id === currentProduct.id && 
+                item.size === sizeDisplay && 
+                item.color === (selectedColor ? selectedColor.name : null) &&
+                !item.isPackItem
+            );
             
             if(existingItem) {
                 existingItem.quantity++;
             } else {
                 cart.push({
-                    ...currentProduct,
-                    size: selectedSize,
+                    id: currentProduct.id,
+                    name: currentProduct.name,
+                    price: currentProduct.basePrice,
+                    originalPrice: currentProduct.basePrice,
+                    size: sizeDisplay,
+                    color: selectedColor ? selectedColor.name : null,
+                    shoeSize: selectedShoeSize,
                     quantity: 1,
-                    isPackItem: false
+                    image: selectedColor ? selectedColor.image : (currentProduct.image || currentProduct.colors[0].image),
+                    isPackItem: false,
+                    packName: null
                 });
             }
             
@@ -1058,7 +1222,10 @@
                                     ${item.name}
                                     ${item.isPackItem ? `<span class="text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">PACK ${item.packName}</span>` : ''}
                                 </h4>
-                                <p class="text-sm text-nuca-green/60">Tamanho: ${item.size}</p>
+                                <p class="text-sm text-nuca-green/60">
+                                    ${item.color ? `Cor: ${item.color}` : ''}
+                                    ${item.size ? `• Tamanho: ${item.size}` : ''}
+                                </p>
                                 ${item.isPackItem ? `
                                     <p class="text-xs text-green-600 font-medium">Poupas €${(item.originalPrice - item.price).toFixed(2)}</p>
                                 ` : ''}
@@ -1134,35 +1301,32 @@
             });
         }
 
-        // CORREÇÃO CRÍTICA: Usar encodeURIComponent em vez de btoa para evitar problemas com UTF-8
+        // Checkout - ATUALIZADO COM NOVOS CAMPOS
         function goToCheckout() {
             if(cart.length === 0) {
                 alert('O teu carrinho está vazio!');
                 return;
             }
             
-            // Criar versão simplificada do carrinho para URL
             const simplifiedCart = cart.map(item => ({
                 id: item.id,
                 name: item.name,
                 price: item.price,
                 originalPrice: item.originalPrice || item.price,
                 size: item.size,
+                color: item.color,
+                shoeSize: item.shoeSize,
                 quantity: item.quantity,
                 image: item.image,
                 isPackItem: item.isPackItem || false,
                 packName: item.packName || null
             }));
             
-            // Usar encodeURIComponent em vez de btoa (que falha com UTF-8)
             const cartJson = JSON.stringify(simplifiedCart);
             const cartEncoded = encodeURIComponent(cartJson);
             
-            // Navegar para checkout
             window.location.href = `checkout.html?cart=${cartEncoded}`;
         }
-
-        document.getElementById("year").textContent = new Date().getFullYear();
     </script>
 </body>
 </html>
