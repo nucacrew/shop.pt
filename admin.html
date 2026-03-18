@@ -91,6 +91,13 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .sidebar-link { transition: all 0.2s; }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(85, 107, 79, 0.1);
+            border-right: 3px solid #556B4F;
+        }
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 <base target="_blank">
 </head>
@@ -103,7 +110,7 @@
         <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4 border border-nuca-green/10">
             <div class="text-center mb-8">
                 <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
-                <p class="text-nuca-green/60">Area de Administracao</p>
+                <p class="text-nuca-green/60">Área de Administração</p>
             </div>
             <form id="login-form" class="space-y-4">
                 <div>
@@ -114,8 +121,13 @@
                     <label class="block text-sm font-bold text-nuca-green mb-2">Password</label>
                     <input type="password" id="login-password" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="••••••••">
                 </div>
-                <button type="submit" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
-                    Entrar
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-nuca-green/30 text-nuca-green focus:ring-nuca-green">
+                    <label for="remember-me" class="text-sm text-nuca-green/70">Lembrar-me</label>
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                    <span id="login-text">Entrar</span>
+                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px; border-width: 2px;"></div>
                 </button>
             </form>
             <p class="text-center text-xs text-nuca-green/40 mt-6">Acesso restrito a administradores</p>
@@ -123,177 +135,367 @@
     </div>
 
     <!-- Main Admin Interface -->
-    <div id="admin-interface" class="hidden">
-        <!-- Header -->
-        <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
-            <div class="max-w-7xl mx-auto px-6 lg:px-12 py-4">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-4">
-                        <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
-                        <span class="hidden md:inline-block px-3 py-1 bg-nuca-green/10 rounded-full text-xs font-medium text-nuca-green">Painel de Controlo</span>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-                            <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
-                        </button>
-                        <div class="relative" id="user-menu-container">
-                            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                                <div class="w-8 h-8 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold text-sm">A</div>
-                                <span class="hidden md:block text-sm font-medium">Admin</span>
+    <div id="admin-interface" class="hidden flex min-h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 fixed h-full hidden lg:block">
+            <div class="p-6">
+                <h1 class="nuca-logo text-2xl text-nuca-green mb-8">NUCA Admin</h1>
+                <nav class="space-y-2">
+                    <a href="#dashboard" onclick="showSection('dashboard')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        Dashboard
+                    </a>
+                    <a href="#orders" onclick="showSection('orders')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        Encomendas
+                        <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                    </a>
+                    <a href="#products" onclick="showSection('products')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        Produtos
+                    </a>
+                    <a href="#customers" onclick="showSection('customers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Clientes
+                    </a>
+                    <a href="#analytics" onclick="showSection('analytics')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        Análises
+                    </a>
+                    <a href="#settings" onclick="showSection('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Configurações
+                    </a>
+                </nav>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-green/10">
+                <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Sair
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-64">
+            <!-- Header -->
+            <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
+                <div class="px-6 lg:px-12 py-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                             </button>
-                            <div id="user-menu" class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-nuca-green/10 py-2">
-                                <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors text-sm font-medium">Sair</button>
+                            <div>
+                                <h2 id="page-title" class="font-display text-xl font-bold text-nuca-green">Dashboard</h2>
+                                <p id="current-date" class="text-sm text-nuca-green/60"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                                <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                            </button>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold" id="user-avatar">A</div>
+                                <div class="hidden md:block">
+                                    <p class="text-sm font-bold text-nuca-green" id="user-name">Admin</p>
+                                    <p class="text-xs text-nuca-green/60">Administrador</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </header>
+            </header>
 
-        <!-- Notifications Panel -->
-        <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
-            <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
-                <h3 class="font-bold text-nuca-green">Notificacoes</h3>
-                <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
-            </div>
-            <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
-                <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificacoes novas</p>
-            </div>
-        </div>
-
-        <main class="max-w-7xl mx-auto px-6 lg:px-12 py-8">
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="admin-card rounded-2xl p-6 stats-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
-                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                        </div>
-                    </div>
-                    <p class="text-xs text-nuca-green/60">Desde o inicio</p>
+            <!-- Notifications Panel -->
+            <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
+                <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
+                    <h3 class="font-bold text-nuca-green">Notificações</h3>
+                    <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
                 </div>
-
-                <div class="admin-card rounded-2xl p-6 stats-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
-                            <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                    </div>
-                    <p class="text-xs text-nuca-green/60">Aguardam pagamento</p>
-                </div>
-
-                <div class="admin-card rounded-2xl p-6 stats-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
-                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                        </div>
-                    </div>
-                    <p class="text-xs text-nuca-green/60">Encomendas pagas</p>
-                </div>
-
-                <div class="admin-card rounded-2xl p-6 stats-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
-                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        </div>
-                    </div>
-                    <p class="text-xs text-nuca-green/60">Novas encomendas</p>
+                <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
+                    <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>
                 </div>
             </div>
 
-            <!-- Charts Section -->
-            <div class="grid lg:grid-cols-3 gap-6 mb-8">
-                <div class="lg:col-span-2 admin-card rounded-2xl p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Ultimos 7 dias)</h3>
-                        <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
-                            <option value="7">7 dias</option>
-                            <option value="30">30 dias</option>
-                        </select>
-                    </div>
-                    <canvas id="salesChart" height="200"></canvas>
-                </div>
-                <div class="admin-card rounded-2xl p-6">
-                    <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
-                    <canvas id="statusChart" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="admin-card rounded-2xl p-6 mb-6">
-                <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
-                        <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="pending_payment">Pendentes</button>
-                        <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="paid">Pagas</button>
-                        <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="shipped">Enviadas</button>
-                        <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="delivered">Entregues</button>
-                        <button onclick="filterOrders('cancelled')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="cancelled">Canceladas</button>
-                    </div>
-                    <div class="flex gap-3 w-full lg:w-auto">
-                        <div class="relative flex-1 lg:w-64">
-                            <input type="text" id="search-orders" placeholder="Pesquisar por n, nome ou email..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
-                            <svg class="absolute left-3 top-2.5 text-nuca-green/40" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <!-- Content Sections -->
+            <div class="p-6 lg:p-12">
+                
+                <!-- Dashboard Section -->
+                <div id="section-dashboard" class="fade-in">
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1" id="stat-total-trend">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                    +12%
+                                </span>
+                                <span class="text-xs text-nuca-green/60">vs mês anterior</span>
+                            </div>
                         </div>
-                        <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                        </button>
-                        <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar CSV">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        </button>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
+                                    <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-nuca-green/60">Aguardam pagamento</p>
+                        </div>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-green-600 font-medium flex items-center gap-1" id="stat-revenue-trend">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                                    +8%
+                                </span>
+                                <span class="text-xs text-nuca-green/60">vs mês anterior</span>
+                            </div>
+                        </div>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
+                            </div>
+                            <p class="text-xs text-nuca-green/60">Novas encomendas</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-2 admin-card rounded-2xl p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Últimos 7 dias)</h3>
+                                <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
+                                    <option value="7">7 dias</option>
+                                    <option value="30">30 dias</option>
+                                    <option value="90">3 meses</option>
+                                </select>
+                            </div>
+                            <canvas id="salesChart" height="200"></canvas>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6">
+                            <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
+                            <canvas id="statusChart" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="admin-card rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-display text-xl font-bold text-nuca-green">Encomendas Recentes</h3>
+                            <button onclick="showSection('orders')" class="text-sm text-nuca-green hover:underline">Ver todas</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Nº</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Total</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Status</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-orders-table" class="divide-y divide-nuca-green/10">
+                                    <tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">A carregar...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Orders Table -->
-            <div class="admin-card rounded-2xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                            <tr>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">N Encomenda</th>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Cliente</th>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Data</th>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Total</th>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Status</th>
-                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Prioridade</th>
-                                <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Acoes</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
-                            <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">
-                                    <div class="flex flex-col items-center gap-3">
-                                        <div class="loading-spinner w-8 h-8 border-2 border-nuca-green/30 border-t-nuca-green rounded-full animate-spin"></div>
-                                        <p>A carregar encomendas...</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!-- Orders Section -->
+                <div id="section-orders" class="hidden fade-in">
+                    <!-- Filters -->
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
+                                <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="pending_payment">Pendentes</button>
+                                <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="paid">Pagas</button>
+                                <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="shipped">Enviadas</button>
+                                <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="delivered">Entregues</button>
+                                <button onclick="filterOrders('cancelled')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="cancelled">Canceladas</button>
+                            </div>
+                            <div class="flex gap-3 w-full lg:w-auto">
+                                <div class="relative flex-1 lg:w-64">
+                                    <input type="text" id="search-orders" placeholder="Pesquisar por nº, nome ou email..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
+                                    <svg class="absolute left-3 top-2.5 text-nuca-green/40" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                </div>
+                                <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                                </button>
+                                <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar CSV">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="admin-card rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
+                                    <tr>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Nº Encomenda</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Cliente</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Data</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Total</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Status</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Prioridade</th>
+                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">
+                                            <div class="flex flex-col items-center gap-3">
+                                                <div class="loading-spinner"></div>
+                                                <p>A carregar encomendas...</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="pagination" class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
+                            <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
+                            <div class="flex gap-2">
+                                <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+                                <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Próxima</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="pagination" class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
-                    <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
-                    <div class="flex gap-2">
-                        <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-                        <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Proxima</button>
+
+                <!-- Products Section -->
+                <div id="section-products" class="hidden fade-in">
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-display text-xl font-bold text-nuca-green">Gestão de Produtos</h3>
+                            <button onclick="showToast('Funcionalidade em desenvolvimento', 'info')" class="bg-nuca-green text-nuca-beige px-4 py-2 rounded-full text-sm font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Novo Produto
+                            </button>
+                        </div>
+                    </div>
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <div class="w-16 h-16 bg-nuca-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-nuca-green mb-2">Gestão de Produtos</h4>
+                        <p class="text-nuca-green/60 max-w-md mx-auto">Esta funcionalidade permite gerir o catálogo de produtos, stock e preços. Em breve disponível.</p>
+                    </div>
+                </div>
+
+                <!-- Customers Section -->
+                <div id="section-customers" class="hidden fade-in">
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-green">Clientes</h3>
+                    </div>
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <div class="w-16 h-16 bg-nuca-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h4 class="font-display text-lg font-bold text-nuca-green mb-2">Base de Clientes</h4>
+                        <p class="text-nuca-green/60 max-w-md mx-auto">Visualize e gerencie os dados dos seus clientes. Em breve disponível.</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="section-analytics" class="hidden fade-in">
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-green">Análises Detalhadas</h3>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="admin-card rounded-2xl p-6">
+                            <h4 class="font-bold text-nuca-green mb-4">Produtos Mais Vendidos</h4>
+                            <div class="space-y-4" id="top-products">
+                                <p class="text-nuca-green/60 text-sm">Dados em processamento...</p>
+                            </div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6">
+                            <h4 class="font-bold text-nuca-green mb-4">Vendas por Categoria</h4>
+                            <canvas id="categoryChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Section -->
+                <div id="section-settings" class="hidden fade-in">
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-green">Configurações</h3>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="admin-card rounded-2xl p-6">
+                            <h4 class="font-bold text-nuca-green mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                Dados da Loja
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-nuca-green mb-1">Nome da Loja</label>
+                                    <input type="text" value="NUCA" class="search-input w-full px-4 py-2 rounded-xl text-sm" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-nuca-green mb-1">Email de Contacto</label>
+                                    <input type="email" value="nuca.crew@gmail.com" class="search-input w-full px-4 py-2 rounded-xl text-sm" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6">
+                            <h4 class="font-bold text-nuca-green mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                                Preferências
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-nuca-green">Notificações de novas encomendas</span>
+                                    <button onclick="toggleSetting(this)" class="w-12 h-6 bg-nuca-green rounded-full relative transition-colors">
+                                        <span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></span>
+                                    </button>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-nuca-green">Modo escuro</span>
+                                    <button onclick="toggleSetting(this)" class="w-12 h-6 bg-nuca-green/30 rounded-full relative transition-colors">
+                                        <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -309,9 +511,14 @@
                     <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
                     <p class="text-sm text-nuca-green/60" id="modal-order-date"></p>
                 </div>
-                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+                <div class="flex items-center gap-3">
+                    <button onclick="printOrder()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors" title="Imprimir">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    </button>
+                    <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                </div>
             </div>
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="grid md:grid-cols-2 gap-6">
@@ -380,45 +587,166 @@
     <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
 
     <script>
+        // ============================================
+        // SUPABASE CONFIGURATION
+        // ============================================
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
         let allOrders = [];
         let filteredOrders = [];
         let currentPage = 1;
         const ordersPerPage = 10;
         let currentFilter = 'all';
+        let currentSection = 'dashboard';
         let salesChart = null;
         let statusChart = null;
+        let categoryChart = null;
         let notifications = [];
+        let currentUser = null;
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        });
+
+        // ============================================
+        // AUTHENTICATION
+        // ============================================
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showAdminInterface();
+            }
+        }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
 
-            if (email === 'admin@nuca.pt' && password === 'admin123') {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('admin-interface').classList.remove('hidden');
-                await initDashboard();
-            } else {
+            setLoginLoading(true);
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                currentUser = data.user;
+                
+                if (rememberMe) {
+                    localStorage.setItem('nuca_admin_remember', 'true');
+                }
+
+                showAdminInterface();
+                showToast('Bem-vindo de volta!', 'success');
+
+            } catch (error) {
+                console.error('Erro de login:', error);
                 showToast('Email ou password incorretos', 'error');
+            } finally {
+                setLoginLoading(false);
             }
         });
 
-        function logout() {
+        function setLoginLoading(loading) {
+            const btn = document.getElementById('login-btn');
+            const text = document.getElementById('login-text');
+            const spinner = document.getElementById('login-spinner');
+            
+            btn.disabled = loading;
+            text.classList.toggle('hidden', loading);
+            spinner.classList.toggle('hidden', !loading);
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('nuca_admin_remember');
+            currentUser = null;
             document.getElementById('admin-interface').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
             document.getElementById('login-form').reset();
         }
 
+        function showAdminInterface() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-interface').classList.remove('hidden');
+            
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.email.split('@')[0];
+                document.getElementById('user-avatar').textContent = currentUser.email.charAt(0).toUpperCase();
+            }
+            
+            initDashboard();
+        }
+
+        // ============================================
+        // DASHBOARD INITIALIZATION
+        // ============================================
         async function initDashboard() {
             await loadOrders();
             setupRealtimeSubscription();
             initCharts();
         }
 
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        function showSection(section) {
+            currentSection = section;
+            
+            // Update sidebar
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`a[href="#${section}"]`).classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'orders': 'Encomendas',
+                'products': 'Produtos',
+                'customers': 'Clientes',
+                'analytics': 'Análises',
+                'settings': 'Configurações'
+            };
+            document.getElementById('page-title').textContent = titles[section];
+            
+            // Show/hide sections
+            document.querySelectorAll('[id^="section-"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(`section-${section}`).classList.remove('hidden');
+            
+            // Close mobile sidebar
+            document.querySelector('aside').classList.add('hidden');
+            document.querySelector('aside').classList.remove('fixed', 'inset-0', 'z-50', 'w-full');
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('aside');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('fixed');
+            sidebar.classList.toggle('inset-0');
+            sidebar.classList.toggle('z-50');
+            sidebar.classList.toggle('w-full');
+        }
+
+        // ============================================
+        // ORDERS MANAGEMENT
+        // ============================================
         async function loadOrders() {
             try {
                 const { data, error } = await supabaseClient
@@ -433,8 +761,10 @@
 
                 updateStats();
                 renderOrders();
+                renderRecentOrders();
                 updateCharts();
                 checkNewOrders();
+                updatePendingBadge();
 
             } catch (error) {
                 console.error('Erro ao carregar encomendas:', error);
@@ -463,25 +793,25 @@
             applyFilters();
             updateStats();
             updateCharts();
+            updatePendingBadge();
         }
 
-        function checkNewOrders() {
-            const lastCheck = localStorage.getItem('lastOrderCheck') || new Date(0).toISOString();
-            const newOrders = allOrders.filter(o => new Date(o.created_at) > new Date(lastCheck));
-
-            if (newOrders.length > 0) {
-                newOrders.forEach(order => { addNotification(`Nova encomenda: ${order.order_number}`, 'new-order'); });
-                document.getElementById('notification-badge').classList.remove('hidden');
-                document.getElementById('notification-badge').textContent = notifications.length;
+        function updatePendingBadge() {
+            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
+            const badge = document.getElementById('sidebar-pending-badge');
+            if (pending > 0) {
+                badge.textContent = pending;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
             }
-            localStorage.setItem('lastOrderCheck', new Date().toISOString());
         }
 
         function updateStats() {
             const total = allOrders.length;
             const pending = allOrders.filter(o => o.status === 'pending_payment').length;
             const revenue = allOrders
-                .filter(o => o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered')
+                .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
                 .reduce((sum, o) => sum + (o.total || 0), 0);
             const today = new Date().toDateString();
             const todayOrders = allOrders.filter(o => new Date(o.created_at).toDateString() === today).length;
@@ -520,6 +850,29 @@
             updatePagination();
         }
 
+        function renderRecentOrders() {
+            const tbody = document.getElementById('recent-orders-table');
+            const recent = allOrders.slice(0, 5);
+
+            if (recent.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = recent.map(order => {
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+
+                return `<tr class="order-row cursor-pointer" onclick="openOrderDetail('${order.id}')">
+                    <td class="px-4 py-3"><span class="font-mono font-bold text-nuca-green">${order.order_number}</span></td>
+                    <td class="px-4 py-3"><p class="font-medium text-nuca-green">${order.customer_name}</p></td>
+                    <td class="px-4 py-3 font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold uppercase ${statusClass}">${statusText}</span></td>
+                    <td class="px-4 py-3"><button onclick="event.stopPropagation(); openOrderDetail('${order.id}')" class="text-nuca-green hover:underline text-sm">Ver</button></td>
+                </tr>`;
+            }).join('');
+        }
+
         function calculatePriority(order) {
             const age = new Date() - new Date(order.created_at);
             const hours = age / (1000 * 60 * 60);
@@ -532,7 +885,7 @@
         function getPriorityBadge(priority) {
             const badges = {
                 'priority-high': '<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">ALTA</span>',
-                'priority-medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">MEDIA</span>',
+                'priority-medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">MÉDIA</span>',
                 'priority-low': '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">NORMAL</span>'
             };
             return badges[priority] || badges['priority-low'];
@@ -557,7 +910,7 @@
         function getActionButtons(order) {
             if (order.status === 'pending_payment') {
                 return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
-                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Nao Pago</button>`;
+                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Não Pago</button>`;
             } else if (order.status === 'paid') {
                 return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
             } else if (order.status === 'shipped') {
@@ -616,7 +969,7 @@
 
             document.getElementById('modal-subtotal').textContent = `€${(order.subtotal || 0).toFixed(2)}`;
             document.getElementById('modal-discount').textContent = `-€${(order.discount || 0).toFixed(2)}`;
-            document.getElementById('modal-shipping').textContent = order.shipping === 0 ? 'Gratis' : `€${(order.shipping || 0).toFixed(2)}`;
+            document.getElementById('modal-shipping').textContent = order.shipping === 0 ? 'Grátis' : `€${(order.shipping || 0).toFixed(2)}`;
             document.getElementById('modal-total').textContent = `€${(order.total || 0).toFixed(2)}`;
 
             document.getElementById('modal-actions').innerHTML = getModalActionButtons(order);
@@ -645,6 +998,13 @@
             document.getElementById('order-modal').classList.add('hidden');
         }
 
+        function printOrder() {
+            window.print();
+        }
+
+        // ============================================
+        // FILTERS & SEARCH
+        // ============================================
         function filterOrders(status) {
             currentFilter = status;
             currentPage = 1;
@@ -696,6 +1056,9 @@
             }
         }
 
+        // ============================================
+        // CHARTS
+        // ============================================
         function initCharts() {
             const salesCtx = document.getElementById('salesChart').getContext('2d');
             salesChart = new Chart(salesCtx, {
@@ -710,21 +1073,31 @@
                 data: { labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], datasets: [{ data: [0, 0, 0, 0, 0], backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
             });
+
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                categoryChart = new Chart(categoryCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: { labels: ['T-shirts', 'Hoodies', 'Acessórios'], datasets: [{ label: 'Vendas', data: [0, 0, 0], backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'] }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                });
+            }
         }
 
         function updateCharts() {
             if (!salesChart || !statusChart) return;
-            const days = 7;
+            
+            const days = parseInt(document.getElementById('chart-period').value) || 7;
             const labels = [];
             const data = [];
 
             for (let i = days - 1; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                const dateStr = date.toLocaleDateString('pt-PT', { weekday: 'short' });
+                const dateStr = days > 30 ? date.toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }) : date.toLocaleDateString('pt-PT', { weekday: 'short' });
                 labels.push(dateStr);
                 const dayTotal = allOrders
-                    .filter(o => { const orderDate = new Date(o.created_at); return orderDate.toDateString() === date.toDateString() && (o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered'); })
+                    .filter(o => { const orderDate = new Date(o.created_at); return orderDate.toDateString() === date.toDateString() && ['paid', 'shipped', 'delivered'].includes(o.status); })
                     .reduce((sum, o) => sum + (o.total || 0), 0);
                 data.push(dayTotal);
             }
@@ -739,6 +1112,13 @@
             statusChart.update();
         }
 
+        function updateChart() {
+            updateCharts();
+        }
+
+        // ============================================
+        // NOTIFICATIONS
+        // ============================================
         function toggleNotifications() {
             document.getElementById('notifications-panel').classList.toggle('hidden');
         }
@@ -755,7 +1135,7 @@
         function updateNotificationsList() {
             const list = document.getElementById('notifications-list');
             if (notifications.length === 0) {
-                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificacoes novas</p>';
+                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>';
                 return;
             }
             list.innerHTML = notifications.map(n => `
@@ -784,6 +1164,21 @@
             document.getElementById('notification-badge').classList.add('hidden');
         }
 
+        function checkNewOrders() {
+            const lastCheck = localStorage.getItem('lastOrderCheck') || new Date(0).toISOString();
+            const newOrders = allOrders.filter(o => new Date(o.created_at) > new Date(lastCheck));
+
+            if (newOrders.length > 0) {
+                newOrders.forEach(order => { addNotification(`Nova encomenda: ${order.order_number}`, 'new-order'); });
+                document.getElementById('notification-badge').classList.remove('hidden');
+                document.getElementById('notification-badge').textContent = notifications.length;
+            }
+            localStorage.setItem('lastOrderCheck', new Date().toISOString());
+        }
+
+        // ============================================
+        // UTILITIES
+        // ============================================
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -793,8 +1188,8 @@
             const now = new Date();
             const diff = Math.floor((now - date) / 1000 / 60);
             if (diff < 1) return 'Agora';
-            if (diff < 60) return `Ha ${diff} min`;
-            if (diff < 1440) return `Ha ${Math.floor(diff / 60)} h`;
+            if (diff < 60) return `Há ${diff} min`;
+            if (diff < 1440) return `Há ${Math.floor(diff / 60)} h`;
             return date.toLocaleDateString('pt-PT');
         }
 
@@ -819,31 +1214,47 @@
 
         function exportOrders() {
             const csvContent = [
-                ['N Encomenda', 'Data', 'Cliente', 'Email', 'Telefone', 'Total', 'Status'].join(','),
+                ['Nº Encomenda', 'Data', 'Cliente', 'Email', 'Telefone', 'Total', 'Status'].join(','),
                 ...filteredOrders.map(o => [
                     o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.customer_phone || '', o.total, o.status
                 ].join(','))
-            ].join('
-');
-            const blob = new Blob([csvContent], { type: 'text/csv' });
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `encomendas_nuca_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
             showToast('CSV exportado com sucesso!', 'success');
         }
 
-        function toggleUserMenu() {
-            document.getElementById('user-menu').classList.toggle('hidden');
+        function toggleSetting(btn) {
+            const isActive = btn.classList.contains('bg-nuca-green');
+            btn.classList.toggle('bg-nuca-green', !isActive);
+            btn.classList.toggle('bg-nuca-green/30', isActive);
+            const dot = btn.querySelector('span');
+            dot.classList.toggle('translate-x-6', !isActive);
         }
 
+        // Close panels on outside click
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('#user-menu-container')) document.getElementById('user-menu').classList.add('hidden');
-            if (!e.target.closest('#notifications-panel') && !e.target.closest('button[onclick="toggleNotifications()"]')) document.getElementById('notifications-panel').classList.add('hidden');
+            if (!e.target.closest('#notifications-panel') && !e.target.closest('button[onclick="toggleNotifications()"]')) {
+                document.getElementById('notifications-panel').classList.add('hidden');
+            }
         });
 
-        function updateChart() { updateCharts(); }
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeOrderModal();
+                document.getElementById('notifications-panel').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
