@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- ============================================
-         FONTS & EXTERNAL RESOURCES
-         ============================================ -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -105,8 +100,18 @@
         }
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Mobile sidebar styles */
+        @media (max-width: 1024px) {
+            aside {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            aside.mobile-open {
+                transform: translateX(0);
+            }
+        }
     </style>
-<base target="_blank">
 </head>
 <body class="antialiased min-h-screen">
 
@@ -145,32 +150,32 @@
     <div id="admin-interface" class="hidden flex min-h-screen">
         
         <!-- Sidebar -->
-        <aside class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 fixed h-full hidden lg:block">
+        <aside id="sidebar" class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 fixed h-full hidden lg:block z-40">
             <div class="p-6">
                 <h1 class="nuca-logo text-2xl text-nuca-green mb-8">NUCA Admin</h1>
                 <nav class="space-y-2">
-                    <a href="#dashboard" onclick="showSection('dashboard')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                         Dashboard
                     </a>
-                    <a href="#orders" onclick="showSection('orders')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                         Encomendas
                         <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
                     </a>
-                    <a href="#products" onclick="showSection('products')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                         Produtos
                     </a>
-                    <a href="#customers" onclick="showSection('customers')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         Clientes
                     </a>
-                    <a href="#analytics" onclick="showSection('analytics')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                         Análises
                     </a>
-                    <a href="#settings" onclick="showSection('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium">
+                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                         Configurações
                     </a>
@@ -183,6 +188,9 @@
                 </button>
             </div>
         </aside>
+
+        <!-- Mobile Sidebar Overlay -->
+        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleMobileSidebar()"></div>
 
         <!-- Main Content -->
         <main class="flex-1 lg:ml-64">
@@ -718,7 +726,8 @@
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active');
             });
-            document.querySelector(`a[href="#${section}"]`).classList.add('active');
+            const activeLink = document.querySelector(`a[href="#${section}"]`);
+            if (activeLink) activeLink.classList.add('active');
             
             // Update page title
             const titles = {
@@ -738,18 +747,44 @@
             document.getElementById(`section-${section}`).classList.remove('hidden');
             
             // Close mobile sidebar
-            document.querySelector('aside').classList.add('hidden');
-            document.querySelector('aside').classList.remove('fixed', 'inset-0', 'z-50', 'w-full');
+            closeMobileSidebar();
+            
+            // Update URL hash without scrolling
+            history.pushState(null, null, `#${section}`);
         }
 
         function toggleMobileSidebar() {
-            const sidebar = document.querySelector('aside');
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('fixed');
-            sidebar.classList.toggle('inset-0');
-            sidebar.classList.toggle('z-50');
-            sidebar.classList.toggle('w-full');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            const isOpen = sidebar.classList.contains('mobile-open');
+            
+            if (isOpen) {
+                closeMobileSidebar();
+            } else {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('fixed', 'inset-0', 'z-50', 'w-full', 'mobile-open');
+                overlay.classList.remove('hidden');
+            }
         }
+
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            sidebar.classList.remove('fixed', 'inset-0', 'z-50', 'w-full', 'mobile-open');
+            if (!window.innerWidth >= 1024) {
+                sidebar.classList.add('hidden');
+            }
+            overlay.classList.add('hidden');
+        }
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.replace('#', '') || 'dashboard';
+            if (document.getElementById(`section-${hash}`)) {
+                showSection(hash);
+            }
+        });
 
         // ============================================
         // ORDERS MANAGEMENT
