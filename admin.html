@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - NUCA Orders</title>
+    <title>Admin - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -15,6 +16,7 @@
                         'nuca-beige': '#D8C6A5',
                         'nuca-green': '#556B4F',
                         'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
                     },
                     fontFamily: {
                         'display': ['Syne', 'sans-serif'],
@@ -25,208 +27,823 @@
         }
     </script>
     <style>
-        body { background-color: #D8C6A5; color: #556B4F; font-family: 'Space Grotesk', sans-serif; }
-        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; }
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-paid { background-color: #D1FAE5; color: #065F46; }
+        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+        .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
+        .status-delivered { background-color: #E0E7FF; color: #3730A3; }
+        .admin-card {
+            background-color: rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(85, 107, 79, 0.1);
+        }
+        .order-row { transition: all 0.2s; }
+        .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
+        .modal-overlay {
+            background-color: rgba(44, 51, 40, 0.8);
+            backdrop-filter: blur(4px);
+        }
+        .btn-action { transition: all 0.2s; }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.3);
+        }
+        .notification { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .tab-active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+        }
+        .priority-high { border-left: 4px solid #DC2626; }
+        .priority-medium { border-left: 4px solid #F59E0B; }
+        .priority-low { border-left: 4px solid #10B981; }
+        .search-input {
+            background-color: rgba(255,255,255,0.7);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #556B4F;
+            background-color: white;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%);
+        }
+        .loading-spinner {
+            border: 3px solid rgba(85, 107, 79, 0.3);
+            border-top: 3px solid #556B4F;
+            border-radius: 50%; width: 24px; height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
+<base target="_blank">
 </head>
-<body class="min-h-screen p-4 md:p-8">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold nuca-logo text-nuca-green">Painel NUCA</h1>
-            <button onclick="loadOrders()" class="bg-nuca-green text-nuca-beige px-6 py-2 rounded-full font-bold hover:bg-nuca-dark transition-colors">
-                Atualizar
-            </button>
+<body class="antialiased min-h-screen">
+
+    <div class="grain-overlay"></div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-nuca-beige">
+        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4 border border-nuca-green/10">
+            <div class="text-center mb-8">
+                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
+                <p class="text-nuca-green/60">Area de Administracao</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
+                    <input type="email" id="login-email" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="admin@nuca.pt">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Password</label>
+                    <input type="password" id="login-password" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                    Entrar
+                </button>
+            </form>
+            <p class="text-center text-xs text-nuca-green/40 mt-6">Acesso restrito a administradores</p>
         </div>
-        
-        <div class="bg-white/50 rounded-3xl shadow-lg overflow-hidden border border-nuca-green/10">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-nuca-green text-nuca-beige">
-                        <tr>
-                            <th class="p-4 text-sm">Nº Encomenda</th>
-                            <th class="p-4 text-sm">Data</th>
-                            <th class="p-4 text-sm">Cliente</th>
-                            <th class="p-4 text-sm">Itens</th>
-                            <th class="p-4 text-sm">Total</th>
-                            <th class="p-4 text-sm">Estado</th>
-                            <th class="p-4 text-sm">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orders-list" class="divide-y divide-nuca-green/10">
-                        <tr><td colspan="7" class="p-8 text-center text-nuca-green/60">A carregar...</td></tr>
-                    </tbody>
-                </table>
+    </div>
+
+    <!-- Main Admin Interface -->
+    <div id="admin-interface" class="hidden">
+        <!-- Header -->
+        <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
+            <div class="max-w-7xl mx-auto px-6 lg:px-12 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
+                        <span class="hidden md:inline-block px-3 py-1 bg-nuca-green/10 rounded-full text-xs font-medium text-nuca-green">Painel de Controlo</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                            <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                        </button>
+                        <div class="relative" id="user-menu-container">
+                            <button onclick="toggleUserMenu()" class="flex items-center gap-2 p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
+                                <div class="w-8 h-8 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold text-sm">A</div>
+                                <span class="hidden md:block text-sm font-medium">Admin</span>
+                            </button>
+                            <div id="user-menu" class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-2xl shadow-xl border border-nuca-green/10 py-2">
+                                <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors text-sm font-medium">Sair</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notifications Panel -->
+        <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
+            <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
+                <h3 class="font-bold text-nuca-green">Notificacoes</h3>
+                <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
+            </div>
+            <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
+                <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificacoes novas</p>
+            </div>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-6 lg:px-12 py-8">
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="admin-card rounded-2xl p-6 stats-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
+                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-nuca-green/60">Desde o inicio</p>
+                </div>
+
+                <div class="admin-card rounded-2xl p-6 stats-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
+                            <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-nuca-green/60">Aguardam pagamento</p>
+                </div>
+
+                <div class="admin-card rounded-2xl p-6 stats-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
+                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-nuca-green/60">Encomendas pagas</p>
+                </div>
+
+                <div class="admin-card rounded-2xl p-6 stats-card">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
+                            <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-nuca-green/60">Novas encomendas</p>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 admin-card rounded-2xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Ultimos 7 dias)</h3>
+                        <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
+                            <option value="7">7 dias</option>
+                            <option value="30">30 dias</option>
+                        </select>
+                    </div>
+                    <canvas id="salesChart" height="200"></canvas>
+                </div>
+                <div class="admin-card rounded-2xl p-6">
+                    <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
+                    <canvas id="statusChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="admin-card rounded-2xl p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
+                        <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="pending_payment">Pendentes</button>
+                        <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="paid">Pagas</button>
+                        <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="shipped">Enviadas</button>
+                        <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="delivered">Entregues</button>
+                        <button onclick="filterOrders('cancelled')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="cancelled">Canceladas</button>
+                    </div>
+                    <div class="flex gap-3 w-full lg:w-auto">
+                        <div class="relative flex-1 lg:w-64">
+                            <input type="text" id="search-orders" placeholder="Pesquisar por n, nome ou email..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
+                            <svg class="absolute left-3 top-2.5 text-nuca-green/40" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        </div>
+                        <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                        </button>
+                        <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar CSV">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table -->
+            <div class="admin-card rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
+                            <tr>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">N Encomenda</th>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Cliente</th>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Data</th>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Total</th>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Status</th>
+                                <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Prioridade</th>
+                                <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Acoes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="loading-spinner w-8 h-8 border-2 border-nuca-green/30 border-t-nuca-green rounded-full animate-spin"></div>
+                                        <p>A carregar encomendas...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="pagination" class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
+                    <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
+                    <div class="flex gap-2">
+                        <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
+                        <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Proxima</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeOrderModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
+                    <p class="text-sm text-nuca-green/60" id="modal-order-date"></p>
+                </div>
+                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                Cliente
+                            </h3>
+                            <p class="font-medium text-nuca-green" id="modal-customer-name"></p>
+                            <p class="text-sm text-nuca-green/60" id="modal-customer-email"></p>
+                            <p class="text-sm text-nuca-green/60" id="modal-customer-phone"></p>
+                        </div>
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                Morada de Envio
+                            </h3>
+                            <p class="text-sm text-nuca-green/80" id="modal-shipping-address"></p>
+                        </div>
+                        <div class="bg-white/50 rounded-2xl p-4" id="modal-notes-section">
+                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                Notas
+                            </h3>
+                            <p class="text-sm text-nuca-green/80" id="modal-notes"></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Itens da Encomenda</h3>
+                            <div id="modal-items" class="space-y-3"></div>
+                        </div>
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Resumo Financeiro</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Subtotal</span>
+                                    <span id="modal-subtotal"></span>
+                                </div>
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Desconto</span>
+                                    <span id="modal-discount" class="text-green-600"></span>
+                                </div>
+                                <div class="flex justify-between text-nuca-green/60">
+                                    <span>Envio</span>
+                                    <span id="modal-shipping"></span>
+                                </div>
+                                <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
+                                    <span>Total</span>
+                                    <span id="modal-total"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t border-nuca-green/10">
+                    <h3 class="font-bold text-nuca-green mb-4">Atualizar Status</h3>
+                    <div class="flex flex-wrap gap-3" id="modal-actions"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Detalhes -->
-    <div id="order-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-nuca-beige rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-nuca-green hover:text-nuca-dark">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-            <div id="modal-content"></div>
-        </div>
-    </div>
+    <!-- Toast Notification -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
 
     <script>
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function loadOrders() {
-            const { data: orders, error } = await supabase
-                .from('orders')
-                .select('*')
-                .order('created_at', { ascending: false });
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentPage = 1;
+        const ordersPerPage = 10;
+        let currentFilter = 'all';
+        let salesChart = null;
+        let statusChart = null;
+        let notifications = [];
 
-            if(error) {
-                console.error(error);
-                document.getElementById('orders-list').innerHTML = `<tr><td colspan="7" class="p-8 text-center text-red-600">Erro: ${error.message}</td></tr>`;
-                return;
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (email === 'admin@nuca.pt' && password === 'admin123') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-interface').classList.remove('hidden');
+                await initDashboard();
+            } else {
+                showToast('Email ou password incorretos', 'error');
             }
+        });
 
-            const tbody = document.getElementById('orders-list');
-            
-            if(orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-nuca-green/60">Sem encomendas ainda</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = orders.map(order => {
-                const itemCount = order.items ? order.items.length : 0;
-                return `
-                <tr class="hover:bg-nuca-green/5 transition-colors">
-                    <td class="p-4 font-mono font-bold text-nuca-green text-sm">${order.order_number}</td>
-                    <td class="p-4 text-sm text-nuca-green/70">${new Date(order.created_at).toLocaleString('pt-PT')}</td>
-                    <td class="p-4">
-                        <div class="font-medium text-nuca-green text-sm">${order.customer_name}</div>
-                        <div class="text-xs text-nuca-green/60">${order.customer_email}</div>
-                    </td>
-                    <td class="p-4 text-sm text-nuca-green/70">${itemCount} item(s)</td>
-                    <td class="p-4 font-bold text-nuca-green">€${order.total.toFixed(2)}</td>
-                    <td class="p-4">
-                        <span class="px-3 py-1 rounded-full text-xs font-bold ${
-                            order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                            order.status === 'paid' ? 'bg-green-100 text-green-700' :
-                            order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                            'bg-gray-100 text-gray-700'
-                        }">${order.status.toUpperCase()}</span>
-                    </td>
-                    <td class="p-4">
-                        <button onclick="viewDetails('${order.id}')" class="text-nuca-green hover:underline text-sm font-medium">Ver detalhes</button>
-                    </td>
-                </tr>
-            `}).join('');
+        function logout() {
+            document.getElementById('admin-interface').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-form').reset();
         }
 
-        async function viewDetails(orderId) {
-            const { data: order, error } = await supabase
-                .from('orders')
-                .select('*')
-                .eq('id', orderId)
-                .single();
+        async function initDashboard() {
+            await loadOrders();
+            setupRealtimeSubscription();
+            initCharts();
+        }
 
-            if(error) return;
+        async function loadOrders() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
 
-            const modal = document.getElementById('order-modal');
-            const content = document.getElementById('modal-content');
-            
-            const itemsHtml = order.items.map(item => `
-                <div class="flex justify-between py-2 border-b border-nuca-green/10">
-                    <div>
-                        <span class="font-medium text-nuca-green">${item.name}</span>
-                        <span class="text-sm text-nuca-green/60">x${item.quantity} • ${item.size}</span>
-                    </div>
-                    <span class="text-nuca-green font-medium">€${(item.price * item.quantity).toFixed(2)}</span>
+                if (error) throw error;
+
+                allOrders = data || [];
+                filteredOrders = [...allOrders];
+
+                updateStats();
+                renderOrders();
+                updateCharts();
+                checkNewOrders();
+
+            } catch (error) {
+                console.error('Erro ao carregar encomendas:', error);
+                showToast('Erro ao carregar encomendas', 'error');
+            }
+        }
+
+        function setupRealtimeSubscription() {
+            supabaseClient
+                .channel('orders-channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
+                    (payload) => { handleRealtimeChange(payload); }
+                )
+                .subscribe();
+        }
+
+        function handleRealtimeChange(payload) {
+            if (payload.eventType === 'INSERT') {
+                allOrders.unshift(payload.new);
+                addNotification(`Nova encomenda: ${payload.new.order_number}`, 'new-order');
+                showToast(`Nova encomenda recebida: ${payload.new.order_number}`, 'success');
+            } else if (payload.eventType === 'UPDATE') {
+                const index = allOrders.findIndex(o => o.id === payload.new.id);
+                if (index !== -1) allOrders[index] = payload.new;
+            }
+            applyFilters();
+            updateStats();
+            updateCharts();
+        }
+
+        function checkNewOrders() {
+            const lastCheck = localStorage.getItem('lastOrderCheck') || new Date(0).toISOString();
+            const newOrders = allOrders.filter(o => new Date(o.created_at) > new Date(lastCheck));
+
+            if (newOrders.length > 0) {
+                newOrders.forEach(order => { addNotification(`Nova encomenda: ${order.order_number}`, 'new-order'); });
+                document.getElementById('notification-badge').classList.remove('hidden');
+                document.getElementById('notification-badge').textContent = notifications.length;
+            }
+            localStorage.setItem('lastOrderCheck', new Date().toISOString());
+        }
+
+        function updateStats() {
+            const total = allOrders.length;
+            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
+            const revenue = allOrders
+                .filter(o => o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered')
+                .reduce((sum, o) => sum + (o.total || 0), 0);
+            const today = new Date().toDateString();
+            const todayOrders = allOrders.filter(o => new Date(o.created_at).toDateString() === today).length;
+
+            document.getElementById('stat-total-orders').textContent = total;
+            document.getElementById('stat-pending').textContent = pending;
+            document.getElementById('stat-revenue').textContent = `€${revenue.toFixed(2)}`;
+            document.getElementById('stat-today').textContent = todayOrders;
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const pageOrders = filteredOrders.slice(start, end);
+
+            if (pageOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40"><p>Nenhuma encomenda encontrada</p></td></tr>`;
+            } else {
+                tbody.innerHTML = pageOrders.map(order => {
+                    const priority = calculatePriority(order);
+                    const statusClass = getStatusClass(order.status);
+                    const statusText = getStatusText(order.status);
+
+                    return `<tr class="order-row cursor-pointer ${priority}" onclick="openOrderDetail('${order.id}')">
+                        <td class="px-6 py-4"><span class="font-mono font-bold text-nuca-green">${order.order_number}</span></td>
+                        <td class="px-6 py-4"><div><p class="font-medium text-nuca-green">${order.customer_name}</p><p class="text-xs text-nuca-green/60">${order.customer_email}</p></div></td>
+                        <td class="px-6 py-4 text-sm text-nuca-green/80">${formatDate(order.created_at)}</td>
+                        <td class="px-6 py-4 font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</td>
+                        <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusClass}">${statusText}</span></td>
+                        <td class="px-6 py-4">${getPriorityBadge(priority)}</td>
+                        <td class="px-6 py-4"><div class="flex justify-center gap-2">${getActionButtons(order)}</div></td>
+                    </tr>`;
+                }).join('');
+            }
+            updatePagination();
+        }
+
+        function calculatePriority(order) {
+            const age = new Date() - new Date(order.created_at);
+            const hours = age / (1000 * 60 * 60);
+            if (order.status === 'pending_payment' && hours > 24) return 'priority-high';
+            if (order.status === 'pending_payment' && hours > 12) return 'priority-medium';
+            if (order.status === 'paid' && hours > 48) return 'priority-medium';
+            return 'priority-low';
+        }
+
+        function getPriorityBadge(priority) {
+            const badges = {
+                'priority-high': '<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">ALTA</span>',
+                'priority-medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">MEDIA</span>',
+                'priority-low': '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">NORMAL</span>'
+            };
+            return badges[priority] || badges['priority-low'];
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'pending_payment': 'status-pending', 'paid': 'status-paid',
+                'shipped': 'status-shipped', 'delivered': 'status-delivered', 'cancelled': 'status-cancelled'
+            };
+            return classes[status] || 'status-pending';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending_payment': 'Pendente', 'paid': 'Paga', 'shipped': 'Enviada',
+                'delivered': 'Entregue', 'cancelled': 'Cancelada'
+            };
+            return texts[status] || status;
+        }
+
+        function getActionButtons(order) {
+            if (order.status === 'pending_payment') {
+                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
+                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Nao Pago</button>`;
+            } else if (order.status === 'paid') {
+                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
+            } else if (order.status === 'shipped') {
+                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'delivered')" class="btn-action px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600">Entregue</button>`;
+            }
+            return '<span class="text-xs text-nuca-green/40">-</span>';
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ status: newStatus, updated_at: new Date().toISOString() })
+                    .eq('id', orderId);
+
+                if (error) throw error;
+
+                const order = allOrders.find(o => o.id === orderId);
+                addNotification(`Encomenda ${order.order_number} atualizada para: ${getStatusText(newStatus)}`, 'status-update');
+                showToast('Status atualizado com sucesso!', 'success');
+                await loadOrders();
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                showToast('Erro ao atualizar status', 'error');
+            }
+        }
+
+        function openOrderDetail(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            document.getElementById('modal-order-number').textContent = order.order_number;
+            document.getElementById('modal-order-date').textContent = `Realizada em ${formatDate(order.created_at)}`;
+            document.getElementById('modal-customer-name').textContent = order.customer_name;
+            document.getElementById('modal-customer-email').textContent = order.customer_email;
+            document.getElementById('modal-customer-phone').textContent = order.customer_phone || 'N/A';
+
+            const address = order.shipping_address || {};
+            document.getElementById('modal-shipping-address').innerHTML = `${address.address || ''}<br>${address.postal || ''} ${address.city || ''}`;
+
+            const notesSection = document.getElementById('modal-notes-section');
+            if (address.notes) {
+                document.getElementById('modal-notes').textContent = address.notes;
+                notesSection.classList.remove('hidden');
+            } else {
+                notesSection.classList.add('hidden');
+            }
+
+            const items = order.items || [];
+            document.getElementById('modal-items').innerHTML = items.map(item => `
+                <div class="flex justify-between items-center py-2 border-b border-nuca-green/10 last:border-0">
+                    <div><p class="font-medium text-nuca-green">${item.name}</p><p class="text-xs text-nuca-green/60">Tamanho: ${item.size} | Qtd: ${item.quantity}</p></div>
+                    <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
             `).join('');
 
-            content.innerHTML = `
-                <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Detalhes da Encomenda</h2>
-                
-                <div class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white/50 p-4 rounded-2xl">
-                        <h3 class="font-bold text-nuca-green mb-2 text-sm uppercase">Cliente</h3>
-                        <p class="text-nuca-green"><strong>${order.customer_name}</strong></p>
-                        <p class="text-sm text-nuca-green/70">${order.customer_email}</p>
-                        <p class="text-sm text-nuca-green/70">${order.customer_phone}</p>
-                    </div>
-                    <div class="bg-white/50 p-4 rounded-2xl">
-                        <h3 class="font-bold text-nuca-green mb-2 text-sm uppercase">Envio</h3>
-                        <p class="text-sm text-nuca-green/70">${order.shipping_address.address}</p>
-                        <p class="text-sm text-nuca-green/70">${order.shipping_address.postal} ${order.shipping_address.city}</p>
-                    </div>
-                </div>
+            document.getElementById('modal-subtotal').textContent = `€${(order.subtotal || 0).toFixed(2)}`;
+            document.getElementById('modal-discount').textContent = `-€${(order.discount || 0).toFixed(2)}`;
+            document.getElementById('modal-shipping').textContent = order.shipping === 0 ? 'Gratis' : `€${(order.shipping || 0).toFixed(2)}`;
+            document.getElementById('modal-total').textContent = `€${(order.total || 0).toFixed(2)}`;
 
-                <div class="bg-white/50 p-4 rounded-2xl mb-6">
-                    <h3 class="font-bold text-nuca-green mb-3 text-sm uppercase">Itens</h3>
-                    ${itemsHtml}
-                    <div class="mt-4 pt-4 border-t border-nuca-green/20 space-y-1 text-sm">
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Subtotal</span>
-                            <span>€${order.subtotal.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Desconto</span>
-                            <span class="text-green-600">-€${order.discount.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-nuca-green/60">
-                            <span>Envio</span>
-                            <span>${order.shipping === 0 ? 'Grátis' : '€' + order.shipping.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
-                            <span>Total</span>
-                            <span>€${order.total.toFixed(2)}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex gap-3">
-                    <select onchange="updateStatus('${order.id}', this.value)" class="flex-1 bg-white border border-nuca-green/20 rounded-xl px-4 py-2 text-nuca-green">
-                        <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendente</option>
-                        <option value="paid" ${order.status === 'paid' ? 'selected' : ''}>Pago</option>
-                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviado</option>
-                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
-                    </select>
-                </div>
-            `;
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            document.getElementById('modal-actions').innerHTML = getModalActionButtons(order);
+            document.getElementById('order-modal').classList.remove('hidden');
         }
 
-        async function updateStatus(orderId, newStatus) {
-            const { error } = await supabase
-                .from('orders')
-                .update({ status: newStatus })
-                .eq('id', orderId);
+        function getModalActionButtons(order) {
+            const buttons = [];
+            if (order.status === 'pending_payment') {
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'paid'); closeOrderModal();" class="btn-action flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Marcar como Pago</button>`);
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'cancelled'); closeOrderModal();" class="btn-action flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancelar Encomenda</button>`);
+            } else if (order.status === 'paid') {
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'shipped'); closeOrderModal();" class="btn-action flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Marcar como Enviada</button>`);
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'pending_payment'); closeOrderModal();" class="btn-action px-4 py-3 border-2 border-nuca-green text-nuca-green rounded-xl font-bold hover:bg-nuca-green/5">Voltar a Pendente</button>`);
+            } else if (order.status === 'shipped') {
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'delivered'); closeOrderModal();" class="btn-action flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold hover:bg-purple-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Marcar como Entregue</button>`);
+            } else if (order.status === 'delivered') {
+                buttons.push(`<span class="flex-1 text-center py-3 text-green-600 font-bold">✓ Encomenda Completa</span>`);
+            } else if (order.status === 'cancelled') {
+                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'pending_payment'); closeOrderModal();" class="btn-action flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold hover:bg-nuca-dark">Reativar Encomenda</button>`);
+            }
+            return buttons.join('');
+        }
 
-            if(error) {
-                alert('Erro ao atualizar: ' + error.message);
-            } else {
-                loadOrders();
-                alert('Estado atualizado!');
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        function filterOrders(status) {
+            currentFilter = status;
+            currentPage = 1;
+
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.filter === status) {
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('text-nuca-green', 'hover:bg-nuca-green/10');
+                } else {
+                    tab.classList.remove('tab-active');
+                    tab.classList.add('text-nuca-green', 'hover:bg-nuca-green/10');
+                }
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-orders').value.toLowerCase();
+            filteredOrders = allOrders.filter(order => {
+                const matchesStatus = currentFilter === 'all' || order.status === currentFilter;
+                const matchesSearch = order.order_number.toLowerCase().includes(searchTerm) ||
+                    order.customer_name.toLowerCase().includes(searchTerm) ||
+                    order.customer_email.toLowerCase().includes(searchTerm);
+                return matchesStatus && matchesSearch;
+            });
+            renderOrders();
+        }
+
+        function searchOrders() {
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            const showingStart = (currentPage - 1) * ordersPerPage + 1;
+            const showingEnd = Math.min(currentPage * ordersPerPage, filteredOrders.length);
+            document.getElementById('showing-text').textContent = `A mostrar ${filteredOrders.length > 0 ? showingStart : 0}-${showingEnd} de ${filteredOrders.length} encomendas`;
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage >= totalPages || totalPages === 0;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderOrders();
             }
         }
 
-        function closeModal() {
-            const modal = document.getElementById('order-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+        function initCharts() {
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Vendas (€)', data: [], borderColor: '#556B4F', backgroundColor: 'rgba(85, 107, 79, 0.1)', tension: 0.4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } }, x: { grid: { display: false } } } }
+            });
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: { labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], datasets: [{ data: [0, 0, 0, 0, 0], backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } } }
+            });
         }
 
-        // Fechar modal ao clicar fora
-        document.getElementById('order-modal').addEventListener('click', (e) => {
-            if(e.target.id === 'order-modal') closeModal();
+        function updateCharts() {
+            if (!salesChart || !statusChart) return;
+            const days = 7;
+            const labels = [];
+            const data = [];
+
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toLocaleDateString('pt-PT', { weekday: 'short' });
+                labels.push(dateStr);
+                const dayTotal = allOrders
+                    .filter(o => { const orderDate = new Date(o.created_at); return orderDate.toDateString() === date.toDateString() && (o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered'); })
+                    .reduce((sum, o) => sum + (o.total || 0), 0);
+                data.push(dayTotal);
+            }
+
+            salesChart.data.labels = labels;
+            salesChart.data.datasets[0].data = data;
+            salesChart.update();
+
+            const statusCounts = { 'pending_payment': 0, 'paid': 0, 'shipped': 0, 'delivered': 0, 'cancelled': 0 };
+            allOrders.forEach(o => { if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; });
+            statusChart.data.datasets[0].data = [statusCounts['pending_payment'], statusCounts['paid'], statusCounts['shipped'], statusCounts['delivered'], statusCounts['cancelled']];
+            statusChart.update();
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notifications-panel').classList.toggle('hidden');
+        }
+
+        function addNotification(message, type) {
+            const notification = { id: Date.now(), message, type, time: new Date(), read: false };
+            notifications.unshift(notification);
+            updateNotificationsList();
+            const badge = document.getElementById('notification-badge');
+            badge.classList.remove('hidden');
+            badge.textContent = notifications.filter(n => !n.read).length;
+        }
+
+        function updateNotificationsList() {
+            const list = document.getElementById('notifications-list');
+            if (notifications.length === 0) {
+                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificacoes novas</p>';
+                return;
+            }
+            list.innerHTML = notifications.map(n => `
+                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} notification cursor-pointer hover:bg-nuca-green/10 transition-colors" onclick="markAsRead(${n.id})">
+                    <p class="text-sm text-nuca-green font-medium">${n.message}</p>
+                    <p class="text-xs text-nuca-green/60 mt-1">${formatTime(n.time)}</p>
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.read = true;
+                updateNotificationsList();
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById('notification-badge');
+                if (unreadCount === 0) badge.classList.add('hidden');
+                else badge.textContent = unreadCount;
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationsList();
+            document.getElementById('notification-badge').classList.add('hidden');
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000 / 60);
+            if (diff < 1) return 'Agora';
+            if (diff < 60) return `Ha ${diff} min`;
+            if (diff < 1440) return `Ha ${Math.floor(diff / 60)} h`;
+            return date.toLocaleDateString('pt-PT');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-nuca-green' };
+            toast.className = `notification ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px]`;
+            toast.innerHTML = `<span class="font-medium">${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function refreshOrders() {
+            showToast('A atualizar...', 'info');
+            loadOrders();
+        }
+
+        function exportOrders() {
+            const csvContent = [
+                ['N Encomenda', 'Data', 'Cliente', 'Email', 'Telefone', 'Total', 'Status'].join(','),
+                ...filteredOrders.map(o => [
+                    o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.customer_phone || '', o.total, o.status
+                ].join(','))
+            ].join('
+');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `encomendas_nuca_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            showToast('CSV exportado com sucesso!', 'success');
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('user-menu').classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#user-menu-container')) document.getElementById('user-menu').classList.add('hidden');
+            if (!e.target.closest('#notifications-panel') && !e.target.closest('button[onclick="toggleNotifications()"]')) document.getElementById('notifications-panel').classList.add('hidden');
         });
 
-        // Carregar ao iniciar
-        loadOrders();
-        
-        // Atualizar a cada 30 segundos
-        setInterval(loadOrders, 30000);
+        function updateChart() { updateCharts(); }
     </script>
 </body>
 </html>
