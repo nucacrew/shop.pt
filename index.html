@@ -262,6 +262,7 @@
         /* Utilities */
         .smooth-scroll { scroll-behavior: smooth; }
     </style>
+<base target="_blank">
 </head>
 
 <body class="smooth-scroll antialiased overflow-x-hidden">
@@ -833,10 +834,10 @@
         // ============================================
         
         const seasonIcons = {
-            'Primavera': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M12 2c0 0 4 4 4 8s-4 4-4 4M12 2c0 0-4 4-4 8s4 4 4 4"/><circle cx="12" cy="14" r="2"/></svg>`,
-            'Verão': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-            'Outono': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 6 3 11c0 3 2 5 2 5l7 6 7-6s2-2 2-5c0-5-4-9-9-9z"/><path d="M12 6v10"/></svg>`,
-            'Inverno': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M8 12l4-4 4 4-4 4-4-4z"/></svg>`
+            'Primavera': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M12 2c0 0 4 4 4 8s-4 4-4 4M12 2c0 0-4 4-4 8s4 4 4 4"/><circle cx="12" cy="14" r="2" fill="#D8C6A5"/></svg>`,
+            'Verão': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" fill="#D8C6A5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
+            'Outono': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C7 2 3 6 3 11c0 3 2 5 2 5l7 6 7-6s2-2 2-5c0-5-4-9-9-9z" fill="#D8C6A5"/><path d="M12 6v10"/></svg>`,
+            'Inverno': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M8 12l4-4 4 4-4 4-4-4z" fill="#D8C6A5"/></svg>`
         };
 
         const seasonColors = {
@@ -952,7 +953,7 @@
         const seasonsProducts = [
             {
                 id: 101,
-                name: "T-shirt NUCA",
+                name: "T-shirt - Estações",
                 category: "camisetas",
                 basePrice: 28,
                 description: "T-shirt da Coleção Estações do Ano. Design exclusivo inspirado nas quatro estações.",
@@ -970,7 +971,7 @@
             },
             {
                 id: 102,
-                name: "Hoodie NUCA",
+                name: "Hoodie - Estações",
                 category: "hoodies",
                 basePrice: 60,
                 description: "Hoodie da Coleção Estações do Ano. Conforto para todas as estações.",
@@ -988,7 +989,7 @@
             },
             {
                 id: 103,
-                name: "Boné NUCA",
+                name: "Boné - Estações",
                 category: "acessorios",
                 basePrice: 22,
                 description: "Boné da Coleção Estações do Ano. Estilo para todo o ano.",
@@ -1006,7 +1007,7 @@
             },
             {
                 id: 104,
-                name: "Meias NUCA",
+                name: "Meias - Estações",
                 category: "acessorios",
                 basePrice: 14,
                 description: "Meias da Coleção Estações do Ano. Conforto em todas as estações.",
@@ -1066,7 +1067,7 @@
             {
                 id: "pack-seasons-hoodies",
                 name: "PACK Estações - Hoodies",
-                description: "Os 4 Hoodies das estações + Boné + Meias + Chaveiro OFERTA!",
+                description: "Os 4 Hoodies das estações + Boné + 4 pares de Meias + Chaveiro OFERTA!",
                 items: [102],
                 discount: 25,
                 image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80",
@@ -1079,7 +1080,7 @@
             {
                 id: "pack-seasons-accessories",
                 name: "PACK Estações - Acessórios",
-                description: "Todos os acessórios das estações: 4 Bonés + 4 Meias + Chaveiro OFERTA!",
+                description: "Todos os acessórios das estações: 4 Bonés + 4 pares de Meias + Chaveiro OFERTA!",
                 items: [103, 104],
                 discount: 30,
                 image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=800&q=80",
@@ -1091,7 +1092,7 @@
             {
                 id: "pack-seasons-all",
                 name: "PACK Estações - All In One",
-                description: "COLEÇÃO COMPLETA! 4 T-shirts + 4 Hoodies + 4 Bonés + 4 Meias + Chaveiro OFERTA!",
+                description: "COLEÇÃO COMPLETA! 4 T-shirts + 4 Hoodies + 4 Bonés + 4 pares de Meias + Chaveiro OFERTA!",
                 items: [101, 102, 103, 104],
                 discount: 35,
                 image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
@@ -1184,8 +1185,7 @@
             track.innerHTML = seasonsProducts.map((product, index) => {
                 const seasonPreviews = product.seasons.map(season => `
                     <div class="flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity" onclick="event.stopPropagation(); openProductModal(${product.id})">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center border-2 border-white/50" 
-                             style="background-color: ${seasonColors[season]}20; color: ${seasonColors[season]}">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center border-2 border-nuca-green/30 bg-nuca-beige/50">
                             ${seasonIcons[season]}
                         </div>
                         <span class="text-[10px] text-nuca-green/70 font-medium">${seasonNames[season]}</span>
@@ -1427,13 +1427,12 @@
                 const seasonsContainer = document.getElementById('modal-seasons');
                 seasonsContainer.innerHTML = currentProduct.seasons.map((season, idx) => `
                     <button onclick="selectSeason('${season}')" 
-                            class="season-selector flex flex-col items-center gap-2 px-4 py-3 rounded-xl border-2 border-nuca-green font-bold transition-all ${idx === 0 ? 'active bg-nuca-green text-nuca-beige' : 'text-nuca-green hover:bg-nuca-green/10'}" 
-                            data-season="${season}"
-                            style="${idx === 0 ? '' : `border-color: ${seasonColors[season]}`}">
-                        <span class="season-icon" style="${idx === 0 ? '' : `color: ${seasonColors[season]}`}">
+                            class="season-selector flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-xl border-2 font-bold transition-all ${idx === 0 ? 'active bg-nuca-green text-nuca-beige border-nuca-green' : 'text-nuca-green hover:bg-nuca-green/10 border-nuca-green/40'}" 
+                            data-season="${season}">
+                        <span class="season-icon">
                             ${seasonIcons[season]}
                         </span>
-                        <span class="text-xs">${seasonNames[season]}</span>
+                        <span class="text-[10px]">${seasonNames[season]}</span>
                     </button>
                 `).join('');
             } else {
@@ -1520,16 +1519,9 @@
                 btn.classList.toggle('active', isActive);
                 btn.classList.toggle('bg-nuca-green', isActive);
                 btn.classList.toggle('text-nuca-beige', isActive);
+                btn.classList.toggle('border-nuca-green', isActive);
                 btn.classList.toggle('text-nuca-green', !isActive);
-                
-                const iconSpan = btn.querySelector('.season-icon');
-                if (isActive) {
-                    iconSpan.style.color = 'currentColor';
-                    btn.style.borderColor = '#556B4F';
-                } else {
-                    iconSpan.style.color = seasonColors[btn.dataset.season];
-                    btn.style.borderColor = seasonColors[btn.dataset.season];
-                }
+                btn.classList.toggle('border-nuca-green/40', !isActive);
             });
         }
 
@@ -1608,7 +1600,7 @@
                     itemsHtml += `
                         <div class="bg-nuca-light/50 p-4 rounded-xl mb-3">
                             <h4 class="font-bold text-nuca-green text-sm mb-3 flex items-center gap-2">
-                                <span style="color: ${seasonColors[season]}">
+                                <span class="w-6 h-6 flex items-center justify-center bg-nuca-beige rounded-full">
                                     ${seasonIcons[season]}
                                 </span>
                                 ${seasonNames[season]}
