@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - NUCA</title>
-    <!-- ============================================
-         FONTS & EXTERNAL RESOURCES
-         ============================================ -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -263,6 +257,7 @@
             max-width: 400px;
             margin: 0 auto;
             font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .receipt-header {
@@ -281,6 +276,11 @@
 
         .receipt-details {
             margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .receipt-details p {
+            margin: 4px 0;
         }
 
         .receipt-items {
@@ -292,14 +292,23 @@
             justify-content: space-between;
             padding: 8px 0;
             border-bottom: 1px solid #eee;
+            font-size: 14px;
         }
 
         .receipt-total {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: right;
-            padding-top: 16px;
-            border-top: 2px solid #556B4F;
+            font-size: 16px;
+        }
+
+        .receipt-total > div {
+            padding: 4px 0;
+        }
+
+        .receipt-discount {
+            color: #10B981;
+        }
+
+        .receipt-free-shipping {
+            color: #10B981;
         }
     </style>
 </head>
@@ -662,12 +671,14 @@
                             <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between"><span>Subtotal</span><span id="modal-subtotal"></span></div>
+                                <div class="flex justify-between"><span>Desconto</span><span id="modal-discount" class="text-green-600"></span></div>
+                                <div class="flex justify-between"><span>Portes</span><span id="modal-shipping"></span></div>
                                 <div class="flex justify-between text-lg font-bold pt-2 border-t">Total<span id="modal-total"></span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 pt-6 border-t flex gap-3" id="modal-actions"></div>
+                <div class="mt-6 pt-6 border-t flex gap-3 flex-wrap" id="modal-actions"></div>
             </div>
         </div>
     </div>
@@ -1030,7 +1041,7 @@
         }
 
         // ============================================
-        // FUNÇÃO DE IMPRESSÃO DE RECIBO
+        // FUNÇÃO DE IMPRESSÃO DE RECIBO (COM DESCONTO)
         // ============================================
         function printReceipt(orderId) {
             const order = allOrders.find(o => o.id === orderId);
@@ -1055,6 +1066,12 @@
                 minute: '2-digit'
             });
 
+            // Calcular valores
+            const subtotal = order.subtotal || 0;
+            const discount = order.discount || 0;
+            const shipping = order.shipping_cost || 0;
+            const total = order.total || 0;
+
             receiptDiv.innerHTML = `
                 <div class="receipt-container">
                     <div class="receipt-header">
@@ -1069,6 +1086,7 @@
                         <p><strong>Email:</strong> ${order.customer_email}</p>
                         <p><strong>Morada:</strong> ${address.address || ''}, ${address.postal || ''} ${address.city || ''}</p>
                         <p><strong>Status:</strong> ${getStatusText(order.status)}</p>
+                        ${order.payment_method ? `<p><strong>Pagamento:</strong> ${order.payment_method}</p>` : ''}
                     </div>
 
                     <div class="receipt-items">
@@ -1079,23 +1097,38 @@
                     <div class="receipt-total">
                         <div style="display: flex; justify-content: space-between;">
                             <span>Subtotal:</span>
-                            <span>€${(order.subtotal || 0).toFixed(2)}</span>
+                            <span>€${subtotal.toFixed(2)}</span>
                         </div>
-                        ${order.shipping_cost ? `
-                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
-                            <span>Portes:</span>
-                            <span>€${order.shipping_cost.toFixed(2)}</span>
+                        
+                        ${discount > 0 ? `
+                        <div style="display: flex; justify-content: space-between; color: #10B981;">
+                            <span>Desconto:</span>
+                            <span>-€${discount.toFixed(2)}</span>
                         </div>
                         ` : ''}
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 8px;">
+                        
+                        ${shipping > 0 ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                            <span>Portes:</span>
+                            <span>€${shipping.toFixed(2)}</span>
+                        </div>
+                        ` : shipping === 0 ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; color: #10B981;">
+                            <span>Portes:</span>
+                            <span>Grátis</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 8px; padding-top: 8px; border-top: 2px solid #556B4F;">
                             <span>TOTAL:</span>
-                            <span>€${(order.total || 0).toFixed(2)}</span>
+                            <span>€${total.toFixed(2)}</span>
                         </div>
                     </div>
 
                     <div style="text-align: center; margin-top: 24px; font-size: 12px; color: #666;">
                         <p>Obrigado pela sua compra!</p>
                         <p>NUCA - Qualidade e Tradição</p>
+                        ${order.notes ? `<p style="margin-top: 8px; font-style: italic;">Notas: ${order.notes}</p>` : ''}
                     </div>
                 </div>
             `;
@@ -1125,8 +1158,16 @@
                 </div>
             `).join('');
 
-            document.getElementById('modal-subtotal').textContent = `€${(order.subtotal || 0).toFixed(2)}`;
-            document.getElementById('modal-total').textContent = `€${(order.total || 0).toFixed(2)}`;
+            // Valores
+            const subtotal = order.subtotal || 0;
+            const discount = order.discount || 0;
+            const shipping = order.shipping_cost || 0;
+            const total = order.total || 0;
+
+            document.getElementById('modal-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('modal-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            document.getElementById('modal-shipping').textContent = shipping > 0 ? `€${shipping.toFixed(2)}` : 'Grátis';
+            document.getElementById('modal-total').textContent = `€${total.toFixed(2)}`;
 
             let actions = '';
             
