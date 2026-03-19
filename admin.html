@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,189 +28,214 @@
         }
     </script>
     <style>
+        /* ESTILOS BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: #D8C6A5;
             color: #556B4F;
             font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
         }
-        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 50; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+
+        .nuca-logo { 
+            font-family: 'Syne', sans-serif; 
+            font-weight: 800; 
+            letter-spacing: -0.02em; 
         }
+
+        /* SIDEBAR - ESTRUTURA FIXA */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid rgba(85, 107, 79, 0.2);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            background-color: #D8C6A5;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+            }
+
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
+            }
+        }
+
+        /* DESKTOP */
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: none !important;
+                display: block !important;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #556B4F;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(85, 107, 79, 0.1);
+        }
+
+        .sidebar-link.active {
+            background: rgba(85, 107, 79, 0.15);
+            border-right: 3px solid #556B4F;
+        }
+
+        /* ESTILOS DAS ENCOMENDAS */
         .status-pending { background-color: #FEF3C7; color: #92400E; }
         .status-paid { background-color: #D1FAE5; color: #065F46; }
-        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
         .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
         .status-delivered { background-color: #E0E7FF; color: #3730A3; }
+        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+        
         .admin-card {
             background-color: rgba(255,255,255,0.5);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(85, 107, 79, 0.1);
         }
+        
         .order-row { transition: all 0.2s; }
         .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
-        .modal-overlay {
-            background-color: rgba(44, 51, 40, 0.8);
-            backdrop-filter: blur(4px);
-        }
-        .btn-action { transition: all 0.2s; }
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.3);
-        }
-        .notification { animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+        
         .tab-active {
             background-color: #556B4F;
             color: #D8C6A5;
         }
+        
         .priority-high { border-left: 4px solid #DC2626; }
         .priority-medium { border-left: 4px solid #F59E0B; }
         .priority-low { border-left: 4px solid #10B981; }
+        
         .search-input {
             background-color: rgba(255,255,255,0.7);
             border: 2px solid transparent;
             transition: all 0.3s;
         }
+        
         .search-input:focus {
             outline: none;
             border-color: #556B4F;
             background-color: white;
         }
+        
         .stats-card {
             background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%);
         }
+        
         .loading-spinner {
             border: 3px solid rgba(85, 107, 79, 0.3);
             border-top: 3px solid #556B4F;
             border-radius: 50%; width: 24px; height: 24px;
             animation: spin 1s linear infinite;
         }
+        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .sidebar-link { transition: all 0.2s; }
-        .sidebar-link:hover, .sidebar-link.active {
-            background-color: rgba(85, 107, 79, 0.1);
-            border-right: 3px solid #556B4F;
-        }
+        
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Section containers */
-        .section-content {
-            display: none;
-            min-height: 0;
-            min-width: 0;
-        }
-        .section-content.active {
-            display: block;
-        }
+        .section-content { display: none; }
+        .section-content.active { display: block; }
         
-        /* Grid containers */
-        .grid-container {
-            display: grid;
-            min-width: 0;
-            min-height: 0;
-        }
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .chart-wrapper-sm { position: relative; height: 250px; width: 100%; }
+        canvas { max-width: 100% !important; }
         
-        /* Chart containers with strict dimensions */
-        .chart-wrapper {
-            position: relative;
-            height: 300px;
-            width: 100%;
-            overflow: hidden;
-            min-width: 0;
-        }
-        .chart-wrapper-sm {
-            position: relative;
-            height: 250px;
-            width: 100%;
-            overflow: hidden;
-            min-width: 0;
-        }
-        
-        /* CORREÇÃO CRÍTICA: Mobile sidebar */
-        @media (max-width: 1024px) {
-            aside#sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                width: 280px;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
-                z-index: 100;
-                background-color: rgba(255,255,255,0.95);
-                backdrop-filter: blur(10px);
-                display: block !important; /* Força a manter display block */
-                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
-            }
-            
-            aside#sidebar.mobile-open {
-                transform: translateX(0);
-            }
-            
-            /* Overlay mais escuro para melhor contraste */
-            #mobile-overlay {
-                display: none;
-                position: fixed;
-                inset: 0;
-                background-color: rgba(0,0,0,0.5);
-                z-index: 90;
-                backdrop-filter: blur(2px);
-            }
-            
-            #mobile-overlay.active {
-                display: block;
-            }
-            
-            /* Desktop sidebar permanece visível */
-            body:not(.mobile) aside#sidebar {
-                display: block !important;
-            }
-        }
-        
-        /* Desktop styles */
-        @media (min-width: 1025px) {
-            aside#sidebar {
-                transform: none !important;
-                display: block !important;
-                position: fixed;
-                width: 16rem;
-            }
-            
-            #mobile-overlay {
-                display: none !important;
-            }
-        }
-        
-        /* Ensure canvas doesn't overflow */
-        canvas {
-            max-width: 100% !important;
-            max-height: 100% !important;
-        }
-        
-        /* Prevenir overflow em todo o site */
-        * {
-            box-sizing: border-box;
-        }
-        
-        main {
-            overflow-x: hidden;
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
     </style>
 </head>
-<body class="antialiased min-h-screen overflow-x-hidden">
+<body>
 
     <div class="grain-overlay"></div>
 
     <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-nuca-beige">
-        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4 border border-nuca-green/10">
+    <div id="login-screen" class="fixed inset-0 z-[2000] flex items-center justify-center bg-nuca-beige">
+        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4">
             <div class="text-center mb-8">
                 <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
                 <p class="text-nuca-green/60">Área de Administração</p>
@@ -231,68 +255,97 @@
                 </div>
                 <button type="submit" id="login-btn" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
                     <span id="login-text">Entrar</span>
-                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px; border-width: 2px;"></div>
+                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px;"></div>
                 </button>
             </form>
-            <p class="text-center text-xs text-nuca-green/40 mt-6">Acesso restrito a administradores</p>
         </div>
     </div>
 
-    <!-- Main Admin Interface -->
-    <div id="admin-interface" class="hidden min-h-screen relative">
+    <!-- Admin Interface -->
+    <div id="admin-interface" class="hidden app-container">
         
-        <!-- Sidebar - CORRIGIDA -->
-        <aside id="sidebar" class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 z-40">
-            <div class="p-6 h-full flex flex-col">
-                <h1 class="nuca-logo text-2xl text-nuca-green mb-8">NUCA Admin</h1>
-                <nav class="space-y-2 flex-1">
-                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <!-- Overlay para mobile -->
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="hideMobileSidebar()"></div>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="flex items-center justify-between">
+                    <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
+                    <button onclick="hideMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        </svg>
                         Dashboard
                     </a>
-                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
                         Encomendas
                         <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
                     </a>
-                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
                         Produtos
                     </a>
-                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
                         Clientes
                     </a>
-                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
                         Análises
                     </a>
-                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
                         Configurações
                     </a>
                 </nav>
+
                 <div class="border-t border-nuca-green/10 pt-6 mt-auto">
                     <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
                         Sair
                     </button>
                 </div>
             </div>
         </aside>
 
-        <!-- Mobile Sidebar Overlay -->
-        <div id="mobile-overlay" class="fixed inset-0 z-30 hidden" onclick="closeMobileSidebar()"></div>
-
         <!-- Main Content -->
-        <main class="lg:ml-64 min-w-0 w-full">
+        <main class="main-content">
             <!-- Header -->
             <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
                 <div class="px-6 lg:px-12 py-4">
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                            <button onclick="toggleMobileSidebar()" class="menu-toggle p-2 hover:bg-nuca-green/10 rounded-lg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                                </svg>
                             </button>
                             <div>
                                 <h2 id="page-title" class="font-display text-xl font-bold text-nuca-green">Dashboard</h2>
@@ -300,8 +353,10 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                </svg>
                                 <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
                             </button>
                             <div class="flex items-center gap-3">
@@ -328,11 +383,11 @@
             </div>
 
             <!-- Content Sections -->
-            <div class="p-6 lg:p-12 min-w-0">
+            <div class="p-6 lg:p-12">
                 
-                <!-- Dashboard Section -->
+                <!-- DASHBOARD SECTION -->
                 <div id="section-dashboard" class="section-content active fade-in">
-                    <!-- Stats Overview -->
+                    <!-- Stats Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="admin-card rounded-2xl p-6 stats-card">
                             <div class="flex justify-between items-start mb-4">
@@ -341,15 +396,8 @@
                                     <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
                                 </div>
                                 <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-green-600 font-medium flex items-center gap-1" id="stat-total-trend">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                                    +12%
-                                </span>
-                                <span class="text-xs text-nuca-green/60">vs mês anterior</span>
                             </div>
                         </div>
 
@@ -360,10 +408,9 @@
                                     <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
                                 </div>
                                 <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-nuca-green/60">Aguardam pagamento</p>
                         </div>
 
                         <div class="admin-card rounded-2xl p-6 stats-card">
@@ -373,15 +420,8 @@
                                     <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
                                 </div>
                                 <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                                 </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs text-green-600 font-medium flex items-center gap-1" id="stat-revenue-trend">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                                    +8%
-                                </span>
-                                <span class="text-xs text-nuca-green/60">vs mês anterior</span>
                             </div>
                         </div>
 
@@ -392,14 +432,13 @@
                                     <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
                                 </div>
                                 <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                                 </div>
                             </div>
-                            <p class="text-xs text-nuca-green/60">Novas encomendas</p>
                         </div>
                     </div>
 
-                    <!-- Charts Section -->
+                    <!-- Charts -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                         <div class="lg:col-span-2 admin-card rounded-2xl p-6">
                             <div class="flex justify-between items-center mb-6">
@@ -447,7 +486,7 @@
                     </div>
                 </div>
 
-                <!-- Orders Section -->
+                <!-- ORDERS SECTION -->
                 <div id="section-orders" class="section-content fade-in">
                     <!-- Filters -->
                     <div class="admin-card rounded-2xl p-6 mb-6">
@@ -462,14 +501,14 @@
                             </div>
                             <div class="flex gap-3 w-full lg:w-auto">
                                 <div class="relative flex-1 lg:w-64">
-                                    <input type="text" id="search-orders" placeholder="Pesquisar por nº, nome ou email..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
-                                    <svg class="absolute left-3 top-2.5 text-nuca-green/40" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                    <input type="text" id="search-orders" placeholder="Pesquisar..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
+                                    <svg class="absolute left-3 top-2.5 text-nuca-green/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                                 </div>
                                 <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
                                 </button>
-                                <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar CSV">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 </button>
                             </div>
                         </div>
@@ -481,142 +520,41 @@
                             <table class="w-full">
                                 <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
                                     <tr>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Nº Encomenda</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Cliente</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Data</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Total</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Status</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Prioridade</th>
-                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase tracking-wider">Ações</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Nº Encomenda</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Data</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Status</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Prioridade</th>
+                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">
-                                            <div class="flex flex-col items-center gap-3">
-                                                <div class="loading-spinner"></div>
-                                                <p>A carregar encomendas...</p>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">A carregar...</td></tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div id="pagination" class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
+                        <div class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
                             <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
                             <div class="flex gap-2">
-                                <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Anterior</button>
-                                <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50 disabled:cursor-not-allowed">Próxima</button>
+                                <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Anterior</button>
+                                <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Próxima</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Products Section -->
-                <div id="section-products" class="section-content fade-in">
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-display text-xl font-bold text-nuca-green">Gestão de Produtos</h3>
-                            <button onclick="showToast('Funcionalidade em desenvolvimento', 'info')" class="bg-nuca-green text-nuca-beige px-4 py-2 rounded-full text-sm font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Novo Produto
-                            </button>
-                        </div>
-                    </div>
-                    <div class="admin-card rounded-2xl p-12 text-center">
-                        <div class="w-16 h-16 bg-nuca-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                        </div>
-                        <h4 class="font-display text-lg font-bold text-nuca-green mb-2">Gestão de Produtos</h4>
-                        <p class="text-nuca-green/60 max-w-md mx-auto">Esta funcionalidade permite gerir o catálogo de produtos, stock e preços. Em breve disponível.</p>
-                    </div>
-                </div>
-
-                <!-- Customers Section -->
-                <div id="section-customers" class="section-content fade-in">
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-green">Clientes</h3>
-                    </div>
-                    <div class="admin-card rounded-2xl p-12 text-center">
-                        <div class="w-16 h-16 bg-nuca-green/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </div>
-                        <h4 class="font-display text-lg font-bold text-nuca-green mb-2">Base de Clientes</h4>
-                        <p class="text-nuca-green/60 max-w-md mx-auto">Visualize e gerencie os dados dos seus clientes. Em breve disponível.</p>
-                    </div>
-                </div>
-
-                <!-- Analytics Section -->
-                <div id="section-analytics" class="section-content fade-in">
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-green">Análises Detalhadas</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="admin-card rounded-2xl p-6">
-                            <h4 class="font-bold text-nuca-green mb-4">Produtos Mais Vendidos</h4>
-                            <div class="space-y-4" id="top-products">
-                                <p class="text-nuca-green/60 text-sm">Dados em processamento...</p>
-                            </div>
-                        </div>
-                        <div class="admin-card rounded-2xl p-6">
-                            <h4 class="font-bold text-nuca-green mb-4">Vendas por Categoria</h4>
-                            <div class="chart-wrapper-sm">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Section -->
-                <div id="section-settings" class="section-content fade-in">
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-green">Configurações</h3>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="admin-card rounded-2xl p-6">
-                            <h4 class="font-bold text-nuca-green mb-4 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                                Dados da Loja
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-nuca-green mb-1">Nome da Loja</label>
-                                    <input type="text" value="NUCA" class="search-input w-full px-4 py-2 rounded-xl text-sm" readonly>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-nuca-green mb-1">Email de Contacto</label>
-                                    <input type="email" value="nuca.crew@gmail.com" class="search-input w-full px-4 py-2 rounded-xl text-sm" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="admin-card rounded-2xl p-6">
-                            <h4 class="font-bold text-nuca-green mb-4 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                                Preferências
-                            </h4>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-nuca-green">Notificações de novas encomendas</span>
-                                    <button onclick="toggleSetting(this)" class="w-12 h-6 bg-nuca-green rounded-full relative transition-colors">
-                                        <span class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></span>
-                                    </button>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-nuca-green">Modo escuro</span>
-                                    <button onclick="toggleSetting(this)" class="w-12 h-6 bg-nuca-green/30 rounded-full relative transition-colors">
-                                        <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform"></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Outras secções (placeholders) -->
+                <div id="section-products" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Gestão de Produtos</div></div>
+                <div id="section-customers" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Clientes</div></div>
+                <div id="section-analytics" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Análises</div></div>
+                <div id="section-settings" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Configurações</div></div>
             </div>
         </main>
     </div>
 
     <!-- Order Detail Modal -->
-    <div id="order-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div id="order-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
         <div class="modal-overlay absolute inset-0" onclick="closeOrderModal()"></div>
         <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
             <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
@@ -624,91 +562,55 @@
                     <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
                     <p class="text-sm text-nuca-green/60" id="modal-order-date"></p>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="printOrder()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors" title="Imprimir">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    </button>
-                    <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
+                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
             </div>
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-4">
                         <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                Cliente
-                            </h3>
-                            <p class="font-medium text-nuca-green" id="modal-customer-name"></p>
+                            <h3 class="font-bold text-nuca-green mb-3">Cliente</h3>
+                            <p class="font-medium" id="modal-customer-name"></p>
                             <p class="text-sm text-nuca-green/60" id="modal-customer-email"></p>
-                            <p class="text-sm text-nuca-green/60" id="modal-customer-phone"></p>
                         </div>
                         <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                Morada de Envio
-                            </h3>
-                            <p class="text-sm text-nuca-green/80" id="modal-shipping-address"></p>
-                        </div>
-                        <div class="bg-white/50 rounded-2xl p-4" id="modal-notes-section">
-                            <h3 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                                Notas
-                            </h3>
-                            <p class="text-sm text-nuca-green/80" id="modal-notes"></p>
+                            <h3 class="font-bold text-nuca-green mb-3">Morada</h3>
+                            <p class="text-sm" id="modal-shipping-address"></p>
                         </div>
                     </div>
                     <div class="space-y-4">
                         <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Itens da Encomenda</h3>
+                            <h3 class="font-bold text-nuca-green mb-3">Itens</h3>
                             <div id="modal-items" class="space-y-3"></div>
                         </div>
                         <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Resumo Financeiro</h3>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Subtotal</span>
-                                    <span id="modal-subtotal"></span>
-                                </div>
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Desconto</span>
-                                    <span id="modal-discount" class="text-green-600"></span>
-                                </div>
-                                <div class="flex justify-between text-nuca-green/60">
-                                    <span>Envio</span>
-                                    <span id="modal-shipping"></span>
-                                </div>
-                                <div class="flex justify-between text-lg font-bold text-nuca-green pt-2 border-t border-nuca-green/10">
-                                    <span>Total</span>
-                                    <span id="modal-total"></span>
-                                </div>
+                            <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span>Subtotal</span><span id="modal-subtotal"></span></div>
+                                <div class="flex justify-between text-lg font-bold pt-2 border-t">Total<span id="modal-total"></span></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 pt-6 border-t border-nuca-green/10">
-                    <h3 class="font-bold text-nuca-green mb-4">Atualizar Status</h3>
-                    <div class="flex flex-wrap gap-3" id="modal-actions"></div>
-                </div>
+                <div class="mt-6 pt-6 border-t" id="modal-actions"></div>
             </div>
         </div>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[2000] space-y-2"></div>
 
     <script>
         // ============================================
-        // SUPABASE CONFIGURATION
+        // SUPABASE CONFIG
         // ============================================
         const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================
-        // STATE MANAGEMENT
+        // STATE
         // ============================================
         let allOrders = [];
         let filteredOrders = [];
@@ -718,38 +620,69 @@
         let currentSection = 'dashboard';
         let salesChart = null;
         let statusChart = null;
-        let categoryChart = null;
         let notifications = [];
         let currentUser = null;
-        let chartsInitialized = false;
 
         // ============================================
-        // INITIALIZATION
+        // INIT
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
             checkSession();
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
             
-            // Inicializar estado da sidebar
-            checkWindowSize();
-            window.addEventListener('resize', checkWindowSize);
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) hideMobileSidebar();
+            });
         });
 
-        // Função para verificar o tamanho da janela e ajustar sidebar
-        function checkWindowSize() {
+        // ============================================
+        // SIDEBAR CONTROLS
+        // ============================================
+        function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            
-            if (window.innerWidth >= 1025) {
-                // Desktop: sidebar sempre visível, overlay escondido
-                sidebar.style.transform = 'none';
-                sidebar.classList.remove('mobile-open');
-                if (overlay) overlay.classList.remove('active');
-            }
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('mobile-visible');
+            overlay.classList.toggle('visible');
+            document.body.style.overflow = sidebar.classList.contains('mobile-visible') ? 'hidden' : '';
+        }
+
+        function hideMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('mobile-visible');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
         }
 
         // ============================================
-        // AUTHENTICATION
+        // NAVEGAÇÃO
+        // ============================================
+        function showSection(section) {
+            currentSection = section;
+            
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+            const activeLink = document.querySelector(`a[href="#${section}"]`);
+            if (activeLink) activeLink.classList.add('active');
+            
+            const titles = {
+                'dashboard': 'Dashboard', 'orders': 'Encomendas', 'products': 'Produtos',
+                'customers': 'Clientes', 'analytics': 'Análises', 'settings': 'Configurações'
+            };
+            document.getElementById('page-title').textContent = titles[section];
+            
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) targetSection.classList.add('active');
+            
+            hideMobileSidebar();
+            
+            if (section === 'dashboard' && !salesChart) initCharts();
+        }
+
+        // ============================================
+        // AUTH
         // ============================================
         async function checkSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -768,47 +701,23 @@
             setLoginLoading(true);
 
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-
                 currentUser = data.user;
-                
-                if (rememberMe) {
-                    localStorage.setItem('nuca_admin_remember', 'true');
-                }
-
+                if (rememberMe) localStorage.setItem('nuca_admin_remember', 'true');
                 showAdminInterface();
-                showToast('Bem-vindo de volta!', 'success');
-
+                showToast('Bem-vindo!', 'success');
             } catch (error) {
-                console.error('Erro de login:', error);
-                showToast('Email ou password incorretos', 'error');
+                showToast('Erro no login', 'error');
             } finally {
                 setLoginLoading(false);
             }
         });
 
         function setLoginLoading(loading) {
-            const btn = document.getElementById('login-btn');
-            const text = document.getElementById('login-text');
-            const spinner = document.getElementById('login-spinner');
-            
-            btn.disabled = loading;
-            text.classList.toggle('hidden', loading);
-            spinner.classList.toggle('hidden', !loading);
-        }
-
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            localStorage.removeItem('nuca_admin_remember');
-            currentUser = null;
-            document.getElementById('admin-interface').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('login-form').reset();
+            document.getElementById('login-btn').disabled = loading;
+            document.getElementById('login-text').classList.toggle('hidden', loading);
+            document.getElementById('login-spinner').classList.toggle('hidden', !loading);
         }
 
         function showAdminInterface() {
@@ -820,112 +729,20 @@
                 document.getElementById('user-avatar').textContent = currentUser.email.charAt(0).toUpperCase();
             }
             
-            initDashboard();
-        }
-
-        // ============================================
-        // DASHBOARD INITIALIZATION
-        // ============================================
-        async function initDashboard() {
-            await loadOrders();
+            loadOrders();
             setupRealtimeSubscription();
-            // Initialize charts only when dashboard is visible
-            if (currentSection === 'dashboard') {
-                initCharts();
-            }
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('nuca_admin_remember');
+            currentUser = null;
+            document.getElementById('admin-interface').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
         }
 
         // ============================================
-        // NAVIGATION - CORRIGIDA
-        // ============================================
-        function showSection(section) {
-            currentSection = section;
-            
-            // Atualizar links da sidebar
-            document.querySelectorAll('.sidebar-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            const activeLink = document.querySelector(`a[href="#${section}"]`);
-            if (activeLink) activeLink.classList.add('active');
-            
-            // Atualizar título da página
-            const titles = {
-                'dashboard': 'Dashboard',
-                'orders': 'Encomendas',
-                'products': 'Produtos',
-                'customers': 'Clientes',
-                'analytics': 'Análises',
-                'settings': 'Configurações'
-            };
-            document.getElementById('page-title').textContent = titles[section];
-            
-            // Mostrar/esconder seções usando CSS classes
-            document.querySelectorAll('.section-content').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            const targetSection = document.getElementById(`section-${section}`);
-            if (targetSection) {
-                targetSection.classList.add('active');
-            }
-            
-            // Fechar sidebar mobile APENAS se estiver em mobile
-            if (window.innerWidth < 1025) {
-                closeMobileSidebar();
-            }
-            
-            // Atualizar URL hash sem scroll
-            history.pushState(null, null, `#${section}`);
-            
-            // Inicializar charts quando necessário
-            if (section === 'dashboard') {
-                setTimeout(() => {
-                    if (!chartsInitialized) {
-                        initCharts();
-                    } else {
-                        if (salesChart) salesChart.resize();
-                        if (statusChart) statusChart.resize();
-                    }
-                }, 50);
-            } else if (section === 'analytics') {
-                setTimeout(() => {
-                    initAnalyticsCharts();
-                }, 50);
-            }
-        }
-
-        // Funções da sidebar mobile - CORRIGIDAS
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            
-            if (window.innerWidth < 1025) {
-                sidebar.classList.toggle('mobile-open');
-                overlay.classList.toggle('active');
-                
-                // Evitar scroll do body quando sidebar está aberta
-                if (sidebar.classList.contains('mobile-open')) {
-                    document.body.style.overflow = 'hidden';
-                } else {
-                    document.body.style.overflow = '';
-                }
-            }
-        }
-        
-        function closeMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-            
-            if (window.innerWidth < 1025) {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-        }
-
-        // ============================================
-        // RESTO DO CÓDIGO (mantido igual)
+        // ORDERS - CRUD COMPLETO
         // ============================================
         async function loadOrders() {
             try {
@@ -938,12 +755,11 @@
 
                 allOrders = data || [];
                 filteredOrders = [...allOrders];
-
+                
                 updateStats();
                 renderOrders();
                 renderRecentOrders();
                 updateChartsData();
-                checkNewOrders();
                 updatePendingBadge();
 
             } catch (error) {
@@ -955,36 +771,24 @@
         function setupRealtimeSubscription() {
             supabaseClient
                 .channel('orders-channel')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
-                    (payload) => { handleRealtimeChange(payload); }
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'orders' },
+                    (payload) => {
+                        if (payload.eventType === 'INSERT') {
+                            allOrders.unshift(payload.new);
+                            addNotification(`Nova encomenda: ${payload.new.order_number}`, 'new-order');
+                            showToast(`Nova encomenda: ${payload.new.order_number}`, 'success');
+                        } else if (payload.eventType === 'UPDATE') {
+                            const index = allOrders.findIndex(o => o.id === payload.new.id);
+                            if (index !== -1) allOrders[index] = payload.new;
+                        }
+                        applyFilters();
+                        updateStats();
+                        updateChartsData();
+                        updatePendingBadge();
+                    }
                 )
                 .subscribe();
-        }
-
-        function handleRealtimeChange(payload) {
-            if (payload.eventType === 'INSERT') {
-                allOrders.unshift(payload.new);
-                addNotification(`Nova encomenda: ${payload.new.order_number}`, 'new-order');
-                showToast(`Nova encomenda recebida: ${payload.new.order_number}`, 'success');
-            } else if (payload.eventType === 'UPDATE') {
-                const index = allOrders.findIndex(o => o.id === payload.new.id);
-                if (index !== -1) allOrders[index] = payload.new;
-            }
-            applyFilters();
-            updateStats();
-            updateChartsData();
-            updatePendingBadge();
-        }
-
-        function updatePendingBadge() {
-            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
-            const badge = document.getElementById('sidebar-pending-badge');
-            if (pending > 0) {
-                badge.textContent = pending;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
         }
 
         function updateStats() {
@@ -1009,24 +813,26 @@
             const pageOrders = filteredOrders.slice(start, end);
 
             if (pageOrders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40"><p>Nenhuma encomenda encontrada</p></td></tr>`;
-            } else {
-                tbody.innerHTML = pageOrders.map(order => {
-                    const priority = calculatePriority(order);
-                    const statusClass = getStatusClass(order.status);
-                    const statusText = getStatusText(order.status);
-
-                    return `<tr class="order-row cursor-pointer ${priority}" onclick="openOrderDetail('${order.id}')">
-                        <td class="px-6 py-4"><span class="font-mono font-bold text-nuca-green">${order.order_number}</span></td>
-                        <td class="px-6 py-4"><div><p class="font-medium text-nuca-green">${order.customer_name}</p><p class="text-xs text-nuca-green/60">${order.customer_email}</p></div></td>
-                        <td class="px-6 py-4 text-sm text-nuca-green/80">${formatDate(order.created_at)}</td>
-                        <td class="px-6 py-4 font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</td>
-                        <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${statusClass}">${statusText}</span></td>
-                        <td class="px-6 py-4">${getPriorityBadge(priority)}</td>
-                        <td class="px-6 py-4"><div class="flex justify-center gap-2">${getActionButtons(order)}</div></td>
-                    </tr>`;
-                }).join('');
+                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
+                return;
             }
+
+            tbody.innerHTML = pageOrders.map(order => {
+                const priority = calculatePriority(order);
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+
+                return `<tr class="order-row cursor-pointer ${priority}" onclick="openOrderDetail('${order.id}')">
+                    <td class="px-6 py-4"><span class="font-mono font-bold">${order.order_number}</span></td>
+                    <td class="px-6 py-4"><div><p class="font-medium">${order.customer_name}</p><p class="text-xs text-nuca-green/60">${order.customer_email}</p></div></td>
+                    <td class="px-6 py-4 text-sm">${formatDate(order.created_at)}</td>
+                    <td class="px-6 py-4 font-bold">€${(order.total || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
+                    <td class="px-6 py-4">${getPriorityBadge(priority)}</td>
+                    <td class="px-6 py-4"><div class="flex justify-center gap-2">${getActionButtons(order)}</div></td>
+                </tr>`;
+            }).join('');
+            
             updatePagination();
         }
 
@@ -1035,7 +841,7 @@
             const recent = allOrders.slice(0, 5);
 
             if (recent.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>`;
+                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
                 return;
             }
 
@@ -1044,11 +850,11 @@
                 const statusText = getStatusText(order.status);
 
                 return `<tr class="order-row cursor-pointer" onclick="openOrderDetail('${order.id}')">
-                    <td class="px-4 py-3"><span class="font-mono font-bold text-nuca-green">${order.order_number}</span></td>
-                    <td class="px-4 py-3"><p class="font-medium text-nuca-green">${order.customer_name}</p></td>
-                    <td class="px-4 py-3 font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</td>
-                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold uppercase ${statusClass}">${statusText}</span></td>
-                    <td class="px-4 py-3"><button onclick="event.stopPropagation(); openOrderDetail('${order.id}')" class="text-nuca-green hover:underline text-sm">Ver</button></td>
+                    <td class="px-4 py-3"><span class="font-mono font-bold">${order.order_number}</span></td>
+                    <td class="px-4 py-3"><p class="font-medium">${order.customer_name}</p></td>
+                    <td class="px-4 py-3 font-bold">€${(order.total || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
+                    <td class="px-4 py-3"><button onclick="event.stopPropagation(); openOrderDetail('${order.id}')" class="text-nuca-green hover:underline">Ver</button></td>
                 </tr>`;
             }).join('');
         }
@@ -1090,7 +896,7 @@
         function getActionButtons(order) {
             if (order.status === 'pending_payment') {
                 return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
-                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Não Pago</button>`;
+                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
             } else if (order.status === 'paid') {
                 return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
             } else if (order.status === 'shipped') {
@@ -1109,12 +915,12 @@
                 if (error) throw error;
 
                 const order = allOrders.find(o => o.id === orderId);
-                addNotification(`Encomenda ${order.order_number} atualizada para: ${getStatusText(newStatus)}`, 'status-update');
-                showToast('Status atualizado com sucesso!', 'success');
+                addNotification(`Encomenda ${order.order_number} atualizada`, 'status-update');
+                showToast('Status atualizado!', 'success');
                 await loadOrders();
+                closeOrderModal();
             } catch (error) {
-                console.error('Erro ao atualizar status:', error);
-                showToast('Erro ao atualizar status', 'error');
+                showToast('Erro ao atualizar', 'error');
             }
         }
 
@@ -1126,64 +932,41 @@
             document.getElementById('modal-order-date').textContent = `Realizada em ${formatDate(order.created_at)}`;
             document.getElementById('modal-customer-name').textContent = order.customer_name;
             document.getElementById('modal-customer-email').textContent = order.customer_email;
-            document.getElementById('modal-customer-phone').textContent = order.customer_phone || 'N/A';
 
             const address = order.shipping_address || {};
             document.getElementById('modal-shipping-address').innerHTML = `${address.address || ''}<br>${address.postal || ''} ${address.city || ''}`;
 
-            const notesSection = document.getElementById('modal-notes-section');
-            if (address.notes) {
-                document.getElementById('modal-notes').textContent = address.notes;
-                notesSection.classList.remove('hidden');
-            } else {
-                notesSection.classList.add('hidden');
-            }
-
             const items = order.items || [];
             document.getElementById('modal-items').innerHTML = items.map(item => `
-                <div class="flex justify-between items-center py-2 border-b border-nuca-green/10 last:border-0">
-                    <div><p class="font-medium text-nuca-green">${item.name}</p><p class="text-xs text-nuca-green/60">Tamanho: ${item.size} | Qtd: ${item.quantity}</p></div>
-                    <span class="font-bold text-nuca-green">€${(item.price * item.quantity).toFixed(2)}</span>
+                <div class="flex justify-between py-2 border-b">
+                    <div><p class="font-medium">${item.name}</p><p class="text-xs">Qtd: ${item.quantity}</p></div>
+                    <span class="font-bold">€${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
             `).join('');
 
             document.getElementById('modal-subtotal').textContent = `€${(order.subtotal || 0).toFixed(2)}`;
-            document.getElementById('modal-discount').textContent = `-€${(order.discount || 0).toFixed(2)}`;
-            document.getElementById('modal-shipping').textContent = order.shipping === 0 ? 'Grátis' : `€${(order.shipping || 0).toFixed(2)}`;
             document.getElementById('modal-total').textContent = `€${(order.total || 0).toFixed(2)}`;
 
-            document.getElementById('modal-actions').innerHTML = getModalActionButtons(order);
-            document.getElementById('order-modal').classList.remove('hidden');
-        }
-
-        function getModalActionButtons(order) {
-            const buttons = [];
+            let actions = '';
             if (order.status === 'pending_payment') {
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'paid'); closeOrderModal();" class="btn-action flex-1 bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Marcar como Pago</button>`);
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'cancelled'); closeOrderModal();" class="btn-action flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Cancelar Encomenda</button>`);
+                actions = `<button onclick="updateOrderStatus('${order.id}', 'paid')" class="btn-action flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Marcar como Pago</button>
+                           <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="btn-action flex-1 bg-red-500 text-white py-3 rounded-xl font-bold">Cancelar</button>`;
             } else if (order.status === 'paid') {
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'shipped'); closeOrderModal();" class="btn-action flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Marcar como Enviada</button>`);
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'pending_payment'); closeOrderModal();" class="btn-action px-4 py-3 border-2 border-nuca-green text-nuca-green rounded-xl font-bold hover:bg-nuca-green/5">Voltar a Pendente</button>`);
+                actions = `<button onclick="updateOrderStatus('${order.id}', 'shipped')" class="btn-action flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold">Marcar como Enviada</button>`;
             } else if (order.status === 'shipped') {
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'delivered'); closeOrderModal();" class="btn-action flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold hover:bg-purple-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Marcar como Entregue</button>`);
-            } else if (order.status === 'delivered') {
-                buttons.push(`<span class="flex-1 text-center py-3 text-green-600 font-bold">✓ Encomenda Completa</span>`);
-            } else if (order.status === 'cancelled') {
-                buttons.push(`<button onclick="updateOrderStatus('${order.id}', 'pending_payment'); closeOrderModal();" class="btn-action flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold hover:bg-nuca-dark">Reativar Encomenda</button>`);
+                actions = `<button onclick="updateOrderStatus('${order.id}', 'delivered')" class="btn-action flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold">Marcar como Entregue</button>`;
             }
-            return buttons.join('');
+            
+            document.getElementById('modal-actions').innerHTML = actions;
+            document.getElementById('order-modal').classList.remove('hidden');
         }
 
         function closeOrderModal() {
             document.getElementById('order-modal').classList.add('hidden');
         }
 
-        function printOrder() {
-            window.print();
-        }
-
         // ============================================
-        // FILTERS & SEARCH
+        // FILTERS
         // ============================================
         function filterOrders(status) {
             currentFilter = status;
@@ -1224,7 +1007,7 @@
             const showingEnd = Math.min(currentPage * ordersPerPage, filteredOrders.length);
             document.getElementById('showing-text').textContent = `A mostrar ${filteredOrders.length > 0 ? showingStart : 0}-${showingEnd} de ${filteredOrders.length} encomendas`;
             document.getElementById('prev-page').disabled = currentPage === 1;
-            document.getElementById('next-page').disabled = currentPage >= totalPages || totalPages === 0;
+            document.getElementById('next-page').disabled = currentPage >= totalPages;
         }
 
         function changePage(direction) {
@@ -1236,6 +1019,29 @@
             }
         }
 
+        function refreshOrders() {
+            showToast('A atualizar...', 'info');
+            loadOrders();
+        }
+
+        function exportOrders() {
+            const csvContent = [
+                ['Nº Encomenda', 'Data', 'Cliente', 'Email', 'Total', 'Status'].join(','),
+                ...filteredOrders.map(o => [
+                    o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.total, o.status
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `encomendas_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('CSV exportado!', 'success');
+        }
+
         // ============================================
         // CHARTS
         // ============================================
@@ -1243,141 +1049,39 @@
             if (salesChart) salesChart.destroy();
             if (statusChart) statusChart.destroy();
 
-            const salesCanvas = document.getElementById('salesChart');
-            const statusCanvas = document.getElementById('statusChart');
+            const salesCtx = document.getElementById('salesChart')?.getContext('2d');
+            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
             
-            if (!salesCanvas || !statusCanvas) return;
-
-            const salesCtx = salesCanvas.getContext('2d');
-            const statusCtx = statusCanvas.getContext('2d');
+            if (!salesCtx || !statusCtx) return;
 
             salesChart = new Chart(salesCtx, {
                 type: 'line',
-                data: { 
-                    labels: [], 
-                    datasets: [{ 
-                        label: 'Vendas (€)', 
-                        data: [], 
-                        borderColor: '#556B4F', 
-                        backgroundColor: 'rgba(85, 107, 79, 0.1)', 
-                        tension: 0.4, 
-                        fill: true,
-                        borderWidth: 2,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#556B4F'
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false } 
-                    }, 
-                    scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: 'rgba(85, 107, 79, 0.1)' },
-                            ticks: {
-                                callback: function(value) {
-                                    return '€' + value;
-                                }
-                            }
-                        }, 
-                        x: { 
-                            grid: { display: false } 
-                        } 
-                    } 
-                }
+                data: { labels: [], datasets: [{ label: 'Vendas (€)', data: [], borderColor: '#556B4F', backgroundColor: 'rgba(85,107,79,0.1)', tension: 0.4, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
 
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
-                data: { 
-                    labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], 
-                    datasets: [{ 
-                        data: [0, 0, 0, 0, 0], 
-                        backgroundColor: ['#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EF4444'], 
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    cutout: '60%',
-                    plugins: { 
-                        legend: { 
-                            position: 'bottom', 
-                            labels: { 
-                                usePointStyle: true, 
-                                padding: 15,
-                                font: { size: 11 },
-                                boxWidth: 8
-                            } 
-                        } 
-                    } 
-                }
+                data: { labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444'] }] },
+                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
             });
 
-            chartsInitialized = true;
             updateChartsData();
-        }
-
-        function initAnalyticsCharts() {
-            if (categoryChart) categoryChart.destroy();
-
-            const categoryCanvas = document.getElementById('categoryChart');
-            if (!categoryCanvas) return;
-
-            const categoryCtx = categoryCanvas.getContext('2d');
-
-            categoryChart = new Chart(categoryCtx, {
-                type: 'bar',
-                data: { 
-                    labels: ['T-shirts', 'Hoodies', 'Acessórios'], 
-                    datasets: [{ 
-                        label: 'Vendas', 
-                        data: [12, 8, 5], 
-                        backgroundColor: ['#556B4F', '#D8C6A5', '#2C3328'],
-                        borderRadius: 4
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false } 
-                    }, 
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: 'rgba(85, 107, 79, 0.1)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    } 
-                }
-            });
         }
 
         function updateChartsData() {
             if (!salesChart || !statusChart) return;
             
-            const days = parseInt(document.getElementById('chart-period').value) || 7;
+            const days = parseInt(document.getElementById('chart-period')?.value || 7);
             const labels = [];
             const data = [];
 
             for (let i = days - 1; i >= 0; i--) {
                 const date = new Date();
                 date.setDate(date.getDate() - i);
-                const dateStr = days > 30 ? date.toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }) : date.toLocaleDateString('pt-PT', { weekday: 'short' });
-                labels.push(dateStr);
+                labels.push(date.toLocaleDateString('pt-PT', { weekday: 'short' }));
                 const dayTotal = allOrders
-                    .filter(o => { 
-                        const orderDate = new Date(o.created_at); 
-                        return orderDate.toDateString() === date.toDateString() && ['paid', 'shipped', 'delivered'].includes(o.status); 
-                    })
+                    .filter(o => new Date(o.created_at).toDateString() === date.toDateString() && ['paid','shipped','delivered'].includes(o.status))
                     .reduce((sum, o) => sum + (o.total || 0), 0);
                 data.push(dayTotal);
             }
@@ -1386,14 +1090,11 @@
             salesChart.data.datasets[0].data = data;
             salesChart.update();
 
-            const statusCounts = { 'pending_payment': 0, 'paid': 0, 'shipped': 0, 'delivered': 0, 'cancelled': 0 };
+            const statusCounts = { pending_payment:0, paid:0, shipped:0, delivered:0, cancelled:0 };
             allOrders.forEach(o => { if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; });
             statusChart.data.datasets[0].data = [
-                statusCounts['pending_payment'], 
-                statusCounts['paid'], 
-                statusCounts['shipped'], 
-                statusCounts['delivered'], 
-                statusCounts['cancelled']
+                statusCounts.pending_payment, statusCounts.paid, statusCounts.shipped, 
+                statusCounts.delivered, statusCounts.cancelled
             ];
             statusChart.update();
         }
@@ -1413,20 +1114,19 @@
             const notification = { id: Date.now(), message, type, time: new Date(), read: false };
             notifications.unshift(notification);
             updateNotificationsList();
-            const badge = document.getElementById('notification-badge');
-            badge.classList.remove('hidden');
-            badge.textContent = notifications.filter(n => !n.read).length;
+            document.getElementById('notification-badge').classList.remove('hidden');
+            document.getElementById('notification-badge').textContent = notifications.filter(n => !n.read).length;
         }
 
         function updateNotificationsList() {
             const list = document.getElementById('notifications-list');
             if (notifications.length === 0) {
-                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>';
+                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações</p>';
                 return;
             }
             list.innerHTML = notifications.map(n => `
-                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} notification cursor-pointer hover:bg-nuca-green/10 transition-colors" onclick="markAsRead(${n.id})">
-                    <p class="text-sm text-nuca-green font-medium">${n.message}</p>
+                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} cursor-pointer hover:bg-nuca-green/10" onclick="markAsRead(${n.id})">
+                    <p class="text-sm font-medium">${n.message}</p>
                     <p class="text-xs text-nuca-green/60 mt-1">${formatTime(n.time)}</p>
                 </div>
             `).join('');
@@ -1450,29 +1150,27 @@
             document.getElementById('notification-badge').classList.add('hidden');
         }
 
-        function checkNewOrders() {
-            const lastCheck = localStorage.getItem('lastOrderCheck') || new Date(0).toISOString();
-            const newOrders = allOrders.filter(o => new Date(o.created_at) > new Date(lastCheck));
-
-            if (newOrders.length > 0) {
-                newOrders.forEach(order => { addNotification(`Nova encomenda: ${order.order_number}`, 'new-order'); });
-                document.getElementById('notification-badge').classList.remove('hidden');
-                document.getElementById('notification-badge').textContent = notifications.length;
+        function updatePendingBadge() {
+            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
+            const badge = document.getElementById('sidebar-pending-badge');
+            if (pending > 0) {
+                badge.textContent = pending;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
             }
-            localStorage.setItem('lastOrderCheck', new Date().toISOString());
         }
 
         // ============================================
-        // UTILITIES
+        // UTILS
         // ============================================
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            return date.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
         }
 
         function formatTime(date) {
-            const now = new Date();
-            const diff = Math.floor((now - date) / 1000 / 60);
+            const diff = Math.floor((new Date() - date) / 1000 / 60);
             if (diff < 1) return 'Agora';
             if (diff < 60) return `Há ${diff} min`;
             if (diff < 1440) return `Há ${Math.floor(diff / 60)} h`;
@@ -1483,61 +1181,14 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-nuca-green' };
-            toast.className = `notification ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px]`;
+            toast.className = `notification ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px]`;
             toast.innerHTML = `<span class="font-medium">${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100%)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function refreshOrders() {
-            showToast('A atualizar...', 'info');
-            loadOrders();
-        }
-
-        function exportOrders() {
-            const csvContent = [
-                ['Nº Encomenda', 'Data', 'Cliente', 'Email', 'Telefone', 'Total', 'Status'].join(','),
-                ...filteredOrders.map(o => [
-                    o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.customer_phone || '', o.total, o.status
-                ].join(','))
-            ].join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `encomendas_nuca_${new Date().toISOString().split('T')[0]}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            showToast('CSV exportado com sucesso!', 'success');
-        }
-
-        function toggleSetting(btn) {
-            const isActive = btn.classList.contains('bg-nuca-green');
-            btn.classList.toggle('bg-nuca-green', !isActive);
-            btn.classList.toggle('bg-nuca-green/30', isActive);
-            const dot = btn.querySelector('span');
-            dot.classList.toggle('translate-x-6', !isActive);
-        }
-
-        // Close panels on outside click
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#notifications-panel') && !e.target.closest('button[onclick="toggleNotifications()"]')) {
-                document.getElementById('notifications-panel').classList.add('hidden');
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeOrderModal();
                 document.getElementById('notifications-panel').classList.add('hidden');
             }
         });
