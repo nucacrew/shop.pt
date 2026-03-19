@@ -311,273 +311,6 @@
         .receipt-free-shipping {
             color: #10B981;
         }
-
-        /* NOVOS ESTILOS PARA CARTÃO DE PONTOS SIMPLIFICADO */
-        .points-badge {
-            display: inline-flex;
-            align-items: baseline;
-            background: rgba(85, 107, 79, 0.08);
-            padding: 6px 12px;
-            border-radius: 30px;
-            border: 1px solid rgba(85, 107, 79, 0.15);
-            transition: all 0.2s ease;
-        }
-        
-        .points-badge:hover {
-            background: rgba(85, 107, 79, 0.15);
-            transform: scale(1.02);
-            cursor: pointer;
-        }
-        
-        .points-number {
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #556B4F;
-        }
-        
-        .points-separator {
-            color: rgba(85, 107, 79, 0.3);
-            margin: 0 4px;
-            font-weight: 500;
-        }
-        
-        .points-total {
-            color: rgba(85, 107, 79, 0.5);
-            font-size: 0.9rem;
-        }
-        
-        .points-label {
-            font-size: 0.75rem;
-            color: rgba(85, 107, 79, 0.6);
-            margin-left: 6px;
-        }
-        
-        .completed-badge {
-            background: #556B4F;
-            color: #D8C6A5;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-left: 6px;
-        }
-        
-        .reward-badge {
-            background: #556B4F;
-            color: #D8C6A5;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-left: 6px;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-        
-        /* CARTÃO DE PONTOS SIMPLIFICADO NO MODAL */
-        .simple-points-card {
-            background: white;
-            border-radius: 24px;
-            padding: 32px;
-            box-shadow: 0 10px 30px rgba(85, 107, 79, 0.1);
-            border: 1px solid rgba(85, 107, 79, 0.1);
-        }
-        
-        .points-display {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .points-display-main {
-            display: inline-flex;
-            align-items: baseline;
-            background: rgba(85, 107, 79, 0.05);
-            padding: 20px 40px;
-            border-radius: 60px;
-        }
-        
-        .points-display-current {
-            font-family: 'Syne', sans-serif;
-            font-size: 4rem;
-            font-weight: 800;
-            color: #556B4F;
-            line-height: 1;
-        }
-        
-        .points-display-separator {
-            font-size: 3rem;
-            color: rgba(85, 107, 79, 0.2);
-            margin: 0 10px;
-        }
-        
-        .points-display-max {
-            font-family: 'Syne', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 500;
-            color: rgba(85, 107, 79, 0.3);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin: 30px 0;
-        }
-        
-        .stat-box {
-            background: rgba(85, 107, 79, 0.03);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(85, 107, 79, 0.1);
-        }
-        
-        .stat-box-value {
-            font-family: 'Syne', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: #556B4F;
-        }
-        
-        .stat-box-label {
-            font-size: 0.8rem;
-            color: rgba(85, 107, 79, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .progress-section {
-            margin: 30px 0;
-        }
-        
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: rgba(85, 107, 79, 0.7);
-            margin-bottom: 8px;
-        }
-        
-        .progress-bg {
-            background: rgba(85, 107, 79, 0.1);
-            height: 12px;
-            border-radius: 6px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            background: linear-gradient(90deg, #556B4F, #6B8E5E);
-            height: 100%;
-            border-radius: 6px;
-            transition: width 0.5s ease;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin: 30px 0 20px;
-        }
-        
-        .btn-primary {
-            flex: 1;
-            background: #556B4F;
-            color: #D8C6A5;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .btn-primary:hover {
-            background: #2C3328;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(85, 107, 79, 0.3);
-        }
-        
-        .btn-secondary {
-            padding: 16px 20px;
-            background: transparent;
-            border: 2px solid rgba(220, 38, 38, 0.3);
-            color: #DC2626;
-            border-radius: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(220, 38, 38, 0.05);
-            border-color: rgba(220, 38, 38, 0.5);
-        }
-        
-        .reward-section {
-            background: rgba(85, 107, 79, 0.05);
-            border: 2px dashed rgba(85, 107, 79, 0.3);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .reward-section.complete {
-            background: rgba(85, 107, 79, 0.1);
-            border: 2px solid #556B4F;
-            animation: glow 2s infinite;
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(85, 107, 79, 0.3); }
-            50% { box-shadow: 0 0 20px 5px rgba(85, 107, 79, 0.1); }
-        }
-        
-        .btn-redeem {
-            width: 100%;
-            background: linear-gradient(135deg, #D8C6A5, #C4B090);
-            color: #2C3328;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 15px;
-        }
-        
-        /* Menu de Ações do Cliente */
-        #customer-actions-menu {
-            animation: fadeInMenu 0.15s ease-out;
-        }
-
-        @keyframes fadeInMenu {
-            from { opacity: 0; transform: translate(-50%, 5px); }
-            to { opacity: 1; transform: translate(-50%, 10px); }
-        }
-
-        #customer-actions-menu button {
-            transition: all 0.15s ease;
-        }
-
-        #customer-actions-menu button:hover {
-            background-color: rgba(85, 107, 79, 0.08);
-            padding-left: 1.25rem;
-        }
-
-        .btn-redeem:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(85, 107, 79, 0.3);
-        }
     </style>
 <base target="_blank">
 </head>
@@ -705,11 +438,6 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <button onclick="openPointsCheck()" class="p-2 hover:bg-nuca-green/10 rounded-full" title="Consultar Pontos do Cliente">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
-                                </svg>
-                            </button>
                             <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
@@ -950,14 +678,13 @@
                                     <tr>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cartão de Pontos</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
                                         <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
+                                    <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -997,15 +724,8 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-6">
-                <!-- Tabs -->
-                <div class="flex gap-2 mb-6 border-b border-nuca-green/10">
-                    <button onclick="switchCustomerTab('info')" id="tab-info" class="px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green">Informação</button>
-                    <button onclick="switchCustomerTab('loyalty')" id="tab-loyalty" class="px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green">Cartão de Pontos</button>
-                    <button onclick="switchCustomerTab('history')" id="tab-history" class="px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green">Histórico</button>
-                </div>
-
-                <!-- Tab: Informação do Cliente -->
-                <div id="customer-info-tab" class="tab-content">
+                <!-- Informação do Cliente -->
+                <div id="customer-info-tab">
                     <form id="customer-form" class="space-y-6">
                         <input type="hidden" id="customer-id">
                         
@@ -1059,227 +779,6 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Tab: Cartão de Pontos - VERSÃO SIMPLIFICADA (SEM BOLINHAS) -->
-                <div id="customer-loyalty-tab" class="tab-content hidden">
-                    <div class="simple-points-card">
-                        <!-- Header -->
-                        <div class="text-center mb-6">
-                            <h3 class="font-display text-2xl font-bold text-nuca-green">NUCA</h3>
-                            <p class="text-nuca-green/60 text-sm">Cartão de Fidelidade</p>
-                        </div>
-
-                        <!-- Pontos em destaque -->
-                        <div class="points-display">
-                            <div class="points-display-main">
-                                <span class="points-display-current" id="simple-total-stamps">0</span>
-                                <span class="points-display-separator">/</span>
-                                <span class="points-display-max">10</span>
-                            </div>
-                            <p class="text-nuca-green/60 mt-2 text-sm">pontos acumulados</p>
-                        </div>
-
-                        <!-- Stats Grid -->
-                        <div class="stats-grid">
-                            <div class="stat-box">
-                                <div class="stat-box-value" id="simple-completed-cards">0</div>
-                                <div class="stat-box-label">Cartões Completos</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="stat-box-value" id="simple-remaining-stamps">10</div>
-                                <div class="stat-box-label">Faltam</div>
-                            </div>
-                        </div>
-
-                        <!-- Barra de Progresso -->
-                        <div class="progress-section">
-                            <div class="progress-header">
-                                <span>Progresso</span>
-                                <span id="simple-progress-percent">0%</span>
-                            </div>
-                            <div class="progress-bg">
-                                <div id="simple-progress-bar" class="progress-fill" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Mensagem de Recompensa -->
-                        <div id="simple-reward-message" class="reward-section">
-                            <p id="simple-reward-text" class="text-nuca-green/80">
-                                A cada 10 pontos ganha <strong class="text-nuca-green">25% de desconto</strong>
-                            </p>
-                        </div>
-
-                        <!-- Ações -->
-                        <div class="action-buttons" id="simple-loyalty-actions">
-                            <button onclick="addStamp()" class="btn-primary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                                Adicionar Ponto
-                            </button>
-                            <button onclick="removeStamp()" class="btn-secondary" title="Remover último ponto">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Botões adicionais -->
-                        <div class="flex gap-2 mt-3">
-                            <button onclick="saveLoyaltyCard()" class="flex-1 bg-nuca-green/10 text-nuca-green py-3 rounded-xl font-medium hover:bg-nuca-green/20 transition-colors">
-                                Guardar
-                            </button>
-                            <button onclick="clearAllStamps()" class="flex-1 border border-red-300 text-red-600 py-3 rounded-xl font-medium hover:bg-red-50 transition-colors">
-                                Limpar
-                            </button>
-                        </div>
-
-                        <!-- Botão Resgatar (aparece quando completo) -->
-                        <div id="simple-redeem-section" class="hidden mt-4">
-                            <button onclick="openRedeemModal()" class="btn-redeem">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline mr-2">
-                                    <polyline points="20 6 9 17 4 12"/>
-                                </svg>
-                                Resgatar Recompensa: 25% de Desconto!
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Histórico de Recompensas -->
-                    <div class="mt-8">
-                        <h4 class="font-display text-lg font-bold text-nuca-green mb-4">Recompensas Resgatadas</h4>
-                        <div id="rewards-history" class="space-y-3">
-                            <p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Histórico de Compras -->
-                <div id="customer-history-tab" class="tab-content hidden">
-                    <div class="space-y-4">
-                        <h4 class="font-bold text-nuca-green">Últimas Compras</h4>
-                        <div id="customer-orders-history" class="space-y-3">
-                            <p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Resgatar Recompensa -->
-    <div id="redeem-modal" class="hidden fixed inset-0 z-[3000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <div class="redeem-modal relative">
-            <button onclick="closeRedeemModal()" class="absolute top-4 right-4 p-2 hover:bg-nuca-green/10 rounded-full">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-            
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-nuca-green rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                </div>
-                <h3 class="font-display text-2xl font-bold text-nuca-green mb-2">Parabéns!</h3>
-                <p class="text-nuca-green/70">Cartão completo. Escolha como usar seus 10 carimbos:</p>
-            </div>
-
-            <div class="space-y-3">
-                <div class="redeem-option selected" onclick="selectRedeemOption('discount')" id="option-discount">
-                    <div class="redeem-option-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="1" x2="12" y2="23"/>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                        </svg>
-                    </div>
-                    <div class="redeem-option-content">
-                        <h4>25% de Desconto</h4>
-                        <p>Na próxima compra. Válido por 30 dias.</p>
-                    </div>
-                </div>
-
-                <div class="redeem-option" onclick="selectRedeemOption('product')" id="option-product">
-                    <div class="redeem-option-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                            <line x1="3" y1="6" x2="21" y2="6"/>
-                            <path d="M16 10a4 4 0 0 1-8 0"/>
-                        </svg>
-                    </div>
-                    <div class="redeem-option-content">
-                        <h4>Produto Gratuito</h4>
-                        <p>T-shirt ou acessório até €25 de valor.</p>
-                    </div>
-                </div>
-
-                <div class="redeem-option" onclick="selectRedeemOption('shipping')" id="option-shipping">
-                    <div class="redeem-option-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="1" y="3" width="15" height="13"/>
-                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
-                            <circle cx="5.5" cy="18.5" r="2.5"/>
-                            <circle cx="18.5" cy="18.5" r="2.5"/>
-                        </svg>
-                    </div>
-                    <div class="redeem-option-content">
-                        <h4>Portes Grátis (3x)</h4>
-                        <p>Envio gratuito nas próximas 3 compras.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-nuca-green/10">
-                <button onclick="confirmRedeem()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-xl font-bold hover:bg-nuca-dark transition-colors">
-                    Confirmar Resgate
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Página Pública para Cliente Verificar Pontos -->
-    <div id="customer-points-check" class="fixed inset-0 z-[2000] hidden items-center justify-center p-4" style="background: rgba(216, 198, 165, 0.95);">
-        <div class="bg-white/90 backdrop-blur-md rounded-3xl p-8 max-w-md w-full">
-            <div class="text-center mb-8">
-                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
-                <p class="text-nuca-green/60">Consulte os seus pontos</p>
-            </div>
-
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-sm font-bold text-nuca-green mb-2">Número de Telefone</label>
-                    <input type="tel" id="check-phone" class="search-input w-full px-4 py-3 rounded-xl text-center text-2xl" placeholder="912345678" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
-                </div>
-
-                <button onclick="checkCustomerPoints()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                    <span>Verificar Pontos</span>
-                </button>
-
-                <div id="points-result" class="hidden mt-6 p-6 bg-nuca-green/5 rounded-2xl">
-                    <div class="text-center mb-4">
-                        <p class="text-sm text-nuca-green/60">Bem-vindo(a), <span id="result-name" class="font-bold"></span></p>
-                    </div>
-                    
-                    <!-- Versão simplificada para consulta pública -->
-                    <div class="flex justify-center items-baseline gap-1 mb-4">
-                        <span class="font-display text-5xl font-bold text-nuca-green" id="result-points">0</span>
-                        <span class="text-nuca-green/40 text-3xl">/</span>
-                        <span class="text-nuca-green/30 text-2xl">10</span>
-                        <span class="text-nuca-green/60 ml-2">pontos</span>
-                    </div>
-
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-xs text-nuca-green/60">Próxima recompensa</p>
-                            <p class="text-sm font-medium text-nuca-green" id="next-reward">Faltam 10 pontos</p>
-                        </div>
-                    </div>
-
-                    <div id="result-reward-info" class="hidden mt-4 bg-white rounded-xl p-3 border border-nuca-green/20">
-                        <p class="text-xs text-center text-nuca-green/70">🎉 Recompensa disponível: <strong>25% de desconto</strong></p>
-                    </div>
-                </div>
-
-                <button onclick="closePointsCheck()" class="w-full mt-4 text-nuca-green/60 hover:text-nuca-green text-sm">Fechar</button>
             </div>
         </div>
     </div>
@@ -1358,12 +857,6 @@
         let statusChart = null;
         let notifications = [];
         let currentUser = null;
-        
-        // Customer State
-        let currentCustomerId = null;
-        let currentLoyaltyCard = null;
-        let stamps = new Array(10).fill(false);
-        let selectedRedeemOption = 'discount';
 
         // ============================================
         // INIT
@@ -1518,19 +1011,6 @@
                     { event: '*', schema: 'public', table: 'orders' },
                     (payload) => {
                         loadOrders();
-                    }
-                )
-                .subscribe();
-        
-            supabaseClient
-                .channel('loyalty-channel')
-                .on('postgres_changes',
-                    { event: '*', schema: 'public', table: 'loyalty_cards' },
-                    (payload) => {
-                        console.log('Loyalty card updated:', payload);
-                        if (currentSection === 'customers') {
-                            loadCustomers();
-                        }
                     }
                 )
                 .subscribe();
@@ -2004,25 +1484,7 @@
         
                 if (customersError) throw customersError;
         
-                const { data: loyaltyCards, error: cardsError } = await supabaseClient
-                    .from('loyalty_cards')
-                    .select('id, customer_id, current_stamps, completed_cards, status');
-        
-                if (cardsError) throw cardsError;
-        
-                const cardsMap = {};
-                if (loyaltyCards) {
-                    loyaltyCards.forEach(card => {
-                        cardsMap[card.customer_id] = card;
-                    });
-                }
-        
-                const customersWithCards = customers.map(customer => ({
-                    ...customer,
-                    loyalty_card: cardsMap[customer.id] || { current_stamps: 0, completed_cards: 0, status: 'active' }
-                }));
-        
-                renderCustomers(customersWithCards);
+                renderCustomers(customers || []);
             } catch (error) {
                 console.error('Erro ao carregar clientes:', error);
                 showToast('Erro ao carregar clientes', 'error');
@@ -2033,16 +1495,11 @@
             const tbody = document.getElementById('customers-table-body');
 
             if (customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
                 return;
             }
 
             tbody.innerHTML = customers.map(customer => {
-                const loyaltyCard = customer.loyalty_card || { current_stamps: 0, completed_cards: 0, status: 'active' };
-                const stamps = loyaltyCard.current_stamps || 0;
-
-                const hasReward = stamps >= 10 || loyaltyCard.status === 'reward_pending';
-
                 return `<tr class="order-row">
                     <td class="px-6 py-4">
                         <div>
@@ -2054,18 +1511,6 @@
                         <div>
                             <p class="font-medium">${customer.phone}</p>
                             <p class="text-xs text-nuca-green/60">${customer.city || 'Sem morada'}</p>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="points-badge">
-                            <span class="points-number">${stamps}</span>
-                            <span class="points-separator">/</span>
-                            <span class="points-total">10</span>
-                            <span class="points-label">pontos</span>
-                            ${loyaltyCard.completed_cards > 0 ? 
-                                `<span class="completed-badge">${loyaltyCard.completed_cards}✓</span>` : ''}
-                            ${hasReward ? 
-                                `<span class="reward-badge">🎁</span>` : ''}
                         </div>
                     </td>
                     <td class="px-6 py-4" id="orders-count-${customer.id}">
@@ -2158,21 +1603,14 @@
 
             menu.innerHTML = `
                 <div class="px-4 py-2 text-xs font-bold text-nuca-green/60 uppercase border-b border-nuca-green/10 mb-1">Ações do Cliente</div>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'info')" 
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
                     class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                     </svg>
                     Ver Informação
                 </button>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'loyalty')" 
-                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
-                    </svg>
-                    Cartão de Pontos
-                </button>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'history')" 
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
                     class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -2181,7 +1619,7 @@
                     Histórico de Compras
                 </button>
                 <div class="border-t border-nuca-green/10 my-1"></div>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit', 'info')" 
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit')" 
                     class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -2213,8 +1651,7 @@
             }
         }
 
-        async function openCustomerModal(customerId = null, mode = 'view', initialTab = 'info') {
-            currentCustomerId = customerId;
+        async function openCustomerModal(customerId = null, mode = 'view') {
             document.getElementById('customer-modal').classList.remove('hidden');
 
             // Configurar modo (view ou edit)
@@ -2259,462 +1696,16 @@
                     document.getElementById('customer-notes').value = customer.notes || '';
                 }
 
-                await loadLoyaltyCard(customerId);
                 await loadCustomerOrders(customerId);
-                await loadRewardsHistory(customerId);
             } else {
                 document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
                 document.getElementById('customer-form').reset();
                 document.getElementById('customer-id').value = '';
-                resetLoyaltyDisplay();
             }
-
-            // Ir para a tab especificada (não sempre 'info')
-            switchCustomerTab(initialTab);
         }
 
         function closeCustomerModal() {
             document.getElementById('customer-modal').classList.add('hidden');
-            currentCustomerId = null;
-        }
-
-        function switchCustomerTab(tab) {
-            document.getElementById('tab-info').className = tab === 'info' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
-            document.getElementById('tab-loyalty').className = tab === 'loyalty' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
-            document.getElementById('tab-history').className = tab === 'history' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
-            
-            document.getElementById('customer-info-tab').classList.toggle('hidden', tab !== 'info');
-            document.getElementById('customer-loyalty-tab').classList.toggle('hidden', tab !== 'loyalty');
-            document.getElementById('customer-history-tab').classList.toggle('hidden', tab !== 'history');
-        }
-
-        // ============================================
-        // LOYALTY CARD SYSTEM (SIMPLIFICADO)
-        // ============================================
-        
-        async function loadLoyaltyCard(customerId) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('loyalty_cards')
-                    .select('*')
-                    .eq('customer_id', customerId)
-                    .maybeSingle();
-
-                if (error) throw error;
-
-                if (data) {
-                    currentLoyaltyCard = data;
-                    
-                    const { data: stampsData } = await supabaseClient
-                        .from('loyalty_stamps')
-                        .select('stamp_position')
-                        .eq('card_id', data.id);
-
-                    stamps = new Array(10).fill(false);
-                    if (stampsData) {
-                        stampsData.forEach(s => {
-                            if (s.stamp_position >= 1 && s.stamp_position <= 10) {
-                                stamps[s.stamp_position - 1] = true;
-                            }
-                        });
-                    }
-                } else {
-                    const { data: newCard, error: createError } = await supabaseClient
-                        .from('loyalty_cards')
-                        .insert([{
-                            customer_id: customerId,
-                            card_number: `NUCA-${Date.now()}`,
-                            current_stamps: 0,
-                            max_stamps: 10,
-                            completed_cards: 0,
-                            status: 'active'
-                        }])
-                        .select()
-                        .single();
-
-                    if (createError) throw createError;
-                    currentLoyaltyCard = newCard;
-                    stamps = new Array(10).fill(false);
-                }
-
-                updateSimpleLoyaltyDisplay();
-            } catch (error) {
-                console.error('Erro ao carregar cartão:', error);
-                showToast('Erro ao carregar cartão de pontos', 'error');
-            }
-        }
-
-        function updateSimpleLoyaltyDisplay() {
-            const filledCount = stamps.filter(s => s).length;
-            
-            // Atualizar elementos simplificados
-            document.getElementById('simple-total-stamps').textContent = filledCount;
-            document.getElementById('simple-completed-cards').textContent = currentLoyaltyCard?.completed_cards || 0;
-            document.getElementById('simple-remaining-stamps').textContent = Math.max(0, 10 - filledCount);
-            
-            const percentage = (filledCount / 10) * 100;
-            document.getElementById('simple-progress-bar').style.width = `${percentage}%`;
-            document.getElementById('simple-progress-percent').textContent = `${Math.round(percentage)}%`;
-            
-            const rewardSection = document.getElementById('simple-reward-message');
-            const redeemSection = document.getElementById('simple-redeem-section');
-            const loyaltyActions = document.getElementById('simple-loyalty-actions');
-            
-            if (filledCount === 10) {
-                rewardSection.classList.add('complete');
-                document.getElementById('simple-reward-text').innerHTML = `
-                    🎉 Parabéns! Cartão Completo!<br>
-                    <strong>Cliente tem direito a 25% de desconto na próxima compra!</strong>
-                `;
-                redeemSection.classList.remove('hidden');
-                loyaltyActions.classList.add('hidden');
-            } else {
-                rewardSection.classList.remove('complete');
-                document.getElementById('simple-reward-text').innerHTML = `
-                    A cada 10 pontos ganha <strong class="text-nuca-green">25% de desconto</strong><br>
-                    <span class="text-sm">(${filledCount}/10 pontos)</span>
-                `;
-                redeemSection.classList.add('hidden');
-                loyaltyActions.classList.remove('hidden');
-            }
-        }
-
-        function addStamp() {
-            if (!currentCustomerId) {
-                showToast('Selecione um cliente primeiro', 'info');
-                return;
-            }
-            
-            const filledCount = stamps.filter(s => s).length;
-            if (filledCount < 10) {
-                for (let i = 0; i < stamps.length; i++) {
-                    if (!stamps[i]) {
-                        stamps[i] = true;
-                        break;
-                    }
-                }
-                updateSimpleLoyaltyDisplay();
-                
-                if (filledCount + 1 === 10) {
-                    showToast('Cartão completo! Cliente ganhou 25% de desconto!', 'success');
-                }
-            } else {
-                showToast('Cartão já está completo!', 'info');
-            }
-        }
-
-        function removeStamp() {
-            if (!currentCustomerId) return;
-            
-            for (let i = stamps.length - 1; i >= 0; i--) {
-                if (stamps[i]) {
-                    stamps[i] = false;
-                    break;
-                }
-            }
-            updateSimpleLoyaltyDisplay();
-        }
-
-        function clearAllStamps() {
-            if (!currentCustomerId) return;
-            
-            if (confirm('Tem a certeza que quer limpar todos os pontos?')) {
-                stamps = new Array(10).fill(false);
-                updateSimpleLoyaltyDisplay();
-            }
-        }
-
-        async function saveLoyaltyCard() {
-            if (!currentCustomerId || !currentLoyaltyCard) return;
-
-            try {
-                const filledStamps = stamps.reduce((acc, val, idx) => val ? [...acc, idx + 1] : acc, []);
-                
-                if (filledStamps.length === 10) {
-                    await supabaseClient
-                        .from('loyalty_cards')
-                        .update({
-                            status: 'reward_pending',
-                            current_stamps: 10
-                        })
-                        .eq('id', currentLoyaltyCard.id);
-                } else {
-                    await supabaseClient
-                        .from('loyalty_cards')
-                        .update({
-                            current_stamps: filledStamps.length,
-                            status: 'active'
-                        })
-                        .eq('id', currentLoyaltyCard.id);
-
-                    await supabaseClient
-                        .from('loyalty_stamps')
-                        .delete()
-                        .eq('card_id', currentLoyaltyCard.id);
-
-                    if (filledStamps.length > 0) {
-                        const stampInserts = filledStamps.map(pos => ({
-                            card_id: currentLoyaltyCard.id,
-                            stamp_position: pos,
-                            given_by: currentUser?.id
-                        }));
-                        
-                        await supabaseClient
-                            .from('loyalty_stamps')
-                            .insert(stampInserts);
-                    }
-                }
-
-                showToast('Cartão atualizado com sucesso!', 'success');
-                await loadLoyaltyCard(currentCustomerId);
-                loadCustomers();
-                
-            } catch (error) {
-                console.error('Erro ao guardar cartão:', error);
-                showToast('Erro ao guardar cartão', 'error');
-            }
-        }
-
-        // ============================================
-        // REDEEM REWARD SYSTEM
-        // ============================================
-        function openRedeemModal() {
-            document.getElementById('redeem-modal').classList.remove('hidden');
-            selectedRedeemOption = 'discount';
-            updateRedeemOptions();
-        }
-
-        function closeRedeemModal() {
-            document.getElementById('redeem-modal').classList.add('hidden');
-        }
-
-        function selectRedeemOption(option) {
-            selectedRedeemOption = option;
-            updateRedeemOptions();
-        }
-
-        function updateRedeemOptions() {
-            document.querySelectorAll('.redeem-option').forEach(el => el.classList.remove('selected'));
-            document.getElementById(`option-${selectedRedeemOption}`).classList.add('selected');
-        }
-
-        async function confirmRedeem() {
-            if (!currentCustomerId || !currentLoyaltyCard) return;
-
-            try {
-                const rewardDescriptions = {
-                    'discount': '25% de desconto na próxima compra',
-                    'product': 'Produto gratuito (até €25)',
-                    'shipping': 'Portes grátis nas próximas 3 compras'
-                };
-
-                const { data: reward, error: rewardError } = await supabaseClient
-                    .from('loyalty_rewards')
-                    .insert([{
-                        customer_id: currentCustomerId,
-                        card_id: currentLoyaltyCard.id,
-                        reward_type: selectedRedeemOption,
-                        reward_description: rewardDescriptions[selectedRedeemOption],
-                        discount_percentage: selectedRedeemOption === 'discount' ? 25 : null,
-                        status: 'active',
-                        valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-                    }])
-                    .select()
-                    .single();
-
-                if (rewardError) throw rewardError;
-
-                await supabaseClient
-                    .from('loyalty_cards')
-                    .update({
-                        current_stamps: 0,
-                        completed_cards: (currentLoyaltyCard.completed_cards || 0) + 1,
-                        status: 'active'
-                    })
-                    .eq('id', currentLoyaltyCard.id);
-
-                await supabaseClient
-                    .from('loyalty_stamps')
-                    .delete()
-                    .eq('card_id', currentLoyaltyCard.id);
-
-                stamps = new Array(10).fill(false);
-                
-                showToast(`Recompensa resgatada: ${rewardDescriptions[selectedRedeemOption]}!`, 'success');
-                closeRedeemModal();
-                await loadLoyaltyCard(currentCustomerId);
-                await loadRewardsHistory(currentCustomerId);
-                loadCustomers();
-                
-            } catch (error) {
-                console.error('Erro ao resgatar:', error);
-                showToast('Erro ao resgatar recompensa', 'error');
-            }
-        }
-
-        async function loadRewardsHistory(customerId) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('loyalty_rewards')
-                    .select('*')
-                    .eq('customer_id', customerId)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                const historyDiv = document.getElementById('rewards-history');
-                
-                if (!data || data.length === 0) {
-                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>';
-                    return;
-                }
-
-                historyDiv.innerHTML = data.map(reward => {
-                    const isActive = reward.status === 'active';
-                    const isUsed = reward.status === 'used';
-                    const statusClass = isActive ? 'bg-green-100 text-green-700' : (isUsed ? 'bg-gray-100 text-gray-600' : 'bg-red-100 text-red-600');
-                    const statusText = isActive ? 'Ativo' : (isUsed ? 'Utilizado' : 'Expirado');
-                    
-                    return `
-                        <div class="bg-white/50 rounded-xl p-4 border-l-4 ${isActive ? 'border-nuca-green' : 'border-gray-300'}">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="font-bold text-nuca-green">${reward.reward_description}</p>
-                                    <p class="text-xs text-nuca-green/60 mt-1">
-                                        Resgatado em ${new Date(reward.created_at).toLocaleDateString('pt-PT')}
-                                        ${reward.discount_percentage ? ` • ${reward.discount_percentage}% desconto` : ''}
-                                    </p>
-                                    ${isActive && reward.valid_until ? `
-                                        <p class="text-xs text-orange-600 mt-1">
-                                            Válido até ${new Date(reward.valid_until).toLocaleDateString('pt-PT')}
-                                        </p>
-                                    ` : ''}
-                                </div>
-                                <span class="text-xs px-2 py-1 rounded-full ${statusClass} font-bold">${statusText}</span>
-                            </div>
-                            ${isActive ? `
-                                <div class="mt-3 pt-3 border-t border-nuca-green/10 flex gap-2">
-                                    <button onclick="copyRewardCode('${reward.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1 rounded-lg hover:bg-nuca-green/20">
-                                        Copiar Código
-                                    </button>
-                                    <button onclick="markRewardAsUsed('${reward.id}')" class="text-xs bg-nuca-green text-nuca-beige px-3 py-1 rounded-lg hover:bg-nuca-dark">
-                                        Marcar como Usado
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Erro ao carregar recompensas:', error);
-            }
-        }
-
-        async function markRewardAsUsed(rewardId) {
-            try {
-                const { error } = await supabaseClient
-                    .from('loyalty_rewards')
-                    .update({ status: 'used', used_at: new Date().toISOString() })
-                    .eq('id', rewardId);
-
-                if (error) throw error;
-                
-                showToast('Recompensa marcada como utilizada', 'success');
-                await loadRewardsHistory(currentCustomerId);
-            } catch (error) {
-                console.error('Erro:', error);
-                showToast('Erro ao atualizar recompensa', 'error');
-            }
-        }
-
-        function copyRewardCode(rewardId) {
-            const code = `NUCA-REWARD-${rewardId.slice(0, 8).toUpperCase()}`;
-            navigator.clipboard.writeText(code).then(() => {
-                showToast(`Código copiado: ${code}`, 'success');
-            });
-        }
-
-        function openLoyaltyCard(customerId) {
-            openCustomerModal(customerId);
-            setTimeout(() => switchCustomerTab('loyalty'), 100);
-        }
-
-        function resetLoyaltyDisplay() {
-            stamps = new Array(10).fill(false);
-            updateSimpleLoyaltyDisplay();
-        }
-
-        // ============================================
-        // PUBLIC POINTS CHECK
-        // ============================================
-        function openPointsCheck() {
-            document.getElementById('customer-points-check').classList.remove('hidden');
-            document.getElementById('customer-points-check').classList.add('flex');
-            document.getElementById('points-result').classList.add('hidden');
-            document.getElementById('check-phone').value = '';
-        }
-
-        function closePointsCheck() {
-            document.getElementById('customer-points-check').classList.add('hidden');
-            document.getElementById('customer-points-check').classList.remove('flex');
-        }
-
-        async function checkCustomerPoints() {
-            const phone = document.getElementById('check-phone').value;
-            
-            if (!phone || phone.length < 9) {
-                showToast('Por favor, insira um telefone válido', 'error');
-                return;
-            }
-
-            try {
-                const { data: customer, error } = await supabaseClient
-                    .from('customers')
-                    .select(`
-                        name,
-                        phone,
-                        loyalty_cards (
-                            current_stamps,
-                            completed_cards,
-                            status
-                        )
-                    `)
-                    .eq('phone', phone)
-                    .maybeSingle();
-
-                if (error) throw error;
-
-                if (!customer) {
-                    showToast('Cliente não encontrado', 'error');
-                    return;
-                }
-
-                const stamps = customer.loyalty_cards?.[0]?.current_stamps || 0;
-                const hasReward = stamps >= 10 || customer.loyalty_cards?.[0]?.status === 'reward_pending';
-                
-                document.getElementById('result-name').textContent = customer.name;
-                document.getElementById('result-points').textContent = stamps;
-                
-                const remaining = 10 - stamps;
-                const nextRewardEl = document.getElementById('next-reward');
-                const rewardInfoEl = document.getElementById('result-reward-info');
-                
-                if (hasReward) {
-                    nextRewardEl.textContent = 'Recompensa disponível!';
-                    nextRewardEl.classList.add('text-green-600', 'font-bold');
-                    rewardInfoEl.classList.remove('hidden');
-                } else {
-                    nextRewardEl.textContent = `Faltam ${remaining} ${remaining === 1 ? 'ponto' : 'pontos'}`;
-                    nextRewardEl.classList.remove('text-green-600', 'font-bold');
-                    rewardInfoEl.classList.add('hidden');
-                }
-                
-                document.getElementById('points-result').classList.remove('hidden');
-
-            } catch (error) {
-                console.error('Erro ao verificar pontos:', error);
-                showToast('Erro ao verificar pontos', 'error');
-            }
         }
 
         // ============================================
@@ -2754,17 +1745,6 @@
                         .single();
 
                     if (error) throw error;
-                    
-                    await supabaseClient
-                        .from('loyalty_cards')
-                        .insert([{
-                            customer_id: data.id,
-                            card_number: `NUCA-${Date.now()}`,
-                            current_stamps: 0,
-                            max_stamps: 10,
-                            completed_cards: 0,
-                            status: 'active'
-                        }]);
 
                     showToast('Cliente criado com sucesso!', 'success');
                 }
@@ -2779,7 +1759,7 @@
 
         async function loadCustomerOrders(customerId) {
             const historyDiv = document.getElementById('customer-orders-history');
-            historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-4">A carregar histórico...</p>';
+            if (!historyDiv) return;
 
             try {
                 // 1. Buscar o email do cliente
@@ -2790,14 +1770,12 @@
                     .single();
 
                 if (customerError || !customerData || !customerData.email) {
-                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Cliente sem email registado</p>';
                     return;
                 }
 
                 const customerEmail = customerData.email;
-                console.log('Buscando encomendas para o email:', customerEmail);
 
-                // 2. Buscar encomendas pelo email (não por customer_id)
+                // 2. Buscar encomendas pelo email
                 const { data, error } = await supabaseClient
                     .from('orders')
                     .select('*')
@@ -2806,95 +1784,27 @@
 
                 if (error) throw error;
 
-                console.log('Encomendas encontradas:', data?.length || 0);
-
-                if (!data || data.length === 0) {
-                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada para este cliente</p>';
-                    return;
+                // 3. Atualizar o modal com o histórico se existir
+                if (data && data.length > 0) {
+                    // Podemos adicionar um pequeno indicador no modal
+                    const modalContent = document.querySelector('#customer-modal .flex-1');
+                    const historyIndicator = document.createElement('div');
+                    historyIndicator.className = 'mt-4 p-4 bg-nuca-green/5 rounded-xl';
+                    historyIndicator.innerHTML = `
+                        <p class="text-sm text-nuca-green"><strong>${data.length}</strong> compra${data.length !== 1 ? 's' : ''} encontrada${data.length !== 1 ? 's' : ''}</p>
+                    `;
+                    
+                    // Remover indicador anterior se existir
+                    const oldIndicator = document.getElementById('customer-history-indicator');
+                    if (oldIndicator) oldIndicator.remove();
+                    
+                    historyIndicator.id = 'customer-history-indicator';
+                    modalContent?.appendChild(historyIndicator);
                 }
-
-                // 3. Renderizar com estatísticas
-                renderCustomerOrdersHistory(data);
 
             } catch (error) {
                 console.error('Erro ao carregar histórico:', error);
-                historyDiv.innerHTML = '<p class="text-center text-red-500 py-8">Erro ao carregar histórico</p>';
             }
-        }
-
-        function renderCustomerOrdersHistory(orders) {
-            const historyDiv = document.getElementById('customer-orders-history');
-
-            // Calcular estatísticas
-            const totalOrders = orders.length;
-            const completedOrders = orders.filter(o => o.status === 'delivered').length;
-            const paidOrders = orders.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status)).length;
-            const cancelledOrders = orders.filter(o => o.status === 'cancelled').length;
-            const totalSpent = orders
-                .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
-                .reduce((sum, o) => sum + (o.total || 0), 0);
-
-            let statsHtml = `
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                    <div class="bg-white/50 rounded-xl p-3 text-center">
-                        <p class="text-xl font-bold text-nuca-green">${totalOrders}</p>
-                        <p class="text-xs text-nuca-green/60">Total</p>
-                    </div>
-                    <div class="bg-green-50 rounded-xl p-3 text-center">
-                        <p class="text-xl font-bold text-green-600">${paidOrders}</p>
-                        <p class="text-xs text-green-600/60">Pagas</p>
-                    </div>
-                    <div class="bg-purple-50 rounded-xl p-3 text-center">
-                        <p class="text-xl font-bold text-purple-600">${completedOrders}</p>
-                        <p class="text-xs text-purple-600/60">Concluídas</p>
-                    </div>
-                    <div class="bg-nuca-green/10 rounded-xl p-3 text-center">
-                        <p class="text-xl font-bold text-nuca-green">€${totalSpent.toFixed(0)}</p>
-                        <p class="text-xs text-nuca-green/60">Total Gasto</p>
-                    </div>
-                </div>
-            `;
-
-            const ordersHtml = orders.map(order => `
-                <div class="bg-white/50 rounded-xl p-4 mb-3 border-l-4 ${getStatusBorderColor(order.status)} hover:bg-white/70 transition-colors">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="font-bold text-nuca-green">${order.order_number}</p>
-                            <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
-                            ${order.items && order.items.length > 0 ? `
-                                <p class="text-xs text-nuca-green/50 mt-1">
-                                    ${order.items.length} item(s): ${order.items.map(i => i.name).slice(0, 2).join(', ')}${order.items.length > 2 ? '...' : ''}
-                                </p>
-                            ` : ''}
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</p>
-                            <span class="text-xs px-2 py-1 rounded-full ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
-                        </div>
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-nuca-green/10 flex gap-2">
-                        <button onclick="openOrderDetail('${order.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1.5 rounded-lg hover:bg-nuca-green/20 transition-colors">
-                            Ver Detalhes
-                        </button>
-                        <button onclick="printReceipt('${order.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1.5 rounded-lg hover:bg-nuca-green/20 transition-colors">
-                            Imprimir
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            historyDiv.innerHTML = statsHtml + ordersHtml;
-        }
-
-        function getStatusBorderColor(status) {
-            const colors = {
-                'pending_payment': 'border-yellow-400',
-                'paid': 'border-green-400',
-                'shipped': 'border-blue-400',
-                'delivered': 'border-purple-400',
-                'cancelled': 'border-red-400'
-            };
-            return colors[status] || 'border-gray-300';
         }
 
         // ============================================
