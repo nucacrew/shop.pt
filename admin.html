@@ -2257,21 +2257,77 @@
                             id,
                             current_stamps,
                             completed_cards,
-                            total_points,
                             status
                         )
                     `)
                     .order('created_at', { ascending: false });
-
+        
                 if (error) throw error;
-
+        
                 renderCustomers(data || []);
             } catch (error) {
                 console.error('Erro ao carregar clientes:', error);
                 showToast('Erro ao carregar clientes', 'error');
             }
         }
-
+        
+        // Substituir a função renderCustomers por esta versão corrigida:
+        function renderCustomers(customers) {
+            const tbody = document.getElementById('customers-table-body');
+            
+            if (customers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                return;
+            }
+        
+            tbody.innerHTML = customers.map(customer => {
+                const loyaltyCard = customer.loyalty_cards?.[0] || { current_stamps: 0, completed_cards: 0, status: 'active' };
+                const stamps = loyaltyCard.current_stamps || 0;
+                
+                // Gerar mini carimbos
+                let stampsHtml = '';
+                for (let i = 0; i < 10; i++) {
+                    stampsHtml += `<div class="loyalty-mini-stamp ${i < stamps ? 'filled' : ''}"></div>`;
+                }
+                
+                // Verificar se tem recompensa pendente
+                const hasReward = stamps >= 10 || loyaltyCard.status === 'reward_pending';
+                const rewardBadge = hasReward ? 
+                    '<span class="ml-2 text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">🎁</span>' : '';
+                
+                return `<tr class="order-row cursor-pointer" onclick="openCustomerModal('${customer.id}')">
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-bold text-nuca-green">${customer.name}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.email || 'Sem email'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-medium">${customer.phone}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.city || 'Sem morada'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="loyalty-card-compact" onclick="event.stopPropagation(); openLoyaltyCard('${customer.id}')">
+                            <div class="loyalty-mini-stamps">${stampsHtml}</div>
+                            <span class="loyalty-mini-text">${stamps}/10</span>
+                            ${loyaltyCard.completed_cards > 0 ? `<span style="margin-left: 4px; font-size: 11px; color: #556B4F; opacity: 0.7;">(${loyaltyCard.completed_cards}✓)</span>` : ''}
+                            ${rewardBadge}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">${customer.total_orders || 0} compras</td>
+                    <td class="px-6 py-4 font-bold">€${(customer.total_purchases || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="event.stopPropagation(); openCustomerModal('${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20" title="Editar">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
         function renderCustomers(customers) {
             const tbody = document.getElementById('customers-table-body');
             
