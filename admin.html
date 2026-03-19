@@ -101,7 +101,7 @@
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* CRITICAL FIX: Section containers */
+        /* Section containers */
         .section-content {
             display: none;
             min-height: 0;
@@ -111,14 +111,14 @@
             display: block;
         }
         
-        /* CRITICAL FIX: Grid containers */
+        /* Grid containers */
         .grid-container {
             display: grid;
             min-width: 0;
             min-height: 0;
         }
         
-        /* CRITICAL FIX: Chart containers with strict dimensions */
+        /* Chart containers with strict dimensions */
         .chart-wrapper {
             position: relative;
             height: 300px;
@@ -134,14 +134,58 @@
             min-width: 0;
         }
         
-        /* Mobile sidebar styles */
+        /* CORREÇÃO CRÍTICA: Mobile sidebar */
         @media (max-width: 1024px) {
-            aside {
+            aside#sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 280px;
                 transform: translateX(-100%);
                 transition: transform 0.3s ease-in-out;
+                z-index: 100;
+                background-color: rgba(255,255,255,0.95);
+                backdrop-filter: blur(10px);
+                display: block !important; /* Força a manter display block */
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
             }
-            aside.mobile-open {
+            
+            aside#sidebar.mobile-open {
                 transform: translateX(0);
+            }
+            
+            /* Overlay mais escuro para melhor contraste */
+            #mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 90;
+                backdrop-filter: blur(2px);
+            }
+            
+            #mobile-overlay.active {
+                display: block;
+            }
+            
+            /* Desktop sidebar permanece visível */
+            body:not(.mobile) aside#sidebar {
+                display: block !important;
+            }
+        }
+        
+        /* Desktop styles */
+        @media (min-width: 1025px) {
+            aside#sidebar {
+                transform: none !important;
+                display: block !important;
+                position: fixed;
+                width: 16rem;
+            }
+            
+            #mobile-overlay {
+                display: none !important;
             }
         }
         
@@ -150,9 +194,18 @@
             max-width: 100% !important;
             max-height: 100% !important;
         }
+        
+        /* Prevenir overflow em todo o site */
+        * {
+            box-sizing: border-box;
+        }
+        
+        main {
+            overflow-x: hidden;
+        }
     </style>
 </head>
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen overflow-x-hidden">
 
     <div class="grain-overlay"></div>
 
@@ -186,13 +239,13 @@
     </div>
 
     <!-- Main Admin Interface -->
-    <div id="admin-interface" class="hidden flex min-h-screen">
+    <div id="admin-interface" class="hidden min-h-screen relative">
         
-        <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 fixed h-full hidden lg:block z-40">
-            <div class="p-6">
+        <!-- Sidebar - CORRIGIDA -->
+        <aside id="sidebar" class="w-64 bg-white/50 backdrop-blur-md border-r border-nuca-green/10 z-40">
+            <div class="p-6 h-full flex flex-col">
                 <h1 class="nuca-logo text-2xl text-nuca-green mb-8">NUCA Admin</h1>
-                <nav class="space-y-2">
+                <nav class="space-y-2 flex-1">
                     <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-nuca-green font-medium cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                         Dashboard
@@ -219,20 +272,20 @@
                         Configurações
                     </a>
                 </nav>
-            </div>
-            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-green/10">
-                <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Sair
-                </button>
+                <div class="border-t border-nuca-green/10 pt-6 mt-auto">
+                    <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Sair
+                    </button>
+                </div>
             </div>
         </aside>
 
         <!-- Mobile Sidebar Overlay -->
-        <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden" onclick="toggleMobileSidebar()"></div>
+        <div id="mobile-overlay" class="fixed inset-0 z-30 hidden" onclick="closeMobileSidebar()"></div>
 
         <!-- Main Content -->
-        <main class="flex-1 lg:ml-64 min-w-0">
+        <main class="lg:ml-64 min-w-0 w-full">
             <!-- Header -->
             <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
                 <div class="px-6 lg:px-12 py-4">
@@ -346,9 +399,9 @@
                         </div>
                     </div>
 
-                    <!-- Charts Section - FIXED STRUCTURE -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8" style="min-width: 0;">
-                        <div class="lg:col-span-2 admin-card rounded-2xl p-6" style="min-width: 0;">
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-2 admin-card rounded-2xl p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Últimos 7 dias)</h3>
                                 <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
@@ -361,7 +414,7 @@
                                 <canvas id="salesChart"></canvas>
                             </div>
                         </div>
-                        <div class="admin-card rounded-2xl p-6" style="min-width: 0;">
+                        <div class="admin-card rounded-2xl p-6">
                             <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
                             <div class="chart-wrapper-sm">
                                 <canvas id="statusChart"></canvas>
@@ -498,14 +551,14 @@
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <h3 class="font-display text-xl font-bold text-nuca-green">Análises Detalhadas</h3>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" style="min-width: 0;">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="admin-card rounded-2xl p-6">
                             <h4 class="font-bold text-nuca-green mb-4">Produtos Mais Vendidos</h4>
                             <div class="space-y-4" id="top-products">
                                 <p class="text-nuca-green/60 text-sm">Dados em processamento...</p>
                             </div>
                         </div>
-                        <div class="admin-card rounded-2xl p-6" style="min-width: 0;">
+                        <div class="admin-card rounded-2xl p-6">
                             <h4 class="font-bold text-nuca-green mb-4">Vendas por Categoria</h4>
                             <div class="chart-wrapper-sm">
                                 <canvas id="categoryChart"></canvas>
@@ -676,7 +729,24 @@
         document.addEventListener('DOMContentLoaded', () => {
             checkSession();
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            
+            // Inicializar estado da sidebar
+            checkWindowSize();
+            window.addEventListener('resize', checkWindowSize);
         });
+
+        // Função para verificar o tamanho da janela e ajustar sidebar
+        function checkWindowSize() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (window.innerWidth >= 1025) {
+                // Desktop: sidebar sempre visível, overlay escondido
+                sidebar.style.transform = 'none';
+                sidebar.classList.remove('mobile-open');
+                if (overlay) overlay.classList.remove('active');
+            }
+        }
 
         // ============================================
         // AUTHENTICATION
@@ -766,19 +836,20 @@
         }
 
         // ============================================
-        // NAVIGATION
+        // NAVIGATION - CORRIGIDA
         // ============================================
         function showSection(section) {
             currentSection = section;
             
-            // Update sidebar
+            // Atualizar links da sidebar
             document.querySelectorAll('.sidebar-link').forEach(link => {
                 link.classList.remove('active');
             });
+            
             const activeLink = document.querySelector(`a[href="#${section}"]`);
             if (activeLink) activeLink.classList.add('active');
             
-            // Update page title
+            // Atualizar título da página
             const titles = {
                 'dashboard': 'Dashboard',
                 'orders': 'Encomendas',
@@ -789,29 +860,30 @@
             };
             document.getElementById('page-title').textContent = titles[section];
             
-            // Show/hide sections using CSS classes
+            // Mostrar/esconder seções usando CSS classes
             document.querySelectorAll('.section-content').forEach(el => {
                 el.classList.remove('active');
             });
+            
             const targetSection = document.getElementById(`section-${section}`);
             if (targetSection) {
                 targetSection.classList.add('active');
             }
             
-            // Close mobile sidebar
-            closeMobileSidebar();
+            // Fechar sidebar mobile APENAS se estiver em mobile
+            if (window.innerWidth < 1025) {
+                closeMobileSidebar();
+            }
             
-            // Update URL hash without scrolling
+            // Atualizar URL hash sem scroll
             history.pushState(null, null, `#${section}`);
             
-            // Handle charts initialization based on section
+            // Inicializar charts quando necessário
             if (section === 'dashboard') {
-                // Small delay to ensure DOM is visible
                 setTimeout(() => {
                     if (!chartsInitialized) {
                         initCharts();
                     } else {
-                        // Resize existing charts
                         if (salesChart) salesChart.resize();
                         if (statusChart) statusChart.resize();
                     }
@@ -823,55 +895,37 @@
             }
         }
 
+        // Funções da sidebar mobile - CORRIGIDAS
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-        
-            sidebar.classList.toggle('mobile-open');
-            overlay.classList.toggle('hidden');
-        }
-        
-        function closeMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-        
-            sidebar.classList.remove('mobile-open');
-            overlay.classList.add('hidden');
-        }
-        
-        // 🔥 EXTRA (recomendado)
-        // evita bugs ao mudar de mobile → desktop
-        window.addEventListener('resize', () => {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobile-overlay');
-        
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.remove('mobile-open');
-                overlay.classList.add('hidden');
+            
+            if (window.innerWidth < 1025) {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+                
+                // Evitar scroll do body quando sidebar está aberta
+                if (sidebar.classList.contains('mobile-open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
             }
-        });
-
+        }
+        
         function closeMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
             
-            sidebar.classList.remove('fixed', 'inset-0', 'z-50', 'w-full', 'mobile-open');
-            if (window.innerWidth < 1024) {
-                sidebar.classList.add('hidden');
+            if (window.innerWidth < 1025) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
             }
-            overlay.classList.add('hidden');
         }
 
-        // Handle browser back/forward buttons
-        window.addEventListener('popstate', () => {
-            const hash = window.location.hash.replace('#', '') || 'dashboard';
-            if (document.getElementById(`section-${hash}`)) {
-                showSection(hash);
-            }
-        });
-
         // ============================================
-        // ORDERS MANAGEMENT
+        // RESTO DO CÓDIGO (mantido igual)
         // ============================================
         async function loadOrders() {
             try {
@@ -1183,25 +1237,17 @@
         }
 
         // ============================================
-        // CHARTS - CRITICAL FIXES
+        // CHARTS
         // ============================================
         function initCharts() {
-            // Destroy existing charts if they exist
-            if (salesChart) {
-                salesChart.destroy();
-                salesChart = null;
-            }
-            if (statusChart) {
-                statusChart.destroy();
-                statusChart = null;
-            }
+            if (salesChart) salesChart.destroy();
+            if (statusChart) statusChart.destroy();
 
             const salesCanvas = document.getElementById('salesChart');
             const statusCanvas = document.getElementById('statusChart');
             
             if (!salesCanvas || !statusCanvas) return;
 
-            // Ensure canvases have proper dimensions
             const salesCtx = salesCanvas.getContext('2d');
             const statusCtx = statusCanvas.getContext('2d');
 
@@ -1278,11 +1324,7 @@
         }
 
         function initAnalyticsCharts() {
-            // Destroy existing category chart if exists
-            if (categoryChart) {
-                categoryChart.destroy();
-                categoryChart = null;
-            }
+            if (categoryChart) categoryChart.destroy();
 
             const categoryCanvas = document.getElementById('categoryChart');
             if (!categoryCanvas) return;
