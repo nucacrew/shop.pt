@@ -1766,28 +1766,33 @@
         }
 
         function setupRealtimeSubscription() {
+            // Subscription existente para orders...
             supabaseClient
                 .channel('orders-channel')
                 .on('postgres_changes', 
                     { event: '*', schema: 'public', table: 'orders' },
                     (payload) => {
-                        if (payload.eventType === 'INSERT') {
-                            allOrders.unshift(payload.new);
-                            addNotification(`Nova encomenda: ${payload.new.order_number}`, 'new-order');
-                            showToast(`Nova encomenda: ${payload.new.order_number}`, 'success');
-                        } else if (payload.eventType === 'UPDATE') {
-                            const index = allOrders.findIndex(o => o.id === payload.new.id);
-                            if (index !== -1) allOrders[index] = payload.new;
+                        // ... código existente
+                    }
+                )
+                .subscribe();
+        
+            // NOVO: Subscription para loyalty_cards
+            supabaseClient
+                .channel('loyalty-channel')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'loyalty_cards' },
+                    (payload) => {
+                        console.log('Loyalty card updated:', payload);
+                        // Atualizar a lista de clientes se estivermos nessa aba
+                        if (currentSection === 'customers') {
+                            loadCustomers();
                         }
-                        applyFilters();
-                        updateStats();
-                        updateChartsData();
-                        updatePendingBadge();
                     }
                 )
                 .subscribe();
         }
-
+        
         function updateStats() {
             const total = allOrders.length;
             const pending = allOrders.filter(o => o.status === 'pending_payment').length;
@@ -2458,6 +2463,8 @@
         // ============================================
         function initStampsGrid() {
             const container = document.getElementById('stamps-container');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             for (let i = 1; i <= 10; i++) {
@@ -2468,6 +2475,8 @@
                 stamp.onclick = () => toggleStamp(i);
                 container.appendChild(stamp);
             }
+            
+            console.log('Grid de stamps inicializada');
         }
 
         async function loadLoyaltyCard(customerId) {
@@ -2525,23 +2534,35 @@
         function updateLoyaltyDisplay() {
             const filledCount = stamps.filter(s => s).length;
             
+            // Log para debug
+            console.log('Atualizando display - Filled count:', filledCount);
+            console.log('Stamps array:', stamps);
+            
+            // Atualizar cada stamp individualmente
             for (let i = 1; i <= 10; i++) {
                 const stampEl = document.getElementById(`stamp-${i}`);
-                if (stamps[i-1]) {
-                    stampEl.classList.add('filled');
-                } else {
-                    stampEl.classList.remove('filled');
+                if (stampEl) {
+                    if (stamps[i-1]) {
+                        stampEl.classList.add('filled');
+                        console.log(`Stamp ${i} preenchido`);
+                    } else {
+                        stampEl.classList.remove('filled');
+                        console.log(`Stamp ${i} vazio`);
+                    }
                 }
             }
             
+            // Atualizar barra de progresso
             const progressBar = document.getElementById('progress-bar');
             const percentage = (filledCount / 10) * 100;
             progressBar.style.width = `${percentage}%`;
             
+            // Atualizar stats
             document.getElementById('total-stamps').textContent = filledCount;
             document.getElementById('completed-cards').textContent = currentLoyaltyCard?.completed_cards || 0;
             document.getElementById('remaining-stamps').textContent = Math.max(0, 10 - filledCount);
             
+            // Atualizar mensagem de recompensa
             const rewardMsg = document.getElementById('reward-message');
             const redeemSection = document.getElementById('redeem-section');
             const loyaltyActions = document.getElementById('loyalty-actions');
