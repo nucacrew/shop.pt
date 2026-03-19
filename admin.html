@@ -826,16 +826,30 @@
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-            const isOpen = sidebar.classList.contains('mobile-open');
-            
-            if (isOpen) {
-                closeMobileSidebar();
-            } else {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('fixed', 'inset-0', 'z-50', 'w-full', 'mobile-open');
-                overlay.classList.remove('hidden');
-            }
+        
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('hidden');
         }
+        
+        function closeMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+        
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.add('hidden');
+        }
+        
+        // 🔥 EXTRA (recomendado)
+        // evita bugs ao mudar de mobile → desktop
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+        
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('mobile-open');
+                overlay.classList.add('hidden');
+            }
+        });
 
         function closeMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
