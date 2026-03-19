@@ -907,20 +907,47 @@
 
         async function updateOrderStatus(orderId, newStatus) {
             try {
+                // Mostrar loading
+                const button = event?.target;
+                const originalText = button?.innerHTML;
+                if (button) {
+                    button.innerHTML = 'A atualizar...';
+                    button.disabled = true;
+                }
+        
                 const { error } = await supabaseClient
                     .from('orders')
-                    .update({ status: newStatus, updated_at: new Date().toISOString() })
+                    .update({ 
+                        status: newStatus,
+                        // O updated_at será automaticamente atualizado pelo trigger
+                        // Não precisamos enviar manualmente
+                    })
                     .eq('id', orderId);
-
+        
                 if (error) throw error;
-
+        
                 const order = allOrders.find(o => o.id === orderId);
-                addNotification(`Encomenda ${order.order_number} atualizada`, 'status-update');
-                showToast('Status atualizado!', 'success');
+                const statusText = getStatusText(newStatus);
+                
+                // Notificações
+                addNotification(`Encomenda ${order.order_number} atualizada para ${statusText}`, 'status-update');
+                showToast(`Status atualizado para ${statusText}!`, 'success');
+                
+                // Recarregar dados
                 await loadOrders();
                 closeOrderModal();
+                
             } catch (error) {
-                showToast('Erro ao atualizar', 'error');
+                console.error('Erro detalhado:', error);
+                showToast(`Erro: ${error.message}`, 'error');
+            } finally {
+                // Restaurar botão se existir
+                if (event?.target) {
+                    setTimeout(() => {
+                        event.target.innerHTML = originalText;
+                        event.target.disabled = false;
+                    }, 1000);
+                }
             }
         }
 
