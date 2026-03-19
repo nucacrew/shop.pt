@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - NUCA</title>
+    <!-- ============================================
+         FONTS & EXTERNAL RESOURCES
+         ============================================ -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -226,6 +232,74 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 50; opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* ESTILOS PARA IMPRESSÃO */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #receipt-print, #receipt-print * {
+                visibility: visible;
+            }
+            #receipt-print {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+                font-family: 'Space Grotesk', sans-serif;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .receipt-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            margin: 0 auto;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #556B4F;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .receipt-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #556B4F;
+        }
+
+        .receipt-details {
+            margin-bottom: 16px;
+        }
+
+        .receipt-items {
+            margin-bottom: 16px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .receipt-total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            padding-top: 16px;
+            border-top: 2px solid #556B4F;
         }
     </style>
 </head>
@@ -593,10 +667,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 pt-6 border-t" id="modal-actions"></div>
+                <div class="mt-6 pt-6 border-t flex gap-3" id="modal-actions"></div>
             </div>
         </div>
     </div>
+
+    <!-- Receipt Print Template (Hidden) -->
+    <div id="receipt-print" class="hidden"></div>
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-6 right-6 z-[2000] space-y-2"></div>
@@ -894,20 +971,26 @@
         }
 
         function getActionButtons(order) {
+            let buttons = '';
+            
+            // Botão de imprimir recibo (disponível para todos os status)
+            buttons += `<button onclick="event.stopPropagation(); printReceipt('${order.id}')" class="btn-action px-3 py-1 bg-nuca-green text-white rounded-lg text-xs font-bold hover:bg-nuca-dark">Imprimir</button>`;
+            
+            // Botões de ação baseados no status
             if (order.status === 'pending_payment') {
-                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
-                        <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
+                           <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
             } else if (order.status === 'paid') {
-                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
             } else if (order.status === 'shipped') {
-                return `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'delivered')" class="btn-action px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600">Entregue</button>`;
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'delivered')" class="btn-action px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600">Entregue</button>`;
             }
-            return '<span class="text-xs text-nuca-green/40">-</span>';
+            
+            return buttons;
         }
 
         async function updateOrderStatus(orderId, newStatus) {
             try {
-                // Mostrar loading
                 const button = event?.target;
                 const originalText = button?.innerHTML;
                 if (button) {
@@ -919,8 +1002,6 @@
                     .from('orders')
                     .update({ 
                         status: newStatus,
-                        // O updated_at será automaticamente atualizado pelo trigger
-                        // Não precisamos enviar manualmente
                     })
                     .eq('id', orderId);
         
@@ -929,11 +1010,9 @@
                 const order = allOrders.find(o => o.id === orderId);
                 const statusText = getStatusText(newStatus);
                 
-                // Notificações
                 addNotification(`Encomenda ${order.order_number} atualizada para ${statusText}`, 'status-update');
                 showToast(`Status atualizado para ${statusText}!`, 'success');
                 
-                // Recarregar dados
                 await loadOrders();
                 closeOrderModal();
                 
@@ -941,7 +1020,6 @@
                 console.error('Erro detalhado:', error);
                 showToast(`Erro: ${error.message}`, 'error');
             } finally {
-                // Restaurar botão se existir
                 if (event?.target) {
                     setTimeout(() => {
                         event.target.innerHTML = originalText;
@@ -949,6 +1027,82 @@
                     }, 1000);
                 }
             }
+        }
+
+        // ============================================
+        // FUNÇÃO DE IMPRESSÃO DE RECIBO
+        // ============================================
+        function printReceipt(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            const receiptDiv = document.getElementById('receipt-print');
+            
+            const items = order.items || [];
+            const itemsHtml = items.map(item => `
+                <div class="receipt-item">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            const address = order.shipping_address || {};
+            const date = new Date(order.created_at).toLocaleDateString('pt-PT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            receiptDiv.innerHTML = `
+                <div class="receipt-container">
+                    <div class="receipt-header">
+                        <div class="receipt-title">NUCA</div>
+                        <div style="font-size: 12px; color: #666;">Comprovativo de Pagamento</div>
+                    </div>
+                    
+                    <div class="receipt-details">
+                        <p><strong>Encomenda:</strong> ${order.order_number}</p>
+                        <p><strong>Data:</strong> ${date}</p>
+                        <p><strong>Cliente:</strong> ${order.customer_name}</p>
+                        <p><strong>Email:</strong> ${order.customer_email}</p>
+                        <p><strong>Morada:</strong> ${address.address || ''}, ${address.postal || ''} ${address.city || ''}</p>
+                        <p><strong>Status:</strong> ${getStatusText(order.status)}</p>
+                    </div>
+
+                    <div class="receipt-items">
+                        <h3 style="font-weight: bold; margin-bottom: 8px;">Itens</h3>
+                        ${itemsHtml}
+                    </div>
+
+                    <div class="receipt-total">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Subtotal:</span>
+                            <span>€${(order.subtotal || 0).toFixed(2)}</span>
+                        </div>
+                        ${order.shipping_cost ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                            <span>Portes:</span>
+                            <span>€${order.shipping_cost.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 8px;">
+                            <span>TOTAL:</span>
+                            <span>€${(order.total || 0).toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 24px; font-size: 12px; color: #666;">
+                        <p>Obrigado pela sua compra!</p>
+                        <p>NUCA - Qualidade e Tradição</p>
+                    </div>
+                </div>
+            `;
+
+            receiptDiv.classList.remove('hidden');
+            window.print();
+            receiptDiv.classList.add('hidden');
         }
 
         function openOrderDetail(orderId) {
@@ -975,13 +1129,17 @@
             document.getElementById('modal-total').textContent = `€${(order.total || 0).toFixed(2)}`;
 
             let actions = '';
+            
+            // Botão de imprimir sempre presente
+            actions += `<button onclick="printReceipt('${order.id}')" class="flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold">Imprimir Recibo</button>`;
+            
             if (order.status === 'pending_payment') {
-                actions = `<button onclick="updateOrderStatus('${order.id}', 'paid')" class="btn-action flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Marcar como Pago</button>
-                           <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="btn-action flex-1 bg-red-500 text-white py-3 rounded-xl font-bold">Cancelar</button>`;
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'paid')" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Marcar como Pago</button>
+                           <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold">Cancelar</button>`;
             } else if (order.status === 'paid') {
-                actions = `<button onclick="updateOrderStatus('${order.id}', 'shipped')" class="btn-action flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold">Marcar como Enviada</button>`;
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'shipped')" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold">Marcar como Enviada</button>`;
             } else if (order.status === 'shipped') {
-                actions = `<button onclick="updateOrderStatus('${order.id}', 'delivered')" class="btn-action flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold">Marcar como Entregue</button>`;
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'delivered')" class="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold">Marcar como Entregue</button>`;
             }
             
             document.getElementById('modal-actions').innerHTML = actions;
