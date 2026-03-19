@@ -311,6 +311,37 @@
         .receipt-free-shipping {
             color: #10B981;
         }
+
+        /* ESTILOS DO CARTÃO DE PONTOS */
+        .stamp-square {
+            transition: all 0.2s ease;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stamp-square:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(85,107,79,0.2);
+        }
+
+        .stamp-square.filled {
+            background: #556B4F;
+            color: #D8C6A5;
+        }
+
+        @keyframes stampPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .stamp-square.filled {
+            animation: stampPop 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -437,6 +468,11 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
+                            <button onclick="openPointsCheck()" class="p-2 hover:bg-nuca-green/10 rounded-full" title="Consultar Pontos do Cliente">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                                </svg>
+                            </button>
                             <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
@@ -628,13 +664,280 @@
                     </div>
                 </div>
 
-                <!-- Outras secções (placeholders) -->
-                <div id="section-products" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Gestão de Produtos</div></div>
-                <div id="section-customers" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Clientes</div></div>
-                <div id="section-analytics" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Análises</div></div>
-                <div id="section-settings" class="section-content"><div class="admin-card rounded-2xl p-12 text-center">Configurações</div></div>
+                <!-- PRODUCTS SECTION -->
+                <div id="section-products" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Gestão de Produtos</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
+                    </div>
+                </div>
+
+                <!-- CUSTOMERS SECTION -->
+                <div id="section-customers" class="section-content fade-in">
+                    <!-- Header com ações -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display text-2xl font-bold text-nuca-green">Clientes</h3>
+                        <button onclick="openCustomerModal()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Novo Cliente
+                        </button>
+                    </div>
+
+                    <!-- Filtros e pesquisa -->
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-4 justify-between">
+                            <div class="flex-1 relative">
+                                <input type="text" id="search-customers" placeholder="Pesquisar por nome, email ou telefone..." class="search-input w-full px-4 py-3 pl-12 rounded-xl" onkeyup="searchCustomers()">
+                                <svg class="absolute left-4 top-3.5 text-nuca-green/40" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                                </svg>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="loadCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                                </button>
+                                <button onclick="exportCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Clientes -->
+                    <div class="admin-card rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
+                                    <tr>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Pontos</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
+                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
+                                    <tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS SECTION -->
+                <div id="section-analytics" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Análises</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
+                    </div>
+                </div>
+
+                <!-- SETTINGS SECTION -->
+                <div id="section-settings" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Configurações</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
+                    </div>
+                </div>
             </div>
         </main>
+    </div>
+
+    <!-- Customer Modal (Ficha do Cliente) -->
+    <div id="customer-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeCustomerModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-customer-title">Ficha de Cliente</h2>
+                </div>
+                <button onclick="closeCustomerModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Tabs -->
+                <div class="flex gap-2 mb-6 border-b border-nuca-green/10">
+                    <button onclick="switchCustomerTab('info')" id="tab-info" class="px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green">Informação</button>
+                    <button onclick="switchCustomerTab('loyalty')" id="tab-loyalty" class="px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green">Cartão de Pontos</button>
+                    <button onclick="switchCustomerTab('history')" id="tab-history" class="px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green">Histórico</button>
+                </div>
+
+                <!-- Tab: Informação do Cliente -->
+                <div id="customer-info-tab" class="tab-content">
+                    <form id="customer-form" class="space-y-6">
+                        <input type="hidden" id="customer-id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Nome Completo *</label>
+                                <input type="text" id="customer-name" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="Nome do cliente">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
+                                <input type="email" id="customer-email" class="search-input w-full px-4 py-3 rounded-xl" placeholder="email@exemplo.pt">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Telefone *</label>
+                                <input type="tel" id="customer-phone" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="912345678">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Data de Nascimento</label>
+                                <input type="date" id="customer-birth" class="search-input w-full px-4 py-3 rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">NIF</label>
+                                <input type="text" id="customer-nif" class="search-input w-full px-4 py-3 rounded-xl" placeholder="123456789">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Morada</label>
+                            <input type="text" id="customer-address" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Rua, número">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Cidade</label>
+                                <input type="text" id="customer-city" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Cidade">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Código Postal</label>
+                                <input type="text" id="customer-postal" class="search-input w-full px-4 py-3 rounded-xl" placeholder="1000-001">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Notas</label>
+                            <textarea id="customer-notes" rows="3" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Informações adicionais..."></textarea>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-6 border-t">
+                            <button type="button" onclick="closeCustomerModal()" class="px-6 py-3 border border-nuca-green/30 rounded-xl text-nuca-green hover:bg-nuca-green/5">Cancelar</button>
+                            <button type="submit" class="px-6 py-3 bg-nuca-green text-nuca-beige rounded-xl font-bold hover:bg-nuca-dark">Guardar Cliente</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tab: Cartão de Pontos -->
+                <div id="customer-loyalty-tab" class="tab-content hidden">
+                    <div class="text-center mb-8">
+                        <div class="inline-block bg-white/50 rounded-2xl p-6">
+                            <h3 class="font-display text-3xl font-bold text-nuca-green mb-2">NUCA</h3>
+                            <p class="text-sm text-nuca-green/60">Cartão de Fidelidade</p>
+                            <p class="text-xs text-nuca-green/40 mt-2">Acumule 10 carimbos e ganhe um produto à escolha!</p>
+                        </div>
+                    </div>
+
+                    <!-- Cartão de Pontos -->
+                    <div class="bg-white/50 rounded-2xl p-8 mb-6">
+                        <div class="grid grid-cols-5 gap-4 mb-6">
+                            <!-- 10 quadrados de carimbo -->
+                            <div id="stamp-1" onclick="toggleStamp(1)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-2" onclick="toggleStamp(2)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-3" onclick="toggleStamp(3)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-4" onclick="toggleStamp(4)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-5" onclick="toggleStamp(5)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-6" onclick="toggleStamp(6)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-7" onclick="toggleStamp(7)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-8" onclick="toggleStamp(8)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-9" onclick="toggleStamp(9)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                            <div id="stamp-10" onclick="toggleStamp(10)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                        </div>
+
+                        <!-- Informações do cartão -->
+                        <div class="flex justify-between items-center bg-nuca-green/5 rounded-xl p-4">
+                            <div>
+                                <p class="text-sm text-nuca-green/60">Total de Carimbos</p>
+                                <p class="text-2xl font-bold text-nuca-green" id="total-stamps">0/10</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-nuca-green/60">Cartões Completos</p>
+                                <p class="text-2xl font-bold text-nuca-green" id="completed-cards">0</p>
+                            </div>
+                        </div>
+
+                        <!-- Ações -->
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="saveLoyaltyCard()" class="flex-1 bg-nuca-green text-nuca-beige py-3 rounded-xl font-bold hover:bg-nuca-dark flex items-center justify-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                Guardar Carimbos
+                            </button>
+                            <button onclick="clearAllStamps()" class="px-6 py-3 border border-red-300 text-red-600 rounded-xl font-bold hover:bg-red-50 flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                Limpar Tudo
+                            </button>
+                        </div>
+
+                        <!-- Histórico de Recompensas -->
+                        <div class="mt-8 pt-6 border-t">
+                            <h4 class="font-bold text-nuca-green mb-4">Recompensas Resgatadas</h4>
+                            <div id="rewards-history" class="space-y-2">
+                                <p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Histórico de Compras -->
+                <div id="customer-history-tab" class="tab-content hidden">
+                    <div class="space-y-4">
+                        <h4 class="font-bold text-nuca-green">Últimas Compras</h4>
+                        <div id="customer-orders-history" class="space-y-3">
+                            <p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página Pública para Cliente Verificar Pontos -->
+    <div id="customer-points-check" class="fixed inset-0 z-[2000] hidden items-center justify-center p-4" style="background: rgba(216, 198, 165, 0.95);">
+        <div class="bg-white/90 backdrop-blur-md rounded-3xl p-8 max-w-md w-full">
+            <div class="text-center mb-8">
+                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
+                <p class="text-nuca-green/60">Consulte os seus pontos</p>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Número de Telefone</label>
+                    <input type="tel" id="check-phone" class="search-input w-full px-4 py-3 rounded-xl text-center text-2xl" placeholder="912345678" onkeyup="this.value=this.value.replace(/[^0-9]/g,'')">
+                </div>
+
+                <button onclick="checkCustomerPoints()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                    <span>Verificar Pontos</span>
+                </button>
+
+                <div id="points-result" class="hidden mt-6 p-6 bg-nuca-green/5 rounded-2xl">
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-nuca-green/60">Bem-vindo(a), <span id="result-name" class="font-bold"></span></p>
+                    </div>
+                    
+                    <div class="grid grid-cols-5 gap-2 mb-4" id="result-stamps">
+                        <!-- Gerado via JS -->
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-xs text-nuca-green/60">Pontos acumulados</p>
+                            <p class="text-2xl font-bold text-nuca-green" id="result-points">0/10</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-nuca-green/60">Próxima recompensa</p>
+                            <p class="text-sm font-medium text-nuca-green" id="next-reward">Faltam 10 pontos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="closePointsCheck()" class="w-full mt-4 text-nuca-green/60 hover:text-nuca-green text-sm">Fechar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Order Detail Modal -->
@@ -711,6 +1014,11 @@
         let statusChart = null;
         let notifications = [];
         let currentUser = null;
+        
+        // Customer State
+        let currentCustomerId = null;
+        let currentLoyaltyCard = null;
+        let stamps = new Array(10).fill(false);
 
         // ============================================
         // INIT
@@ -768,6 +1076,7 @@
             hideMobileSidebar();
             
             if (section === 'dashboard' && !salesChart) initCharts();
+            if (section === 'customers') loadCustomers();
         }
 
         // ============================================
@@ -1044,7 +1353,6 @@
         // ============================================
         // FUNÇÃO DE IMPRESSÃO DE RECIBO (COM DESCONTO)
         // ============================================
-
         function printReceipt(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
@@ -1072,10 +1380,8 @@
             const subtotal = order.subtotal || 0;
             const discount = order.discount || 0;
             
-            // Verificar portes - pode estar em campos diferentes
+            // Verificar portes
             let shipping = 0;
-            
-            // Tentar diferentes campos onde os portes podem estar
             if (order.shipping_cost !== undefined && order.shipping_cost !== null) {
                 shipping = order.shipping_cost;
             } else if (order.shipping !== undefined && order.shipping !== null) {
@@ -1085,8 +1391,6 @@
             } else if (order.portes !== undefined && order.portes !== null) {
                 shipping = order.portes;
             } else {
-                // Calcular portes com base no subtotal (regra de negócio)
-                // Se subtotal < 50, portes = 3.99, senão portes = 0
                 shipping = subtotal < 50 ? 3.99 : 0;
             }
             
@@ -1127,7 +1431,6 @@
                         </div>
                         ` : ''}
                         
-                        <!-- Portes - SEMPRE VISÍVEIS -->
                         <div style="display: flex; justify-content: space-between; ${shipping === 0 ? 'color: #10B981;' : ''}">
                             <span>Portes:</span>
                             ${shipping > 0 ? 
@@ -1136,7 +1439,6 @@
                             }
                         </div>
                         
-                        <!-- Linha de desconto de portes se aplicável (para valores > 50) -->
                         ${subtotal >= 50 && shipping === 0 ? `
                         <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10B981; font-style: italic;">
                             <span>Portes Grátis (compra ≥ 50€)</span>
@@ -1168,20 +1470,17 @@
                         <head>
                             <title>Recibo NUCA - ${order.order_number}</title>
                             <style>
-                                /* Reset completo */
                                 * {
                                     margin: 0;
                                     padding: 0;
                                     box-sizing: border-box;
                                 }
                                 
-                                /* Configuração da página */
                                 @page {
                                     margin: 0;
                                     size: auto;
                                 }
                                 
-                                /* Corpo da página - centralização perfeita */
                                 body {
                                     margin: 0;
                                     padding: 0;
@@ -1193,7 +1492,6 @@
                                     background: #f5f5f5;
                                 }
                                 
-                                /* Container do recibo - centralizado */
                                 .receipt-container {
                                     width: 400px;
                                     max-width: 90%;
@@ -1204,7 +1502,6 @@
                                     margin: 20px;
                                 }
                                 
-                                /* Cabeçalho */
                                 .receipt-header {
                                     text-align: center;
                                     border-bottom: 2px dashed #556B4F;
@@ -1220,7 +1517,6 @@
                                     letter-spacing: -0.02em;
                                 }
                                 
-                                /* Detalhes */
                                 .receipt-details {
                                     margin-bottom: 20px;
                                     font-size: 14px;
@@ -1231,7 +1527,6 @@
                                     margin: 6px 0;
                                 }
                                 
-                                /* Itens */
                                 .receipt-items {
                                     margin-bottom: 20px;
                                 }
@@ -1250,7 +1545,6 @@
                                     font-size: 14px;
                                 }
                                 
-                                /* Total */
                                 .receipt-total {
                                     font-size: 16px;
                                 }
@@ -1259,7 +1553,6 @@
                                     padding: 6px 0;
                                 }
                                 
-                                /* Rodapé */
                                 .receipt-footer {
                                     text-align: center;
                                     margin-top: 30px;
@@ -1278,13 +1571,11 @@
                 printWindow.document.close();
                 printWindow.focus();
                 
-                // Pequeno atraso para garantir que o CSS seja aplicado
                 setTimeout(() => {
                     printWindow.print();
                     printWindow.close();
                 }, 250);
             } else {
-                // Fallback se o popup for bloqueado
                 window.print();
             }
             
@@ -1324,7 +1615,6 @@
 
             let actions = '';
             
-            // Botão de imprimir sempre presente
             actions += `<button onclick="printReceipt('${order.id}')" class="flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold">Imprimir Recibo</button>`;
             
             if (order.status === 'pending_payment') {
@@ -1420,6 +1710,473 @@
             window.URL.revokeObjectURL(url);
             showToast('CSV exportado!', 'success');
         }
+
+        // ============================================
+        // CUSTOMERS MANAGEMENT
+        // ============================================
+        async function loadCustomers() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('customers')
+                    .select(`
+                        *,
+                        loyalty_cards (
+                            id,
+                            current_stamps,
+                            completed_cards,
+                            total_points
+                        )
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                renderCustomers(data || []);
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+                showToast('Erro ao carregar clientes', 'error');
+            }
+        }
+
+        function renderCustomers(customers) {
+            const tbody = document.getElementById('customers-table-body');
+            
+            if (customers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = customers.map(customer => {
+                const loyaltyCard = customer.loyalty_cards?.[0] || { current_stamps: 0, completed_cards: 0 };
+                
+                return `<tr class="order-row cursor-pointer" onclick="openCustomerModal('${customer.id}')">
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-bold text-nuca-green">${customer.name}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.email || 'Sem email'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-medium">${customer.phone}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.city || 'Sem morada'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xl">${loyaltyCard.current_stamps || 0}</span>
+                            <span class="text-xs text-nuca-green/60">/10</span>
+                            <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">${loyaltyCard.completed_cards || 0} cartões</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">${customer.total_orders || 0} compras</td>
+                    <td class="px-6 py-4 font-bold">€${(customer.total_purchases || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="event.stopPropagation(); openLoyaltyCard('${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Cartão de Pontos">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function openCustomerModal(customerId = null) {
+            currentCustomerId = customerId;
+            document.getElementById('customer-modal').classList.remove('hidden');
+            
+            if (customerId) {
+                // Carregar dados do cliente
+                const { data: customer, error } = await supabaseClient
+                    .from('customers')
+                    .select('*')
+                    .eq('id', customerId)
+                    .single();
+
+                if (customer) {
+                    document.getElementById('modal-customer-title').textContent = `Ficha de Cliente - ${customer.name}`;
+                    document.getElementById('customer-id').value = customer.id;
+                    document.getElementById('customer-name').value = customer.name || '';
+                    document.getElementById('customer-email').value = customer.email || '';
+                    document.getElementById('customer-phone').value = customer.phone || '';
+                    document.getElementById('customer-birth').value = customer.birth_date || '';
+                    document.getElementById('customer-nif').value = customer.nif || '';
+                    document.getElementById('customer-address').value = customer.address || '';
+                    document.getElementById('customer-city').value = customer.city || '';
+                    document.getElementById('customer-postal').value = customer.postal_code || '';
+                    document.getElementById('customer-notes').value = customer.notes || '';
+                }
+
+                // Carregar cartão de pontos
+                await loadLoyaltyCard(customerId);
+                await loadCustomerOrders(customerId);
+            } else {
+                // Novo cliente
+                document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
+                document.getElementById('customer-form').reset();
+                document.getElementById('customer-id').value = '';
+                resetLoyaltyDisplay();
+            }
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customer-modal').classList.add('hidden');
+            currentCustomerId = null;
+        }
+
+        function switchCustomerTab(tab) {
+            document.getElementById('tab-info').className = tab === 'info' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
+            document.getElementById('tab-loyalty').className = tab === 'loyalty' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
+            document.getElementById('tab-history').className = tab === 'history' ? 'px-4 py-2 font-medium text-nuca-green border-b-2 border-nuca-green' : 'px-4 py-2 font-medium text-nuca-green/60 hover:text-nuca-green';
+            
+            document.getElementById('customer-info-tab').classList.toggle('hidden', tab !== 'info');
+            document.getElementById('customer-loyalty-tab').classList.toggle('hidden', tab !== 'loyalty');
+            document.getElementById('customer-history-tab').classList.toggle('hidden', tab !== 'history');
+        }
+
+        async function loadLoyaltyCard(customerId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('loyalty_cards')
+                    .select('*')
+                    .eq('customer_id', customerId)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                    currentLoyaltyCard = data;
+                    // Carregar carimbos existentes
+                    const { data: stampsData } = await supabaseClient
+                        .from('loyalty_stamps')
+                        .select('stamp_position')
+                        .eq('card_id', data.id);
+
+                    stamps = new Array(10).fill(false);
+                    if (stampsData) {
+                        stampsData.forEach(s => {
+                            stamps[s.stamp_position - 1] = true;
+                        });
+                    }
+                } else {
+                    // Criar novo cartão
+                    const { data: newCard, error: createError } = await supabaseClient
+                        .from('loyalty_cards')
+                        .insert([{
+                            customer_id: customerId,
+                            card_number: `NUCA-${Date.now()}`,
+                            current_stamps: 0,
+                            max_stamps: 10,
+                            completed_cards: 0
+                        }])
+                        .select()
+                        .single();
+
+                    if (createError) throw createError;
+                    currentLoyaltyCard = newCard;
+                    stamps = new Array(10).fill(false);
+                }
+
+                updateLoyaltyDisplay();
+            } catch (error) {
+                console.error('Erro ao carregar cartão:', error);
+                showToast('Erro ao carregar cartão de pontos', 'error');
+            }
+        }
+
+        function updateLoyaltyDisplay() {
+            // Atualizar quadrados
+            for (let i = 1; i <= 10; i++) {
+                const stampDiv = document.getElementById(`stamp-${i}`);
+                if (stamps[i-1]) {
+                    stampDiv.innerHTML = '🔴';
+                    stampDiv.classList.add('bg-nuca-green/10');
+                } else {
+                    stampDiv.innerHTML = '○';
+                    stampDiv.classList.remove('bg-nuca-green/10');
+                }
+            }
+
+            const filled = stamps.filter(s => s).length;
+            document.getElementById('total-stamps').textContent = `${filled}/10`;
+            document.getElementById('completed-cards').textContent = currentLoyaltyCard?.completed_cards || 0;
+        }
+
+        function resetLoyaltyDisplay() {
+            stamps = new Array(10).fill(false);
+            for (let i = 1; i <= 10; i++) {
+                const stampDiv = document.getElementById(`stamp-${i}`);
+                stampDiv.innerHTML = '○';
+                stampDiv.classList.remove('bg-nuca-green/10');
+            }
+            document.getElementById('total-stamps').textContent = '0/10';
+            document.getElementById('completed-cards').textContent = '0';
+        }
+
+        function toggleStamp(position) {
+            if (!currentCustomerId) {
+                showToast('Guarde o cliente primeiro', 'info');
+                return;
+            }
+            
+            stamps[position - 1] = !stamps[position - 1];
+            
+            const filled = stamps.filter(s => s).length;
+            if (filled === 10) {
+                showToast('Parabéns! Cartão completo! Cliente ganhou uma recompensa!', 'success');
+            }
+            
+            updateLoyaltyDisplay();
+        }
+
+        async function saveLoyaltyCard() {
+            if (!currentCustomerId || !currentLoyaltyCard) return;
+
+            try {
+                const filledStamps = stamps.reduce((acc, val, idx) => val ? [...acc, idx + 1] : acc, []);
+                
+                if (filledStamps.length === 10) {
+                    // Registrar recompensa
+                    await supabaseClient
+                        .from('loyalty_rewards')
+                        .insert([{
+                            customer_id: currentCustomerId,
+                            card_id: currentLoyaltyCard.id,
+                            reward_type: 'free_product',
+                            reward_description: 'Produto gratuito - Cartão completo'
+                        }]);
+
+                    // Incrementar contador de cartões completos
+                    await supabaseClient
+                        .from('loyalty_cards')
+                        .update({
+                            completed_cards: (currentLoyaltyCard.completed_cards || 0) + 1,
+                            current_stamps: 0
+                        })
+                        .eq('id', currentLoyaltyCard.id);
+
+                    stamps = new Array(10).fill(false);
+                } else {
+                    // Atualizar stamps
+                    await supabaseClient
+                        .from('loyalty_cards')
+                        .update({
+                            current_stamps: filledStamps.length
+                        })
+                        .eq('id', currentLoyaltyCard.id);
+
+                    // Remover stamps antigos e adicionar novos
+                    await supabaseClient
+                        .from('loyalty_stamps')
+                        .delete()
+                        .eq('card_id', currentLoyaltyCard.id);
+
+                    if (filledStamps.length > 0) {
+                        const stampInserts = filledStamps.map(pos => ({
+                            card_id: currentLoyaltyCard.id,
+                            stamp_position: pos,
+                            given_by: currentUser?.id
+                        }));
+                        
+                        await supabaseClient
+                            .from('loyalty_stamps')
+                            .insert(stampInserts);
+                    }
+                }
+
+                showToast('Cartão atualizado com sucesso!', 'success');
+                await loadLoyaltyCard(currentCustomerId);
+                loadCustomers();
+                
+            } catch (error) {
+                console.error('Erro ao guardar cartão:', error);
+                showToast('Erro ao guardar cartão', 'error');
+            }
+        }
+
+        function clearAllStamps() {
+            if (!currentCustomerId) return;
+            
+            if (confirm('Tem a certeza que quer limpar todos os carimbos?')) {
+                stamps = new Array(10).fill(false);
+                updateLoyaltyDisplay();
+            }
+        }
+
+        function openLoyaltyCard(customerId) {
+            openCustomerModal(customerId);
+            switchCustomerTab('loyalty');
+        }
+
+        async function loadCustomerOrders(customerId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_id', customerId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const historyDiv = document.getElementById('customer-orders-history');
+                
+                if (!data || data.length === 0) {
+                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>';
+                    return;
+                }
+
+                historyDiv.innerHTML = data.map(order => `
+                    <div class="bg-white/50 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">${order.order_number}</p>
+                            <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold">€${(order.total || 0).toFixed(2)}</p>
+                            <span class="text-xs px-2 py-1 rounded-full ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+
+        // ============================================
+        // PUBLIC POINTS CHECK
+        // ============================================
+        function openPointsCheck() {
+            document.getElementById('customer-points-check').classList.remove('hidden');
+            document.getElementById('points-result').classList.add('hidden');
+            document.getElementById('check-phone').value = '';
+        }
+
+        function closePointsCheck() {
+            document.getElementById('customer-points-check').classList.add('hidden');
+        }
+
+        async function checkCustomerPoints() {
+            const phone = document.getElementById('check-phone').value;
+            
+            if (!phone || phone.length < 9) {
+                showToast('Por favor, insira um telefone válido', 'error');
+                return;
+            }
+
+            try {
+                const { data: customer, error } = await supabaseClient
+                    .from('customers')
+                    .select(`
+                        name,
+                        phone,
+                        loyalty_cards (
+                            current_stamps,
+                            completed_cards
+                        )
+                    `)
+                    .eq('phone', phone)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!customer) {
+                    showToast('Cliente não encontrado', 'error');
+                    return;
+                }
+
+                const stamps = customer.loyalty_cards?.[0]?.current_stamps || 0;
+                
+                let stampsHtml = '';
+                for (let i = 0; i < 10; i++) {
+                    if (i < stamps) {
+                        stampsHtml += '<div class="aspect-square bg-nuca-green/10 rounded-lg flex items-center justify-center text-2xl">🔴</div>';
+                    } else {
+                        stampsHtml += '<div class="aspect-square bg-white border-2 border-nuca-green/30 rounded-lg flex items-center justify-center text-2xl text-nuca-green/30">○</div>';
+                    }
+                }
+
+                document.getElementById('result-stamps').innerHTML = stampsHtml;
+                document.getElementById('result-name').textContent = customer.name;
+                document.getElementById('result-points').textContent = `${stamps}/10`;
+                
+                const remaining = 10 - stamps;
+                document.getElementById('next-reward').textContent = remaining === 0 ? 
+                    'Parabéns! Já pode resgatar!' : 
+                    `Faltam ${remaining} ${remaining === 1 ? 'ponto' : 'pontos'}`;
+                
+                document.getElementById('points-result').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Erro ao verificar pontos:', error);
+                showToast('Erro ao verificar pontos', 'error');
+            }
+        }
+
+        // ============================================
+        // CUSTOMER FORM SUBMIT
+        // ============================================
+        document.getElementById('customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const customerData = {
+                name: document.getElementById('customer-name').value,
+                email: document.getElementById('customer-email').value || null,
+                phone: document.getElementById('customer-phone').value,
+                birth_date: document.getElementById('customer-birth').value || null,
+                nif: document.getElementById('customer-nif').value || null,
+                address: document.getElementById('customer-address').value || null,
+                city: document.getElementById('customer-city').value || null,
+                postal_code: document.getElementById('customer-postal').value || null,
+                notes: document.getElementById('customer-notes').value || null
+            };
+
+            const customerId = document.getElementById('customer-id').value;
+
+            try {
+                if (customerId) {
+                    // Atualizar
+                    const { error } = await supabaseClient
+                        .from('customers')
+                        .update(customerData)
+                        .eq('id', customerId);
+
+                    if (error) throw error;
+                    showToast('Cliente atualizado com sucesso!', 'success');
+                } else {
+                    // Criar novo
+                    const { data, error } = await supabaseClient
+                        .from('customers')
+                        .insert([customerData])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    
+                    // Criar cartão de pontos automaticamente
+                    await supabaseClient
+                        .from('loyalty_cards')
+                        .insert([{
+                            customer_id: data.id,
+                            card_number: `NUCA-${Date.now()}`,
+                            current_stamps: 0,
+                            max_stamps: 10,
+                            completed_cards: 0
+                        }]);
+
+                    showToast('Cliente criado com sucesso!', 'success');
+                }
+
+                loadCustomers();
+                closeCustomerModal();
+            } catch (error) {
+                console.error('Erro ao guardar cliente:', error);
+                showToast('Erro ao guardar cliente', 'error');
+            }
+        });
 
         // ============================================
         // CHARTS
@@ -1560,10 +2317,18 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-nuca-green' };
-            toast.className = `notification ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px]`;
+            toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px] animate-fade-in-up`;
             toast.innerHTML = `<span class="font-medium">${message}</span>`;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
+        }
+
+        function searchCustomers() {
+            loadCustomers();
+        }
+
+        function exportCustomers() {
+            showToast('Exportação em desenvolvimento', 'info');
         }
 
         document.addEventListener('click', (e) => {
