@@ -2249,29 +2249,43 @@
         // ============================================
         async function loadCustomers() {
             try {
-                const { data, error } = await supabaseClient
+                // Buscar clientes sem o join complexo
+                const { data: customers, error: customersError } = await supabaseClient
                     .from('customers')
-                    .select(`
-                        *,
-                        loyalty_cards (
-                            id,
-                            current_stamps,
-                            completed_cards,
-                            status
-                        )
-                    `)
+                    .select('*')
                     .order('created_at', { ascending: false });
         
-                if (error) throw error;
+                if (customersError) throw customersError;
         
-                renderCustomers(data || []);
+                // Buscar cartões de fidelidade separadamente
+                const { data: loyaltyCards, error: cardsError } = await supabaseClient
+                    .from('loyalty_cards')
+                    .select('id, customer_id, current_stamps, completed_cards, status');
+        
+                if (cardsError) throw cardsError;
+        
+                // Criar mapa de cartões por customer_id
+                const cardsMap = {};
+                if (loyaltyCards) {
+                    loyaltyCards.forEach(card => {
+                        cardsMap[card.customer_id] = card;
+                    });
+                }
+        
+                // Combinar dados
+                const customersWithCards = customers.map(customer => ({
+                    ...customer,
+                    loyalty_card: cardsMap[customer.id] || { current_stamps: 0, completed_cards: 0, status: 'active' }
+                }));
+        
+                renderCustomers(customersWithCards);
             } catch (error) {
                 console.error('Erro ao carregar clientes:', error);
                 showToast('Erro ao carregar clientes', 'error');
             }
         }
         
-        // Substituir a função renderCustomers por esta versão corrigida:
+        // Render corrigido para usar loyalty_card (singular)
         function renderCustomers(customers) {
             const tbody = document.getElementById('customers-table-body');
             
@@ -2281,7 +2295,7 @@
             }
         
             tbody.innerHTML = customers.map(customer => {
-                const loyaltyCard = customer.loyalty_cards?.[0] || { current_stamps: 0, completed_cards: 0, status: 'active' };
+                const loyaltyCard = customer.loyalty_card || { current_stamps: 0, completed_cards: 0, status: 'active' };
                 const stamps = loyaltyCard.current_stamps || 0;
                 
                 // Gerar mini carimbos
@@ -2328,6 +2342,7 @@
                 </tr>`;
             }).join('');
         }
+        
         function renderCustomers(customers) {
             const tbody = document.getElementById('customers-table-body');
             
