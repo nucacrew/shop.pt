@@ -1043,10 +1043,11 @@
         // ============================================
         // FUNÇÃO DE IMPRESSÃO DE RECIBO (COM DESCONTO)
         // ============================================
+
         function printReceipt(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
-
+        
             const receiptDiv = document.getElementById('receipt-print');
             
             const items = order.items || [];
@@ -1056,7 +1057,7 @@
                     <span>€${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
             `).join('');
-
+        
             const address = order.shipping_address || {};
             const date = new Date(order.created_at).toLocaleDateString('pt-PT', {
                 day: '2-digit',
@@ -1065,13 +1066,13 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
-
+        
             // Calcular valores
             const subtotal = order.subtotal || 0;
             const discount = order.discount || 0;
             const shipping = order.shipping_cost || 0;
             const total = order.total || 0;
-
+        
             receiptDiv.innerHTML = `
                 <div class="receipt-container">
                     <div class="receipt-header">
@@ -1088,12 +1089,12 @@
                         <p><strong>Status:</strong> ${getStatusText(order.status)}</p>
                         ${order.payment_method ? `<p><strong>Pagamento:</strong> ${order.payment_method}</p>` : ''}
                     </div>
-
+        
                     <div class="receipt-items">
                         <h3 style="font-weight: bold; margin-bottom: 8px;">Itens</h3>
                         ${itemsHtml}
                     </div>
-
+        
                     <div class="receipt-total">
                         <div style="display: flex; justify-content: space-between;">
                             <span>Subtotal:</span>
@@ -1124,7 +1125,7 @@
                             <span>€${total.toFixed(2)}</span>
                         </div>
                     </div>
-
+        
                     <div style="text-align: center; margin-top: 24px; font-size: 12px; color: #666;">
                         <p>Obrigado pela sua compra!</p>
                         <p>NUCA - Qualidade e Tradição</p>
@@ -1132,9 +1133,137 @@
                     </div>
                 </div>
             `;
-
+        
             receiptDiv.classList.remove('hidden');
-            window.print();
+            
+            // Criar uma nova janela para impressão com o recibo perfeitamente centralizado
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Recibo NUCA - ${order.order_number}</title>
+                            <style>
+                                /* Reset completo */
+                                * {
+                                    margin: 0;
+                                    padding: 0;
+                                    box-sizing: border-box;
+                                }
+                                
+                                /* Configuração da página */
+                                @page {
+                                    margin: 0;
+                                    size: auto;
+                                }
+                                
+                                /* Corpo da página - centralização perfeita */
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    min-height: 100vh;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    font-family: 'Space Grotesk', sans-serif;
+                                    background: white;
+                                }
+                                
+                                /* Container do recibo - centralizado */
+                                .receipt-container {
+                                    width: 400px;
+                                    max-width: 90%;
+                                    background: white;
+                                    padding: 30px 24px;
+                                    border-radius: 16px;
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                                    margin: 20px auto;
+                                }
+                                
+                                /* Cabeçalho */
+                                .receipt-header {
+                                    text-align: center;
+                                    border-bottom: 2px dashed #556B4F;
+                                    padding-bottom: 16px;
+                                    margin-bottom: 16px;
+                                }
+                                
+                                .receipt-title {
+                                    font-family: 'Syne', sans-serif;
+                                    font-size: 28px;
+                                    font-weight: 800;
+                                    color: #556B4F;
+                                    letter-spacing: -0.02em;
+                                }
+                                
+                                /* Detalhes */
+                                .receipt-details {
+                                    margin-bottom: 20px;
+                                    font-size: 14px;
+                                    line-height: 1.6;
+                                }
+                                
+                                .receipt-details p {
+                                    margin: 6px 0;
+                                }
+                                
+                                /* Itens */
+                                .receipt-items {
+                                    margin-bottom: 20px;
+                                }
+                                
+                                .receipt-items h3 {
+                                    font-size: 16px;
+                                    margin-bottom: 12px;
+                                    color: #556B4F;
+                                }
+                                
+                                .receipt-item {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    padding: 8px 0;
+                                    border-bottom: 1px solid #eee;
+                                    font-size: 14px;
+                                }
+                                
+                                /* Total */
+                                .receipt-total {
+                                    font-size: 16px;
+                                }
+                                
+                                .receipt-total > div {
+                                    padding: 6px 0;
+                                }
+                                
+                                /* Rodapé */
+                                .receipt-footer {
+                                    text-align: center;
+                                    margin-top: 30px;
+                                    padding-top: 16px;
+                                    border-top: 1px solid #eee;
+                                    font-size: 12px;
+                                    color: #666;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${receiptDiv.innerHTML}
+                        </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                
+                // Pequeno atraso para garantir que o CSS seja aplicado
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 250);
+            } else {
+                // Fallback se o popup for bloqueado
+                window.print();
+            }
+            
             receiptDiv.classList.add('hidden');
         }
 
