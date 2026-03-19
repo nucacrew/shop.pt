@@ -555,11 +555,31 @@
             margin-top: 15px;
         }
         
+        /* Menu de Ações do Cliente */
+        #customer-actions-menu {
+            animation: fadeInMenu 0.15s ease-out;
+        }
+
+        @keyframes fadeInMenu {
+            from { opacity: 0; transform: translate(-50%, 5px); }
+            to { opacity: 1; transform: translate(-50%, 10px); }
+        }
+
+        #customer-actions-menu button {
+            transition: all 0.15s ease;
+        }
+
+        #customer-actions-menu button:hover {
+            background-color: rgba(85, 107, 79, 0.08);
+            padding-left: 1.25rem;
+        }
+
         .btn-redeem:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(85, 107, 79, 0.3);
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -2011,19 +2031,19 @@
         
         function renderCustomers(customers) {
             const tbody = document.getElementById('customers-table-body');
-            
+
             if (customers.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
                 return;
             }
-        
+
             tbody.innerHTML = customers.map(customer => {
                 const loyaltyCard = customer.loyalty_card || { current_stamps: 0, completed_cards: 0, status: 'active' };
                 const stamps = loyaltyCard.current_stamps || 0;
-                
+
                 const hasReward = stamps >= 10 || loyaltyCard.status === 'reward_pending';
-                
-                return `<tr class="order-row cursor-pointer" onclick="openCustomerModal('${customer.id}')">
+
+                return `<tr class="order-row">
                     <td class="px-6 py-4">
                         <div>
                             <p class="font-bold text-nuca-green">${customer.name}</p>
@@ -2037,7 +2057,7 @@
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="points-badge" onclick="event.stopPropagation(); openLoyaltyCard('${customer.id}')">
+                        <div class="points-badge">
                             <span class="points-number">${stamps}</span>
                             <span class="points-separator">/</span>
                             <span class="points-total">10</span>
@@ -2048,23 +2068,175 @@
                                 `<span class="reward-badge">🎁</span>` : ''}
                         </div>
                     </td>
-                    <td class="px-6 py-4">${customer.total_orders || 0} compras</td>
-                    <td class="px-6 py-4 font-bold">€${(customer.total_purchases || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4" id="orders-count-${customer.id}">
+                        <span class="text-nuca-green/40">-</span>
+                    </td>
+                    <td class="px-6 py-4 font-bold" id="total-spent-${customer.id}">
+                        <span class="text-nuca-green/40">-</span>
+                    </td>
                     <td class="px-6 py-4">
                         <div class="flex justify-center gap-2">
-                            <button onclick="event.stopPropagation(); openCustomerModal('${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20" title="Editar">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <button onclick="openCustomerActions(event, '${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Ações">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
+                                    <circle cx="12" cy="5" r="1" fill="#556B4F"/>
+                                    <circle cx="12" cy="12" r="1" fill="#556B4F"/>
+                                    <circle cx="12" cy="19" r="1" fill="#556B4F"/>
+                                </svg>
                             </button>
                         </div>
                     </td>
                 </tr>`;
             }).join('');
+
+            // Carregar estatísticas de encomendas para cada cliente
+            customers.forEach(customer => {
+                loadCustomerOrdersStats(customer.id, customer.email);
+            });
         }
 
-        async function openCustomerModal(customerId = null) {
+        async function loadCustomerOrdersStats(customerId, customerEmail) {
+            if (!customerEmail) {
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+                if (countEl) countEl.innerHTML = '0 compras';
+                if (totalEl) totalEl.innerHTML = '€0.00';
+                return;
+            }
+
+            try {
+                // Buscar todas as encomendas do cliente
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('status, total')
+                    .eq('customer_email', customerEmail);
+
+                if (error) throw error;
+
+                const count = data ? data.length : 0;
+
+                // Calcular total gasto (só encomendas pagas, enviadas ou entregues)
+                const totalSpent = data ? data
+                    .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                    .reduce((sum, o) => sum + (o.total || 0), 0) : 0;
+
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+
+                if (countEl) {
+                    countEl.innerHTML = `${count} compra${count !== 1 ? 's' : ''}`;
+                }
+                if (totalEl) {
+                    totalEl.innerHTML = `€${totalSpent.toFixed(2)}`;
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+                if (countEl) countEl.innerHTML = '0 compras';
+                if (totalEl) totalEl.innerHTML = '€0.00';
+            }
+        }
+
+        // Menu de ações do cliente (dropdown)
+        function openCustomerActions(event, customerId) {
+            event.stopPropagation();
+
+            // Remover menu existente se houver
+            const existingMenu = document.getElementById('customer-actions-menu');
+            if (existingMenu) existingMenu.remove();
+
+            // Criar menu dropdown
+            const menu = document.createElement('div');
+            menu.id = 'customer-actions-menu';
+            menu.className = 'fixed bg-white rounded-xl shadow-2xl border border-nuca-green/10 py-2 z-[3000] min-w-[200px]';
+            menu.style.cssText = `
+                top: ${event.pageY}px;
+                left: ${event.pageX}px;
+                transform: translate(-50%, 10px);
+            `;
+
+            menu.innerHTML = `
+                <div class="px-4 py-2 text-xs font-bold text-nuca-green/60 uppercase border-b border-nuca-green/10 mb-1">Ações do Cliente</div>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'info')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Ver Informação
+                </button>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'loyalty')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
+                    </svg>
+                    Cartão de Pontos
+                </button>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view', 'history')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    Histórico de Compras
+                </button>
+                <div class="border-t border-nuca-green/10 my-1"></div>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit', 'info')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Editar Cliente
+                </button>
+            `;
+
+            document.body.appendChild(menu);
+
+            // Fechar menu ao clicar fora
+            setTimeout(() => {
+                document.addEventListener('click', closeCustomerActionsMenuOnClickOutside);
+            }, 100);
+        }
+
+        function closeCustomerActionsMenu() {
+            const menu = document.getElementById('customer-actions-menu');
+            if (menu) {
+                menu.remove();
+                document.removeEventListener('click', closeCustomerActionsMenuOnClickOutside);
+            }
+        }
+
+        function closeCustomerActionsMenuOnClickOutside(e) {
+            const menu = document.getElementById('customer-actions-menu');
+            if (menu && !menu.contains(e.target)) {
+                closeCustomerActionsMenu();
+            }
+        }
+
+        async function openCustomerModal(customerId = null, mode = 'view', initialTab = 'info') {
             currentCustomerId = customerId;
             document.getElementById('customer-modal').classList.remove('hidden');
-            
+
+            // Configurar modo (view ou edit)
+            const isEditMode = mode === 'edit' || !customerId;
+            const formInputs = document.querySelectorAll('#customer-form input, #customer-form textarea');
+            const saveButton = document.querySelector('#customer-form button[type="submit"]');
+            const cancelButton = document.querySelector('#customer-form button[type="button"]');
+
+            formInputs.forEach(input => {
+                input.readOnly = !isEditMode;
+                if (!isEditMode) {
+                    input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    input.classList.remove('search-input');
+                } else {
+                    input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    input.classList.add('search-input');
+                }
+            });
+
+            if (saveButton) saveButton.style.display = isEditMode ? 'inline-flex' : 'none';
+            if (cancelButton) cancelButton.textContent = isEditMode ? 'Cancelar' : 'Fechar';
+
             if (customerId) {
                 const { data: customer, error } = await supabaseClient
                     .from('customers')
@@ -2073,7 +2245,8 @@
                     .single();
 
                 if (customer) {
-                    document.getElementById('modal-customer-title').textContent = `Ficha de Cliente - ${customer.name}`;
+                    const titlePrefix = isEditMode ? 'Editar Cliente' : 'Ficha de Cliente';
+                    document.getElementById('modal-customer-title').textContent = `${titlePrefix} - ${customer.name}`;
                     document.getElementById('customer-id').value = customer.id;
                     document.getElementById('customer-name').value = customer.name || '';
                     document.getElementById('customer-email').value = customer.email || '';
@@ -2095,8 +2268,9 @@
                 document.getElementById('customer-id').value = '';
                 resetLoyaltyDisplay();
             }
-            
-            switchCustomerTab('info');
+
+            // Ir para a tab especificada (não sempre 'info')
+            switchCustomerTab(initialTab);
         }
 
         function closeCustomerModal() {
@@ -2604,38 +2778,123 @@
         });
 
         async function loadCustomerOrders(customerId) {
+            const historyDiv = document.getElementById('customer-orders-history');
+            historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-4">A carregar histórico...</p>';
+
             try {
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .eq('customer_id', customerId)
-                    .order('created_at', { ascending: false })
-                    .limit(5);
+                // 1. Buscar o email do cliente
+                const { data: customerData, error: customerError } = await supabaseClient
+                    .from('customers')
+                    .select('email')
+                    .eq('id', customerId)
+                    .single();
 
-                if (error) throw error;
-
-                const historyDiv = document.getElementById('customer-orders-history');
-                
-                if (!data || data.length === 0) {
-                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>';
+                if (customerError || !customerData || !customerData.email) {
+                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Cliente sem email registado</p>';
                     return;
                 }
 
-                historyDiv.innerHTML = data.map(order => `
-                    <div class="bg-white/50 rounded-xl p-4 flex justify-between items-center">
+                const customerEmail = customerData.email;
+                console.log('Buscando encomendas para o email:', customerEmail);
+
+                // 2. Buscar encomendas pelo email (não por customer_id)
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_email', customerEmail)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                console.log('Encomendas encontradas:', data?.length || 0);
+
+                if (!data || data.length === 0) {
+                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada para este cliente</p>';
+                    return;
+                }
+
+                // 3. Renderizar com estatísticas
+                renderCustomerOrdersHistory(data);
+
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+                historyDiv.innerHTML = '<p class="text-center text-red-500 py-8">Erro ao carregar histórico</p>';
+            }
+        }
+
+        function renderCustomerOrdersHistory(orders) {
+            const historyDiv = document.getElementById('customer-orders-history');
+
+            // Calcular estatísticas
+            const totalOrders = orders.length;
+            const completedOrders = orders.filter(o => o.status === 'delivered').length;
+            const paidOrders = orders.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status)).length;
+            const cancelledOrders = orders.filter(o => o.status === 'cancelled').length;
+            const totalSpent = orders
+                .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                .reduce((sum, o) => sum + (o.total || 0), 0);
+
+            let statsHtml = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-white/50 rounded-xl p-3 text-center">
+                        <p class="text-xl font-bold text-nuca-green">${totalOrders}</p>
+                        <p class="text-xs text-nuca-green/60">Total</p>
+                    </div>
+                    <div class="bg-green-50 rounded-xl p-3 text-center">
+                        <p class="text-xl font-bold text-green-600">${paidOrders}</p>
+                        <p class="text-xs text-green-600/60">Pagas</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-xl p-3 text-center">
+                        <p class="text-xl font-bold text-purple-600">${completedOrders}</p>
+                        <p class="text-xs text-purple-600/60">Concluídas</p>
+                    </div>
+                    <div class="bg-nuca-green/10 rounded-xl p-3 text-center">
+                        <p class="text-xl font-bold text-nuca-green">€${totalSpent.toFixed(0)}</p>
+                        <p class="text-xs text-nuca-green/60">Total Gasto</p>
+                    </div>
+                </div>
+            `;
+
+            const ordersHtml = orders.map(order => `
+                <div class="bg-white/50 rounded-xl p-4 mb-3 border-l-4 ${getStatusBorderColor(order.status)} hover:bg-white/70 transition-colors">
+                    <div class="flex justify-between items-start">
                         <div>
-                            <p class="font-medium">${order.order_number}</p>
+                            <p class="font-bold text-nuca-green">${order.order_number}</p>
                             <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
+                            ${order.items && order.items.length > 0 ? `
+                                <p class="text-xs text-nuca-green/50 mt-1">
+                                    ${order.items.length} item(s): ${order.items.map(i => i.name).slice(0, 2).join(', ')}${order.items.length > 2 ? '...' : ''}
+                                </p>
+                            ` : ''}
                         </div>
                         <div class="text-right">
-                            <p class="font-bold">€${(order.total || 0).toFixed(2)}</p>
+                            <p class="font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</p>
                             <span class="text-xs px-2 py-1 rounded-full ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
                         </div>
                     </div>
-                `).join('');
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-            }
+                    <div class="mt-3 pt-3 border-t border-nuca-green/10 flex gap-2">
+                        <button onclick="openOrderDetail('${order.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1.5 rounded-lg hover:bg-nuca-green/20 transition-colors">
+                            Ver Detalhes
+                        </button>
+                        <button onclick="printReceipt('${order.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1.5 rounded-lg hover:bg-nuca-green/20 transition-colors">
+                            Imprimir
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            historyDiv.innerHTML = statsHtml + ordersHtml;
+        }
+
+        function getStatusBorderColor(status) {
+            const colors = {
+                'pending_payment': 'border-yellow-400',
+                'paid': 'border-green-400',
+                'shipped': 'border-blue-400',
+                'delivered': 'border-purple-400',
+                'cancelled': 'border-red-400'
+            };
+            return colors[status] || 'border-gray-300';
         }
 
         // ============================================
