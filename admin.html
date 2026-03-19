@@ -229,6 +229,533 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
+        /* ============================================
+           CARTÃO DE PONTOS NUCA - ESTILO PREMIUM
+           ============================================ */
+
+        /* Container principal do cartão */
+        .loyalty-card-container {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F5F0E8 100%);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 
+                0 4px 6px -1px rgba(85, 107, 79, 0.1),
+                0 10px 20px -5px rgba(85, 107, 79, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(85, 107, 79, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito de textura sutil no fundo */
+        .loyalty-card-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+            pointer-events: none;
+            border-radius: 24px;
+        }
+
+        /* Header do cartão */
+        .loyalty-card-header {
+            text-align: center;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loyalty-card-logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: #556B4F;
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+            text-shadow: 0 2px 4px rgba(85, 107, 79, 0.1);
+        }
+
+        .loyalty-card-subtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            color: #556B4F;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 500;
+        }
+
+        .loyalty-card-divider {
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #556B4F, transparent);
+            margin: 16px auto;
+            border-radius: 2px;
+            opacity: 0.3;
+        }
+
+        /* Grid de carimbos - estilo premium */
+        .stamps-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Quadrado individual do carimbo */
+        .stamp-square {
+            aspect-ratio: 1;
+            background: #FFFFFF;
+            border: 2px solid rgba(85, 107, 79, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 
+                0 2px 4px rgba(85, 107, 79, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        /* Número do carimbo (quando vazio) */
+        .stamp-square::before {
+            content: attr(data-number);
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: rgba(85, 107, 79, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        /* Hover no carimbo vazio */
+        .stamp-square:hover {
+            border-color: rgba(85, 107, 79, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 16px rgba(85, 107, 79, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .stamp-square:hover::before {
+            color: rgba(85, 107, 79, 0.3);
+        }
+
+        /* Carimbo preenchido */
+        .stamp-square.filled {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            border-color: #556B4F;
+            box-shadow: 
+                0 4px 12px rgba(85, 107, 79, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .stamp-square.filled::before {
+            display: none;
+        }
+
+        /* Ícone do carimbo preenchido */
+        .stamp-square.filled::after {
+            content: '';
+            width: 28px;
+            height: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D8C6A5' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: stampCheck 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes stampCheck {
+            0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        /* Efeito de pulso no carimbo preenchido */
+        .stamp-square.filled:hover {
+            animation: stampPulse 0.6s ease;
+        }
+
+        @keyframes stampPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Barra de progresso visual */
+        .progress-bar-container {
+            background: rgba(85, 107, 79, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #556B4F 0%, #6B8E5E 100%);
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Stats do cartão */
+        .loyalty-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(85, 107, 79, 0.05);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(85, 107, 79, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: #556B4F;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11px;
+            color: #556B4F;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 40px;
+            background: rgba(85, 107, 79, 0.2);
+        }
+
+        /* Mensagem de recompensa */
+        .reward-message {
+            background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(85, 107, 79, 0.05) 100%);
+            border: 2px dashed rgba(85, 107, 79, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .reward-message.complete {
+            background: linear-gradient(135deg, rgba(85, 107, 79, 0.15) 0%, rgba(85, 107, 79, 0.08) 100%);
+            border-style: solid;
+            border-color: #556B4F;
+            animation: rewardPulse 2s infinite;
+        }
+
+        @keyframes rewardPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(85, 107, 79, 0.2); }
+            50% { box-shadow: 0 0 20px 5px rgba(85, 107, 79, 0.1); }
+        }
+
+        .reward-message h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #556B4F;
+            margin-bottom: 8px;
+        }
+
+        .reward-message p {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            color: #556B4F;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        /* Botões de ação */
+        .loyalty-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn-save-stamps {
+            flex: 1;
+            background: #556B4F;
+            color: #D8C6A5;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.2);
+        }
+
+        .btn-save-stamps:hover {
+            background: #2C3328;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(85, 107, 79, 0.3);
+        }
+
+        .btn-clear-stamps {
+            padding: 16px 20px;
+            background: transparent;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            color: #DC2626;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-clear-stamps:hover {
+            background: rgba(220, 38, 38, 0.05);
+            border-color: rgba(220, 38, 38, 0.5);
+        }
+
+        /* Botão de resgatar recompensa */
+        .btn-redeem {
+            flex: 1;
+            background: linear-gradient(135deg, #D8C6A5 0%, #C4B090 100%);
+            color: #2C3328;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.2);
+            animation: redeemPulse 2s infinite;
+        }
+
+        @keyframes redeemPulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(85, 107, 79, 0.2); }
+            50% { box-shadow: 0 6px 20px rgba(85, 107, 79, 0.4); }
+        }
+
+        .btn-redeem:hover {
+            background: linear-gradient(135deg, #C4B090 0%, #B5A180 100%);
+            transform: translateY(-2px);
+        }
+
+        /* Versão compacta (para lista de clientes) */
+        .loyalty-card-compact {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(85, 107, 79, 0.08);
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: 1px solid rgba(85, 107, 79, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .loyalty-card-compact:hover {
+            background: rgba(85, 107, 79, 0.15);
+            transform: scale(1.02);
+        }
+
+        .loyalty-mini-stamps {
+            display: flex;
+            gap: 4px;
+        }
+
+        .loyalty-mini-stamp {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(85, 107, 79, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: transparent;
+            transition: all 0.2s ease;
+        }
+
+        .loyalty-mini-stamp.filled {
+            background: #556B4F;
+            color: #D8C6A5;
+        }
+
+        .loyalty-mini-stamp.filled::after {
+            content: '✓';
+            color: #D8C6A5;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .loyalty-mini-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #556B4F;
+        }
+
+        /* Animação de entrada */
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .loyalty-card-container {
+            animation: cardEntrance 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Modal de resgatar recompensa */
+        .redeem-modal {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .redeem-option {
+            background: rgba(85, 107, 79, 0.05);
+            border: 2px solid rgba(85, 107, 79, 0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .redeem-option:hover {
+            border-color: #556B4F;
+            background: rgba(85, 107, 79, 0.08);
+            transform: translateX(4px);
+        }
+
+        .redeem-option.selected {
+            border-color: #556B4F;
+            background: rgba(85, 107, 79, 0.12);
+        }
+
+        .redeem-option-icon {
+            width: 48px;
+            height: 48px;
+            background: #556B4F;
+            color: #D8C6A5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .redeem-option-content h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #556B4F;
+            margin-bottom: 4px;
+        }
+
+        .redeem-option-content p {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px;
+            color: #556B4F;
+            opacity: 0.7;
+            margin: 0;
+        }
+
+        /* Responsividade */
+        @media (max-width: 640px) {
+            .stamps-grid {
+                gap: 12px;
+            }
+            
+            .stamp-square {
+                border-radius: 12px;
+            }
+            
+            .stamp-square::before {
+                font-size: 14px;
+            }
+            
+            .loyalty-card-logo {
+                font-size: 32px;
+            }
+            
+            .loyalty-stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+            
+            .stat-divider {
+                width: 100%;
+                height: 1px;
+            }
+            
+            .loyalty-actions {
+                flex-direction: column;
+            }
+            
+            .btn-save-stamps,
+            .btn-clear-stamps,
+            .btn-redeem {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         /* ESTILOS PARA IMPRESSÃO */
         @media print {
             body * {
@@ -310,37 +837,6 @@
 
         .receipt-free-shipping {
             color: #10B981;
-        }
-
-        /* ESTILOS DO CARTÃO DE PONTOS */
-        .stamp-square {
-            transition: all 0.2s ease;
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .stamp-square:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(85,107,79,0.2);
-        }
-
-        .stamp-square.filled {
-            background: #556B4F;
-            color: #D8C6A5;
-        }
-
-        @keyframes stampPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .stamp-square.filled {
-            animation: stampPop 0.3s ease;
         }
     </style>
 </head>
@@ -713,7 +1209,7 @@
                                     <tr>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Pontos</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cartão de Pontos</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
                                         <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
@@ -748,7 +1244,7 @@
 
     <!-- Customer Modal (Ficha do Cliente) -->
     <div id="customer-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeCustomerModal()"></div>
+        <div class="modal-overlay absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCustomerModal()"></div>
         <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
             <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
                 <div>
@@ -823,62 +1319,91 @@
                     </form>
                 </div>
 
-                <!-- Tab: Cartão de Pontos -->
+                                <!-- Tab: Cartão de Pontos -->
                 <div id="customer-loyalty-tab" class="tab-content hidden">
-                    <div class="text-center mb-8">
-                        <div class="inline-block bg-white/50 rounded-2xl p-6">
-                            <h3 class="font-display text-3xl font-bold text-nuca-green mb-2">NUCA</h3>
-                            <p class="text-sm text-nuca-green/60">Cartão de Fidelidade</p>
-                            <p class="text-xs text-nuca-green/40 mt-2">Acumule 10 carimbos e ganhe um produto à escolha!</p>
-                        </div>
-                    </div>
-
-                    <!-- Cartão de Pontos -->
-                    <div class="bg-white/50 rounded-2xl p-8 mb-6">
-                        <div class="grid grid-cols-5 gap-4 mb-6">
-                            <!-- 10 quadrados de carimbo -->
-                            <div id="stamp-1" onclick="toggleStamp(1)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-2" onclick="toggleStamp(2)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-3" onclick="toggleStamp(3)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-4" onclick="toggleStamp(4)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-5" onclick="toggleStamp(5)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-6" onclick="toggleStamp(6)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-7" onclick="toggleStamp(7)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-8" onclick="toggleStamp(8)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-9" onclick="toggleStamp(9)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
-                            <div id="stamp-10" onclick="toggleStamp(10)" class="stamp-square aspect-square bg-white rounded-xl border-2 border-nuca-green/30 cursor-pointer hover:border-nuca-green transition-all flex items-center justify-center text-4xl">○</div>
+                    <div class="loyalty-card-container">
+                        <!-- Header -->
+                        <div class="loyalty-card-header">
+                            <h3 class="loyalty-card-logo">NUCA</h3>
+                            <p class="loyalty-card-subtitle">Cartão de Fidelidade</p>
+                            <div class="loyalty-card-divider"></div>
                         </div>
 
-                        <!-- Informações do cartão -->
-                        <div class="flex justify-between items-center bg-nuca-green/5 rounded-xl p-4">
-                            <div>
-                                <p class="text-sm text-nuca-green/60">Total de Carimbos</p>
-                                <p class="text-2xl font-bold text-nuca-green" id="total-stamps">0/10</p>
+                        <!-- Mensagem de Recompensa -->
+                        <div id="reward-message" class="reward-message">
+                            <h4>Acumule 10 carimbos</h4>
+                            <p>E ganhe <strong>25% de desconto</strong> na próxima compra!</p>
+                        </div>
+
+                        <!-- Barra de Progresso -->
+                        <div class="progress-bar-container">
+                            <div id="progress-bar" class="progress-bar-fill" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Grid de Carimbos -->
+                        <div class="stamps-grid" id="stamps-container">
+                            <!-- Gerado via JavaScript -->
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="loyalty-stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="total-stamps">0</div>
+                                <div class="stat-label">Carimbos</div>
                             </div>
-                            <div>
-                                <p class="text-sm text-nuca-green/60">Cartões Completos</p>
-                                <p class="text-2xl font-bold text-nuca-green" id="completed-cards">0</p>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="completed-cards">0</div>
+                                <div class="stat-label">Cartões Completos</div>
+                            </div>
+                            <div class="stat-divider"></div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="remaining-stamps">10</div>
+                                <div class="stat-label">Faltam</div>
                             </div>
                         </div>
 
                         <!-- Ações -->
-                        <div class="flex gap-3 mt-6">
-                            <button onclick="saveLoyaltyCard()" class="flex-1 bg-nuca-green text-nuca-beige py-3 rounded-xl font-bold hover:bg-nuca-dark flex items-center justify-center gap-2">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                        <div class="loyalty-actions" id="loyalty-actions">
+                            <button onclick="saveLoyaltyCard()" class="btn-save-stamps">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
                                 Guardar Carimbos
                             </button>
-                            <button onclick="clearAllStamps()" class="px-6 py-3 border border-red-300 text-red-600 rounded-xl font-bold hover:bg-red-50 flex items-center gap-2">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
-                                Limpar Tudo
+                            <button onclick="clearAllStamps()" class="btn-clear-stamps">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    <line x1="10" y1="11" x2="10" y2="17"/>
+                                    <line x1="14" y1="11" x2="14" y2="17"/>
+                                </svg>
+                                Limpar
                             </button>
                         </div>
 
-                        <!-- Histórico de Recompensas -->
-                        <div class="mt-8 pt-6 border-t">
-                            <h4 class="font-bold text-nuca-green mb-4">Recompensas Resgatadas</h4>
-                            <div id="rewards-history" class="space-y-2">
-                                <p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>
-                            </div>
+                        <!-- Botão de Resgatar (aparece quando completo) -->
+                        <div id="redeem-section" class="hidden mt-4">
+                            <button onclick="openRedeemModal()" class="btn-redeem w-full">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 12 20 22 4 22 4 12"/>
+                                    <rect x="2" y="7" width="20" height="5"/>
+                                    <line x1="12" y1="22" x2="12" y2="7"/>
+                                    <path d="M12 7V3 7H7L12 2 17 7h-5z"/>
+                                </svg>
+                                Resgatar Recompensa: 25% de Desconto!
+                            </button>
+                            <p class="text-center text-sm text-nuca-green/60 mt-2">Válido para a próxima compra</p>
+                        </div>
+                    </div>
+
+                    <!-- Histórico de Recompensas -->
+                    <div class="mt-8">
+                        <h4 class="font-display text-lg font-bold text-nuca-green mb-4">Recompensas Resgatadas</h4>
+                        <div id="rewards-history" class="space-y-3">
+                            <p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>
                         </div>
                     </div>
                 </div>
@@ -892,6 +1417,75 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Resgatar Recompensa -->
+    <div id="redeem-modal" class="hidden fixed inset-0 z-[3000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="redeem-modal relative">
+            <button onclick="closeRedeemModal()" class="absolute top-4 right-4 p-2 hover:bg-nuca-green/10 rounded-full">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-nuca-green rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D8C6A5" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3 class="font-display text-2xl font-bold text-nuca-green mb-2">Parabéns!</h3>
+                <p class="text-nuca-green/70">Cartão completo. Escolha como usar seus 10 carimbos:</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="redeem-option selected" onclick="selectRedeemOption('discount')" id="option-discount">
+                    <div class="redeem-option-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <div class="redeem-option-content">
+                        <h4>25% de Desconto</h4>
+                        <p>Na próxima compra. Válido por 30 dias.</p>
+                    </div>
+                </div>
+
+                <div class="redeem-option" onclick="selectRedeemOption('product')" id="option-product">
+                    <div class="redeem-option-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
+                    </div>
+                    <div class="redeem-option-content">
+                        <h4>Produto Gratuito</h4>
+                        <p>T-shirt ou acessório até €25 de valor.</p>
+                    </div>
+                </div>
+
+                <div class="redeem-option" onclick="selectRedeemOption('shipping')" id="option-shipping">
+                    <div class="redeem-option-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="3" width="15" height="13"/>
+                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                            <circle cx="5.5" cy="18.5" r="2.5"/>
+                            <circle cx="18.5" cy="18.5" r="2.5"/>
+                        </svg>
+                    </div>
+                    <div class="redeem-option-content">
+                        <h4>Portes Grátis (3x)</h4>
+                        <p>Envio gratuito nas próximas 3 compras.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-nuca-green/10">
+                <button onclick="confirmRedeem()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-xl font-bold hover:bg-nuca-dark transition-colors">
+                    Confirmar Resgate
+                </button>
             </div>
         </div>
     </div>
@@ -923,7 +1517,7 @@
                         <!-- Gerado via JS -->
                     </div>
 
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center mb-4">
                         <div>
                             <p class="text-xs text-nuca-green/60">Pontos acumulados</p>
                             <p class="text-2xl font-bold text-nuca-green" id="result-points">0/10</p>
@@ -932,6 +1526,10 @@
                             <p class="text-xs text-nuca-green/60">Próxima recompensa</p>
                             <p class="text-sm font-medium text-nuca-green" id="next-reward">Faltam 10 pontos</p>
                         </div>
+                    </div>
+
+                    <div id="result-reward-info" class="hidden bg-white rounded-xl p-3 border border-nuca-green/20">
+                        <p class="text-xs text-center text-nuca-green/70">🎉 Recompensa disponível: <strong>25% de desconto</strong></p>
                     </div>
                 </div>
 
@@ -942,7 +1540,7 @@
 
     <!-- Order Detail Modal -->
     <div id="order-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeOrderModal()"></div>
+        <div class="modal-overlay absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeOrderModal()"></div>
         <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
             <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
                 <div>
@@ -1019,6 +1617,7 @@
         let currentCustomerId = null;
         let currentLoyaltyCard = null;
         let stamps = new Array(10).fill(false);
+        let selectedRedeemOption = 'discount';
 
         // ============================================
         // INIT
@@ -1294,10 +1893,8 @@
         function getActionButtons(order) {
             let buttons = '';
             
-            // Botão de imprimir recibo (disponível para todos os status)
             buttons += `<button onclick="event.stopPropagation(); printReceipt('${order.id}')" class="btn-action px-3 py-1 bg-nuca-green text-white rounded-lg text-xs font-bold hover:bg-nuca-dark">Imprimir</button>`;
             
-            // Botões de ação baseados no status
             if (order.status === 'pending_payment') {
                 buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
                            <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
@@ -1350,9 +1947,6 @@
             }
         }
 
-        // ============================================
-        // FUNÇÃO DE IMPRESSÃO DE RECIBO (COM DESCONTO)
-        // ============================================
         function printReceipt(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
@@ -1376,11 +1970,9 @@
                 minute: '2-digit'
             });
         
-            // Calcular valores
             const subtotal = order.subtotal || 0;
             const discount = order.discount || 0;
             
-            // Verificar portes
             let shipping = 0;
             if (order.shipping_cost !== undefined && order.shipping_cost !== null) {
                 shipping = order.shipping_cost;
@@ -1462,7 +2054,6 @@
         
             receiptDiv.classList.remove('hidden');
             
-            // Criar uma nova janela para impressão
             const printWindow = window.open('', '_blank');
             if (printWindow) {
                 printWindow.document.write(`
@@ -1470,102 +2061,45 @@
                         <head>
                             <title>Recibo NUCA - ${order.order_number}</title>
                             <style>
-                                * {
-                                    margin: 0;
-                                    padding: 0;
-                                    box-sizing: border-box;
-                                }
-                                
-                                @page {
-                                    margin: 0;
-                                    size: auto;
-                                }
-                                
+                                * { margin: 0; padding: 0; box-sizing: border-box; }
+                                @page { margin: 0; size: auto; }
                                 body {
-                                    margin: 0;
-                                    padding: 0;
-                                    min-height: 100vh;
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                    font-family: 'Space Grotesk', sans-serif;
-                                    background: #f5f5f5;
+                                    margin: 0; padding: 0; min-height: 100vh;
+                                    display: flex; justify-content: center; align-items: center;
+                                    font-family: 'Space Grotesk', sans-serif; background: #f5f5f5;
                                 }
-                                
                                 .receipt-container {
-                                    width: 400px;
-                                    max-width: 90%;
-                                    background: white;
-                                    padding: 30px 24px;
-                                    border-radius: 16px;
-                                    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-                                    margin: 20px;
+                                    width: 400px; max-width: 90%; background: white;
+                                    padding: 30px 24px; border-radius: 16px;
+                                    box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin: 20px;
                                 }
-                                
                                 .receipt-header {
                                     text-align: center;
                                     border-bottom: 2px dashed #556B4F;
-                                    padding-bottom: 16px;
-                                    margin-bottom: 16px;
+                                    padding-bottom: 16px; margin-bottom: 16px;
                                 }
-                                
                                 .receipt-title {
-                                    font-family: 'Syne', sans-serif;
-                                    font-size: 28px;
-                                    font-weight: 800;
-                                    color: #556B4F;
-                                    letter-spacing: -0.02em;
+                                    font-family: 'Syne', sans-serif; font-size: 28px;
+                                    font-weight: 800; color: #556B4F; letter-spacing: -0.02em;
                                 }
-                                
-                                .receipt-details {
-                                    margin-bottom: 20px;
-                                    font-size: 14px;
-                                    line-height: 1.6;
-                                }
-                                
-                                .receipt-details p {
-                                    margin: 6px 0;
-                                }
-                                
-                                .receipt-items {
-                                    margin-bottom: 20px;
-                                }
-                                
-                                .receipt-items h3 {
-                                    font-size: 16px;
-                                    margin-bottom: 12px;
-                                    color: #556B4F;
-                                }
-                                
+                                .receipt-details { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+                                .receipt-details p { margin: 6px 0; }
+                                .receipt-items { margin-bottom: 20px; }
+                                .receipt-items h3 { font-size: 16px; margin-bottom: 12px; color: #556B4F; }
                                 .receipt-item {
-                                    display: flex;
-                                    justify-content: space-between;
-                                    padding: 8px 0;
-                                    border-bottom: 1px solid #eee;
-                                    font-size: 14px;
+                                    display: flex; justify-content: space-between;
+                                    padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px;
                                 }
-                                
-                                .receipt-total {
-                                    font-size: 16px;
-                                }
-                                
-                                .receipt-total > div {
-                                    padding: 6px 0;
-                                }
-                                
+                                .receipt-total { font-size: 16px; }
+                                .receipt-total > div { padding: 6px 0; }
                                 .receipt-footer {
-                                    text-align: center;
-                                    margin-top: 30px;
-                                    padding-top: 16px;
-                                    border-top: 1px solid #eee;
-                                    font-size: 12px;
-                                    color: #666;
+                                    text-align: center; margin-top: 30px;
+                                    padding-top: 16px; border-top: 1px solid #eee;
+                                    font-size: 12px; color: #666;
                                 }
                             </style>
                         </head>
-                        <body>
-                            ${receiptDiv.innerHTML}
-                        </body>
+                        <body>${receiptDiv.innerHTML}</body>
                     </html>
                 `);
                 printWindow.document.close();
@@ -1602,7 +2136,6 @@
                 </div>
             `).join('');
 
-            // Valores
             const subtotal = order.subtotal || 0;
             const discount = order.discount || 0;
             const shipping = order.shipping_cost || 0;
@@ -1724,7 +2257,8 @@
                             id,
                             current_stamps,
                             completed_cards,
-                            total_points
+                            total_points,
+                            status
                         )
                     `)
                     .order('created_at', { ascending: false });
@@ -1747,7 +2281,19 @@
             }
 
             tbody.innerHTML = customers.map(customer => {
-                const loyaltyCard = customer.loyalty_cards?.[0] || { current_stamps: 0, completed_cards: 0 };
+                const loyaltyCard = customer.loyalty_cards?.[0] || { current_stamps: 0, completed_cards: 0, status: 'active' };
+                const stamps = loyaltyCard.current_stamps || 0;
+                
+                // Gerar mini carimbos
+                let stampsHtml = '';
+                for (let i = 0; i < 10; i++) {
+                    stampsHtml += `<div class="loyalty-mini-stamp ${i < stamps ? 'filled' : ''}"></div>`;
+                }
+                
+                // Verificar se tem recompensa pendente
+                const hasReward = stamps >= 10 || loyaltyCard.status === 'reward_pending';
+                const rewardBadge = hasReward ? 
+                    '<span class="ml-2 text-xs bg-nuca-green text-nuca-beige px-2 py-1 rounded-full">🎁</span>' : '';
                 
                 return `<tr class="order-row cursor-pointer" onclick="openCustomerModal('${customer.id}')">
                     <td class="px-6 py-4">
@@ -1763,20 +2309,19 @@
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-xl">${loyaltyCard.current_stamps || 0}</span>
-                            <span class="text-xs text-nuca-green/60">/10</span>
-                            <span class="ml-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">${loyaltyCard.completed_cards || 0} cartões</span>
+                        <div class="loyalty-card-compact" onclick="event.stopPropagation(); openLoyaltyCard('${customer.id}')">
+                            <div class="loyalty-mini-stamps">${stampsHtml}</div>
+                            <span class="loyalty-mini-text">${stamps}/10</span>
+                            ${loyaltyCard.completed_cards > 0 ? `<span style="margin-left: 4px; font-size: 11px; color: #556B4F; opacity: 0.7;">(${loyaltyCard.completed_cards}✓)</span>` : ''}
+                            ${rewardBadge}
                         </div>
                     </td>
                     <td class="px-6 py-4">${customer.total_orders || 0} compras</td>
                     <td class="px-6 py-4 font-bold">€${(customer.total_purchases || 0).toFixed(2)}</td>
                     <td class="px-6 py-4">
                         <div class="flex justify-center gap-2">
-                            <button onclick="event.stopPropagation(); openLoyaltyCard('${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Cartão de Pontos">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/>
-                                </svg>
+                            <button onclick="event.stopPropagation(); openCustomerModal('${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20" title="Editar">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                             </button>
                         </div>
                     </td>
@@ -1789,7 +2334,6 @@
             document.getElementById('customer-modal').classList.remove('hidden');
             
             if (customerId) {
-                // Carregar dados do cliente
                 const { data: customer, error } = await supabaseClient
                     .from('customers')
                     .select('*')
@@ -1810,16 +2354,17 @@
                     document.getElementById('customer-notes').value = customer.notes || '';
                 }
 
-                // Carregar cartão de pontos
                 await loadLoyaltyCard(customerId);
                 await loadCustomerOrders(customerId);
+                await loadRewardsHistory(customerId);
             } else {
-                // Novo cliente
                 document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
                 document.getElementById('customer-form').reset();
                 document.getElementById('customer-id').value = '';
                 resetLoyaltyDisplay();
             }
+            
+            switchCustomerTab('info');
         }
 
         function closeCustomerModal() {
@@ -1837,8 +2382,27 @@
             document.getElementById('customer-history-tab').classList.toggle('hidden', tab !== 'history');
         }
 
+        // ============================================
+        // LOYALTY CARD SYSTEM
+        // ============================================
+        function initStampsGrid() {
+            const container = document.getElementById('stamps-container');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= 10; i++) {
+                const stamp = document.createElement('div');
+                stamp.className = 'stamp-square';
+                stamp.setAttribute('data-number', i);
+                stamp.id = `stamp-${i}`;
+                stamp.onclick = () => toggleStamp(i);
+                container.appendChild(stamp);
+            }
+        }
+
         async function loadLoyaltyCard(customerId) {
             try {
+                initStampsGrid();
+                
                 const { data, error } = await supabaseClient
                     .from('loyalty_cards')
                     .select('*')
@@ -1849,7 +2413,7 @@
 
                 if (data) {
                     currentLoyaltyCard = data;
-                    // Carregar carimbos existentes
+                    
                     const { data: stampsData } = await supabaseClient
                         .from('loyalty_stamps')
                         .select('stamp_position')
@@ -1862,7 +2426,6 @@
                         });
                     }
                 } else {
-                    // Criar novo cartão
                     const { data: newCard, error: createError } = await supabaseClient
                         .from('loyalty_cards')
                         .insert([{
@@ -1870,7 +2433,8 @@
                             card_number: `NUCA-${Date.now()}`,
                             current_stamps: 0,
                             max_stamps: 10,
-                            completed_cards: 0
+                            completed_cards: 0,
+                            status: 'active'
                         }])
                         .select()
                         .single();
@@ -1888,32 +2452,46 @@
         }
 
         function updateLoyaltyDisplay() {
-            // Atualizar quadrados
+            const filledCount = stamps.filter(s => s).length;
+            
             for (let i = 1; i <= 10; i++) {
-                const stampDiv = document.getElementById(`stamp-${i}`);
+                const stampEl = document.getElementById(`stamp-${i}`);
                 if (stamps[i-1]) {
-                    stampDiv.innerHTML = '🔴';
-                    stampDiv.classList.add('bg-nuca-green/10');
+                    stampEl.classList.add('filled');
                 } else {
-                    stampDiv.innerHTML = '○';
-                    stampDiv.classList.remove('bg-nuca-green/10');
+                    stampEl.classList.remove('filled');
                 }
             }
-
-            const filled = stamps.filter(s => s).length;
-            document.getElementById('total-stamps').textContent = `${filled}/10`;
+            
+            const progressBar = document.getElementById('progress-bar');
+            const percentage = (filledCount / 10) * 100;
+            progressBar.style.width = `${percentage}%`;
+            
+            document.getElementById('total-stamps').textContent = filledCount;
             document.getElementById('completed-cards').textContent = currentLoyaltyCard?.completed_cards || 0;
-        }
-
-        function resetLoyaltyDisplay() {
-            stamps = new Array(10).fill(false);
-            for (let i = 1; i <= 10; i++) {
-                const stampDiv = document.getElementById(`stamp-${i}`);
-                stampDiv.innerHTML = '○';
-                stampDiv.classList.remove('bg-nuca-green/10');
+            document.getElementById('remaining-stamps').textContent = Math.max(0, 10 - filledCount);
+            
+            const rewardMsg = document.getElementById('reward-message');
+            const redeemSection = document.getElementById('redeem-section');
+            const loyaltyActions = document.getElementById('loyalty-actions');
+            
+            if (filledCount === 10) {
+                rewardMsg.classList.add('complete');
+                rewardMsg.innerHTML = `
+                    <h4>🎉 Parabéns! Cartão Completo!</h4>
+                    <p>Cliente tem direito a <strong>25% de desconto</strong> na próxima compra!</p>
+                `;
+                redeemSection.classList.remove('hidden');
+                loyaltyActions.classList.add('hidden');
+            } else {
+                rewardMsg.classList.remove('complete');
+                rewardMsg.innerHTML = `
+                    <h4>Acumule 10 carimbos</h4>
+                    <p>E ganhe <strong>25% de desconto</strong> na próxima compra! (${filledCount}/10)</p>
+                `;
+                redeemSection.classList.add('hidden');
+                loyaltyActions.classList.remove('hidden');
             }
-            document.getElementById('total-stamps').textContent = '0/10';
-            document.getElementById('completed-cards').textContent = '0';
         }
 
         function toggleStamp(position) {
@@ -1923,13 +2501,21 @@
             }
             
             stamps[position - 1] = !stamps[position - 1];
-            
-            const filled = stamps.filter(s => s).length;
-            if (filled === 10) {
-                showToast('Parabéns! Cartão completo! Cliente ganhou uma recompensa!', 'success');
-            }
-            
             updateLoyaltyDisplay();
+            
+            const filledCount = stamps.filter(s => s).length;
+            if (filledCount === 10) {
+                showToast('Cartão completo! Cliente ganhou 25% de desconto!', 'success');
+            }
+        }
+
+        function clearAllStamps() {
+            if (!currentCustomerId) return;
+            
+            if (confirm('Tem a certeza que quer limpar todos os carimbos?')) {
+                stamps = new Array(10).fill(false);
+                updateLoyaltyDisplay();
+            }
         }
 
         async function saveLoyaltyCard() {
@@ -1939,36 +2525,23 @@
                 const filledStamps = stamps.reduce((acc, val, idx) => val ? [...acc, idx + 1] : acc, []);
                 
                 if (filledStamps.length === 10) {
-                    // Registrar recompensa
-                    await supabaseClient
-                        .from('loyalty_rewards')
-                        .insert([{
-                            customer_id: currentCustomerId,
-                            card_id: currentLoyaltyCard.id,
-                            reward_type: 'free_product',
-                            reward_description: 'Produto gratuito - Cartão completo'
-                        }]);
-
-                    // Incrementar contador de cartões completos
+                    // Atualizar status para reward_pending
                     await supabaseClient
                         .from('loyalty_cards')
                         .update({
-                            completed_cards: (currentLoyaltyCard.completed_cards || 0) + 1,
-                            current_stamps: 0
+                            status: 'reward_pending',
+                            current_stamps: 10
                         })
                         .eq('id', currentLoyaltyCard.id);
-
-                    stamps = new Array(10).fill(false);
                 } else {
-                    // Atualizar stamps
                     await supabaseClient
                         .from('loyalty_cards')
                         .update({
-                            current_stamps: filledStamps.length
+                            current_stamps: filledStamps.length,
+                            status: 'active'
                         })
                         .eq('id', currentLoyaltyCard.id);
 
-                    // Remover stamps antigos e adicionar novos
                     await supabaseClient
                         .from('loyalty_stamps')
                         .delete()
@@ -1997,53 +2570,177 @@
             }
         }
 
-        function clearAllStamps() {
-            if (!currentCustomerId) return;
-            
-            if (confirm('Tem a certeza que quer limpar todos os carimbos?')) {
+        // ============================================
+        // REDEEM REWARD SYSTEM
+        // ============================================
+        function openRedeemModal() {
+            document.getElementById('redeem-modal').classList.remove('hidden');
+            selectedRedeemOption = 'discount';
+            updateRedeemOptions();
+        }
+
+        function closeRedeemModal() {
+            document.getElementById('redeem-modal').classList.add('hidden');
+        }
+
+        function selectRedeemOption(option) {
+            selectedRedeemOption = option;
+            updateRedeemOptions();
+        }
+
+        function updateRedeemOptions() {
+            document.querySelectorAll('.redeem-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`option-${selectedRedeemOption}`).classList.add('selected');
+        }
+
+        async function confirmRedeem() {
+            if (!currentCustomerId || !currentLoyaltyCard) return;
+
+            try {
+                const rewardDescriptions = {
+                    'discount': '25% de desconto na próxima compra',
+                    'product': 'Produto gratuito (até €25)',
+                    'shipping': 'Portes grátis nas próximas 3 compras'
+                };
+
+                // Criar recompensa
+                const { data: reward, error: rewardError } = await supabaseClient
+                    .from('loyalty_rewards')
+                    .insert([{
+                        customer_id: currentCustomerId,
+                        card_id: currentLoyaltyCard.id,
+                        reward_type: selectedRedeemOption,
+                        reward_description: rewardDescriptions[selectedRedeemOption],
+                        discount_percentage: selectedRedeemOption === 'discount' ? 25 : null,
+                        status: 'active',
+                        valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 dias
+                    }])
+                    .select()
+                    .single();
+
+                if (rewardError) throw rewardError;
+
+                // Resetar cartão
+                await supabaseClient
+                    .from('loyalty_cards')
+                    .update({
+                        current_stamps: 0,
+                        completed_cards: (currentLoyaltyCard.completed_cards || 0) + 1,
+                        status: 'active'
+                    })
+                    .eq('id', currentLoyaltyCard.id);
+
+                // Limpar stamps
+                await supabaseClient
+                    .from('loyalty_stamps')
+                    .delete()
+                    .eq('card_id', currentLoyaltyCard.id);
+
                 stamps = new Array(10).fill(false);
-                updateLoyaltyDisplay();
+                
+                showToast(`Recompensa resgatada: ${rewardDescriptions[selectedRedeemOption]}!`, 'success');
+                closeRedeemModal();
+                await loadLoyaltyCard(currentCustomerId);
+                await loadRewardsHistory(currentCustomerId);
+                loadCustomers();
+                
+            } catch (error) {
+                console.error('Erro ao resgatar:', error);
+                showToast('Erro ao resgatar recompensa', 'error');
             }
+        }
+
+        async function loadRewardsHistory(customerId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('loyalty_rewards')
+                    .select('*')
+                    .eq('customer_id', customerId)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const historyDiv = document.getElementById('rewards-history');
+                
+                if (!data || data.length === 0) {
+                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-4">Nenhuma recompensa resgatada</p>';
+                    return;
+                }
+
+                historyDiv.innerHTML = data.map(reward => {
+                    const isActive = reward.status === 'active';
+                    const isUsed = reward.status === 'used';
+                    const statusClass = isActive ? 'bg-green-100 text-green-700' : (isUsed ? 'bg-gray-100 text-gray-600' : 'bg-red-100 text-red-600');
+                    const statusText = isActive ? 'Ativo' : (isUsed ? 'Utilizado' : 'Expirado');
+                    
+                    return `
+                        <div class="bg-white/50 rounded-xl p-4 border-l-4 ${isActive ? 'border-nuca-green' : 'border-gray-300'}">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-bold text-nuca-green">${reward.reward_description}</p>
+                                    <p class="text-xs text-nuca-green/60 mt-1">
+                                        Resgatado em ${new Date(reward.created_at).toLocaleDateString('pt-PT')}
+                                        ${reward.discount_percentage ? ` • ${reward.discount_percentage}% desconto` : ''}
+                                    </p>
+                                    ${isActive && reward.valid_until ? `
+                                        <p class="text-xs text-orange-600 mt-1">
+                                            Válido até ${new Date(reward.valid_until).toLocaleDateString('pt-PT')}
+                                        </p>
+                                    ` : ''}
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full ${statusClass} font-bold">${statusText}</span>
+                            </div>
+                            ${isActive ? `
+                                <div class="mt-3 pt-3 border-t border-nuca-green/10 flex gap-2">
+                                    <button onclick="copyRewardCode('${reward.id}')" class="text-xs bg-nuca-green/10 text-nuca-green px-3 py-1 rounded-lg hover:bg-nuca-green/20">
+                                        Copiar Código
+                                    </button>
+                                    <button onclick="markRewardAsUsed('${reward.id}')" class="text-xs bg-nuca-green text-nuca-beige px-3 py-1 rounded-lg hover:bg-nuca-dark">
+                                        Marcar como Usado
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Erro ao carregar recompensas:', error);
+            }
+        }
+
+        async function markRewardAsUsed(rewardId) {
+            try {
+                const { error } = await supabaseClient
+                    .from('loyalty_rewards')
+                    .update({ status: 'used', used_at: new Date().toISOString() })
+                    .eq('id', rewardId);
+
+                if (error) throw error;
+                
+                showToast('Recompensa marcada como utilizada', 'success');
+                await loadRewardsHistory(currentCustomerId);
+            } catch (error) {
+                console.error('Erro:', error);
+                showToast('Erro ao atualizar recompensa', 'error');
+            }
+        }
+
+        function copyRewardCode(rewardId) {
+            const code = `NUCA-REWARD-${rewardId.slice(0, 8).toUpperCase()}`;
+            navigator.clipboard.writeText(code).then(() => {
+                showToast(`Código copiado: ${code}`, 'success');
+            });
         }
 
         function openLoyaltyCard(customerId) {
             openCustomerModal(customerId);
-            switchCustomerTab('loyalty');
+            setTimeout(() => switchCustomerTab('loyalty'), 100);
         }
 
-        async function loadCustomerOrders(customerId) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .eq('customer_id', customerId)
-                    .order('created_at', { ascending: false })
-                    .limit(5);
-
-                if (error) throw error;
-
-                const historyDiv = document.getElementById('customer-orders-history');
-                
-                if (!data || data.length === 0) {
-                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>';
-                    return;
-                }
-
-                historyDiv.innerHTML = data.map(order => `
-                    <div class="bg-white/50 rounded-xl p-4 flex justify-between items-center">
-                        <div>
-                            <p class="font-medium">${order.order_number}</p>
-                            <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">€${(order.total || 0).toFixed(2)}</p>
-                            <span class="text-xs px-2 py-1 rounded-full ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-            }
+        function resetLoyaltyDisplay() {
+            stamps = new Array(10).fill(false);
+            initStampsGrid();
+            updateLoyaltyDisplay();
         }
 
         // ============================================
@@ -2051,12 +2748,14 @@
         // ============================================
         function openPointsCheck() {
             document.getElementById('customer-points-check').classList.remove('hidden');
+            document.getElementById('customer-points-check').classList.add('flex');
             document.getElementById('points-result').classList.add('hidden');
             document.getElementById('check-phone').value = '';
         }
 
         function closePointsCheck() {
             document.getElementById('customer-points-check').classList.add('hidden');
+            document.getElementById('customer-points-check').classList.remove('flex');
         }
 
         async function checkCustomerPoints() {
@@ -2075,7 +2774,8 @@
                         phone,
                         loyalty_cards (
                             current_stamps,
-                            completed_cards
+                            completed_cards,
+                            status
                         )
                     `)
                     .eq('phone', phone)
@@ -2089,11 +2789,12 @@
                 }
 
                 const stamps = customer.loyalty_cards?.[0]?.current_stamps || 0;
+                const hasReward = stamps >= 10 || customer.loyalty_cards?.[0]?.status === 'reward_pending';
                 
                 let stampsHtml = '';
                 for (let i = 0; i < 10; i++) {
                     if (i < stamps) {
-                        stampsHtml += '<div class="aspect-square bg-nuca-green/10 rounded-lg flex items-center justify-center text-2xl">🔴</div>';
+                        stampsHtml += '<div class="aspect-square bg-nuca-green/10 rounded-lg flex items-center justify-center text-2xl">✓</div>';
                     } else {
                         stampsHtml += '<div class="aspect-square bg-white border-2 border-nuca-green/30 rounded-lg flex items-center justify-center text-2xl text-nuca-green/30">○</div>';
                     }
@@ -2101,12 +2802,21 @@
 
                 document.getElementById('result-stamps').innerHTML = stampsHtml;
                 document.getElementById('result-name').textContent = customer.name;
-                document.getElementById('result-points').textContent = `${stamps}/10`;
+                                document.getElementById('result-points').textContent = `${stamps}/10`;
                 
                 const remaining = 10 - stamps;
-                document.getElementById('next-reward').textContent = remaining === 0 ? 
-                    'Parabéns! Já pode resgatar!' : 
-                    `Faltam ${remaining} ${remaining === 1 ? 'ponto' : 'pontos'}`;
+                const nextRewardEl = document.getElementById('next-reward');
+                const rewardInfoEl = document.getElementById('result-reward-info');
+                
+                if (hasReward) {
+                    nextRewardEl.textContent = 'Recompensa disponível!';
+                    nextRewardEl.classList.add('text-green-600', 'font-bold');
+                    rewardInfoEl.classList.remove('hidden');
+                } else {
+                    nextRewardEl.textContent = `Faltam ${remaining} ${remaining === 1 ? 'ponto' : 'pontos'}`;
+                    nextRewardEl.classList.remove('text-green-600', 'font-bold');
+                    rewardInfoEl.classList.add('hidden');
+                }
                 
                 document.getElementById('points-result').classList.remove('hidden');
 
@@ -2164,7 +2874,8 @@
                             card_number: `NUCA-${Date.now()}`,
                             current_stamps: 0,
                             max_stamps: 10,
-                            completed_cards: 0
+                            completed_cards: 0,
+                            status: 'active'
                         }]);
 
                     showToast('Cliente criado com sucesso!', 'success');
@@ -2177,6 +2888,41 @@
                 showToast('Erro ao guardar cliente', 'error');
             }
         });
+
+        async function loadCustomerOrders(customerId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_id', customerId)
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                const historyDiv = document.getElementById('customer-orders-history');
+                
+                if (!data || data.length === 0) {
+                    historyDiv.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Nenhuma compra encontrada</p>';
+                    return;
+                }
+
+                historyDiv.innerHTML = data.map(order => `
+                    <div class="bg-white/50 rounded-xl p-4 flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">${order.order_number}</p>
+                            <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold">€${(order.total || 0).toFixed(2)}</p>
+                            <span class="text-xs px-2 py-1 rounded-full ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
 
         // ============================================
         // CHARTS
@@ -2192,14 +2938,56 @@
 
             salesChart = new Chart(salesCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Vendas (€)', data: [], borderColor: '#556B4F', backgroundColor: 'rgba(85,107,79,0.1)', tension: 0.4, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                data: { 
+                    labels: [], 
+                    datasets: [{ 
+                        label: 'Vendas (€)', 
+                        data: [], 
+                        borderColor: '#556B4F', 
+                        backgroundColor: 'rgba(85,107,79,0.1)', 
+                        tension: 0.4, 
+                        fill: true 
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(85, 107, 79, 0.1)' },
+                            ticks: { color: '#556B4F' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#556B4F' }
+                        }
+                    }
+                }
             });
 
             statusChart = new Chart(statusCtx, {
                 type: 'doughnut',
-                data: { labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], datasets: [{ data: [0,0,0,0,0], backgroundColor: ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444'] }] },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '60%' }
+                data: { 
+                    labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], 
+                    datasets: [{ 
+                        data: [0,0,0,0,0], 
+                        backgroundColor: ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444'],
+                        borderWidth: 0
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#556B4F', font: { family: 'Space Grotesk' } }
+                        }
+                    }
+                }
             });
 
             updateChartsData();
@@ -2217,7 +3005,11 @@
                 date.setDate(date.getDate() - i);
                 labels.push(date.toLocaleDateString('pt-PT', { weekday: 'short' }));
                 const dayTotal = allOrders
-                    .filter(o => new Date(o.created_at).toDateString() === date.toDateString() && ['paid','shipped','delivered'].includes(o.status))
+                    .filter(o => {
+                        const orderDate = new Date(o.created_at);
+                        return orderDate.toDateString() === date.toDateString() && 
+                               ['paid','shipped','delivered'].includes(o.status);
+                    })
                     .reduce((sum, o) => sum + (o.total || 0), 0);
                 data.push(dayTotal);
             }
@@ -2227,7 +3019,9 @@
             salesChart.update();
 
             const statusCounts = { pending_payment:0, paid:0, shipped:0, delivered:0, cancelled:0 };
-            allOrders.forEach(o => { if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; });
+            allOrders.forEach(o => { 
+                if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; 
+            });
             statusChart.data.datasets[0].data = [
                 statusCounts.pending_payment, statusCounts.paid, statusCounts.shipped, 
                 statusCounts.delivered, statusCounts.cancelled
@@ -2243,26 +3037,35 @@
         // NOTIFICATIONS
         // ============================================
         function toggleNotifications() {
-            document.getElementById('notifications-panel').classList.toggle('hidden');
+            const panel = document.getElementById('notifications-panel');
+            panel.classList.toggle('hidden');
         }
 
         function addNotification(message, type) {
-            const notification = { id: Date.now(), message, type, time: new Date(), read: false };
+            const notification = { 
+                id: Date.now(), 
+                message, 
+                type, 
+                time: new Date(), 
+                read: false 
+            };
             notifications.unshift(notification);
             updateNotificationsList();
-            document.getElementById('notification-badge').classList.remove('hidden');
-            document.getElementById('notification-badge').textContent = notifications.filter(n => !n.read).length;
+            
+            const badge = document.getElementById('notification-badge');
+            badge.classList.remove('hidden');
+            badge.textContent = notifications.filter(n => !n.read).length;
         }
 
         function updateNotificationsList() {
             const list = document.getElementById('notifications-list');
             if (notifications.length === 0) {
-                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações</p>';
+                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações novas</p>';
                 return;
             }
             list.innerHTML = notifications.map(n => `
-                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} cursor-pointer hover:bg-nuca-green/10" onclick="markAsRead(${n.id})">
-                    <p class="text-sm font-medium">${n.message}</p>
+                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} cursor-pointer hover:bg-nuca-green/10 transition-colors" onclick="markAsRead(${n.id})">
+                    <p class="text-sm font-medium text-nuca-green">${n.message}</p>
                     <p class="text-xs text-nuca-green/60 mt-1">${formatTime(n.time)}</p>
                 </div>
             `).join('');
@@ -2275,8 +3078,11 @@
                 updateNotificationsList();
                 const unreadCount = notifications.filter(n => !n.read).length;
                 const badge = document.getElementById('notification-badge');
-                if (unreadCount === 0) badge.classList.add('hidden');
-                else badge.textContent = unreadCount;
+                if (unreadCount === 0) {
+                    badge.classList.add('hidden');
+                } else {
+                    badge.textContent = unreadCount;
+                }
             }
         }
 
@@ -2302,7 +3108,13 @@
         // ============================================
         function formatDate(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            return date.toLocaleDateString('pt-PT', { 
+                day:'2-digit', 
+                month:'2-digit', 
+                year:'numeric', 
+                hour:'2-digit', 
+                minute:'2-digit' 
+            });
         }
 
         function formatTime(date) {
@@ -2316,14 +3128,36 @@
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-nuca-green' };
-            toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px] animate-fade-in-up`;
-            toast.innerHTML = `<span class="font-medium">${message}</span>`;
+            const colors = { 
+                success: 'bg-green-500', 
+                error: 'bg-red-500', 
+                info: 'bg-nuca-green',
+                warning: 'bg-yellow-500'
+            };
+            const icons = {
+                success: '✓',
+                error: '✕',
+                info: 'ℹ',
+                warning: '⚠'
+            };
+            
+            toast.className = `${colors[type] || colors.info} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px] flex items-center gap-3 animate-fade-in`;
+            toast.innerHTML = `
+                <span class="text-lg">${icons[type] || icons.info}</span>
+                <span class="font-medium">${message}</span>
+            `;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function searchCustomers() {
+            const searchTerm = document.getElementById('search-customers').value.toLowerCase();
+            // Implementar filtro de clientes se necessário
             loadCustomers();
         }
 
@@ -2331,11 +3165,27 @@
             showToast('Exportação em desenvolvimento', 'info');
         }
 
+        // Fechar notificações ao clicar fora
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('#notifications-panel') && !e.target.closest('button[onclick="toggleNotifications()"]')) {
-                document.getElementById('notifications-panel').classList.add('hidden');
+            const panel = document.getElementById('notifications-panel');
+            const btn = document.querySelector('button[onclick="toggleNotifications()"]');
+            if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                panel.classList.add('hidden');
             }
         });
+
+        // Animação de entrada para toasts
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fade-in 0.3s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
