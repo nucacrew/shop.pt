@@ -1070,8 +1070,26 @@
             // Calcular valores
             const subtotal = order.subtotal || 0;
             const discount = order.discount || 0;
-            const shipping = order.shipping_cost || 0;
-            const total = order.total || 0;
+            
+            // Verificar portes - pode estar em campos diferentes
+            let shipping = 0;
+            
+            // Tentar diferentes campos onde os portes podem estar
+            if (order.shipping_cost !== undefined && order.shipping_cost !== null) {
+                shipping = order.shipping_cost;
+            } else if (order.shipping !== undefined && order.shipping !== null) {
+                shipping = order.shipping;
+            } else if (order.delivery_cost !== undefined && order.delivery_cost !== null) {
+                shipping = order.delivery_cost;
+            } else if (order.portes !== undefined && order.portes !== null) {
+                shipping = order.portes;
+            } else {
+                // Calcular portes com base no subtotal (regra de negócio)
+                // Se subtotal < 50, portes = 3.99, senão portes = 0
+                shipping = subtotal < 50 ? 3.99 : 0;
+            }
+            
+            const total = order.total || (subtotal - discount + shipping);
         
             receiptDiv.innerHTML = `
                 <div class="receipt-container">
@@ -1108,19 +1126,24 @@
                         </div>
                         ` : ''}
                         
-                        ${shipping > 0 ? `
-                        <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                        <!-- Portes - SEMPRE VISÍVEIS -->
+                        <div style="display: flex; justify-content: space-between; ${shipping === 0 ? 'color: #10B981;' : ''}">
                             <span>Portes:</span>
-                            <span>€${shipping.toFixed(2)}</span>
+                            ${shipping > 0 ? 
+                                `<span>€${shipping.toFixed(2)}</span>` : 
+                                `<span>Grátis</span>`
+                            }
                         </div>
-                        ` : shipping === 0 ? `
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; color: #10B981;">
-                            <span>Portes:</span>
-                            <span>Grátis</span>
+                        
+                        <!-- Linha de desconto de portes se aplicável (para valores > 50) -->
+                        ${subtotal >= 50 && shipping === 0 ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10B981; font-style: italic;">
+                            <span>Portes Grátis (compra ≥ 50€)</span>
+                            <span>€0.00</span>
                         </div>
                         ` : ''}
                         
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 8px; padding-top: 8px; border-top: 2px solid #556B4F;">
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 12px; padding-top: 12px; border-top: 2px solid #556B4F; font-size: 18px;">
                             <span>TOTAL:</span>
                             <span>€${total.toFixed(2)}</span>
                         </div>
@@ -1136,7 +1159,7 @@
         
             receiptDiv.classList.remove('hidden');
             
-            // Criar uma nova janela para impressão com o recibo perfeitamente centralizado
+            // Criar uma nova janela para impressão
             const printWindow = window.open('', '_blank');
             if (printWindow) {
                 printWindow.document.write(`
@@ -1166,7 +1189,7 @@
                                     justify-content: center;
                                     align-items: center;
                                     font-family: 'Space Grotesk', sans-serif;
-                                    background: white;
+                                    background: #f5f5f5;
                                 }
                                 
                                 /* Container do recibo - centralizado */
@@ -1176,8 +1199,8 @@
                                     background: white;
                                     padding: 30px 24px;
                                     border-radius: 16px;
-                                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                                    margin: 20px auto;
+                                    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+                                    margin: 20px;
                                 }
                                 
                                 /* Cabeçalho */
@@ -1266,7 +1289,7 @@
             
             receiptDiv.classList.add('hidden');
         }
-
+        
         function openOrderDetail(orderId) {
             const order = allOrders.find(o => o.id === orderId);
             if (!order) return;
