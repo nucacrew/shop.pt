@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso - NUCA</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .nuca-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+<base target="_blank">
+</head>
+
+<body class="antialiased overflow-x-hidden">
+    <div class="grain-overlay"></div>
+
+    <!-- Header -->
+    <header class="w-full px-6 lg:px-12 py-6 flex justify-between items-center border-b border-nuca-green/10">
+        <a href="index.html" class="nuca-logo text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
+        <a href="index.html" class="text-sm font-medium text-nuca-green hover:text-nuca-dark transition-colors flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Voltar
+        </a>
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="max-w-3xl mx-auto px-6 py-16">
+        <div class="mb-12">
+            <span class="inline-block px-3 py-1 bg-nuca-green text-nuca-beige rounded-full text-xs font-bold tracking-wider uppercase mb-4">Legal</span>
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-nuca-green mb-4">Termos de Uso</h1>
+            <p class="text-nuca-green/70">Última atualização: Março 2025</p>
+        </div>
+
+        <div class="space-y-12 text-nuca-green/80 leading-relaxed">
+            
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">1. Aceitação dos Termos</h2>
+                <p>Ao acederes e utilizares o site da NUCA, concordas com estes Termos de Uso. Se não concordares com algum ponto, pedimos que não utilizes o nosso site.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">2. A Nossa Loja</h2>
+                <p>A NUCA é uma marca de moda minimalista portuguesa. Somos uma loja 100% online e vendemos produtos exclusivamente através deste website.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">3. Encomendas</h2>
+                <p class="mb-3">Ao fazeres uma encomenda:</p>
+                <ul class="list-disc list-inside space-y-1 ml-4">
+                    <li>Confirmas que as informações fornecidas são verdadeiras</li>
+                    <li>Te comprometes a pagar o valor total indicado</li>
+                    <li>Receberás confirmação por email após a compra</li>
+                </ul>
+                <p class="mt-3 text-sm">Reservamo-nos o direito de cancelar encomendas em caso de erro de preço ou indisponibilidade de stock.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">4. Preços e Pagamento</h2>
+                <p>Os preços indicados são em Euros (€) e incluem IVA. Os custos de envio são calculados no checkout. Aceitamos os métodos de pagamento disponíveis na finalização da compra.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">5. Envio e Entrega</h2>
+                <p>Processamos encomendas em 3-5 dias úteis. O prazo de entrega depende da localização e do serviço de transporte escolhido. Não nos responsabilizamos por atrasos causados pelos transportadores.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">6. Trocas e Devoluções</h2>
+                <p class="mb-3">Aceitamos trocas e devoluções dentro de 14 dias após a receção. As peças devem estar:</p>
+                <ul class="list-disc list-inside space-y-1 ml-4">
+                    <li>Não usadas e com etiquetas originais</li>
+                    <li>Na embalagem original</li>
+                    <li>Acompanhadas do comprovativo de compra</li>
+                </ul>
+                <p class="mt-3">Os custos de envio para devolução são da responsabilidade do cliente, exceto em caso de defeito.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">7. Propriedade Intelectual</h2>
+                <p>Todos os conteúdos do site (imagens, textos, logo) são propriedade da NUCA. Não é permitida a reprodução sem autorização prévia.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">8. Limitação de Responsabilidade</h2>
+                <p>A NUCA não se responsabiliza por danos indiretos resultantes do uso do site ou dos produtos. A nossa responsabilidade máxima limita-se ao valor da encomenda.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">9. Alterações aos Termos</h2>
+                <p>Podemos atualizar estes termos ocasionalmente. As alterações entram em vigor assim que publicadas no site. Recomendamos consultares esta página regularmente.</p>
+            </section>
+
+            <section>
+                <h2 class="font-display text-xl font-bold text-nuca-green mb-3">10. Contacto</h2>
+                <p>Para questões sobre estes termos:</p>
+                <p class="mt-2"><a href="mailto:nuca.crew@gmail.com" class="text-nuca-green font-bold hover:underline">nuca.crew@gmail.com</a></p>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-nuca-dark text-nuca-beige py-8 px-6 text-center">
+        <a href="index.html" class="nuca-logo text-2xl hover:opacity-80 transition-opacity">NUCA</a>
+        <div class="flex justify-center gap-6 mt-4 text-sm text-nuca-beige/60">
+            <a href="privacidade.html" class="hover:text-nuca-beige transition-colors">Privacidade</a>
+            <a href="#" class="text-nuca-beige font-bold">Termos</a>
+        </div>
+        <p class="text-nuca-beige/60 text-sm mt-4">&copy; 2025 NUCA. Moda minimalista portuguesa.</p>
+    </footer>
+
+</body>
+</html>
