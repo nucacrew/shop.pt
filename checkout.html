@@ -4,12 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - NUCA</title>
-
-    <!-- ==================== FONTS & EXTERNAL RESOURCES ==================== -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
@@ -71,6 +67,28 @@
         .wa-btn-nuca:hover {
             background-color: #D8C6A5;
             color: #2C3328;
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2C3328;
+            color: #E8DCC4;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -325,14 +343,27 @@
         // Inicializar Supabase com tratamento de erro
         try {
             supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log('Supabase inicializado com sucesso');
         } catch (error) {
-            console.warn('Erro ao inicializar Supabase:', error);
+            console.error('Erro ao inicializar Supabase:', error);
             supabaseClient = null;
         }
         
         let cart = [];
         let currentStep = 1;
         let orderData = { shipping: {} };
+
+        // Função para mostrar notificações
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.style.backgroundColor = isError ? '#dc2626' : '#2C3328';
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
 
         // Carregar carrinho da URL
         function getCartFromURL() {
@@ -661,7 +692,7 @@
             }
         }
 
-        // PROCESSAR PEDIDO
+        // PROCESSAR PEDIDO - VERSÃO CORRIGIDA COM LOGS DETALHADOS
 
         function generateWhatsAppMessage(orderNumber, total, customerData) {
             let itemsList = '';
@@ -736,7 +767,15 @@
                 const shipping = subtotal > 50 ? 0 : 3.99;
                 const total = subtotal - discount + shipping;
                 
-                const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
+                // Gerar número de encomenda no formato NUCA-YYYYMMDD-XXXX
+                const now = new Date();
+                const dateStr = now.toISOString().slice(0,10).replace(/-/g,'');
+                const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+                const orderNumber = `NUCA-${dateStr}-${randomStr}`;
+                
+                console.log('Processando encomenda:', orderNumber);
+                console.log('Dados do cliente:', orderData.shipping);
+                console.log('Carrinho:', cart);
                 
                 const orderPayload = {
                     order_number: orderNumber,
@@ -772,26 +811,44 @@
                     status: 'pending_payment'
                 };
                 
-                // Tentar guardar no Supabase, mas continuar mesmo se falhar
+                console.log('Payload a enviar:', JSON.stringify(orderPayload, null, 2));
+                
+                // Tentar guardar no Supabase
                 if (supabaseClient) {
                     try {
-                        const { error: orderError } = await supabaseClient
+                        const { data, error: orderError } = await supabaseClient
                             .from('orders')
-                            .insert([orderPayload]);
+                            .insert([orderPayload])
+                            .select();
                         
                         if(orderError) {
-                            console.warn('Erro ao criar encomenda no Supabase (continuando):', orderError.message);
+                            console.error('Erro detalhado do Supabase:', orderError);
+                            showToast(`Erro ao guardar: ${orderError.message}`, true);
+                            // Continuamos mesmo com erro, pois vamos guardar localmente
+                        } else {
+                            console.log('Encomenda guardada com sucesso no Supabase:', data);
+                            showToast('Encomenda registada com sucesso!', false);
                         }
                     } catch (dbError) {
-                        console.warn('Erro de conexão com Supabase (continuando):', dbError);
+                        console.error('Erro de conexão com Supabase:', dbError);
+                        showToast('Erro de conexão com a base de dados, mas o pedido foi registado localmente', true);
                     }
                 } else {
-                    console.warn('Supabase não inicializado, continuando sem guardar na BD');
+                    console.warn('Supabase não inicializado, guardando apenas localmente');
+                    showToast('Aviso: Base de dados não disponível, pedido guardado localmente', true);
                 }
                 
                 // Guardar no localStorage para referência
                 localStorage.setItem('lastOrderId', orderNumber);
                 localStorage.setItem('lastOrderData', JSON.stringify(orderPayload));
+                
+                // Guardar também num array de ordens offline
+                const offlineOrders = JSON.parse(localStorage.getItem('offlineOrders') || '[]');
+                offlineOrders.push({
+                    ...orderPayload,
+                    created_at: new Date().toISOString()
+                });
+                localStorage.setItem('offlineOrders', JSON.stringify(offlineOrders));
                 
                 // Gerar link do WhatsApp
                 const whatsappLink = generateWhatsAppMessage(orderNumber, total, orderData.shipping);
@@ -808,7 +865,7 @@
                 }, 1500);
                 
             } catch(error) {
-                console.error('Erro:', error);
+                console.error('Erro no processamento:', error);
                 alert('Erro ao processar o pedido: ' + error.message);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
