@@ -143,7 +143,7 @@
                 <!-- Step 2: Envio -->
                 <div id="step-2" class="hidden bg-white/50 rounded-3xl p-8 border border-nuca-green/10">
                     <h2 class="font-display text-2xl font-bold text-nuca-green mb-6">Dados de Envio</h2>
-                    <form id="shipping-form" class="space-y-4">
+                    <form id="shipping-form" class="space-y-4" onsubmit="event.preventDefault(); validateShipping();">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-bold text-nuca-green mb-2">Nome *</label>
@@ -316,11 +316,19 @@
         
         const WHATSAPP_NUMBER = '351912345678';
         
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let supabaseClient = null;
+        
+        // Inicializar Supabase com tratamento de erro
+        try {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } catch (error) {
+            console.warn('Erro ao inicializar Supabase:', error);
+            supabaseClient = null;
+        }
         
         let cart = [];
         let currentStep = 1;
-        let orderData = {};
+        let orderData = { shipping: {} };
 
         // Carregar carrinho da URL
         function getCartFromURL() {
@@ -335,7 +343,7 @@
                     const decoded = decodeURIComponent(cartData);
                     const parsed = JSON.parse(decoded);
                     
-                    if (parsed && Array.isArray(parsed)) {
+                    if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                         console.log('Carrinho parseado com sucesso:', parsed.length, 'itens');
                         return parsed;
                     }
@@ -378,7 +386,6 @@
             calculateAndDisplayTotals();
         }
 
-        // ATUALIZADO: Mostrar cor, estação e tamanho de calçado
         function renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
             const summaryContainer = document.getElementById('summary-items');
@@ -515,7 +522,6 @@
             currentStep = step;
         }
 
-        // ATUALIZADO: Mostrar detalhes completos na confirmação (com estação)
         function renderConfirmStep() {
             let itemsHtml = '';
             let subtotal = 0;
@@ -558,11 +564,11 @@
             
             const s = orderData.shipping;
             document.getElementById('confirm-shipping').innerHTML = `
-                ${s.firstName} ${s.lastName}<br>
-                ${s.address}<br>
-                ${s.postal} ${s.city}<br>
-                ${s.email}<br>
-                ${s.phone}
+                ${s.firstName || ''} ${s.lastName || ''}<br>
+                ${s.address || ''}<br>
+                ${s.postal || ''} ${s.city || ''}<br>
+                ${s.email || ''}<br>
+                ${s.phone || ''}
             `;
         }
 
@@ -576,10 +582,46 @@
         function validateShippingOnly() {
             const form = document.getElementById('shipping-form');
             const formData = new FormData(form);
-            const data = Object.fromEntries(formData);
+            const data = {};
             
-            if(!data.firstName || !data.lastName || !data.email || !data.phone || !data.address || !data.postal || !data.city) {
-                alert('Preenche todos os campos obrigatórios.');
+            // Extrair dados do formulário
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Validação dos campos obrigatórios
+            if(!data.firstName || data.firstName.trim() === '') {
+                alert('Por favor, preencha o campo Nome.');
+                return false;
+            }
+            if(!data.lastName || data.lastName.trim() === '') {
+                alert('Por favor, preencha o campo Apelido.');
+                return false;
+            }
+            if(!data.email || data.email.trim() === '') {
+                alert('Por favor, preencha o campo Email.');
+                return false;
+            }
+            // Validação básica de email
+            const emailRegex = /^[^\s@]+@([^\s@]+\.)+[^\s@]+$/;
+            if(!emailRegex.test(data.email)) {
+                alert('Por favor, insira um email válido.');
+                return false;
+            }
+            if(!data.phone || data.phone.trim() === '') {
+                alert('Por favor, preencha o campo Telemóvel.');
+                return false;
+            }
+            if(!data.address || data.address.trim() === '') {
+                alert('Por favor, preencha o campo Morada.');
+                return false;
+            }
+            if(!data.postal || data.postal.trim() === '') {
+                alert('Por favor, preencha o campo Código Postal.');
+                return false;
+            }
+            if(!data.city || data.city.trim() === '') {
+                alert('Por favor, preencha o campo Cidade.');
                 return false;
             }
             
@@ -596,7 +638,9 @@
         function updateStepIndicators(activeStep) {
             for(let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
+                if (!indicator) continue;
                 const circle = indicator.querySelector('div');
+                if (!circle) continue;
                 
                 circle.classList.remove('step-active', 'step-completed', 'step-pending');
                 
@@ -613,7 +657,7 @@
             }
         }
 
-        // PROCESSAR PEDIDO - ATUALIZADO COM SEASON E IS_FREE
+        // PROCESSAR PEDIDO
 
         function generateWhatsAppMessage(orderNumber, total, customerData) {
             let itemsList = '';
@@ -690,7 +734,6 @@
                 
                 const orderNumber = 'NUCA-' + Date.now().toString(36).toUpperCase().slice(-8);
                 
-                // ATUALIZADO: Incluir season e is_free nos itens
                 const orderPayload = {
                     order_number: orderNumber,
                     customer_email: orderData.shipping.email,
@@ -710,11 +753,11 @@
                         quantity: parseInt(item.quantity) || 1,
                         size: item.size || null,
                         color: item.color || null,
-                        season: item.season || null,  // NOVO CAMPO
+                        season: item.season || null,
                         shoe_size: item.shoeSize || null,
                         is_pack_item: item.isPackItem || false,
                         pack_name: item.packName || null,
-                        is_free: item.isFree || false  // NOVO CAMPO
+                        is_free: item.isFree || false
                     })),
                     payment_method: 'whatsapp',
                     payment_provider: 'manual',
@@ -725,13 +768,21 @@
                     status: 'pending_payment'
                 };
                 
-                const { data: orderRecord, error: orderError } = await supabaseClient
-                    .from('orders')
-                    .insert([orderPayload])
-                    .select();
-                
-                if(orderError) {
-                    throw new Error(`Erro ao criar encomenda: ${orderError.message}`);
+                // Tentar guardar no Supabase, mas continuar mesmo se falhar
+                if (supabaseClient) {
+                    try {
+                        const { error: orderError } = await supabaseClient
+                            .from('orders')
+                            .insert([orderPayload]);
+                        
+                        if(orderError) {
+                            console.warn('Erro ao criar encomenda no Supabase (continuando):', orderError.message);
+                        }
+                    } catch (dbError) {
+                        console.warn('Erro de conexão com Supabase (continuando):', dbError);
+                    }
+                } else {
+                    console.warn('Supabase não inicializado, continuando sem guardar na BD');
                 }
                 
                 // Guardar no localStorage para referência
@@ -754,7 +805,7 @@
                 
             } catch(error) {
                 console.error('Erro:', error);
-                alert('Erro: ' + error.message);
+                alert('Erro ao processar o pedido: ' + error.message);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
