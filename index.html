@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NUCA - Moda Minimalista Portuguesa</title>
     
-    <!-- ==================== FONTS & EXTERNAL RESOURCES ==================== -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- ==================== TAILWIND CONFIGURATION ==================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -53,7 +51,6 @@
         }
     </script>
     
-    <!-- ==================== CUSTOM STYLES ==================== -->
     <style>
         body {
             background-color: #D8C6A5;
@@ -157,7 +154,6 @@
             box-shadow: 0 0 0 3px #556B4F;
         }
         
-        /* ===== ESTILOS MINIMALISTAS PARA SELEÇÃO DE ESTAÇÕES ===== */
         .season-selector {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
@@ -337,7 +333,7 @@
             margin-right: 4px;
         }
 
-        /* ===== MODAL LEGAL MINIMALISTA ===== */
+        /* Modal Legal Minimalista */
         .legal-modal {
             position: fixed;
             inset: 0;
@@ -409,7 +405,6 @@
             line-height: 1.7;
         }
         
-        /* Estilos do conteúdo legal minimalista */
         .legal-content {
             padding: 2rem;
         }
@@ -509,7 +504,6 @@
             font-weight: 600;
         }
         
-        /* Scrollbar personalizada para o modal legal */
         .legal-modal-body::-webkit-scrollbar {
             width: 6px;
         }
@@ -524,7 +518,6 @@
             background: rgba(85, 107, 79, 0.3);
         }
 
-        /* Pack season selection no modal */
         .pack-season-btn {
             transition: all 0.3s ease;
         }
@@ -594,11 +587,11 @@
             <div class="flex justify-between items-center text-sm text-nuca-green/60"><span>Subtotal</span><span id="cart-subtotal">€0.00</span></div>
             <div class="flex justify-between items-center text-sm text-nuca-green/60"><span>Desconto Pack</span><span id="cart-discount" class="text-green-600">-€0.00</span></div>
             <div class="flex justify-between text-lg font-bold border-t border-nuca-green/10 pt-4"><span>Total</span><span id="cart-total">€0.00</span></div>
-            <button onclick="goToCheckout()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark">Finalizar Compra</button>
+            <button onclick="goToCheckout()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">Finalizar Compra</button>
         </div>
     </div>
     
-    <!-- Legal Modal (Minimalista) -->
+    <!-- Legal Modal -->
     <div id="legal-modal" class="legal-modal">
         <div class="legal-modal-overlay" onclick="closeLegalModal()"></div>
         <div class="legal-modal-content">
@@ -917,8 +910,7 @@
             </div>
         </div>
     </div>
-    
-    <!-- ==================== JAVASCRIPT ==================== -->
+
     <script>
         // ===== DADOS DOS PRODUTOS =====
         const allProducts = [
@@ -949,7 +941,6 @@
             ]
         };
 
-        // ===== ÍCONES MINIMALISTAS DAS ESTAÇÕES =====
         const seasonIcons = {
             'Primavera': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="M12 18v4"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M2 12h8"/><path d="M18 12h4"/><path d="M4.93 19.07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/></svg>`,
             'Verão': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>`,
@@ -958,12 +949,10 @@
         };
         const seasonNames = { 'Primavera': 'Primavera', 'Verão': 'Verão', 'Outono': 'Outono', 'Inverno': 'Inverno' };
 
-        // ===== ESTADO =====
         let cart = [], currentProduct = null, selectedSeason = null, selectedColor = null, selectedSize = 'M';
         let currentPack = null, selectedPackSeason = null, selectedPackSize = 'M';
         let carouselPosition = 0;
 
-        // ===== INICIALIZAÇÃO =====
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('year').textContent = new Date().getFullYear();
             renderProducts('all');
@@ -972,7 +961,6 @@
             updateCartUI();
         });
 
-        // ===== NAVEGAÇÃO =====
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('translate-x-full');
@@ -994,7 +982,6 @@
             document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // ===== PRODUTOS =====
         function renderProducts(filter) {
             const grid = document.getElementById('products-grid');
             const filtered = filter === 'all' ? allProducts.filter(p => !p.hasSeasons) : allProducts.filter(p => p.category === filter);
@@ -1031,7 +1018,6 @@
             document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // ===== CARROSSEL ESTAÇÕES =====
         function renderSeasonsCarousel() {
             const track = document.getElementById('seasons-track');
             const indicators = document.getElementById('carousel-indicators');
@@ -1099,7 +1085,6 @@
 
         window.addEventListener('resize', updateCarousel);
 
-        // ===== MODAL PRODUTO =====
         function openProductModal(productId) {
             currentProduct = allProducts.find(p => p.id === productId);
             if (!currentProduct) return;
@@ -1219,7 +1204,6 @@
             toggleCart();
         }
 
-        // ===== PACKS =====
         function switchPackTab(tab) {
             document.getElementById('tab-nuca').classList.toggle('active', tab === 'nuca');
             document.getElementById('tab-seasons').classList.toggle('active', tab === 'seasons');
@@ -1397,7 +1381,6 @@
             }
         }
 
-        // ===== CARRINHO =====
         function toggleCart() {
             const sidebar = document.getElementById('cart-sidebar');
             const overlay = document.getElementById('cart-overlay');
@@ -1453,10 +1436,10 @@
                 alert('O teu carrinho está vazio!');
                 return;
             }
-            alert('Checkout em desenvolvimento! Total: €' + cart.reduce((sum, item) => sum + item.price, 0).toFixed(2));
+            const cartData = encodeURIComponent(JSON.stringify(cart));
+            window.location.href = `checkout.html?cart=${cartData}`;
         }
 
-        // ===== MODAIS LEGAIS MINIMALISTAS =====
         const legalContent = {
             privacidade: {
                 title: 'Política de Privacidade',
@@ -1525,7 +1508,6 @@
             document.body.style.overflow = '';
         }
 
-        // Fechar modal com ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeLegalModal();
