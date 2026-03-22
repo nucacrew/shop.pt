@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - NUCA</title>
+    <title>NUCA Admin - Painel de Gestão</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -19,6 +18,10 @@
                         'nuca-green': '#556B4F',
                         'nuca-dark': '#2C3328',
                         'nuca-light': '#E8DCC4',
+                        'spring': '#98D8C8',
+                        'summer': '#F7DC6F',
+                        'autumn': '#E59866',
+                        'winter': '#AED6F1',
                     },
                     fontFamily: {
                         'display': ['Syne', 'sans-serif'],
@@ -28,2044 +31,1337 @@
             }
         }
     </script>
+    
     <style>
-        /* ESTILOS BASE */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #D8C6A5;
-            color: #556B4F;
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .nuca-logo { 
-            font-family: 'Syne', sans-serif; 
-            font-weight: 800; 
-            letter-spacing: -0.02em; 
-        }
-
-        /* SIDEBAR - ESTRUTURA FIXA */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid rgba(85, 107, 79, 0.2);
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            flex-shrink: 0;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-        }
-
-        .main-content {
-            flex: 1;
-            min-width: 0;
-            background-color: #D8C6A5;
-        }
-
-        /* MOBILE */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                transform: translateX(-100%);
-                box-shadow: 2px 0 20px rgba(0,0,0,0.15);
-            }
-
-            .sidebar.mobile-visible {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                width: 100%;
-            }
-
-            .menu-toggle {
-                display: inline-flex;
-            }
-        }
-
-        /* DESKTOP */
-        @media (min-width: 769px) {
-            .sidebar {
-                transform: none !important;
-                display: block !important;
-            }
-            
-            .menu-toggle {
-                display: none;
-            }
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .sidebar-overlay.visible {
-            display: block;
-        }
-
-        .sidebar-content {
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-top: 2rem;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            color: #556B4F;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .sidebar-link:hover {
-            background: rgba(85, 107, 79, 0.1);
-        }
-
-        .sidebar-link.active {
-            background: rgba(85, 107, 79, 0.15);
-            border-right: 3px solid #556B4F;
-        }
-
-        /* ESTILOS DAS ENCOMENDAS */
-        .status-pending { background-color: #FEF3C7; color: #92400E; }
-        .status-paid { background-color: #D1FAE5; color: #065F46; }
-        .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
-        .status-delivered { background-color: #E0E7FF; color: #3730A3; }
-        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+        body { background-color: #F5F1EA; color: #2C3328; font-family: 'Space Grotesk', sans-serif; }
+        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
         
-        .admin-card {
-            background-color: rgba(255,255,255,0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(85, 107, 79, 0.1);
+        .sidebar { 
+            transform: translateX(-100%); 
+            transition: transform 0.3s ease; 
+        }
+        .sidebar.open { transform: translateX(0); }
+        
+        @media (min-width: 1024px) {
+            .sidebar { transform: translateX(0); }
+            .sidebar-toggle { display: none; }
         }
         
-        .order-row { transition: all 0.2s; }
-        .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(85, 107, 79, 0.15); }
         
-        .tab-active {
-            background-color: #556B4F;
-            color: #D8C6A5;
+        .tab-btn { transition: all 0.2s ease; }
+        .tab-btn.active { background: #556B4F; color: #D8C6A5; }
+        .tab-btn:not(.active):hover { background: rgba(85, 107, 79, 0.1); }
+        
+        .status-badge { 
+            padding: 0.25rem 0.75rem; 
+            border-radius: 9999px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+        }
+        .status-pendente { background: #FEF3C7; color: #92400E; }
+        .status-processamento { background: #DBEAFE; color: #1E40AF; }
+        .status-enviado { background: #D1FAE5; color: #065F46; }
+        .status-entregue { background: #556B4F; color: #D8C6A5; }
+        .status-cancelado { background: #FEE2E2; color: #991B1B; }
+        
+        .stock-low { color: #DC2626; font-weight: 600; }
+        .stock-medium { color: #D97706; }
+        .stock-good { color: #059669; }
+        
+        .modal { 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.3s ease; 
+        }
+        .modal.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        .modal-content { 
+            transform: scale(0.95); 
+            transition: transform 0.3s ease; 
+        }
+        .modal.active .modal-content { 
+            transform: scale(1); 
         }
         
-        .priority-high { border-left: 4px solid #DC2626; }
-        .priority-medium { border-left: 4px solid #F59E0B; }
-        .priority-low { border-left: 4px solid #10B981; }
-        
-        .search-input {
-            background-color: rgba(255,255,255,0.7);
-            border: 2px solid transparent;
-            transition: all 0.3s;
+        .progress-bar { 
+            height: 8px; 
+            border-radius: 4px; 
+            background: rgba(85, 107, 79, 0.1); 
+            overflow: hidden; 
+        }
+        .progress-fill { 
+            height: 100%; 
+            border-radius: 4px; 
+            transition: width 0.5s ease; 
         }
         
-        .search-input:focus {
-            outline: none;
-            border-color: #556B4F;
-            background-color: white;
-        }
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(85, 107, 79, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(85, 107, 79, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(85, 107, 79, 0.3); }
         
-        .stats-card {
-            background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%);
-        }
-        
-        .loading-spinner {
-            border: 3px solid rgba(85, 107, 79, 0.3);
-            border-top: 3px solid #556B4F;
-            border-radius: 50%; width: 24px; height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-        
-        .chart-wrapper { position: relative; height: 300px; width: 100%; }
-        .chart-wrapper-sm { position: relative; height: 250px; width: 100%; }
-        canvas { max-width: 100% !important; }
-        
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 50; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-
-        /* ESTILOS PARA IMPRESSÃO */
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #receipt-print, #receipt-print * {
-                visibility: visible;
-            }
-            #receipt-print {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: white;
-                padding: 20px;
-                font-family: 'Space Grotesk', sans-serif;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
-
-        .receipt-container {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 400px;
-            margin: 0 auto;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px dashed #556B4F;
-            padding-bottom: 16px;
-            margin-bottom: 16px;
-        }
-
-        .receipt-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 24px;
-            font-weight: 800;
-            color: #556B4F;
-        }
-
-        .receipt-details {
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .receipt-details p {
-            margin: 4px 0;
-        }
-
-        .receipt-items {
-            margin-bottom: 16px;
-        }
-
-        .receipt-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-
-        .receipt-total {
-            font-size: 16px;
-        }
-
-        .receipt-total > div {
-            padding: 4px 0;
-        }
-
-        .receipt-discount {
-            color: #10B981;
-        }
-
-        .receipt-free-shipping {
-            color: #10B981;
-        }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 <base target="_blank">
 </head>
-<body>
-
-    <div class="grain-overlay"></div>
-
-    <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 z-[2000] flex items-center justify-center bg-nuca-beige">
-        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4">
-            <div class="text-center mb-8">
-                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
-                <p class="text-nuca-green/60">Área de Administração</p>
-            </div>
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
-                    <input type="email" id="login-email" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="admin@nuca.pt">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-nuca-green mb-2">Password</label>
-                    <input type="password" id="login-password" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="••••••••">
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-nuca-green/30 text-nuca-green focus:ring-nuca-green">
-                    <label for="remember-me" class="text-sm text-nuca-green/70">Lembrar-me</label>
-                </div>
-                <button type="submit" id="login-btn" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
-                    <span id="login-text">Entrar</span>
-                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px;"></div>
-                </button>
-            </form>
-        </div>
+<body class="antialiased">
+    
+    <!-- Mobile Header -->
+    <div class="lg:hidden bg-nuca-green text-nuca-beige p-4 flex justify-between items-center sticky top-0 z-40">
+        <span class="nuca-logo text-2xl">NUCA Admin</span>
+        <button onclick="toggleSidebar()" class="p-2 hover:bg-nuca-beige/20 rounded-lg transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
     </div>
-
-    <!-- Admin Interface -->
-    <div id="admin-interface" class="hidden app-container">
-        
-        <!-- Overlay para mobile -->
-        <div id="sidebarOverlay" class="sidebar-overlay" onclick="hideMobileSidebar()"></div>
-
-        <!-- SIDEBAR -->
-        <aside id="sidebar" class="sidebar">
-            <div class="sidebar-content">
-                <div class="flex items-center justify-between">
-                    <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
-                    <button onclick="hideMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
+    
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed lg:static inset-y-0 left-0 w-64 bg-nuca-dark text-nuca-beige z-50 overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-8">
+                    <span class="nuca-logo text-2xl">NUCA</span>
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 hover:bg-nuca-beige/20 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
-
-                <nav class="sidebar-nav">
-                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                        </svg>
+                
+                <nav class="space-y-2">
+                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all bg-nuca-beige/20 text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
                         Dashboard
-                    </a>
-                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                            <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-                        </svg>
-                        Encomendas
-                        <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
-                    </a>
-                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
-                        </svg>
-                        Produtos
-                    </a>
-                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        Clientes
-                    </a>
-                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-                            <line x1="6" y1="20" x2="6" y2="14"/>
-                        </svg>
-                        Análises
-                    </a>
-                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                        </svg>
-                        Configurações
-                    </a>
-                </nav>
-
-                <div class="border-t border-nuca-green/10 pt-6 mt-auto">
-                    <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-                        </svg>
-                        Sair
                     </button>
+                    <button onclick="switchTab('produtos')" id="nav-produtos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        Produtos
+                    </button>
+                    <button onclick="switchTab('encomendas')" id="nav-encomendas" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        Encomendas
+                        <span id="badge-encomendas" class="ml-auto bg-nuca-beige text-nuca-dark text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                    </button>
+                    <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                        Stock
+                        <span id="badge-stock" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                    </button>
+                    <button onclick="switchTab('clientes')" id="nav-clientes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        Clientes
+                    </button>
+                    <button onclick="switchTab('promocoes')" id="nav-promocoes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                        Promoções
+                    </button>
+                    <button onclick="switchTab('analises')" id="nav-analises" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        Análises
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-beige/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-nuca-beige/20 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-sm">Admin NUCA</p>
+                        <p class="text-xs text-nuca-beige/60">nuca.crew@gmail.com</p>
+                    </div>
                 </div>
+                <button onclick="logout()" class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-nuca-beige/30 text-sm hover:bg-nuca-beige/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    Terminar Sessão
+                </button>
             </div>
         </aside>
-
+        
+        <!-- Overlay para mobile -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+        
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
-                <div class="px-6 lg:px-12 py-4">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <button onclick="toggleMobileSidebar()" class="menu-toggle p-2 hover:bg-nuca-green/10 rounded-lg">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-                                </svg>
-                            </button>
-                            <div>
-                                <h2 id="page-title" class="font-display text-xl font-bold text-nuca-green">Dashboard</h2>
-                                <p id="current-date" class="text-sm text-nuca-green/60"></p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                                </svg>
-                                <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
-                            </button>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold" id="user-avatar">A</div>
-                                <div class="hidden md:block">
-                                    <p class="text-sm font-bold text-nuca-green" id="user-name">Admin</p>
-                                    <p class="text-xs text-nuca-green/60">Administrador</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <main class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+            
+            <!-- Header Desktop -->
+            <div class="hidden lg:flex justify-between items-center mb-8">
+                <div>
+                    <h1 id="page-title" class="font-display text-3xl font-bold text-nuca-green">Dashboard</h1>
+                    <p class="text-nuca-green/60 mt-1">Bem-vindo de volta, Admin</p>
                 </div>
-            </header>
-
-            <!-- Notifications Panel -->
-            <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
-                <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
-                    <h3 class="font-bold text-nuca-green">Notificações</h3>
-                    <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
-                </div>
-                <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
-                    <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>
-                </div>
-            </div>
-
-            <!-- Content Sections -->
-            <div class="p-6 lg:p-12">
-                
-                <!-- DASHBOARD SECTION -->
-                <div id="section-dashboard" class="section-content active fade-in">
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
-                                </div>
-                                <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
-                                    <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
-                                </div>
-                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
-                                </div>
-                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
-                                </div>
-                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Charts -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                        <div class="lg:col-span-2 admin-card rounded-2xl p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Últimos 7 dias)</h3>
-                                <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
-                                    <option value="7">7 dias</option>
-                                    <option value="30">30 dias</option>
-                                    <option value="90">3 meses</option>
-                                </select>
-                            </div>
-                            <div class="chart-wrapper">
-                                <canvas id="salesChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="admin-card rounded-2xl p-6">
-                            <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
-                            <div class="chart-wrapper-sm">
-                                <canvas id="statusChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Orders -->
-                    <div class="admin-card rounded-2xl p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="font-display text-xl font-bold text-nuca-green">Encomendas Recentes</h3>
-                            <button onclick="showSection('orders')" class="text-sm text-nuca-green hover:underline">Ver todas</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-nuca-green/5">
-                                    <tr>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Nº</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Cliente</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Total</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Status</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-orders-table" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">A carregar...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ORDERS SECTION -->
-                <div id="section-orders" class="section-content fade-in">
-                    <!-- Filters -->
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
-                                <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="pending_payment">Pendentes</button>
-                                <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="paid">Pagas</button>
-                                <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="shipped">Enviadas</button>
-                                <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="delivered">Entregues</button>
-                                <button onclick="filterOrders('cancelled')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="cancelled">Canceladas</button>
-                            </div>
-                            <div class="flex gap-3 w-full lg:w-auto">
-                                <div class="relative flex-1 lg:w-64">
-                                    <input type="text" id="search-orders" placeholder="Pesquisar..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
-                                    <svg class="absolute left-3 top-2.5 text-nuca-green/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                                </div>
-                                <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                                </button>
-                                <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Orders Table -->
-                    <div class="admin-card rounded-2xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    <tr>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Nº Encomenda</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Data</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Status</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Prioridade</th>
-                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">A carregar...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
-                            <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
-                            <div class="flex gap-2">
-                                <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Anterior</button>
-                                <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Próxima</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTS SECTION -->
-                <div id="section-products" class="section-content">
-                    <div class="admin-card rounded-2xl p-12 text-center">
-                        <h3 class="font-display text-2xl text-nuca-green mb-4">Gestão de Produtos</h3>
-                        <p class="text-nuca-green/60">Em desenvolvimento</p>
-                    </div>
-                </div>
-
-                <!-- CUSTOMERS SECTION -->
-                <div id="section-customers" class="section-content fade-in">
-                    <!-- Header com ações -->
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-display text-2xl font-bold text-nuca-green">Clientes</h3>
-                        <button onclick="openCustomerModal()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Novo Cliente
+                <div class="flex items-center gap-4">
+                    <button onclick="refreshData()" class="flex items-center gap-2 px-4 py-2 rounded-xl border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        Atualizar
+                    </button>
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="p-2 rounded-xl border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 transition-colors relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
                         </button>
-                    </div>
-
-                    <!-- Filtros e pesquisa -->
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <div class="flex flex-col lg:flex-row gap-4 justify-between">
-                            <div class="flex-1 relative">
-                                <input type="text" id="search-customers" placeholder="Pesquisar por nome, email ou telefone..." class="search-input w-full px-4 py-3 pl-12 rounded-xl" onkeyup="searchCustomers()">
-                                <svg class="absolute left-4 top-3.5 text-nuca-green/40" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-                                </svg>
+                        <div id="notifications-panel" class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-nuca-green/10 z-50">
+                            <div class="p-4 border-b border-nuca-green/10">
+                                <h4 class="font-bold text-nuca-green">Notificações</h4>
                             </div>
-                            <div class="flex gap-3">
-                                <button onclick="loadCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                                </button>
-                                <button onclick="exportCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                </button>
+                            <div id="notifications-list" class="max-h-64 overflow-y-auto">
+                                <p class="p-4 text-center text-nuca-green/60 text-sm">Sem notificações novas</p>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Lista de Clientes -->
-                    <div class="admin-card rounded-2xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    <tr>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
-                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ANALYTICS SECTION -->
-                <div id="section-analytics" class="section-content">
-                    <div class="admin-card rounded-2xl p-12 text-center">
-                        <h3 class="font-display text-2xl text-nuca-green mb-4">Análises</h3>
-                        <p class="text-nuca-green/60">Em desenvolvimento</p>
-                    </div>
-                </div>
-
-                <!-- SETTINGS SECTION -->
-                <div id="section-settings" class="section-content">
-                    <div class="admin-card rounded-2xl p-12 text-center">
-                        <h3 class="font-display text-2xl text-nuca-green mb-4">Configurações</h3>
-                        <p class="text-nuca-green/60">Em desenvolvimento</p>
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
-
-    <!-- Customer Modal (Ficha do Cliente) -->
-    <div id="customer-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCustomerModal()"></div>
-        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
-                <div>
-                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-customer-title">Ficha de Cliente</h2>
-                </div>
-                <button onclick="closeCustomerModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
             
-            <div class="flex-1 overflow-y-auto p-6">
-                <!-- Informação do Cliente -->
-                <div id="customer-info-tab">
-                    <form id="customer-form" class="space-y-6">
-                        <input type="hidden" id="customer-id">
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Nome Completo *</label>
-                                <input type="text" id="customer-name" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="Nome do cliente">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
-                                <input type="email" id="customer-email" class="search-input w-full px-4 py-3 rounded-xl" placeholder="email@exemplo.pt">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Telefone *</label>
-                                <input type="tel" id="customer-phone" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="912345678">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Data de Nascimento</label>
-                                <input type="date" id="customer-birth" class="search-input w-full px-4 py-3 rounded-xl">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">NIF</label>
-                                <input type="text" id="customer-nif" class="search-input w-full px-4 py-3 rounded-xl" placeholder="123456789">
+            <!-- DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-nuca-green/60 text-sm">Vendas Hoje</span>
+                            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </div>
                         </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Morada</label>
-                            <input type="text" id="customer-address" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Rua, número">
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Cidade</label>
-                                <input type="text" id="customer-city" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Cidade">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-nuca-green mb-2">Código Postal</label>
-                                <input type="text" id="customer-postal" class="search-input w-full px-4 py-3 rounded-xl" placeholder="1000-001">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-bold text-nuca-green mb-2">Notas</label>
-                            <textarea id="customer-notes" rows="3" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Informações adicionais..."></textarea>
-                        </div>
-
-                        <div class="flex justify-end gap-3 pt-6 border-t">
-                            <button type="button" onclick="closeCustomerModal()" class="px-6 py-3 border border-nuca-green/30 rounded-xl text-nuca-green hover:bg-nuca-green/5">Cancelar</button>
-                            <button type="submit" class="px-6 py-3 bg-nuca-green text-nuca-beige rounded-xl font-bold hover:bg-nuca-dark">Guardar Cliente</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Order Detail Modal -->
-    <div id="order-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeOrderModal()"></div>
-        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
-                <div>
-                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
-                    <p class="text-sm text-nuca-green/60" id="modal-order-date"></p>
-                </div>
-                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
-            <div class="flex-1 overflow-y-auto p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Cliente</h3>
-                            <p class="font-medium" id="modal-customer-name"></p>
-                            <p class="text-sm text-nuca-green/60" id="modal-customer-email"></p>
-                        </div>
-                        <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Morada</h3>
-                            <p class="text-sm" id="modal-shipping-address"></p>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Itens</h3>
-                            <div id="modal-items" class="space-y-3"></div>
-                        </div>
-                        <div class="bg-white/50 rounded-2xl p-4">
-                            <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
-                            <div class="space-y-2">
-                                <div class="flex justify-between"><span>Subtotal</span><span id="modal-subtotal"></span></div>
-                                <div class="flex justify-between"><span>Desconto</span><span id="modal-discount" class="text-green-600"></span></div>
-                                <div class="flex justify-between"><span>Portes</span><span id="modal-shipping"></span></div>
-                                <div class="flex justify-between text-lg font-bold pt-2 border-t">Total<span id="modal-total"></span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-6 pt-6 border-t flex gap-3 flex-wrap" id="modal-actions"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Receipt Print Template (Hidden) -->
-    <div id="receipt-print" class="hidden"></div>
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed bottom-6 right-6 z-[2000] space-y-2"></div>
-
-    <script>
-        // ============================================
-        // SUPABASE CONFIG
-        // ============================================
-        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        // ============================================
-        // STATE
-        // ============================================
-        let allOrders = [];
-        let filteredOrders = [];
-        let currentPage = 1;
-        const ordersPerPage = 10;
-        let currentFilter = 'all';
-        let currentSection = 'dashboard';
-        let salesChart = null;
-        let statusChart = null;
-        let notifications = [];
-        let currentUser = null;
-
-        // ============================================
-        // INIT
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { 
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-            });
-            
-            window.addEventListener('resize', () => {
-                if (window.innerWidth > 768) hideMobileSidebar();
-            });
-        });
-
-        // ============================================
-        // SIDEBAR CONTROLS
-        // ============================================
-        function toggleMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('mobile-visible');
-            overlay.classList.toggle('visible');
-            document.body.style.overflow = sidebar.classList.contains('mobile-visible') ? 'hidden' : '';
-        }
-
-        function hideMobileSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.remove('mobile-visible');
-            overlay.classList.remove('visible');
-            document.body.style.overflow = '';
-        }
-
-        // ============================================
-        // NAVEGAÇÃO
-        // ============================================
-        function showSection(section) {
-            currentSection = section;
-            
-            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
-            const activeLink = document.querySelector(`a[href="#${section}"]`);
-            if (activeLink) activeLink.classList.add('active');
-            
-            const titles = {
-                'dashboard': 'Dashboard', 'orders': 'Encomendas', 'products': 'Produtos',
-                'customers': 'Clientes', 'analytics': 'Análises', 'settings': 'Configurações'
-            };
-            document.getElementById('page-title').textContent = titles[section];
-            
-            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            const targetSection = document.getElementById(`section-${section}`);
-            if (targetSection) targetSection.classList.add('active');
-            
-            hideMobileSidebar();
-            
-            if (section === 'dashboard' && !salesChart) initCharts();
-            if (section === 'customers') loadCustomers();
-        }
-
-        // ============================================
-        // AUTH
-        // ============================================
-        async function checkSession() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                showAdminInterface();
-            }
-        }
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const rememberMe = document.getElementById('remember-me').checked;
-
-            setLoginLoading(true);
-
-            try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-                currentUser = data.user;
-                if (rememberMe) localStorage.setItem('nuca_admin_remember', 'true');
-                showAdminInterface();
-                showToast('Bem-vindo!', 'success');
-            } catch (error) {
-                showToast('Erro no login', 'error');
-            } finally {
-                setLoginLoading(false);
-            }
-        });
-
-        function setLoginLoading(loading) {
-            document.getElementById('login-btn').disabled = loading;
-            document.getElementById('login-text').classList.toggle('hidden', loading);
-            document.getElementById('login-spinner').classList.toggle('hidden', !loading);
-        }
-
-        function showAdminInterface() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('admin-interface').classList.remove('hidden');
-            
-            if (currentUser) {
-                document.getElementById('user-name').textContent = currentUser.email.split('@')[0];
-                document.getElementById('user-avatar').textContent = currentUser.email.charAt(0).toUpperCase();
-            }
-            
-            loadOrders();
-            setupRealtimeSubscription();
-        }
-
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            localStorage.removeItem('nuca_admin_remember');
-            currentUser = null;
-            document.getElementById('admin-interface').classList.add('hidden');
-            document.getElementById('login-screen').classList.remove('hidden');
-        }
-
-        // ============================================
-        // ORDERS - CRUD COMPLETO
-        // ============================================
-        async function loadOrders() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                allOrders = data || [];
-                filteredOrders = [...allOrders];
-                
-                updateStats();
-                renderOrders();
-                renderRecentOrders();
-                updateChartsData();
-                updatePendingBadge();
-
-            } catch (error) {
-                console.error('Erro ao carregar encomendas:', error);
-                showToast('Erro ao carregar encomendas', 'error');
-            }
-        }
-
-        function setupRealtimeSubscription() {
-            supabaseClient
-                .channel('orders-channel')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'orders' },
-                    (payload) => {
-                        loadOrders();
-                    }
-                )
-                .subscribe();
-        }
-        
-        function updateStats() {
-            const total = allOrders.length;
-            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
-            const revenue = allOrders
-                .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
-                .reduce((sum, o) => sum + (o.total || 0), 0);
-            const today = new Date().toDateString();
-            const todayOrders = allOrders.filter(o => new Date(o.created_at).toDateString() === today).length;
-
-            document.getElementById('stat-total-orders').textContent = total;
-            document.getElementById('stat-pending').textContent = pending;
-            document.getElementById('stat-revenue').textContent = `€${revenue.toFixed(2)}`;
-            document.getElementById('stat-today').textContent = todayOrders;
-        }
-
-        function renderOrders() {
-            const tbody = document.getElementById('orders-table-body');
-            const start = (currentPage - 1) * ordersPerPage;
-            const end = start + ordersPerPage;
-            const pageOrders = filteredOrders.slice(start, end);
-
-            if (pageOrders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = pageOrders.map(order => {
-                const priority = calculatePriority(order);
-                const statusClass = getStatusClass(order.status);
-                const statusText = getStatusText(order.status);
-
-                return `<tr class="order-row cursor-pointer ${priority}" onclick="openOrderDetail('${order.id}')">
-                    <td class="px-6 py-4"><span class="font-mono font-bold">${order.order_number}</span></td>
-                    <td class="px-6 py-4"><div><p class="font-medium">${order.customer_name}</p><p class="text-xs text-nuca-green/60">${order.customer_email}</p></div></td>
-                    <td class="px-6 py-4 text-sm">${formatDate(order.created_at)}</td>
-                    <td class="px-6 py-4 font-bold">€${(order.total || 0).toFixed(2)}</td>
-                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
-                    <td class="px-6 py-4">${getPriorityBadge(priority)}</td>
-                    <td class="px-6 py-4"><div class="flex justify-center gap-2">${getActionButtons(order)}</div></td>
-                </tr>`;
-            }).join('');
-            
-            updatePagination();
-        }
-
-        function renderRecentOrders() {
-            const tbody = document.getElementById('recent-orders-table');
-            const recent = allOrders.slice(0, 5);
-
-            if (recent.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = recent.map(order => {
-                const statusClass = getStatusClass(order.status);
-                const statusText = getStatusText(order.status);
-
-                return `<tr class="order-row cursor-pointer" onclick="openOrderDetail('${order.id}')">
-                    <td class="px-4 py-3"><span class="font-mono font-bold">${order.order_number}</span></td>
-                    <td class="px-4 py-3"><p class="font-medium">${order.customer_name}</p></td>
-                    <td class="px-4 py-3 font-bold">€${(order.total || 0).toFixed(2)}</td>
-                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
-                    <td class="px-4 py-3"><button onclick="event.stopPropagation(); openOrderDetail('${order.id}')" class="text-nuca-green hover:underline">Ver</button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function calculatePriority(order) {
-            const age = new Date() - new Date(order.created_at);
-            const hours = age / (1000 * 60 * 60);
-            if (order.status === 'pending_payment' && hours > 24) return 'priority-high';
-            if (order.status === 'pending_payment' && hours > 12) return 'priority-medium';
-            if (order.status === 'paid' && hours > 48) return 'priority-medium';
-            return 'priority-low';
-        }
-
-        function getPriorityBadge(priority) {
-            const badges = {
-                'priority-high': '<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">ALTA</span>',
-                'priority-medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">MÉDIA</span>',
-                'priority-low': '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">NORMAL</span>'
-            };
-            return badges[priority] || badges['priority-low'];
-        }
-
-        function getStatusClass(status) {
-            const classes = {
-                'pending_payment': 'status-pending', 'paid': 'status-paid',
-                'shipped': 'status-shipped', 'delivered': 'status-delivered', 'cancelled': 'status-cancelled'
-            };
-            return classes[status] || 'status-pending';
-        }
-
-        function getStatusText(status) {
-            const texts = {
-                'pending_payment': 'Pendente', 'paid': 'Paga', 'shipped': 'Enviada',
-                'delivered': 'Entregue', 'cancelled': 'Cancelada'
-            };
-            return texts[status] || status;
-        }
-
-        function getActionButtons(order) {
-            let buttons = '';
-            
-            buttons += `<button onclick="event.stopPropagation(); printReceipt('${order.id}')" class="btn-action px-3 py-1 bg-nuca-green text-white rounded-lg text-xs font-bold hover:bg-nuca-dark">Imprimir</button>`;
-            
-            if (order.status === 'pending_payment') {
-                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
-                           <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
-            } else if (order.status === 'paid') {
-                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
-            } else if (order.status === 'shipped') {
-                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'delivered')" class="btn-action px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600">Entregue</button>`;
-            }
-            
-            return buttons;
-        }
-
-        async function updateOrderStatus(orderId, newStatus) {
-            try {
-                const button = event?.target;
-                const originalText = button?.innerHTML;
-                if (button) {
-                    button.innerHTML = 'A atualizar...';
-                    button.disabled = true;
-                }
-        
-                const { error } = await supabaseClient
-                    .from('orders')
-                    .update({ 
-                        status: newStatus,
-                    })
-                    .eq('id', orderId);
-        
-                if (error) throw error;
-        
-                const order = allOrders.find(o => o.id === orderId);
-                const statusText = getStatusText(newStatus);
-                
-                addNotification(`Encomenda ${order.order_number} atualizada para ${statusText}`, 'status-update');
-                showToast(`Status atualizado para ${statusText}!`, 'success');
-                
-                await loadOrders();
-                closeOrderModal();
-                
-            } catch (error) {
-                console.error('Erro detalhado:', error);
-                showToast(`Erro: ${error.message}`, 'error');
-            } finally {
-                if (event?.target) {
-                    setTimeout(() => {
-                        event.target.innerHTML = originalText;
-                        event.target.disabled = false;
-                    }, 1000);
-                }
-            }
-        }
-
-        function printReceipt(orderId) {
-            const order = allOrders.find(o => o.id === orderId);
-            if (!order) return;
-        
-            const receiptDiv = document.getElementById('receipt-print');
-            
-            const items = order.items || [];
-            const itemsHtml = items.map(item => `
-                <div class="receipt-item">
-                    <span>${item.name} x${item.quantity}</span>
-                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-            `).join('');
-        
-            const address = order.shipping_address || {};
-            const date = new Date(order.created_at).toLocaleDateString('pt-PT', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        
-            const subtotal = order.subtotal || 0;
-            const discount = order.discount || 0;
-            
-            let shipping = 0;
-            if (order.shipping_cost !== undefined && order.shipping_cost !== null) {
-                shipping = order.shipping_cost;
-            } else if (order.shipping !== undefined && order.shipping !== null) {
-                shipping = order.shipping;
-            } else if (order.delivery_cost !== undefined && order.delivery_cost !== null) {
-                shipping = order.delivery_cost;
-            } else if (order.portes !== undefined && order.portes !== null) {
-                shipping = order.portes;
-            } else {
-                shipping = subtotal < 50 ? 3.99 : 0;
-            }
-            
-            const total = order.total || (subtotal - discount + shipping);
-        
-            receiptDiv.innerHTML = `
-                <div class="receipt-container">
-                    <div class="receipt-header">
-                        <div class="receipt-title">NUCA</div>
-                        <div style="font-size: 12px; color: #666;">Comprovativo de Pagamento</div>
+                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-vendas-hoje">€0.00</p>
+                        <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            +12% vs ontem
+                        </p>
                     </div>
                     
-                    <div class="receipt-details">
-                        <p><strong>Encomenda:</strong> ${order.order_number}</p>
-                        <p><strong>Data:</strong> ${date}</p>
-                        <p><strong>Cliente:</strong> ${order.customer_name}</p>
-                        <p><strong>Email:</strong> ${order.customer_email}</p>
-                        <p><strong>Morada:</strong> ${address.address || ''}, ${address.postal || ''} ${address.city || ''}</p>
-                        <p><strong>Status:</strong> ${getStatusText(order.status)}</p>
-                        ${order.payment_method ? `<p><strong>Pagamento:</strong> ${order.payment_method}</p>` : ''}
+                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-nuca-green/60 text-sm">Encomendas</span>
+                            <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                            </div>
+                        </div>
+                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-encomendas">0</p>
+                        <p class="text-xs text-nuca-green/60 mt-1">Pendentes: <span id="stat-pendentes">0</span></p>
                     </div>
-        
-                    <div class="receipt-items">
-                        <h3 style="font-weight: bold; margin-bottom: 8px;">Itens</h3>
-                        ${itemsHtml}
+                    
+                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-nuca-green/60 text-sm">Stock Baixo</span>
+                            <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                        </div>
+                        <p class="font-display text-2xl font-bold text-red-600" id="stat-stock-baixo">0</p>
+                        <p class="text-xs text-red-600 mt-1">Produtos em alerta</p>
                     </div>
-        
-                    <div class="receipt-total">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Subtotal:</span>
-                            <span>€${subtotal.toFixed(2)}</span>
+                    
+                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-nuca-green/60 text-sm">Clientes</span>
+                            <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            </div>
                         </div>
-                        
-                        ${discount > 0 ? `
-                        <div style="display: flex; justify-content: space-between; color: #10B981;">
-                            <span>Desconto:</span>
-                            <span>-€${discount.toFixed(2)}</span>
-                        </div>
-                        ` : ''}
-                        
-                        <div style="display: flex; justify-content: space-between; ${shipping === 0 ? 'color: #10B981;' : ''}">
-                            <span>Portes:</span>
-                            ${shipping > 0 ? 
-                                `<span>€${shipping.toFixed(2)}</span>` : 
-                                `<span>Grátis</span>`
-                            }
-                        </div>
-                        
-                        ${subtotal >= 50 && shipping === 0 ? `
-                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10B981; font-style: italic;">
-                            <span>Portes Grátis (compra ≥ 50€)</span>
-                            <span>€0.00</span>
-                        </div>
-                        ` : ''}
-                        
-                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 12px; padding-top: 12px; border-top: 2px solid #556B4F; font-size: 18px;">
-                            <span>TOTAL:</span>
-                            <span>€${total.toFixed(2)}</span>
-                        </div>
-                    </div>
-        
-                    <div style="text-align: center; margin-top: 24px; font-size: 12px; color: #666;">
-                        <p>Obrigado pela sua compra!</p>
-                        <p>NUCA - Qualidade e Tradição</p>
-                        ${order.notes ? `<p style="margin-top: 8px; font-style: italic;">Notas: ${order.notes}</p>` : ''}
+                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-clientes">0</p>
+                        <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            +5 este mês
+                        </p>
                     </div>
                 </div>
-            `;
-        
-            receiptDiv.classList.remove('hidden');
-            
-            const printWindow = window.open('', '_blank');
-            if (printWindow) {
-                printWindow.document.write(`
-                    <html>
-                        <head>
-                            <title>Recibo NUCA - ${order.order_number}</title>
-                            <style>
-                                * { margin: 0; padding: 0; box-sizing: border-box; }
-                                @page { margin: 0; size: auto; }
-                                body {
-                                    margin: 0; padding: 0; min-height: 100vh;
-                                    display: flex; justify-content: center; align-items: center;
-                                    font-family: 'Space Grotesk', sans-serif; background: #f5f5f5;
-                                }
-                                .receipt-container {
-                                    width: 400px; max-width: 90%; background: white;
-                                    padding: 30px 24px; border-radius: 16px;
-                                    box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin: 20px;
-                                }
-                                .receipt-header {
-                                    text-align: center;
-                                    border-bottom: 2px dashed #556B4F;
-                                    padding-bottom: 16px; margin-bottom: 16px;
-                                }
-                                .receipt-title {
-                                    font-family: 'Syne', sans-serif; font-size: 28px;
-                                    font-weight: 800; color: #556B4F; letter-spacing: -0.02em;
-                                }
-                                .receipt-details { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
-                                .receipt-details p { margin: 6px 0; }
-                                .receipt-items { margin-bottom: 20px; }
-                                .receipt-items h3 { font-size: 16px; margin-bottom: 12px; color: #556B4F; }
-                                .receipt-item {
-                                    display: flex; justify-content: space-between;
-                                    padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px;
-                                }
-                                .receipt-total { font-size: 16px; }
-                                .receipt-total > div { padding: 6px 0; }
-                                .receipt-footer {
-                                    text-align: center; margin-top: 30px;
-                                    padding-top: 16px; border-top: 1px solid #eee;
-                                    font-size: 12px; color: #666;
-                                }
-                            </style>
-                        </head>
-                        <body>${receiptDiv.innerHTML}</body>
-                    </html>
-                `);
-                printWindow.document.close();
-                printWindow.focus();
                 
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 250);
-            } else {
-                window.print();
-            }
-            
-            receiptDiv.classList.add('hidden');
-        }
-        
-        function openOrderDetail(orderId) {
-            const order = allOrders.find(o => o.id === orderId);
-            if (!order) return;
-
-            document.getElementById('modal-order-number').textContent = order.order_number;
-            document.getElementById('modal-order-date').textContent = `Realizada em ${formatDate(order.created_at)}`;
-            document.getElementById('modal-customer-name').textContent = order.customer_name;
-            document.getElementById('modal-customer-email').textContent = order.customer_email;
-
-            const address = order.shipping_address || {};
-            document.getElementById('modal-shipping-address').innerHTML = `${address.address || ''}<br>${address.postal || ''} ${address.city || ''}`;
-
-            const items = order.items || [];
-            document.getElementById('modal-items').innerHTML = items.map(item => `
-                <div class="flex justify-between py-2 border-b">
-                    <div><p class="font-medium">${item.name}</p><p class="text-xs">Qtd: ${item.quantity}</p></div>
-                    <span class="font-bold">€${(item.price * item.quantity).toFixed(2)}</span>
+                <!-- Charts Row -->
+                <div class="grid lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-display text-lg font-bold text-nuca-green">Vendas dos Últimos 7 Dias</h3>
+                            <select class="text-sm border border-nuca-green/20 rounded-lg px-3 py-1 text-nuca-green">
+                                <option>Última semana</option>
+                                <option>Último mês</option>
+                                <option>Último ano</option>
+                            </select>
+                        </div>
+                        <canvas id="salesChart" height="200"></canvas>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-display text-lg font-bold text-nuca-green">Produtos Mais Vendidos</h3>
+                            <button class="text-sm text-nuca-green hover:underline">Ver todos</button>
+                        </div>
+                        <canvas id="productsChart" height="200"></canvas>
+                    </div>
                 </div>
-            `).join('');
-
-            const subtotal = order.subtotal || 0;
-            const discount = order.discount || 0;
-            const shipping = order.shipping_cost || 0;
-            const total = order.total || 0;
-
-            document.getElementById('modal-subtotal').textContent = `€${subtotal.toFixed(2)}`;
-            document.getElementById('modal-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
-            document.getElementById('modal-shipping').textContent = shipping > 0 ? `€${shipping.toFixed(2)}` : 'Grátis';
-            document.getElementById('modal-total').textContent = `€${total.toFixed(2)}`;
-
-            let actions = '';
+                
+                <!-- Recent Orders -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-display text-lg font-bold text-nuca-green">Encomendas Recentes</h3>
+                        <button onclick="switchTab('encomendas')" class="text-sm text-nuca-green hover:underline">Ver todas</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-nuca-green/10">
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">ID</th>
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Cliente</th>
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Produtos</th>
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Total</th>
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Estado</th>
+                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-orders-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             
-            actions += `<button onclick="printReceipt('${order.id}')" class="flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold">Imprimir Recibo</button>`;
+            <!-- PRODUTOS -->
+            <div id="tab-produtos" class="tab-content hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div class="flex gap-2">
+                        <button onclick="filterProducts('all')" class="tab-btn active px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Todos</button>
+                        <button onclick="filterProducts('camisetas')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="camisetas">Camisetas</button>
+                        <button onclick="filterProducts('hoodies')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="hoodies">Hoodies</button>
+                        <button onclick="filterProducts('acessorios')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="acessorios">Acessórios</button>
+                    </div>
+                    <button onclick="openProductModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-5 py-2.5 rounded-full font-medium hover:bg-nuca-dark transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Novo Produto
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
+                        <div class="relative flex-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="product-search" placeholder="Pesquisar produtos..." oninput="searchProducts()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                        </div>
+                        <select id="product-sort" onchange="sortProducts()" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
+                            <option value="name">Ordenar por Nome</option>
+                            <option value="price-asc">Preço: Baixo → Alto</option>
+                            <option value="price-desc">Preço: Alto → Baixo</option>
+                            <option value="stock">Stock: Menor → Maior</option>
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-nuca-light/30">
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produto</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Categoria</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Preço</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Stock</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Vendas</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
             
-            if (order.status === 'pending_payment') {
-                actions += `<button onclick="updateOrderStatus('${order.id}', 'paid')" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Marcar como Pago</button>
-                           <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold">Cancelar</button>`;
-            } else if (order.status === 'paid') {
-                actions += `<button onclick="updateOrderStatus('${order.id}', 'shipped')" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold">Marcar como Enviada</button>`;
-            } else if (order.status === 'shipped') {
-                actions += `<button onclick="updateOrderStatus('${order.id}', 'delivered')" class="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold">Marcar como Entregue</button>`;
+            <!-- ENCOMENDAS -->
+            <div id="tab-encomendas" class="tab-content hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div class="flex gap-2 flex-wrap">
+                        <button onclick="filterOrders('all')" class="tab-btn active px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Todas</button>
+                        <button onclick="filterOrders('pendente')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="pendente">Pendentes</button>
+                        <button onclick="filterOrders('processamento')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="processamento">Em Processamento</button>
+                        <button onclick="filterOrders('enviado')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="enviado">Enviadas</button>
+                    </div>
+                    <button onclick="exportOrders()" class="flex items-center gap-2 border border-nuca-green text-nuca-green px-5 py-2.5 rounded-full font-medium hover:bg-nuca-green/5 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Exportar
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
+                        <div class="relative flex-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="order-search" placeholder="Pesquisar encomendas..." oninput="searchOrders()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                        </div>
+                        <input type="date" id="order-date-from" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
+                        <input type="date" id="order-date-to" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-nuca-light/30">
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green"><input type="checkbox" class="rounded border-nuca-green/30"></th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">ID</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Cliente</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produtos</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Total</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Estado</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Data</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="p-4 border-t border-nuca-green/10 flex justify-between items-center">
+                        <p class="text-sm text-nuca-green/60">Mostrando <span id="orders-showing">0</span> de <span id="orders-total">0</span> encomendas</p>
+                        <div class="flex gap-2">
+                            <button onclick="changePage(-1)" class="px-3 py-1 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50" id="btn-prev">←</button>
+                            <span class="px-3 py-1 text-sm text-nuca-green" id="page-indicator">1</span>
+                            <button onclick="changePage(1)" class="px-3 py-1 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50" id="btn-next">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- STOCK -->
+            <div id="tab-stock" class="tab-content hidden">
+                <div class="grid lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-red-50 rounded-2xl p-6 border border-red-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                            </div>
+                            <span class="font-bold text-red-700">Stock Crítico</span>
+                        </div>
+                        <p class="text-3xl font-display font-bold text-red-600" id="stock-critico-count">0</p>
+                        <p class="text-sm text-red-600/70 mt-1">Produtos com menos de 5 unidades</p>
+                    </div>
+                    
+                    <div class="bg-yellow-50 rounded-2xl p-6 border border-yellow-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                            </div>
+                            <span class="font-bold text-yellow-700">Stock Baixo</span>
+                        </div>
+                        <p class="text-3xl font-display font-bold text-yellow-600" id="stock-baixo-count">0</p>
+                        <p class="text-sm text-yellow-600/70 mt-1">Produtos com 5-15 unidades</p>
+                    </div>
+                    
+                    <div class="bg-green-50 rounded-2xl p-6 border border-green-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span class="font-bold text-green-700">Stock OK</span>
+                        </div>
+                        <p class="text-3xl font-display font-bold text-green-600" id="stock-ok-count">0</p>
+                        <p class="text-sm text-green-600/70 mt-1">Produtos com mais de 15 unidades</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
+                        <h3 class="font-display text-lg font-bold text-nuca-green">Gestão de Stock</h3>
+                        <button onclick="openStockModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-4 py-2 rounded-full text-sm font-medium hover:bg-nuca-dark transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Atualizar Stock
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-nuca-light/30">
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produto</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Tamanho</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Stock Atual</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Mínimo</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Status</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stock-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CLIENTES -->
+            <div id="tab-clientes" class="tab-content hidden">
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
+                        <div class="relative flex-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="client-search" placeholder="Pesquisar clientes..." oninput="searchClients()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-nuca-light/30">
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Cliente</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Email</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Encomendas</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Total Gasto</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Última Compra</th>
+                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PROMOÇÕES -->
+            <div id="tab-promocoes" class="tab-content hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <button onclick="openPromoModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-5 py-2.5 rounded-full font-medium hover:bg-nuca-dark transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Nova Promoção
+                    </button>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="promos-grid">
+                    <!-- Promo cards will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- ANÁLISES -->
+            <div id="tab-analises" class="tab-content hidden">
+                <div class="grid lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Vendas por Mês</h3>
+                        <canvas id="monthlyChart" height="200"></canvas>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Vendas por Categoria</h3>
+                        <canvas id="categoryChart" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                    <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Métricas de Desempenho</h3>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-2">Taxa de Conversão</p>
+                            <div class="flex items-center gap-3">
+                                <div class="progress-bar flex-1">
+                                    <div class="progress-fill bg-nuca-green" style="width: 3.2%"></div>
+                                </div>
+                                <span class="font-bold text-nuca-green">3.2%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-2">Valor Médio Encomenda</p>
+                            <div class="flex items-center gap-3">
+                                <div class="progress-bar flex-1">
+                                    <div class="progress-fill bg-blue-500" style="width: 65%"></div>
+                                </div>
+                                <span class="font-bold text-nuca-green">€65.40</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-2">Taxa de Retorno</p>
+                            <div class="flex items-center gap-3">
+                                <div class="progress-bar flex-1">
+                                    <div class="progress-fill bg-purple-500" style="width: 28%"></div>
+                                </div>
+                                <span class="font-bold text-nuca-green">28%</span>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm text-nuca-green/60 mb-2">Satisfação Cliente</p>
+                            <div class="flex items-center gap-3">
+                                <div class="progress-bar flex-1">
+                                    <div class="progress-fill bg-green-500" style="width: 94%"></div>
+                                </div>
+                                <span class="font-bold text-nuca-green">4.7/5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+    
+    <!-- Modal de Produto -->
+    <div id="product-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" onclick="closeProductModal()"></div>
+        <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
+                <h3 class="font-display text-xl font-bold text-nuca-green" id="product-modal-title">Novo Produto</h3>
+                <button onclick="closeProductModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Nome do Produto</label>
+                        <input type="text" id="prod-name" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Categoria</label>
+                        <select id="prod-category" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                            <option value="camisetas">Camisetas</option>
+                            <option value="hoodies">Hoodies</option>
+                            <option value="acessorios">Acessórios</option>
+                            <option value="seasons">Coleção Estações</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Preço (€)</label>
+                        <input type="number" id="prod-price" step="0.01" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Stock Inicial</label>
+                        <input type="number" id="prod-stock" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Descrição</label>
+                    <textarea id="prod-description" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm resize-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">URL da Imagem</label>
+                    <input type="url" id="prod-image" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                </div>
+            </div>
+            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
+                <button onclick="closeProductModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
+                <button onclick="saveProduct()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Guardar Produto</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Stock -->
+    <div id="stock-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" onclick="closeStockModal()"></div>
+        <div class="modal-content bg-white rounded-2xl w-full max-w-md relative">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
+                <h3 class="font-display text-xl font-bold text-nuca-green">Atualizar Stock</h3>
+                <button onclick="closeStockModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Produto</label>
+                    <select id="stock-prod-select" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm"></select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Tamanho</label>
+                    <select id="stock-size-select" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Quantidade a Adicionar/Remover</label>
+                    <input type="number" id="stock-quantity" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm" placeholder="Use valores negativos para remover">
+                </div>
+            </div>
+            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
+                <button onclick="closeStockModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
+                <button onclick="updateStock()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Atualizar</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Promoção -->
+    <div id="promo-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50" onclick="closePromoModal()"></div>
+        <div class="modal-content bg-white rounded-2xl w-full max-w-md relative">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
+                <h3 class="font-display text-xl font-bold text-nuca-green">Nova Promoção</h3>
+                <button onclick="closePromoModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Código</label>
+                    <input type="text" id="promo-code" placeholder="ex: NUCA20" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm uppercase">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Tipo de Desconto</label>
+                    <select id="promo-type" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                        <option value="percentage">Percentagem (%)</option>
+                        <option value="fixed">Valor Fixo (€)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Valor do Desconto</label>
+                    <input type="number" id="promo-value" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Válido De</label>
+                        <input type="date" id="promo-start" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-2">Válido Até</label>
+                        <input type="date" id="promo-end" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-nuca-green mb-2">Valor Mínimo (€)</label>
+                    <input type="number" id="promo-min" placeholder="0 para sem mínimo" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
+                </div>
+            </div>
+            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
+                <button onclick="closePromoModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
+                <button onclick="savePromo()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Criar Promoção</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== DADOS SIMULADOS =====
+        let products = [
+            { id: 'c1', name: 'NUCA Essential', category: 'camisetas', price: 24.99, stock: 45, sales: 128, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100&q=80' },
+            { id: 'c2', name: 'NUCA Logo', category: 'camisetas', price: 29.99, stock: 32, sales: 96, image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=100&q=80' },
+            { id: 'h1', name: 'NUCA Hoodie', category: 'hoodies', price: 59.99, stock: 18, sales: 64, image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100&q=80' },
+            { id: 'h2', name: 'NUCA Zip', category: 'hoodies', price: 64.99, stock: 12, sales: 42, image: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=100&q=80' },
+            { id: 'a1', name: 'NUCA Tote', category: 'acessorios', price: 19.99, stock: 67, sales: 89, image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=100&q=80' },
+            { id: 'a2', name: 'NUCA Cap', category: 'acessorios', price: 24.99, stock: 3, sales: 156, image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=100&q=80' },
+            { id: 's1', name: 'Estação: Primavera', category: 'seasons', price: 34.99, stock: 28, sales: 73, image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=100&q=80' },
+            { id: 's2', name: 'Estação: Verão', category: 'seasons', price: 34.99, stock: 4, sales: 91, image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100&q=80' },
+            { id: 's3', name: 'Estação: Outono', category: 'seasons', price: 34.99, stock: 22, sales: 58, image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=100&q=80' },
+            { id: 's4', name: 'Estação: Inverno', category: 'seasons', price: 34.99, stock: 8, sales: 82, image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&q=80' }
+        ];
+
+        let orders = [
+            { id: 'ENC-001', customer: 'Ana Silva', email: 'ana.silva@email.com', items: 2, total: 54.98, status: 'entregue', date: '2025-03-20' },
+            { id: 'ENC-002', customer: 'João Santos', email: 'joao.santos@email.com', items: 1, total: 59.99, status: 'enviado', date: '2025-03-19' },
+            { id: 'ENC-003', customer: 'Maria Costa', email: 'maria.costa@email.com', items: 3, total: 89.97, status: 'processamento', date: '2025-03-19' },
+            { id: 'ENC-004', customer: 'Pedro Lima', email: 'pedro.lima@email.com', items: 1, total: 24.99, status: 'pendente', date: '2025-03-18' },
+            { id: 'ENC-005', customer: 'Sofia Ferreira', email: 'sofia.f@email.com', items: 4, total: 139.96, status: 'entregue', date: '2025-03-17' },
+            { id: 'ENC-006', customer: 'Miguel Rocha', email: 'miguel.r@email.com', items: 2, total: 49.98, status: 'cancelado', date: '2025-03-16' },
+            { id: 'ENC-007', customer: 'Inês Martins', email: 'ines.m@email.com', items: 1, total: 34.99, status: 'enviado', date: '2025-03-16' },
+            { id: 'ENC-008', customer: 'Rui Almeida', email: 'rui.a@email.com', items: 2, total: 64.98, status: 'pendente', date: '2025-03-15' }
+        ];
+
+        let clients = [
+            { name: 'Ana Silva', email: 'ana.silva@email.com', orders: 5, spent: 234.50, lastOrder: '2025-03-20' },
+            { name: 'João Santos', email: 'joao.santos@email.com', orders: 3, spent: 156.75, lastOrder: '2025-03-19' },
+            { name: 'Maria Costa', email: 'maria.costa@email.com', orders: 8, spent: 412.30, lastOrder: '2025-03-19' },
+            { name: 'Pedro Lima', email: 'pedro.lima@email.com', orders: 2, spent: 89.98, lastOrder: '2025-03-18' },
+            { name: 'Sofia Ferreira', email: 'sofia.f@email.com', orders: 4, spent: 198.45, lastOrder: '2025-03-17' }
+        ];
+
+        let promos = [
+            { code: 'NUCA20', type: 'percentage', value: 20, start: '2025-03-01', end: '2025-03-31', min: 50, uses: 45 },
+            { code: 'BEMVINDO', type: 'fixed', value: 10, start: '2025-01-01', end: '2025-12-31', min: 0, uses: 128 },
+            { code: 'PRIMAVERA', type: 'percentage', value: 15, start: '2025-03-15', end: '2025-04-15', min: 30, uses: 23 }
+        ];
+
+        let stockData = [];
+        products.forEach(p => {
+            ['S', 'M', 'L', 'XL', 'XXL'].forEach(size => {
+                stockData.push({
+                    productId: p.id,
+                    productName: p.name,
+                    size: size,
+                    stock: Math.floor(Math.random() * 30) + 1,
+                    min: 5
+                });
+            });
+        });
+
+        // ===== VARIÁVEIS DE ESTADO =====
+        let currentTab = 'dashboard';
+        let currentProductFilter = 'all';
+        let currentOrderFilter = 'all';
+        let currentOrderPage = 1;
+        const ordersPerPage = 5;
+        let editingProduct = null;
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            renderProducts();
+            renderOrders();
+            renderStock();
+            renderClients();
+            renderPromos();
+            renderRecentOrders();
+            initCharts();
+            updateBadges();
+        });
+
+        // ===== NAVEGAÇÃO =====
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Atualizar navegação
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-nuca-beige/20', 'text-nuca-beige');
+                btn.classList.add('text-nuca-beige/70');
+            });
+            document.getElementById('nav-' + tab).classList.add('bg-nuca-beige/20', 'text-nuca-beige');
+            document.getElementById('nav-' + tab).classList.remove('text-nuca-beige/70');
+            
+            // Mostrar conteúdo
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            
+            // Atualizar título
+            const titles = {
+                dashboard: 'Dashboard',
+                produtos: 'Produtos',
+                encomendas: 'Encomendas',
+                stock: 'Gestão de Stock',
+                clientes: 'Clientes',
+                promocoes: 'Promoções',
+                analises: 'Análises'
+            };
+            document.getElementById('page-title').textContent = titles[tab];
+            
+            // Fechar sidebar no mobile
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notifications-panel').classList.toggle('hidden');
+        }
+
+        function logout() {
+            if (confirm('Terminar sessão?')) {
+                alert('Sessão terminada com sucesso!');
+            }
+        }
+
+        // ===== ESTATÍSTICAS =====
+        function updateStats() {
+            const todaySales = 156.75;
+            const pendingOrders = orders.filter(o => o.status === 'pendente').length;
+            const lowStock = products.filter(p => p.stock < 10).length;
+            
+            document.getElementById('stat-vendas-hoje').textContent = '€' + todaySales.toFixed(2);
+            document.getElementById('stat-encomendas').textContent = orders.length;
+            document.getElementById('stat-pendentes').textContent = pendingOrders;
+            document.getElementById('stat-stock-baixo').textContent = lowStock;
+            document.getElementById('stat-clientes').textContent = clients.length;
+        }
+
+        function updateBadges() {
+            const pendingOrders = orders.filter(o => o.status === 'pendente').length;
+            const lowStock = products.filter(p => p.stock < 10).length;
+            
+            const orderBadge = document.getElementById('badge-encomendas');
+            orderBadge.textContent = pendingOrders;
+            orderBadge.classList.toggle('hidden', pendingOrders === 0);
+            
+            const stockBadge = document.getElementById('badge-stock');
+            stockBadge.textContent = lowStock;
+            stockBadge.classList.toggle('hidden', lowStock === 0);
+        }
+
+        // ===== PRODUTOS =====
+        function renderProducts() {
+            const filtered = currentProductFilter === 'all' 
+                ? products 
+                : products.filter(p => p.category === currentProductFilter);
+            
+            const tbody = document.getElementById('products-table');
+            tbody.innerHTML = filtered.map(p => {
+                const stockClass = p.stock < 5 ? 'stock-low' : p.stock < 15 ? 'stock-medium' : 'stock-good';
+                return `
+                    <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
+                        <td class="py-4 px-6">
+                            <div class="flex items-center gap-3">
+                                <img src="${p.image}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg">
+                                <span class="font-medium text-nuca-green">${p.name}</span>
+                            </div>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-nuca-green/70 capitalize">${p.category}</td>
+                        <td class="py-4 px-6 font-medium text-nuca-green">€${p.price.toFixed(2)}</td>
+                        <td class="py-4 px-6 ${stockClass}">${p.stock}</td>
+                        <td class="py-4 px-6 text-sm text-nuca-green/70">${p.sales}</td>
+                        <td class="py-4 px-6">
+                            <div class="flex gap-2">
+                                <button onclick="editProduct('${p.id}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </button>
+                                <button onclick="deleteProduct('${p.id}')" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function filterProducts(filter) {
+            currentProductFilter = filter;
+            document.querySelectorAll('#tab-produtos .tab-btn').forEach(btn => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('text-nuca-green', !isActive);
+            });
+            renderProducts();
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('product-search').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            // Atualizar renderização com resultados filtrados
+        }
+
+        function openProductModal() {
+            editingProduct = null;
+            document.getElementById('product-modal-title').textContent = 'Novo Produto';
+            document.getElementById('prod-name').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-stock').value = '';
+            document.getElementById('prod-description').value = '';
+            document.getElementById('prod-image').value = '';
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function editProduct(id) {
+            editingProduct = products.find(p => p.id === id);
+            if (!editingProduct) return;
+            
+            document.getElementById('product-modal-title').textContent = 'Editar Produto';
+            document.getElementById('prod-name').value = editingProduct.name;
+            document.getElementById('prod-category').value = editingProduct.category;
+            document.getElementById('prod-price').value = editingProduct.price;
+            document.getElementById('prod-stock').value = editingProduct.stock;
+            document.getElementById('prod-image').value = editingProduct.image;
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function saveProduct() {
+            const name = document.getElementById('prod-name').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const stock = parseInt(document.getElementById('prod-stock').value);
+            
+            if (!name || !price) {
+                alert('Por favor preenche todos os campos obrigatórios.');
+                return;
             }
             
-            document.getElementById('modal-actions').innerHTML = actions;
-            document.getElementById('order-modal').classList.remove('hidden');
+            if (editingProduct) {
+                editingProduct.name = name;
+                editingProduct.price = price;
+                editingProduct.stock = stock;
+                alert('Produto atualizado com sucesso!');
+            } else {
+                const newProduct = {
+                    id: 'p' + Date.now(),
+                    name: name,
+                    category: document.getElementById('prod-category').value,
+                    price: price,
+                    stock: stock,
+                    sales: 0,
+                    image: document.getElementById('prod-image').value || 'https://via.placeholder.com/100'
+                };
+                products.push(newProduct);
+                alert('Produto criado com sucesso!');
+            }
+            
+            closeProductModal();
+            renderProducts();
+            updateStats();
         }
 
-        function closeOrderModal() {
-            document.getElementById('order-modal').classList.add('hidden');
+        function deleteProduct(id) {
+            if (!confirm('Tens a certeza que queres eliminar este produto?')) return;
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+            updateStats();
         }
 
-        // ============================================
-        // FILTERS
-        // ============================================
-        function filterOrders(status) {
-            currentFilter = status;
-            currentPage = 1;
-
-            document.querySelectorAll('.filter-tab').forEach(tab => {
-                if (tab.dataset.filter === status) {
-                    tab.classList.add('tab-active');
-                    tab.classList.remove('text-nuca-green', 'hover:bg-nuca-green/10');
-                } else {
-                    tab.classList.remove('tab-active');
-                    tab.classList.add('text-nuca-green', 'hover:bg-nuca-green/10');
-                }
-            });
-            applyFilters();
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
         }
 
-        function applyFilters() {
-            const searchTerm = document.getElementById('search-orders').value.toLowerCase();
-            filteredOrders = allOrders.filter(order => {
-                const matchesStatus = currentFilter === 'all' || order.status === currentFilter;
-                const matchesSearch = order.order_number.toLowerCase().includes(searchTerm) ||
-                    order.customer_name.toLowerCase().includes(searchTerm) ||
-                    order.customer_email.toLowerCase().includes(searchTerm);
-                return matchesStatus && matchesSearch;
+        // ===== ENCOMENDAS =====
+        function renderOrders() {
+            let filtered = currentOrderFilter === 'all' 
+                ? orders 
+                : orders.filter(o => o.status === currentOrderFilter);
+            
+            const searchQuery = document.getElementById('order-search')?.value?.toLowerCase() || '';
+            if (searchQuery) {
+                filtered = filtered.filter(o => 
+                    o.customer.toLowerCase().includes(searchQuery) || 
+                    o.id.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            const totalPages = Math.ceil(filtered.length / ordersPerPage);
+            const start = (currentOrderPage - 1) * ordersPerPage;
+            const paginated = filtered.slice(start, start + ordersPerPage);
+            
+            const tbody = document.getElementById('orders-table');
+            tbody.innerHTML = paginated.map(o => `
+                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
+                    <td class="py-4 px-6"><input type="checkbox" class="rounded border-nuca-green/30"></td>
+                    <td class="py-4 px-6 font-medium text-nuca-green">${o.id}</td>
+                    <td class="py-4 px-6">
+                        <p class="font-medium text-nuca-green">${o.customer}</p>
+                        <p class="text-xs text-nuca-green/60">${o.email}</p>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-nuca-green/70">${o.items} item(s)</td>
+                    <td class="py-4 px-6 font-medium text-nuca-green">€${o.total.toFixed(2)}</td>
+                    <td class="py-4 px-6">
+                        <select onchange="updateOrderStatus('${o.id}', this.value)" class="status-badge status-${o.status} border-0 cursor-pointer">
+                            <option value="pendente" ${o.status === 'pendente' ? 'selected' : ''}>Pendente</option>
+                            <option value="processamento" ${o.status === 'processamento' ? 'selected' : ''}>Em Processamento</option>
+                            <option value="enviado" ${o.status === 'enviado' ? 'selected' : ''}>Enviado</option>
+                            <option value="entregue" ${o.status === 'entregue' ? 'selected' : ''}>Entregue</option>
+                            <option value="cancelado" ${o.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+                        </select>
+                    </td>
+                    <td class="py-4 px-6 text-sm text-nuca-green/70">${o.date}</td>
+                    <td class="py-4 px-6">
+                        <button onclick="viewOrder('${o.id}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('orders-showing').textContent = paginated.length;
+            document.getElementById('orders-total').textContent = filtered.length;
+            document.getElementById('page-indicator').textContent = currentOrderPage;
+            document.getElementById('btn-prev').disabled = currentOrderPage === 1;
+            document.getElementById('btn-next').disabled = currentOrderPage >= totalPages;
+        }
+
+        function filterOrders(filter) {
+            currentOrderFilter = filter;
+            currentOrderPage = 1;
+            document.querySelectorAll('#tab-encomendas .tab-btn').forEach(btn => {
+                const isActive = btn.dataset.filter === filter;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('text-nuca-green', !isActive);
             });
             renderOrders();
         }
 
         function searchOrders() {
-            currentPage = 1;
-            applyFilters();
-        }
-
-        function updatePagination() {
-            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-            const showingStart = (currentPage - 1) * ordersPerPage + 1;
-            const showingEnd = Math.min(currentPage * ordersPerPage, filteredOrders.length);
-            document.getElementById('showing-text').textContent = `A mostrar ${filteredOrders.length > 0 ? showingStart : 0}-${showingEnd} de ${filteredOrders.length} encomendas`;
-            document.getElementById('prev-page').disabled = currentPage === 1;
-            document.getElementById('next-page').disabled = currentPage >= totalPages;
+            currentOrderPage = 1;
+            renderOrders();
         }
 
         function changePage(direction) {
-            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
-            const newPage = currentPage + direction;
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
+            currentOrderPage += direction;
+            renderOrders();
+        }
+
+        function updateOrderStatus(id, status) {
+            const order = orders.find(o => o.id === id);
+            if (order) {
+                order.status = status;
                 renderOrders();
+                updateStats();
             }
         }
 
-        function refreshOrders() {
-            showToast('A atualizar...', 'info');
-            loadOrders();
+        function viewOrder(id) {
+            alert('Detalhes da encomenda ' + id + ' (em desenvolvimento)');
         }
 
         function exportOrders() {
-            const csvContent = [
-                ['Nº Encomenda', 'Data', 'Cliente', 'Email', 'Total', 'Status'].join(','),
-                ...filteredOrders.map(o => [
-                    o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.total, o.status
-                ].join(','))
-            ].join('\n');
+            alert('Exportação de encomendas em CSV (em desenvolvimento)');
+        }
+
+        // ===== STOCK =====
+        function renderStock() {
+            const critico = stockData.filter(s => s.stock < 5).length;
+            const baixo = stockData.filter(s => s.stock >= 5 && s.stock <= 15).length;
+            const ok = stockData.filter(s => s.stock > 15).length;
             
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `encomendas_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            showToast('CSV exportado!', 'success');
-        }
-
-        // ============================================
-        // CUSTOMERS MANAGEMENT
-        // ============================================
-        async function loadCustomers() {
-            try {
-                const { data: customers, error: customersError } = await supabaseClient
-                    .from('customers')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-        
-                if (customersError) throw customersError;
-        
-                renderCustomers(customers || []);
-            } catch (error) {
-                console.error('Erro ao carregar clientes:', error);
-                showToast('Erro ao carregar clientes', 'error');
-            }
-        }
-        
-        function renderCustomers(customers) {
-            const tbody = document.getElementById('customers-table-body');
-
-            if (customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = customers.map(customer => {
-                return `<tr class="order-row">
-                    <td class="px-6 py-4">
-                        <div>
-                            <p class="font-bold text-nuca-green">${customer.name}</p>
-                            <p class="text-xs text-nuca-green/60">${customer.email || 'Sem email'}</p>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div>
-                            <p class="font-medium">${customer.phone}</p>
-                            <p class="text-xs text-nuca-green/60">${customer.city || 'Sem morada'}</p>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4" id="orders-count-${customer.id}">
-                        <span class="text-nuca-green/40">-</span>
-                    </td>
-                    <td class="px-6 py-4 font-bold" id="total-spent-${customer.id}">
-                        <span class="text-nuca-green/40">-</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="openCustomerActions(event, '${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Ações">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
-                                    <circle cx="12" cy="5" r="1" fill="#556B4F"/>
-                                    <circle cx="12" cy="12" r="1" fill="#556B4F"/>
-                                    <circle cx="12" cy="19" r="1" fill="#556B4F"/>
-                                </svg>
+            document.getElementById('stock-critico-count').textContent = critico;
+            document.getElementById('stock-baixo-count').textContent = baixo;
+            document.getElementById('stock-ok-count').textContent = ok;
+            
+            const tbody = document.getElementById('stock-table');
+            tbody.innerHTML = stockData.map(s => {
+                const statusClass = s.stock < 5 ? 'stock-low' : s.stock <= 15 ? 'stock-medium' : 'stock-good';
+                const statusText = s.stock < 5 ? 'Crítico' : s.stock <= 15 ? 'Baixo' : 'OK';
+                return `
+                    <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
+                        <td class="py-4 px-6 font-medium text-nuca-green">${s.productName}</td>
+                        <td class="py-4 px-6 text-sm text-nuca-green/70">${s.size}</td>
+                        <td class="py-4 px-6 ${statusClass} font-medium">${s.stock}</td>
+                        <td class="py-4 px-6 text-sm text-nuca-green/70">${s.min}</td>
+                        <td class="py-4 px-6">
+                            <span class="status-badge ${statusClass === 'stock-low' ? 'bg-red-100 text-red-700' : statusClass === 'stock-medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${statusText}</span>
+                        </td>
+                        <td class="py-4 px-6">
+                            <button onclick="quickStockUpdate('${s.productId}', '${s.size}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openStockModal() {
+            const select = document.getElementById('stock-prod-select');
+            select.innerHTML = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            document.getElementById('stock-quantity').value = '';
+            document.getElementById('stock-modal').classList.add('active');
+        }
+
+        function quickStockUpdate(productId, size) {
+            document.getElementById('stock-prod-select').value = productId;
+            document.getElementById('stock-size-select').value = size;
+            document.getElementById('stock-modal').classList.add('active');
+        }
+
+        function updateStock() {
+            const productId = document.getElementById('stock-prod-select').value;
+            const size = document.getElementById('stock-size-select').value;
+            const quantity = parseInt(document.getElementById('stock-quantity').value);
+            
+            if (isNaN(quantity)) {
+                alert('Por favor introduz uma quantidade válida.');
+                return;
+            }
+            
+            const item = stockData.find(s => s.productId === productId && s.size === size);
+            if (item) {
+                item.stock = Math.max(0, item.stock + quantity);
+                alert(`Stock atualizado! Novo stock: ${item.stock}`);
+            }
+            
+            closeStockModal();
+            renderStock();
+            updateBadges();
+        }
+
+        function closeStockModal() {
+            document.getElementById('stock-modal').classList.remove('active');
+        }
+
+        // ===== CLIENTES =====
+        function renderClients() {
+            const tbody = document.getElementById('clients-table');
+            tbody.innerHTML = clients.map(c => `
+                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-nuca-green/10 flex items-center justify-center">
+                                <span class="font-bold text-nuca-green">${c.name.charAt(0)}</span>
+                            </div>
+                            <span class="font-medium text-nuca-green">${c.name}</span>
                         </div>
                     </td>
-                </tr>`;
-            }).join('');
-
-            // Carregar estatísticas de encomendas para cada cliente
-            customers.forEach(customer => {
-                loadCustomerOrdersStats(customer.id, customer.email);
-            });
-        }
-
-        async function loadCustomerOrdersStats(customerId, customerEmail) {
-            if (!customerEmail) {
-                const countEl = document.getElementById(`orders-count-${customerId}`);
-                const totalEl = document.getElementById(`total-spent-${customerId}`);
-                if (countEl) countEl.innerHTML = '0 compras';
-                if (totalEl) totalEl.innerHTML = '€0.00';
-                return;
-            }
-
-            try {
-                // Buscar todas as encomendas do cliente
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('status, total')
-                    .eq('customer_email', customerEmail);
-
-                if (error) throw error;
-
-                const count = data ? data.length : 0;
-
-                // Calcular total gasto (só encomendas pagas, enviadas ou entregues)
-                const totalSpent = data ? data
-                    .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
-                    .reduce((sum, o) => sum + (o.total || 0), 0) : 0;
-
-                const countEl = document.getElementById(`orders-count-${customerId}`);
-                const totalEl = document.getElementById(`total-spent-${customerId}`);
-
-                if (countEl) {
-                    countEl.innerHTML = `${count} compra${count !== 1 ? 's' : ''}`;
-                }
-                if (totalEl) {
-                    totalEl.innerHTML = `€${totalSpent.toFixed(2)}`;
-                }
-
-            } catch (error) {
-                console.error('Erro ao carregar estatísticas:', error);
-                const countEl = document.getElementById(`orders-count-${customerId}`);
-                const totalEl = document.getElementById(`total-spent-${customerId}`);
-                if (countEl) countEl.innerHTML = '0 compras';
-                if (totalEl) totalEl.innerHTML = '€0.00';
-            }
-        }
-
-        // Menu de ações do cliente (dropdown)
-        function openCustomerActions(event, customerId) {
-            event.stopPropagation();
-
-            // Remover menu existente se houver
-            const existingMenu = document.getElementById('customer-actions-menu');
-            if (existingMenu) existingMenu.remove();
-
-            // Criar menu dropdown
-            const menu = document.createElement('div');
-            menu.id = 'customer-actions-menu';
-            menu.className = 'fixed bg-white rounded-xl shadow-2xl border border-nuca-green/10 py-2 z-[3000] min-w-[200px]';
-            menu.style.cssText = `
-                top: ${event.pageY}px;
-                left: ${event.pageX}px;
-                transform: translate(-50%, 10px);
-            `;
-
-            menu.innerHTML = `
-                <div class="px-4 py-2 text-xs font-bold text-nuca-green/60 uppercase border-b border-nuca-green/10 mb-1">Ações do Cliente</div>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
-                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    Ver Informação
-                </button>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
-                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                    </svg>
-                    Histórico de Compras
-                </button>
-                <div class="border-t border-nuca-green/10 my-1"></div>
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit')" 
-                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    Editar Cliente
-                </button>
-            `;
-
-            document.body.appendChild(menu);
-
-            // Fechar menu ao clicar fora
-            setTimeout(() => {
-                document.addEventListener('click', closeCustomerActionsMenuOnClickOutside);
-            }, 100);
-        }
-
-        function closeCustomerActionsMenu() {
-            const menu = document.getElementById('customer-actions-menu');
-            if (menu) {
-                menu.remove();
-                document.removeEventListener('click', closeCustomerActionsMenuOnClickOutside);
-            }
-        }
-
-        function closeCustomerActionsMenuOnClickOutside(e) {
-            const menu = document.getElementById('customer-actions-menu');
-            if (menu && !menu.contains(e.target)) {
-                closeCustomerActionsMenu();
-            }
-        }
-
-        async function openCustomerModal(customerId = null, mode = 'view') {
-            document.getElementById('customer-modal').classList.remove('hidden');
-
-            // Configurar modo (view ou edit)
-            const isEditMode = mode === 'edit' || !customerId;
-            const formInputs = document.querySelectorAll('#customer-form input, #customer-form textarea');
-            const saveButton = document.querySelector('#customer-form button[type="submit"]');
-            const cancelButton = document.querySelector('#customer-form button[type="button"]');
-
-            formInputs.forEach(input => {
-                input.readOnly = !isEditMode;
-                if (!isEditMode) {
-                    input.classList.add('bg-gray-100', 'cursor-not-allowed');
-                    input.classList.remove('search-input');
-                } else {
-                    input.classList.remove('bg-gray-100', 'cursor-not-allowed');
-                    input.classList.add('search-input');
-                }
-            });
-
-            if (saveButton) saveButton.style.display = isEditMode ? 'inline-flex' : 'none';
-            if (cancelButton) cancelButton.textContent = isEditMode ? 'Cancelar' : 'Fechar';
-
-            if (customerId) {
-                const { data: customer, error } = await supabaseClient
-                    .from('customers')
-                    .select('*')
-                    .eq('id', customerId)
-                    .single();
-
-                if (customer) {
-                    const titlePrefix = isEditMode ? 'Editar Cliente' : 'Ficha de Cliente';
-                    document.getElementById('modal-customer-title').textContent = `${titlePrefix} - ${customer.name}`;
-                    document.getElementById('customer-id').value = customer.id;
-                    document.getElementById('customer-name').value = customer.name || '';
-                    document.getElementById('customer-email').value = customer.email || '';
-                    document.getElementById('customer-phone').value = customer.phone || '';
-                    document.getElementById('customer-birth').value = customer.birth_date || '';
-                    document.getElementById('customer-nif').value = customer.nif || '';
-                    document.getElementById('customer-address').value = customer.address || '';
-                    document.getElementById('customer-city').value = customer.city || '';
-                    document.getElementById('customer-postal').value = customer.postal_code || '';
-                    document.getElementById('customer-notes').value = customer.notes || '';
-                }
-
-                await loadCustomerOrders(customerId);
-            } else {
-                document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
-                document.getElementById('customer-form').reset();
-                document.getElementById('customer-id').value = '';
-            }
-        }
-
-        function closeCustomerModal() {
-            document.getElementById('customer-modal').classList.add('hidden');
-        }
-
-        // ============================================
-        // CUSTOMER FORM SUBMIT
-        // ============================================
-        document.getElementById('customer-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const customerData = {
-                name: document.getElementById('customer-name').value,
-                email: document.getElementById('customer-email').value || null,
-                phone: document.getElementById('customer-phone').value,
-                birth_date: document.getElementById('customer-birth').value || null,
-                nif: document.getElementById('customer-nif').value || null,
-                address: document.getElementById('customer-address').value || null,
-                city: document.getElementById('customer-city').value || null,
-                postal_code: document.getElementById('customer-postal').value || null,
-                notes: document.getElementById('customer-notes').value || null
-            };
-
-            const customerId = document.getElementById('customer-id').value;
-
-            try {
-                if (customerId) {
-                    const { error } = await supabaseClient
-                        .from('customers')
-                        .update(customerData)
-                        .eq('id', customerId);
-
-                    if (error) throw error;
-                    showToast('Cliente atualizado com sucesso!', 'success');
-                } else {
-                    const { data, error } = await supabaseClient
-                        .from('customers')
-                        .insert([customerData])
-                        .select()
-                        .single();
-
-                    if (error) throw error;
-
-                    showToast('Cliente criado com sucesso!', 'success');
-                }
-
-                loadCustomers();
-                closeCustomerModal();
-            } catch (error) {
-                console.error('Erro ao guardar cliente:', error);
-                showToast('Erro ao guardar cliente', 'error');
-            }
-        });
-
-        async function loadCustomerOrders(customerId) {
-            const historyDiv = document.getElementById('customer-orders-history');
-            if (!historyDiv) return;
-
-            try {
-                // 1. Buscar o email do cliente
-                const { data: customerData, error: customerError } = await supabaseClient
-                    .from('customers')
-                    .select('email')
-                    .eq('id', customerId)
-                    .single();
-
-                if (customerError || !customerData || !customerData.email) {
-                    return;
-                }
-
-                const customerEmail = customerData.email;
-
-                // 2. Buscar encomendas pelo email
-                const { data, error } = await supabaseClient
-                    .from('orders')
-                    .select('*')
-                    .eq('customer_email', customerEmail)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                // 3. Atualizar o modal com o histórico se existir
-                if (data && data.length > 0) {
-                    // Podemos adicionar um pequeno indicador no modal
-                    const modalContent = document.querySelector('#customer-modal .flex-1');
-                    const historyIndicator = document.createElement('div');
-                    historyIndicator.className = 'mt-4 p-4 bg-nuca-green/5 rounded-xl';
-                    historyIndicator.innerHTML = `
-                        <p class="text-sm text-nuca-green"><strong>${data.length}</strong> compra${data.length !== 1 ? 's' : ''} encontrada${data.length !== 1 ? 's' : ''}</p>
-                    `;
-                    
-                    // Remover indicador anterior se existir
-                    const oldIndicator = document.getElementById('customer-history-indicator');
-                    if (oldIndicator) oldIndicator.remove();
-                    
-                    historyIndicator.id = 'customer-history-indicator';
-                    modalContent?.appendChild(historyIndicator);
-                }
-
-            } catch (error) {
-                console.error('Erro ao carregar histórico:', error);
-            }
-        }
-
-        // ============================================
-        // CHARTS
-        // ============================================
-        function initCharts() {
-            if (salesChart) salesChart.destroy();
-            if (statusChart) statusChart.destroy();
-
-            const salesCtx = document.getElementById('salesChart')?.getContext('2d');
-            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
-            
-            if (!salesCtx || !statusCtx) return;
-
-            salesChart = new Chart(salesCtx, {
-                type: 'line',
-                data: { 
-                    labels: [], 
-                    datasets: [{ 
-                        label: 'Vendas (€)', 
-                        data: [], 
-                        borderColor: '#556B4F', 
-                        backgroundColor: 'rgba(85,107,79,0.1)', 
-                        tension: 0.4, 
-                        fill: true 
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(85, 107, 79, 0.1)' },
-                            ticks: { color: '#556B4F' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#556B4F' }
-                        }
-                    }
-                }
-            });
-
-            statusChart = new Chart(statusCtx, {
-                type: 'doughnut',
-                data: { 
-                    labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], 
-                    datasets: [{ 
-                        data: [0,0,0,0,0], 
-                        backgroundColor: ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444'],
-                        borderWidth: 0
-                    }] 
-                },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    cutout: '60%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#556B4F', font: { family: 'Space Grotesk' } }
-                        }
-                    }
-                }
-            });
-
-            updateChartsData();
-        }
-
-        function updateChartsData() {
-            if (!salesChart || !statusChart) return;
-            
-            const days = parseInt(document.getElementById('chart-period')?.value || 7);
-            const labels = [];
-            const data = [];
-
-            for (let i = days - 1; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                labels.push(date.toLocaleDateString('pt-PT', { weekday: 'short' }));
-                const dayTotal = allOrders
-                    .filter(o => {
-                        const orderDate = new Date(o.created_at);
-                        return orderDate.toDateString() === date.toDateString() && 
-                               ['paid','shipped','delivered'].includes(o.status);
-                    })
-                    .reduce((sum, o) => sum + (o.total || 0), 0);
-                data.push(dayTotal);
-            }
-
-            salesChart.data.labels = labels;
-            salesChart.data.datasets[0].data = data;
-            salesChart.update();
-
-            const statusCounts = { pending_payment:0, paid:0, shipped:0, delivered:0, cancelled:0 };
-            allOrders.forEach(o => { 
-                if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; 
-            });
-            statusChart.data.datasets[0].data = [
-                statusCounts.pending_payment, statusCounts.paid, statusCounts.shipped, 
-                statusCounts.delivered, statusCounts.cancelled
-            ];
-            statusChart.update();
-        }
-
-        function updateChart() {
-            updateChartsData();
-        }
-
-        // ============================================
-        // NOTIFICATIONS
-        // ============================================
-        function toggleNotifications() {
-            const panel = document.getElementById('notifications-panel');
-            panel.classList.toggle('hidden');
-        }
-
-        function addNotification(message, type) {
-            const notification = { 
-                id: Date.now(), 
-                message, 
-                type, 
-                time: new Date(), 
-                read: false 
-            };
-            notifications.unshift(notification);
-            updateNotificationsList();
-            
-            const badge = document.getElementById('notification-badge');
-            badge.classList.remove('hidden');
-            badge.textContent = notifications.filter(n => !n.read).length;
-        }
-
-        function updateNotificationsList() {
-            const list = document.getElementById('notifications-list');
-            if (notifications.length === 0) {
-                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações novas</p>';
-                return;
-            }
-            list.innerHTML = notifications.map(n => `
-                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} cursor-pointer hover:bg-nuca-green/10 transition-colors" onclick="markAsRead(${n.id})">
-                    <p class="text-sm font-medium text-nuca-green">${n.message}</p>
-                    <p class="text-xs text-nuca-green/60 mt-1">${formatTime(n.time)}</p>
-                </div>
+                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.email}</td>
+                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.orders}</td>
+                    <td class="py-4 px-6 font-medium text-nuca-green">€${c.spent.toFixed(2)}</td>
+                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.lastOrder}</td>
+                    <td class="py-4 px-6">
+                        <button onclick="viewClient('${c.email}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </td>
+                </tr>
             `).join('');
         }
 
-        function markAsRead(id) {
-            const notification = notifications.find(n => n.id === id);
-            if (notification) {
-                notification.read = true;
-                updateNotificationsList();
-                const unreadCount = notifications.filter(n => !n.read).length;
-                const badge = document.getElementById('notification-badge');
-                if (unreadCount === 0) {
-                    badge.classList.add('hidden');
-                } else {
-                    badge.textContent = unreadCount;
+        function searchClients() {
+            const query = document.getElementById('client-search').value.toLowerCase();
+            // Implementar filtro
+        }
+
+        function viewClient(email) {
+            alert('Detalhes do cliente ' + email + ' (em desenvolvimento)');
+        }
+
+        // ===== PROMOÇÕES =====
+        function renderPromos() {
+            const grid = document.getElementById('promos-grid');
+            grid.innerHTML = promos.map(p => {
+                const isActive = new Date(p.end) >= new Date();
+                return `
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border-2 ${isActive ? 'border-nuca-green' : 'border-gray-200'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${isActive ? 'bg-nuca-green text-nuca-beige' : 'bg-gray-200 text-gray-600'}">${isActive ? 'ATIVO' : 'EXPIRADO'}</span>
+                                <h4 class="font-display text-2xl font-bold text-nuca-green mt-2">${p.code}</h4>
+                            </div>
+                            <button onclick="deletePromo('${p.code}')" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p class="flex justify-between"><span class="text-nuca-green/60">Desconto:</span> <span class="font-medium text-nuca-green">${p.type === 'percentage' ? p.value + '%' : '€' + p.value}</span></p>
+                            <p class="flex justify-between"><span class="text-nuca-green/60">Mínimo:</span> <span class="font-medium text-nuca-green">€${p.min}</span></p>
+                            <p class="flex justify-between"><span class="text-nuca-green/60">Válido até:</span> <span class="font-medium text-nuca-green">${p.end}</span></p>
+                            <p class="flex justify-between"><span class="text-nuca-green/60">Utilizações:</span> <span class="font-medium text-nuca-green">${p.uses}</span></p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPromoModal() {
+            document.getElementById('promo-code').value = '';
+            document.getElementById('promo-value').value = '';
+            document.getElementById('promo-min').value = '';
+            document.getElementById('promo-modal').classList.add('active');
+        }
+
+        function savePromo() {
+            const code = document.getElementById('promo-code').value.toUpperCase();
+            const type = document.getElementById('promo-type').value;
+            const value = parseFloat(document.getElementById('promo-value').value);
+            const start = document.getElementById('promo-start').value;
+            const end = document.getElementById('promo-end').value;
+            const min = parseFloat(document.getElementById('promo-min').value) || 0;
+            
+            if (!code || !value || !start || !end) {
+                alert('Por favor preenche todos os campos obrigatórios.');
+                return;
+            }
+            
+            promos.push({ code, type, value, start, end, min, uses: 0 });
+            alert('Promoção criada com sucesso!');
+            closePromoModal();
+            renderPromos();
+        }
+
+        function deletePromo(code) {
+            if (!confirm('Tens a certeza que queres eliminar esta promoção?')) return;
+            promos = promos.filter(p => p.code !== code);
+            renderPromos();
+        }
+
+        function closePromoModal() {
+            document.getElementById('promo-modal').classList.remove('active');
+        }
+
+        // ===== GRÁFICOS =====
+        function initCharts() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart').getContext('2d');
+            new Chart(salesCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Vendas (€)',
+                        data: [120, 190, 150, 250, 220, 310, 280],
+                        borderColor: '#556B4F',
+                        backgroundColor: 'rgba(85, 107, 79, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } },
+                        x: { grid: { display: false } }
+                    }
                 }
-            }
-        }
+            });
 
-        function markAllAsRead() {
-            notifications.forEach(n => n.read = true);
-            updateNotificationsList();
-            document.getElementById('notification-badge').classList.add('hidden');
-        }
+            // Products Chart
+            const productsCtx = document.getElementById('productsChart').getContext('2d');
+            new Chart(productsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Camisetas', 'Hoodies', 'Acessórios', 'Estações'],
+                    datasets: [{
+                        data: [224, 106, 245, 304],
+                        backgroundColor: ['#556B4F', '#98D8C8', '#D8C6A5', '#E59866']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
 
-        function updatePendingBadge() {
-            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
-            const badge = document.getElementById('sidebar-pending-badge');
-            if (pending > 0) {
-                badge.textContent = pending;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
+            // Monthly Chart
+            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Vendas (€)',
+                        data: [3200, 4100, 3800, 5200, 4800, 5600],
+                        backgroundColor: '#556B4F'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
 
-        // ============================================
-        // UTILS
-        // ============================================
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-PT', { 
-                day:'2-digit', 
-                month:'2-digit', 
-                year:'numeric', 
-                hour:'2-digit', 
-                minute:'2-digit' 
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Camisetas', 'Hoodies', 'Acessórios', 'Estações'],
+                    datasets: [{
+                        data: [35, 20, 25, 20],
+                        backgroundColor: ['#556B4F', '#98D8C8', '#D8C6A5', '#E59866']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'right' } }
+                }
             });
         }
 
-        function formatTime(date) {
-            const diff = Math.floor((new Date() - date) / 1000 / 60);
-            if (diff < 1) return 'Agora';
-            if (diff < 60) return `Há ${diff} min`;
-            if (diff < 1440) return `Há ${Math.floor(diff / 60)} h`;
-            return date.toLocaleDateString('pt-PT');
+        // ===== ENCOMENDAS RECENTES =====
+        function renderRecentOrders() {
+            const tbody = document.getElementById('recent-orders-table');
+            const recent = orders.slice(0, 5);
+            tbody.innerHTML = recent.map(o => `
+                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
+                    <td class="py-3 text-sm font-medium text-nuca-green">${o.id}</td>
+                    <td class="py-3 text-sm text-nuca-green/70">${o.customer}</td>
+                    <td class="py-3 text-sm text-nuca-green/70">${o.items} item(s)</td>
+                    <td class="py-3 text-sm font-medium text-nuca-green">€${o.total.toFixed(2)}</td>
+                    <td class="py-3"><span class="status-badge status-${o.status}">${o.status}</span></td>
+                    <td class="py-3 text-sm text-nuca-green/70">${o.date}</td>
+                </tr>
+            `).join('');
         }
 
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            const colors = { 
-                success: 'bg-green-500', 
-                error: 'bg-red-500', 
-                info: 'bg-nuca-green',
-                warning: 'bg-yellow-500'
-            };
-            const icons = {
-                success: '✓',
-                error: '✕',
-                info: 'ℹ',
-                warning: '⚠'
-            };
-            
-            toast.className = `${colors[type] || colors.info} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px] flex items-center gap-3 animate-fade-in`;
-            toast.innerHTML = `
-                <span class="text-lg">${icons[type] || icons.info}</span>
-                <span class="font-medium">${message}</span>
-            `;
-            container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        function refreshData() {
+            updateStats();
+            renderProducts();
+            renderOrders();
+            renderStock();
+            updateBadges();
+            alert('Dados atualizados!');
         }
-
-        function searchCustomers() {
-            const searchTerm = document.getElementById('search-customers').value.toLowerCase();
-            loadCustomers();
-        }
-
-        function exportCustomers() {
-            showToast('Exportação em desenvolvimento', 'info');
-        }
-
-        document.addEventListener('click', (e) => {
-            const panel = document.getElementById('notifications-panel');
-            const btn = document.querySelector('button[onclick="toggleNotifications()"]');
-            if (!panel.contains(e.target) && !btn.contains(e.target)) {
-                panel.classList.add('hidden');
-            }
-        });
-
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fade-in {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fade-in {
-                animation: fade-in 0.3s ease-out;
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
