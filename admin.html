@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NUCA Admin - Painel de Gestão</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -34,1335 +34,1353 @@
     </script>
     
     <style>
-        body { background-color: #F5F1EA; color: #2C3328; font-family: 'Space Grotesk', sans-serif; }
-        .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
-        
-        .sidebar { 
-            transform: translateX(-100%); 
-            transition: transform 0.3s ease; 
-        }
-        .sidebar.open { transform: translateX(0); }
-        
-        @media (min-width: 1024px) {
-            .sidebar { transform: translateX(0); }
-            .sidebar-toggle { display: none; }
+        body {
+            background: linear-gradient(135deg, #D8C6A5 0%, #E8DCC4 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
         }
         
-        .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(85, 107, 79, 0.15); }
-        
-        .tab-btn { transition: all 0.2s ease; }
-        .tab-btn.active { background: #556B4F; color: #D8C6A5; }
-        .tab-btn:not(.active):hover { background: rgba(85, 107, 79, 0.1); }
-        
-        .status-badge { 
-            padding: 0.25rem 0.75rem; 
-            border-radius: 9999px; 
-            font-size: 0.75rem; 
-            font-weight: 600; 
+        .admin-sidebar {
+            background: #2C3328;
+            min-height: 100vh;
         }
-        .status-pendente { background: #FEF3C7; color: #92400E; }
-        .status-processamento { background: #DBEAFE; color: #1E40AF; }
-        .status-enviado { background: #D1FAE5; color: #065F46; }
-        .status-entregue { background: #556B4F; color: #D8C6A5; }
-        .status-cancelado { background: #FEE2E2; color: #991B1B; }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(85, 107, 79, 0.3);
+            border-left: 3px solid #D8C6A5;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #556B4F;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2C3328;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #D8C6A5;
+            color: #2C3328;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #E8DCC4;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-pending { background: #FEF3C7; color: #92400E; }
+        .status-processing { background: #DBEAFE; color: #1E40AF; }
+        .status-shipped { background: #D1FAE5; color: #065F46; }
+        .status-delivered { background: #E0E7FF; color: #3730A3; }
+        .status-cancelled { background: #FEE2E2; color: #991B1B; }
         
         .stock-low { color: #DC2626; font-weight: 600; }
-        .stock-medium { color: #D97706; }
-        .stock-good { color: #059669; }
+        .stock-medium { color: #F59E0B; font-weight: 600; }
+        .stock-good { color: #10B981; font-weight: 600; }
         
-        .modal { 
-            opacity: 0; 
-            visibility: hidden; 
-            transition: all 0.3s ease; 
-        }
-        .modal.active { 
-            opacity: 1; 
-            visibility: visible; 
-        }
-        .modal-content { 
-            transform: scale(0.95); 
-            transition: transform 0.3s ease; 
-        }
-        .modal.active .modal-content { 
-            transform: scale(1); 
+        .modal-overlay {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
         }
         
-        .progress-bar { 
-            height: 8px; 
-            border-radius: 4px; 
-            background: rgba(85, 107, 79, 0.1); 
-            overflow: hidden; 
-        }
-        .progress-fill { 
-            height: 100%; 
-            border-radius: 4px; 
-            transition: width 0.5s ease; 
+        .season-spring { background: #98D8C8; }
+        .season-summer { background: #F7DC6F; }
+        .season-autumn { background: #E59866; }
+        .season-winter { background: #AED6F1; }
+        
+        input, select, textarea {
+            border: 2px solid #E8DCC4;
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: border-color 0.3s ease;
         }
         
-        /* Scrollbar personalizada */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(85, 107, 79, 0.05); }
-        ::-webkit-scrollbar-thumb { background: rgba(85, 107, 79, 0.2); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(85, 107, 79, 0.3); }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #556B4F;
+        }
         
-        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .table-row:hover {
+            background: rgba(232, 220, 196, 0.3);
+        }
+        
+        .notification {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #E8DCC4;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #556B4F, #2C3328);
+            transition: width 0.5s ease;
+        }
     </style>
 <base target="_blank">
 </head>
-<body class="antialiased">
-    
-    <!-- Mobile Header -->
-    <div class="lg:hidden bg-nuca-green text-nuca-beige p-4 flex justify-between items-center sticky top-0 z-40">
-        <span class="nuca-logo text-2xl">NUCA Admin</span>
-        <button onclick="toggleSidebar()" class="p-2 hover:bg-nuca-beige/20 rounded-lg transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-    </div>
-    
-    <div class="flex min-h-screen">
+<body class="text-nuca-dark">
+    <div class="flex">
         <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar fixed lg:static inset-y-0 left-0 w-64 bg-nuca-dark text-nuca-beige z-50 overflow-y-auto">
+        <aside class="admin-sidebar w-64 fixed left-0 top-0 h-full z-50 overflow-y-auto">
             <div class="p-6">
-                <div class="flex justify-between items-center mb-8">
-                    <span class="nuca-logo text-2xl">NUCA</span>
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 hover:bg-nuca-beige/20 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
-                
-                <nav class="space-y-2">
-                    <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all bg-nuca-beige/20 text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                        Dashboard
-                    </button>
-                    <button onclick="switchTab('produtos')" id="nav-produtos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                        Produtos
-                    </button>
-                    <button onclick="switchTab('encomendas')" id="nav-encomendas" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                        Encomendas
-                        <span id="badge-encomendas" class="ml-auto bg-nuca-beige text-nuca-dark text-xs px-2 py-0.5 rounded-full hidden">0</span>
-                    </button>
-                    <button onclick="switchTab('stock')" id="nav-stock" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                        Stock
-                        <span id="badge-stock" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
-                    </button>
-                    <button onclick="switchTab('clientes')" id="nav-clientes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        Clientes
-                    </button>
-                    <button onclick="switchTab('promocoes')" id="nav-promocoes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                        Promoções
-                    </button>
-                    <button onclick="switchTab('analises')" id="nav-analises" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-nuca-beige/10 text-nuca-beige/70 hover:text-nuca-beige">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                        Análises
-                    </button>
-                </nav>
+                <h1 class="font-display text-2xl font-bold text-nuca-beige">NUCA</h1>
+                <p class="text-nuca-beige/60 text-sm">Painel Administrativo</p>
             </div>
             
-            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-beige/10">
+            <nav class="mt-4">
+                <a href="#dashboard" onclick="showTab('dashboard')" class="nav-item active flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    Dashboard
+                </a>
+                <a href="#orders" onclick="showTab('orders')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    Encomendas
+                    <span id="orders-badge" class="ml-auto bg-nuca-beige text-nuca-dark text-xs px-2 py-0.5 rounded-full">12</span>
+                </a>
+                <a href="#products" onclick="showTab('products')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                    Produtos
+                </a>
+                <a href="#stock" onclick="showTab('stock')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    Stock
+                    <span id="stock-badge" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
+                </a>
+                <a href="#customers" onclick="showTab('customers')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    Clientes
+                </a>
+                <a href="#promotions" onclick="showTab('promotions')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    Promoções
+                </a>
+                <a href="#analytics" onclick="showTab('analytics')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Análises
+                </a>
+                <a href="#settings" onclick="showTab('settings')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Configurações
+                </a>
+            </nav>
+            
+            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-beige/20">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-nuca-beige/20 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    </div>
+                    <div class="w-10 h-10 rounded-full bg-nuca-beige flex items-center justify-center text-nuca-dark font-bold">A</div>
                     <div>
-                        <p class="font-medium text-sm">Admin NUCA</p>
-                        <p class="text-xs text-nuca-beige/60">nuca.crew@gmail.com</p>
+                        <p class="text-nuca-beige font-medium">Admin</p>
+                        <p class="text-nuca-beige/60 text-sm">nuca.crew@gmail.com</p>
                     </div>
                 </div>
-                <button onclick="logout()" class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-nuca-beige/30 text-sm hover:bg-nuca-beige/10 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Terminar Sessão
-                </button>
             </div>
         </aside>
         
-        <!-- Overlay para mobile -->
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
-        
         <!-- Main Content -->
-        <main class="flex-1 p-4 lg:p-8 overflow-x-hidden">
+        <main class="flex-1 ml-64 p-8">
+            <!-- Notifications Container -->
+            <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
             
-            <!-- Header Desktop -->
-            <div class="hidden lg:flex justify-between items-center mb-8">
-                <div>
-                    <h1 id="page-title" class="font-display text-3xl font-bold text-nuca-green">Dashboard</h1>
-                    <p class="text-nuca-green/60 mt-1">Bem-vindo de volta, Admin</p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="refreshData()" class="flex items-center gap-2 px-4 py-2 rounded-xl border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-                        Atualizar
-                    </button>
-                    <div class="relative">
-                        <button onclick="toggleNotifications()" class="p-2 rounded-xl border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 transition-colors relative">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                            <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Dashboard</h2>
+                        <p class="text-nuca-green/70">Visão geral da tua loja</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="exportData()" class="btn-secondary px-4 py-2 rounded-lg flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Exportar
                         </button>
-                        <div id="notifications-panel" class="hidden absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-nuca-green/10 z-50">
-                            <div class="p-4 border-b border-nuca-green/10">
-                                <h4 class="font-bold text-nuca-green">Notificações</h4>
-                            </div>
-                            <div id="notifications-list" class="max-h-64 overflow-y-auto">
-                                <p class="p-4 text-center text-nuca-green/60 text-sm">Sem notificações novas</p>
-                            </div>
-                        </div>
+                        <button onclick="refreshData()" class="btn-primary px-4 py-2 rounded-lg flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Atualizar
+                        </button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- DASHBOARD -->
-            <div id="tab-dashboard" class="tab-content">
+                
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-nuca-green/60 text-sm">Vendas Hoje</span>
-                            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card stat-card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-nuca-beige/70 text-sm">Vendas Hoje</p>
+                                <h3 class="text-3xl font-bold mt-1">€1,247</h3>
+                                <p class="text-green-400 text-sm mt-2 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                    +12.5%
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-nuca-beige/20 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-nuca-beige" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                         </div>
-                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-vendas-hoje">€0.00</p>
-                        <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                            +12% vs ontem
-                        </p>
                     </div>
                     
-                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-nuca-green/60 text-sm">Encomendas</span>
-                            <div class="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-nuca-green/70 text-sm">Encomendas</p>
+                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">24</h3>
+                                <p class="text-green-600 text-sm mt-2 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                    +8.2%
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-nuca-green/10 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-nuca-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                             </div>
                         </div>
-                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-encomendas">0</p>
-                        <p class="text-xs text-nuca-green/60 mt-1">Pendentes: <span id="stat-pendentes">0</span></p>
                     </div>
                     
-                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-nuca-green/60 text-sm">Stock Baixo</span>
-                            <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-nuca-green/70 text-sm">Clientes Novos</p>
+                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">18</h3>
+                                <p class="text-red-500 text-sm mt-2 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+                                    -2.4%
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-nuca-green/10 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-nuca-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                             </div>
                         </div>
-                        <p class="font-display text-2xl font-bold text-red-600" id="stat-stock-baixo">0</p>
-                        <p class="text-xs text-red-600 mt-1">Produtos em alerta</p>
                     </div>
                     
-                    <div class="card-hover bg-white rounded-2xl p-5 shadow-sm">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-nuca-green/60 text-sm">Clientes</span>
-                            <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    <div class="card p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-nuca-green/70 text-sm">Stock Baixo</p>
+                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">3</h3>
+                                <p class="text-orange-500 text-sm mt-2">Ação necessária</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                             </div>
                         </div>
-                        <p class="font-display text-2xl font-bold text-nuca-green" id="stat-clientes">0</p>
-                        <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                            +5 este mês
-                        </p>
                     </div>
                 </div>
                 
                 <!-- Charts Row -->
-                <div class="grid lg:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-display text-lg font-bold text-nuca-green">Vendas dos Últimos 7 Dias</h3>
-                            <select class="text-sm border border-nuca-green/20 rounded-lg px-3 py-1 text-nuca-green">
-                                <option>Última semana</option>
-                                <option>Último mês</option>
-                                <option>Último ano</option>
-                            </select>
-                        </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas dos Últimos 7 Dias</h3>
                         <canvas id="salesChart" height="200"></canvas>
                     </div>
                     
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-display text-lg font-bold text-nuca-green">Produtos Mais Vendidos</h3>
-                            <button class="text-sm text-nuca-green hover:underline">Ver todos</button>
-                        </div>
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Produtos Mais Vendidos</h3>
                         <canvas id="productsChart" height="200"></canvas>
                     </div>
                 </div>
                 
                 <!-- Recent Orders -->
-                <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <div class="card p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-display text-lg font-bold text-nuca-green">Encomendas Recentes</h3>
-                        <button onclick="switchTab('encomendas')" class="text-sm text-nuca-green hover:underline">Ver todas</button>
+                        <h3 class="font-display text-xl font-bold text-nuca-dark">Encomendas Recentes</h3>
+                        <button onclick="showTab('orders')" class="text-nuca-green hover:text-nuca-dark font-medium">Ver todas</button>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
-                                <tr class="border-b border-nuca-green/10">
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">ID</th>
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Cliente</th>
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Produtos</th>
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Total</th>
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Estado</th>
-                                    <th class="text-left py-3 text-sm font-medium text-nuca-green/60">Data</th>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">ID</th>
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Cliente</th>
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Produtos</th>
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Total</th>
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Estado</th>
+                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="recent-orders-table"></tbody>
+                            <tbody id="recent-orders-table">
+                                <!-- Populated by JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             
-            <!-- PRODUTOS -->
-            <div id="tab-produtos" class="tab-content hidden">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div class="flex gap-2">
-                        <button onclick="filterProducts('all')" class="tab-btn active px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Todos</button>
-                        <button onclick="filterProducts('camisetas')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="camisetas">Camisetas</button>
-                        <button onclick="filterProducts('hoodies')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="hoodies">Hoodies</button>
-                        <button onclick="filterProducts('acessorios')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="acessorios">Acessórios</button>
+            <!-- Orders Tab -->
+            <div id="orders" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Encomendas</h2>
+                        <p class="text-nuca-green/70">Gestão de todas as encomendas</p>
                     </div>
-                    <button onclick="openProductModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-5 py-2.5 rounded-full font-medium hover:bg-nuca-dark transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <div class="flex gap-3">
+                        <input type="text" id="order-search" placeholder="Pesquisar encomenda..." class="px-4 py-2 w-64">
+                        <select id="order-filter" class="px-4 py-2">
+                            <option value="all">Todos os estados</option>
+                            <option value="pending">Pendente</option>
+                            <option value="processing">Em processamento</option>
+                            <option value="shipped">Enviado</option>
+                            <option value="delivered">Entregue</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="card p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium"><input type="checkbox" id="select-all-orders"></th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">ID</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Data</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Cliente</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Itens</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Total</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-nuca-beige">
+                        <p class="text-nuca-green/70 text-sm">Mostrando 1-10 de 156 encomendas</p>
+                        <div class="flex gap-2">
+                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">Anterior</button>
+                            <button class="px-3 py-1 rounded-lg bg-nuca-green text-white">1</button>
+                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">2</button>
+                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">3</button>
+                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">Próximo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products Tab -->
+            <div id="products" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Produtos</h2>
+                        <p class="text-nuca-green/70">Gestão do catálogo de produtos</p>
+                    </div>
+                    <button onclick="openProductModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Novo Produto
                     </button>
                 </div>
                 
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
-                        <div class="relative flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <input type="text" id="product-search" placeholder="Pesquisar produtos..." oninput="searchProducts()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                        </div>
-                        <select id="product-sort" onchange="sortProducts()" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
-                            <option value="name">Ordenar por Nome</option>
-                            <option value="price-asc">Preço: Baixo → Alto</option>
-                            <option value="price-desc">Preço: Alto → Baixo</option>
-                            <option value="stock">Stock: Menor → Maior</option>
+                <div class="card p-6">
+                    <div class="flex gap-4 mb-6">
+                        <input type="text" id="product-search" placeholder="Pesquisar produto..." class="flex-1 px-4 py-2">
+                        <select id="product-category" class="px-4 py-2">
+                            <option value="all">Todas as categorias</option>
+                            <option value="tshirts">T-shirts</option>
+                            <option value="hoodies">Hoodies</option>
+                            <option value="pants">Calças</option>
+                            <option value="accessories">Acessórios</option>
+                        </select>
+                        <select id="product-season" class="px-4 py-2">
+                            <option value="all">Todas as estações</option>
+                            <option value="spring">Primavera</option>
+                            <option value="summer">Verão</option>
+                            <option value="autumn">Outono</option>
+                            <option value="winter">Inverno</option>
                         </select>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
-                                <tr class="bg-nuca-light/30">
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produto</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Categoria</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Preço</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Stock</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Vendas</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Produto</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Categoria</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Preço</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Stock</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Vendas</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="products-table"></tbody>
+                            <tbody id="products-table">
+                                <!-- Populated by JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             
-            <!-- ENCOMENDAS -->
-            <div id="tab-encomendas" class="tab-content hidden">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <div class="flex gap-2 flex-wrap">
-                        <button onclick="filterOrders('all')" class="tab-btn active px-4 py-2 rounded-full text-sm font-medium" data-filter="all">Todas</button>
-                        <button onclick="filterOrders('pendente')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="pendente">Pendentes</button>
-                        <button onclick="filterOrders('processamento')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="processamento">Em Processamento</button>
-                        <button onclick="filterOrders('enviado')" class="tab-btn px-4 py-2 rounded-full text-sm font-medium text-nuca-green" data-filter="enviado">Enviadas</button>
+            <!-- Stock Tab -->
+            <div id="stock" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Gestão de Stock</h2>
+                        <p class="text-nuca-green/70">Controlo de inventário e alertas</p>
                     </div>
-                    <button onclick="exportOrders()" class="flex items-center gap-2 border border-nuca-green text-nuca-green px-5 py-2.5 rounded-full font-medium hover:bg-nuca-green/5 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Exportar
+                    <button onclick="openStockModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                        Atualizar Stock
                     </button>
                 </div>
                 
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
-                        <div class="relative flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <input type="text" id="order-search" placeholder="Pesquisar encomendas..." oninput="searchOrders()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                        </div>
-                        <input type="date" id="order-date-from" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
-                        <input type="date" id="order-date-to" class="px-4 py-2.5 rounded-xl border border-nuca-green/20 text-sm text-nuca-green focus:outline-none focus:border-nuca-green">
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="bg-nuca-light/30">
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green"><input type="checkbox" class="rounded border-nuca-green/30"></th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">ID</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Cliente</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produtos</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Total</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Estado</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Data</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table"></tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="p-4 border-t border-nuca-green/10 flex justify-between items-center">
-                        <p class="text-sm text-nuca-green/60">Mostrando <span id="orders-showing">0</span> de <span id="orders-total">0</span> encomendas</p>
-                        <div class="flex gap-2">
-                            <button onclick="changePage(-1)" class="px-3 py-1 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50" id="btn-prev">←</button>
-                            <span class="px-3 py-1 text-sm text-nuca-green" id="page-indicator">1</span>
-                            <button onclick="changePage(1)" class="px-3 py-1 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50" id="btn-next">→</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- STOCK -->
-            <div id="tab-stock" class="tab-content hidden">
-                <div class="grid lg:grid-cols-3 gap-6 mb-6">
-                    <div class="bg-red-50 rounded-2xl p-6 border border-red-200">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                            </div>
-                            <span class="font-bold text-red-700">Stock Crítico</span>
-                        </div>
-                        <p class="text-3xl font-display font-bold text-red-600" id="stock-critico-count">0</p>
-                        <p class="text-sm text-red-600/70 mt-1">Produtos com menos de 5 unidades</p>
-                    </div>
-                    
-                    <div class="bg-yellow-50 rounded-2xl p-6 border border-yellow-200">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                            </div>
-                            <span class="font-bold text-yellow-700">Stock Baixo</span>
-                        </div>
-                        <p class="text-3xl font-display font-bold text-yellow-600" id="stock-baixo-count">0</p>
-                        <p class="text-sm text-yellow-600/70 mt-1">Produtos com 5-15 unidades</p>
-                    </div>
-                    
-                    <div class="bg-green-50 rounded-2xl p-6 border border-green-200">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                            </div>
-                            <span class="font-bold text-green-700">Stock OK</span>
-                        </div>
-                        <p class="text-3xl font-display font-bold text-green-600" id="stock-ok-count">0</p>
-                        <p class="text-sm text-green-600/70 mt-1">Produtos com mais de 15 unidades</p>
+                <!-- Stock Alerts -->
+                <div class="card p-6 mb-6 border-l-4 border-red-500">
+                    <h3 class="font-display text-lg font-bold text-nuca-dark mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Alertas de Stock Baixo
+                    </h3>
+                    <div id="stock-alerts" class="space-y-3">
+                        <!-- Populated by JS -->
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
-                        <h3 class="font-display text-lg font-bold text-nuca-green">Gestão de Stock</h3>
-                        <button onclick="openStockModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-4 py-2 rounded-full text-sm font-medium hover:bg-nuca-dark transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Atualizar Stock
-                        </button>
-                    </div>
-                    
+                <div class="card p-6">
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
-                                <tr class="bg-nuca-light/30">
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Produto</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Tamanho</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Stock Atual</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Mínimo</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Status</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Produto</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Tamanho</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Stock Atual</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Mínimo</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Status</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Última Atualização</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="stock-table"></tbody>
+                            <tbody id="stock-table">
+                                <!-- Populated by JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             
-            <!-- CLIENTES -->
-            <div id="tab-clientes" class="tab-content hidden">
-                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-                    <div class="p-4 border-b border-nuca-green/10 flex flex-col sm:flex-row gap-4">
-                        <div class="relative flex-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="absolute left-3 top-1/2 -translate-y-1/2 text-nuca-green/40"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                            <input type="text" id="client-search" placeholder="Pesquisar clientes..." oninput="searchClients()" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                        </div>
+            <!-- Customers Tab -->
+            <div id="customers" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Clientes</h2>
+                        <p class="text-nuca-green/70">Base de clientes e histórico</p>
+                    </div>
+                    <button onclick="exportCustomers()" class="btn-secondary px-6 py-3 rounded-lg flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Exportar CSV
+                    </button>
+                </div>
+                
+                <div class="card p-6">
+                    <div class="flex gap-4 mb-6">
+                        <input type="text" id="customer-search" placeholder="Pesquisar cliente..." class="flex-1 px-4 py-2">
+                        <select id="customer-sort" class="px-4 py-2">
+                            <option value="recent">Mais recentes</option>
+                            <option value="orders">Mais encomendas</option>
+                            <option value="spent">Mais gasto</option>
+                        </select>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
-                                <tr class="bg-nuca-light/30">
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Cliente</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Email</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Encomendas</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Total Gasto</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Última Compra</th>
-                                    <th class="text-left py-4 px-6 text-sm font-medium text-nuca-green">Ações</th>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Cliente</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Email</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Encomendas</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Total Gasto</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Última Compra</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="clients-table"></tbody>
+                            <tbody id="customers-table">
+                                <!-- Populated by JS -->
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             
-            <!-- PROMOÇÕES -->
-            <div id="tab-promocoes" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="openPromoModal()" class="flex items-center gap-2 bg-nuca-green text-nuca-beige px-5 py-2.5 rounded-full font-medium hover:bg-nuca-dark transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <!-- Promotions Tab -->
+            <div id="promotions" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Promoções</h2>
+                        <p class="text-nuca-green/70">Códigos promocionais e campanhas</p>
+                    </div>
+                    <button onclick="openPromoModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         Nova Promoção
                     </button>
                 </div>
                 
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="promos-grid">
-                    <!-- Promo cards will be inserted here -->
-                </div>
-            </div>
-            
-            <!-- ANÁLISES -->
-            <div id="tab-analises" class="tab-content hidden">
-                <div class="grid lg:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Vendas por Mês</h3>
-                        <canvas id="monthlyChart" height="200"></canvas>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="card p-6 text-center">
+                        <p class="text-nuca-green/70 text-sm">Promoções Ativas</p>
+                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">5</h3>
                     </div>
-                    
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Vendas por Categoria</h3>
-                        <canvas id="categoryChart" height="200"></canvas>
+                    <div class="card p-6 text-center">
+                        <p class="text-nuca-green/70 text-sm">Desconto Médio</p>
+                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">15%</h3>
+                    </div>
+                    <div class="card p-6 text-center">
+                        <p class="text-nuca-green/70 text-sm">Usos este mês</p>
+                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">127</h3>
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-2xl p-6 shadow-sm">
-                    <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Métricas de Desempenho</h3>
-                    <div class="grid md:grid-cols-4 gap-6">
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-2">Taxa de Conversão</p>
-                            <div class="flex items-center gap-3">
-                                <div class="progress-bar flex-1">
-                                    <div class="progress-fill bg-nuca-green" style="width: 3.2%"></div>
-                                </div>
-                                <span class="font-bold text-nuca-green">3.2%</span>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-2">Valor Médio Encomenda</p>
-                            <div class="flex items-center gap-3">
-                                <div class="progress-bar flex-1">
-                                    <div class="progress-fill bg-blue-500" style="width: 65%"></div>
-                                </div>
-                                <span class="font-bold text-nuca-green">€65.40</span>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-2">Taxa de Retorno</p>
-                            <div class="flex items-center gap-3">
-                                <div class="progress-bar flex-1">
-                                    <div class="progress-fill bg-purple-500" style="width: 28%"></div>
-                                </div>
-                                <span class="font-bold text-nuca-green">28%</span>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-sm text-nuca-green/60 mb-2">Satisfação Cliente</p>
-                            <div class="flex items-center gap-3">
-                                <div class="progress-bar flex-1">
-                                    <div class="progress-fill bg-green-500" style="width: 94%"></div>
-                                </div>
-                                <span class="font-bold text-nuca-green">4.7/5</span>
-                            </div>
-                        </div>
+                <div class="card p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-nuca-beige">
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Código</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Tipo</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Valor</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Usos</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Válido até</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
+                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="promotions-table">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
             
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Análises</h2>
+                        <p class="text-nuca-green/70">Métricas e relatórios detalhados</p>
+                    </div>
+                    <select id="analytics-period" class="px-4 py-2">
+                        <option value="7d">Últimos 7 dias</option>
+                        <option value="30d">Últimos 30 dias</option>
+                        <option value="90d">Últimos 3 meses</option>
+                        <option value="1y">Último ano</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas por Estação</h3>
+                        <canvas id="seasonChart" height="250"></canvas>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas por Categoria</h3>
+                        <canvas id="categoryChart" height="250"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Desempenho Mensal</h3>
+                    <canvas id="monthlyChart" height="100"></canvas>
+                </div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="mb-8">
+                    <h2 class="font-display text-3xl font-bold text-nuca-dark">Configurações</h2>
+                    <p class="text-nuca-green/70">Personaliza a tua loja</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Informações da Loja</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Nome da Loja</label>
+                                <input type="text" value="NUCA" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Email de Contacto</label>
+                                <input type="email" value="nuca.crew@gmail.com" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Telefone</label>
+                                <input type="tel" value="+351 912 345 678" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Morada</label>
+                                <textarea class="w-full" rows="2">Rua da Moda 123, Lisboa</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Envio e Pagamento</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Portes Grátis Acima De (€)</label>
+                                <input type="number" value="50" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Custo de Envio (€)</label>
+                                <input type="number" value="4.99" class="w-full">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Prazo de Entrega (dias)</label>
+                                <input type="number" value="3-5" class="w-full">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="cash-on-delivery" checked>
+                                <label for="cash-on-delivery">Pagamento à cobrança</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Alertas de Stock</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-nuca-green mb-1">Nível Mínimo de Alerta</label>
+                                <input type="number" value="5" class="w-full">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="email-alerts" checked>
+                                <label for="email-alerts">Receber alertas por email</label>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="dashboard-alerts" checked>
+                                <label for="dashboard-alerts">Mostrar no dashboard</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Integrações</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">P</div>
+                                    <div>
+                                        <p class="font-medium">PayPal</p>
+                                        <p class="text-sm text-nuca-green/60">Pagamentos online</p>
+                                    </div>
+                                </div>
+                                <button class="text-nuca-green font-medium">Configurar</button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">S</div>
+                                    <div>
+                                        <p class="font-medium">Stripe</p>
+                                        <p class="text-sm text-nuca-green/60">Cartões de crédito</p>
+                                    </div>
+                                </div>
+                                <button class="text-nuca-green font-medium">Configurar</button>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold">M</div>
+                                    <div>
+                                        <p class="font-medium">Mailchimp</p>
+                                        <p class="text-sm text-nuca-green/60">Email marketing</p>
+                                    </div>
+                                </div>
+                                <button class="text-nuca-green font-medium">Configurar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-end">
+                    <button onclick="saveSettings()" class="btn-primary px-8 py-3 rounded-lg">Guardar Alterações</button>
+                </div>
+            </div>
         </main>
     </div>
     
-    <!-- Modal de Produto -->
-    <div id="product-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50" onclick="closeProductModal()"></div>
-        <div class="modal-content bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
-                <h3 class="font-display text-xl font-bold text-nuca-green" id="product-modal-title">Novo Produto</h3>
-                <button onclick="closeProductModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeOrderModal()"></div>
+        <div class="absolute inset-4 md:inset-10 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-nuca-beige flex justify-between items-center">
+                <h3 class="font-display text-2xl font-bold text-nuca-dark">Detalhes da Encomenda</h3>
+                <button onclick="closeOrderModal()" class="text-nuca-green hover:text-nuca-dark">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Nome do Produto</label>
-                        <input type="text" id="prod-name" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Categoria</label>
-                        <select id="prod-category" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                            <option value="camisetas">Camisetas</option>
-                            <option value="hoodies">Hoodies</option>
-                            <option value="acessorios">Acessórios</option>
-                            <option value="seasons">Coleção Estações</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Preço (€)</label>
-                        <input type="number" id="prod-price" step="0.01" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Stock Inicial</label>
-                        <input type="number" id="prod-stock" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Descrição</label>
-                    <textarea id="prod-description" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm resize-none"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">URL da Imagem</label>
-                    <input type="url" id="prod-image" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                </div>
-            </div>
-            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
-                <button onclick="closeProductModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
-                <button onclick="saveProduct()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Guardar Produto</button>
+            <div id="order-modal-content" class="flex-1 overflow-auto p-6">
+                <!-- Populated by JS -->
             </div>
         </div>
     </div>
     
-    <!-- Modal de Stock -->
-    <div id="stock-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50" onclick="closeStockModal()"></div>
-        <div class="modal-content bg-white rounded-2xl w-full max-w-md relative">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
-                <h3 class="font-display text-xl font-bold text-nuca-green">Atualizar Stock</h3>
-                <button onclick="closeStockModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <!-- Product Edit Modal -->
+    <div id="product-edit-modal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-overlay absolute inset-0" onclick="closeProductEditModal()"></div>
+        <div class="absolute right-0 top-0 h-full w-full md:w-[600px] bg-white shadow-2xl overflow-auto">
+            <div class="p-6 border-b border-nuca-beige flex justify-between items-center">
+                <h3 class="font-display text-2xl font-bold text-nuca-dark">Editar Produto</h3>
+                <button onclick="closeProductEditModal()" class="text-nuca-green hover:text-nuca-dark">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Produto</label>
-                    <select id="stock-prod-select" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm"></select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Tamanho</label>
-                    <select id="stock-size-select" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Quantidade a Adicionar/Remover</label>
-                    <input type="number" id="stock-quantity" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm" placeholder="Use valores negativos para remover">
-                </div>
-            </div>
-            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
-                <button onclick="closeStockModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
-                <button onclick="updateStock()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Atualizar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de Promoção -->
-    <div id="promo-modal" class="modal fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50" onclick="closePromoModal()"></div>
-        <div class="modal-content bg-white rounded-2xl w-full max-w-md relative">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
-                <h3 class="font-display text-xl font-bold text-nuca-green">Nova Promoção</h3>
-                <button onclick="closePromoModal()" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Código</label>
-                    <input type="text" id="promo-code" placeholder="ex: NUCA20" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm uppercase">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Tipo de Desconto</label>
-                    <select id="promo-type" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                        <option value="percentage">Percentagem (%)</option>
-                        <option value="fixed">Valor Fixo (€)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Valor do Desconto</label>
-                    <input type="number" id="promo-value" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Válido De</label>
-                        <input type="date" id="promo-start" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-2">Válido Até</label>
-                        <input type="date" id="promo-end" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-nuca-green mb-2">Valor Mínimo (€)</label>
-                    <input type="number" id="promo-min" placeholder="0 para sem mínimo" class="w-full px-4 py-2.5 rounded-xl border border-nuca-green/20 focus:outline-none focus:border-nuca-green text-sm">
-                </div>
-            </div>
-            <div class="p-6 border-t border-nuca-green/10 flex justify-end gap-3">
-                <button onclick="closePromoModal()" class="px-5 py-2.5 rounded-full border border-nuca-green text-nuca-green hover:bg-nuca-green/5 transition-colors text-sm font-medium">Cancelar</button>
-                <button onclick="savePromo()" class="px-5 py-2.5 rounded-full bg-nuca-green text-nuca-beige hover:bg-nuca-dark transition-colors text-sm font-medium">Criar Promoção</button>
+            <div id="product-edit-content" class="p-6">
+                <!-- Populated by JS -->
             </div>
         </div>
     </div>
 
     <script>
         // ===== DADOS SIMULADOS =====
-        let products = [
-            { id: 'c1', name: 'NUCA Essential', category: 'camisetas', price: 24.99, stock: 45, sales: 128, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100&q=80' },
-            { id: 'c2', name: 'NUCA Logo', category: 'camisetas', price: 29.99, stock: 32, sales: 96, image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=100&q=80' },
-            { id: 'h1', name: 'NUCA Hoodie', category: 'hoodies', price: 59.99, stock: 18, sales: 64, image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100&q=80' },
-            { id: 'h2', name: 'NUCA Zip', category: 'hoodies', price: 64.99, stock: 12, sales: 42, image: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=100&q=80' },
-            { id: 'a1', name: 'NUCA Tote', category: 'acessorios', price: 19.99, stock: 67, sales: 89, image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=100&q=80' },
-            { id: 'a2', name: 'NUCA Cap', category: 'acessorios', price: 24.99, stock: 3, sales: 156, image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=100&q=80' },
-            { id: 's1', name: 'Estação: Primavera', category: 'seasons', price: 34.99, stock: 28, sales: 73, image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=100&q=80' },
-            { id: 's2', name: 'Estação: Verão', category: 'seasons', price: 34.99, stock: 4, sales: 91, image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100&q=80' },
-            { id: 's3', name: 'Estação: Outono', category: 'seasons', price: 34.99, stock: 22, sales: 58, image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=100&q=80' },
-            { id: 's4', name: 'Estação: Inverno', category: 'seasons', price: 34.99, stock: 8, sales: 82, image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100&q=80' }
+        const orders = [
+            { id: 'NUC-2025-001', date: '2025-03-23', customer: 'Ana Silva', email: 'ana.silva@email.com', items: 3, total: 89.97, status: 'pending', address: 'Rua das Flores 45, Lisboa', phone: '+351 912 345 678' },
+            { id: 'NUC-2025-002', date: '2025-03-23', customer: 'João Santos', email: 'joao.santos@email.com', items: 2, total: 59.98, status: 'processing', address: 'Av. Liberdade 123, Porto', phone: '+351 923 456 789' },
+            { id: 'NUC-2025-003', date: '2025-03-22', customer: 'Maria Costa', email: 'maria.costa@email.com', items: 1, total: 34.99, status: 'shipped', address: 'Rua do Comércio 78, Braga', phone: '+351 934 567 890' },
+            { id: 'NUC-2025-004', date: '2025-03-22', customer: 'Pedro Ferreira', email: 'pedro.ferreira@email.com', items: 4, total: 129.96, status: 'delivered', address: 'Rua Nova 12, Coimbra', phone: '+351 945 678 901' },
+            { id: 'NUC-2025-005', date: '2025-03-21', customer: 'Sofia Oliveira', email: 'sofia.oliveira@email.com', items: 2, total: 69.98, status: 'pending', address: 'Av. dos Descobrimentos 56, Faro', phone: '+351 956 789 012' },
+            { id: 'NUC-2025-006', date: '2025-03-21', customer: 'Rui Mendes', email: 'rui.mendes@email.com', items: 1, total: 29.99, status: 'cancelled', address: 'Rua Central 34, Aveiro', phone: '+351 967 890 123' },
+            { id: 'NUC-2025-007', date: '2025-03-20', customer: 'Carla Rodrigues', email: 'carla.rodrigues@email.com', items: 3, total: 94.97, status: 'processing', address: 'Rua do Sol 89, Setúbal', phone: '+351 978 901 234' },
+            { id: 'NUC-2025-008', date: '2025-03-20', customer: 'Miguel Pereira', email: 'miguel.pereira@email.com', items: 2, total: 54.98, status: 'shipped', address: 'Av. da República 67, Leiria', phone: '+351 989 012 345' },
+            { id: 'NUC-2025-009', date: '2025-03-19', customer: 'Inês Martins', email: 'ines.martins@email.com', items: 1, total: 39.99, status: 'delivered', address: 'Rua das Acácias 23, Viseu', phone: '+351 990 123 456' },
+            { id: 'NUC-2025-010', date: '2025-03-19', customer: 'Tiago Lopes', email: 'tiago.lopes@email.com', items: 5, total: 149.95, status: 'pending', address: 'Rua do Mar 45, Funchal', phone: '+351 901 234 567' },
         ];
-
-        let orders = [
-            { id: 'ENC-001', customer: 'Ana Silva', email: 'ana.silva@email.com', items: 2, total: 54.98, status: 'entregue', date: '2025-03-20' },
-            { id: 'ENC-002', customer: 'João Santos', email: 'joao.santos@email.com', items: 1, total: 59.99, status: 'enviado', date: '2025-03-19' },
-            { id: 'ENC-003', customer: 'Maria Costa', email: 'maria.costa@email.com', items: 3, total: 89.97, status: 'processamento', date: '2025-03-19' },
-            { id: 'ENC-004', customer: 'Pedro Lima', email: 'pedro.lima@email.com', items: 1, total: 24.99, status: 'pendente', date: '2025-03-18' },
-            { id: 'ENC-005', customer: 'Sofia Ferreira', email: 'sofia.f@email.com', items: 4, total: 139.96, status: 'entregue', date: '2025-03-17' },
-            { id: 'ENC-006', customer: 'Miguel Rocha', email: 'miguel.r@email.com', items: 2, total: 49.98, status: 'cancelado', date: '2025-03-16' },
-            { id: 'ENC-007', customer: 'Inês Martins', email: 'ines.m@email.com', items: 1, total: 34.99, status: 'enviado', date: '2025-03-16' },
-            { id: 'ENC-008', customer: 'Rui Almeida', email: 'rui.a@email.com', items: 2, total: 64.98, status: 'pendente', date: '2025-03-15' }
+        
+        const products = [
+            { id: 1, name: 'NUCA Essential Tee', category: 'tshirts', price: 29.99, stock: 45, sales: 128, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100' },
+            { id: 2, name: 'NUCA Hoodie Beige', category: 'hoodies', price: 59.99, stock: 23, sales: 89, status: 'active', season: 'autumn', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+            { id: 3, name: 'NUCA Summer Vibes', category: 'tshirts', price: 24.99, stock: 67, sales: 156, status: 'active', season: 'summer', image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=100' },
+            { id: 4, name: 'NUCA Winter Warmth', category: 'hoodies', price: 64.99, stock: 3, sales: 45, status: 'active', season: 'winter', image: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=100' },
+            { id: 5, name: 'NUCA Spring Bloom', category: 'tshirts', price: 27.99, stock: 8, sales: 78, status: 'active', season: 'spring', image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=100' },
+            { id: 6, name: 'NUCA Joggers', category: 'pants', price: 44.99, stock: 34, sales: 67, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1517438476312-10d79c077509?w=100' },
+            { id: 7, name: 'NUCA Cap', category: 'accessories', price: 19.99, stock: 2, sales: 34, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=100' },
+            { id: 8, name: 'NUCA Tote Bag', category: 'accessories', price: 14.99, stock: 56, sales: 92, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=100' },
         ];
-
-        let clients = [
-            { name: 'Ana Silva', email: 'ana.silva@email.com', orders: 5, spent: 234.50, lastOrder: '2025-03-20' },
-            { name: 'João Santos', email: 'joao.santos@email.com', orders: 3, spent: 156.75, lastOrder: '2025-03-19' },
-            { name: 'Maria Costa', email: 'maria.costa@email.com', orders: 8, spent: 412.30, lastOrder: '2025-03-19' },
-            { name: 'Pedro Lima', email: 'pedro.lima@email.com', orders: 2, spent: 89.98, lastOrder: '2025-03-18' },
-            { name: 'Sofia Ferreira', email: 'sofia.f@email.com', orders: 4, spent: 198.45, lastOrder: '2025-03-17' }
+        
+        const stockData = [
+            { product: 'NUCA Essential Tee', size: 'S', current: 12, min: 10, lastUpdate: '2025-03-20' },
+            { product: 'NUCA Essential Tee', size: 'M', current: 18, min: 10, lastUpdate: '2025-03-20' },
+            { product: 'NUCA Essential Tee', size: 'L', current: 15, min: 10, lastUpdate: '2025-03-20' },
+            { product: 'NUCA Hoodie Beige', size: 'S', current: 5, min: 5, lastUpdate: '2025-03-19' },
+            { product: 'NUCA Hoodie Beige', size: 'M', current: 3, min: 5, lastUpdate: '2025-03-19' },
+            { product: 'NUCA Hoodie Beige', size: 'L', current: 8, min: 5, lastUpdate: '2025-03-19' },
+            { product: 'NUCA Winter Warmth', size: 'S', current: 1, min: 5, lastUpdate: '2025-03-18' },
+            { product: 'NUCA Winter Warmth', size: 'M', current: 0, min: 5, lastUpdate: '2025-03-18' },
+            { product: 'NUCA Winter Warmth', size: 'L', current: 2, min: 5, lastUpdate: '2025-03-18' },
+            { product: 'NUCA Spring Bloom', size: 'S', current: 2, min: 5, lastUpdate: '2025-03-21' },
+            { product: 'NUCA Spring Bloom', size: 'M', current: 4, min: 5, lastUpdate: '2025-03-21' },
+            { product: 'NUCA Spring Bloom', size: 'L', current: 2, min: 5, lastUpdate: '2025-03-21' },
+            { product: 'NUCA Cap', size: 'Único', current: 2, min: 10, lastUpdate: '2025-03-15' },
         ];
-
-        let promos = [
-            { code: 'NUCA20', type: 'percentage', value: 20, start: '2025-03-01', end: '2025-03-31', min: 50, uses: 45 },
-            { code: 'BEMVINDO', type: 'fixed', value: 10, start: '2025-01-01', end: '2025-12-31', min: 0, uses: 128 },
-            { code: 'PRIMAVERA', type: 'percentage', value: 15, start: '2025-03-15', end: '2025-04-15', min: 30, uses: 23 }
+        
+        const customers = [
+            { id: 1, name: 'Ana Silva', email: 'ana.silva@email.com', orders: 5, total: 345.50, lastPurchase: '2025-03-23' },
+            { id: 2, name: 'João Santos', email: 'joao.santos@email.com', orders: 3, total: 189.97, lastPurchase: '2025-03-23' },
+            { id: 3, name: 'Maria Costa', email: 'maria.costa@email.com', orders: 8, total: 523.45, lastPurchase: '2025-03-22' },
+            { id: 4, name: 'Pedro Ferreira', email: 'pedro.ferreira@email.com', orders: 2, total: 129.96, lastPurchase: '2025-03-22' },
+            { id: 5, name: 'Sofia Oliveira', email: 'sofia.oliveira@email.com', orders: 4, total: 278.93, lastPurchase: '2025-03-21' },
+            { id: 6, name: 'Rui Mendes', email: 'rui.mendes@email.com', orders: 1, total: 29.99, lastPurchase: '2025-03-21' },
+            { id: 7, name: 'Carla Rodrigues', email: 'carla.rodrigues@email.com', orders: 6, total: 412.78, lastPurchase: '2025-03-20' },
+            { id: 8, name: 'Miguel Pereira', email: 'miguel.pereira@email.com', orders: 3, total: 167.94, lastPurchase: '2025-03-20' },
         ];
-
-        let stockData = [];
-        products.forEach(p => {
-            ['S', 'M', 'L', 'XL', 'XXL'].forEach(size => {
-                stockData.push({
-                    productId: p.id,
-                    productName: p.name,
-                    size: size,
-                    stock: Math.floor(Math.random() * 30) + 1,
-                    min: 5
-                });
-            });
-        });
-
-        // ===== VARIÁVEIS DE ESTADO =====
-        let currentTab = 'dashboard';
-        let currentProductFilter = 'all';
-        let currentOrderFilter = 'all';
-        let currentOrderPage = 1;
-        const ordersPerPage = 5;
-        let editingProduct = null;
-
-        // ===== INICIALIZAÇÃO =====
-        document.addEventListener('DOMContentLoaded', () => {
-            updateStats();
-            renderProducts();
-            renderOrders();
-            renderStock();
-            renderClients();
-            renderPromos();
-            renderRecentOrders();
-            initCharts();
-            updateBadges();
-        });
-
+        
+        const promotions = [
+            { code: 'NUCA10', type: 'percentage', value: 10, uses: 45, maxUses: 100, validUntil: '2025-04-30', status: 'active' },
+            { code: 'PRIMAVERA20', type: 'percentage', value: 20, uses: 23, maxUses: 50, validUntil: '2025-04-15', status: 'active' },
+            { code: 'FRETE0', type: 'shipping', value: 0, uses: 89, maxUses: 200, validUntil: '2025-05-31', status: 'active' },
+            { code: 'PACK15', type: 'percentage', value: 15, uses: 12, maxUses: 100, validUntil: '2025-06-30', status: 'active' },
+            { code: 'BOASVINDAS', type: 'percentage', value: 15, uses: 156, maxUses: 500, validUntil: '2025-12-31', status: 'active' },
+            { code: 'INVERNO25', type: 'percentage', value: 25, uses: 67, maxUses: 67, validUntil: '2025-02-28', status: 'expired' },
+        ];
+        
         // ===== NAVEGAÇÃO =====
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebar-overlay').classList.toggle('hidden');
-        }
-
-        function switchTab(tab) {
-            currentTab = tab;
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
             
-            // Atualizar navegação
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-nuca-beige/20', 'text-nuca-beige');
-                btn.classList.add('text-nuca-beige/70');
-            });
-            document.getElementById('nav-' + tab).classList.add('bg-nuca-beige/20', 'text-nuca-beige');
-            document.getElementById('nav-' + tab).classList.remove('text-nuca-beige/70');
-            
-            // Mostrar conteúdo
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.add('hidden');
-            });
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-            
-            // Atualizar título
-            const titles = {
-                dashboard: 'Dashboard',
-                produtos: 'Produtos',
-                encomendas: 'Encomendas',
-                stock: 'Gestão de Stock',
-                clientes: 'Clientes',
-                promocoes: 'Promoções',
-                analises: 'Análises'
-            };
-            document.getElementById('page-title').textContent = titles[tab];
-            
-            // Fechar sidebar no mobile
-            if (window.innerWidth < 1024) {
-                toggleSidebar();
+            if (tabId === 'analytics') {
+                setTimeout(initAnalyticsCharts, 100);
             }
         }
-
-        function toggleNotifications() {
-            document.getElementById('notifications-panel').classList.toggle('hidden');
+        
+        // ===== NOTIFICAÇÕES =====
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            notification.className = `notification px-6 py-4 rounded-xl shadow-lg ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'} text-white`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
+                    </svg>
+                    <span>${message}</span>
+                </div>
+            `;
+            container.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
         }
-
-        function logout() {
-            if (confirm('Terminar sessão?')) {
-                alert('Sessão terminada com sucesso!');
-            }
-        }
-
-        // ===== ESTATÍSTICAS =====
-        function updateStats() {
-            const todaySales = 156.75;
-            const pendingOrders = orders.filter(o => o.status === 'pendente').length;
-            const lowStock = products.filter(p => p.stock < 10).length;
-            
-            document.getElementById('stat-vendas-hoje').textContent = '€' + todaySales.toFixed(2);
-            document.getElementById('stat-encomendas').textContent = orders.length;
-            document.getElementById('stat-pendentes').textContent = pendingOrders;
-            document.getElementById('stat-stock-baixo').textContent = lowStock;
-            document.getElementById('stat-clientes').textContent = clients.length;
-        }
-
-        function updateBadges() {
-            const pendingOrders = orders.filter(o => o.status === 'pendente').length;
-            const lowStock = products.filter(p => p.stock < 10).length;
-            
-            const orderBadge = document.getElementById('badge-encomendas');
-            orderBadge.textContent = pendingOrders;
-            orderBadge.classList.toggle('hidden', pendingOrders === 0);
-            
-            const stockBadge = document.getElementById('badge-stock');
-            stockBadge.textContent = lowStock;
-            stockBadge.classList.toggle('hidden', lowStock === 0);
-        }
-
-        // ===== PRODUTOS =====
-        function renderProducts() {
-            const filtered = currentProductFilter === 'all' 
-                ? products 
-                : products.filter(p => p.category === currentProductFilter);
-            
-            const tbody = document.getElementById('products-table');
-            tbody.innerHTML = filtered.map(p => {
-                const stockClass = p.stock < 5 ? 'stock-low' : p.stock < 15 ? 'stock-medium' : 'stock-good';
-                return `
-                    <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
-                        <td class="py-4 px-6">
-                            <div class="flex items-center gap-3">
-                                <img src="${p.image}" alt="${p.name}" class="w-12 h-12 object-cover rounded-lg">
-                                <span class="font-medium text-nuca-green">${p.name}</span>
-                            </div>
-                        </td>
-                        <td class="py-4 px-6 text-sm text-nuca-green/70 capitalize">${p.category}</td>
-                        <td class="py-4 px-6 font-medium text-nuca-green">€${p.price.toFixed(2)}</td>
-                        <td class="py-4 px-6 ${stockClass}">${p.stock}</td>
-                        <td class="py-4 px-6 text-sm text-nuca-green/70">${p.sales}</td>
-                        <td class="py-4 px-6">
-                            <div class="flex gap-2">
-                                <button onclick="editProduct('${p.id}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                                </button>
-                                <button onclick="deleteProduct('${p.id}')" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function filterProducts(filter) {
-            currentProductFilter = filter;
-            document.querySelectorAll('#tab-produtos .tab-btn').forEach(btn => {
-                const isActive = btn.dataset.filter === filter;
-                btn.classList.toggle('active', isActive);
-                btn.classList.toggle('text-nuca-green', !isActive);
-            });
-            renderProducts();
-        }
-
-        function searchProducts() {
-            const query = document.getElementById('product-search').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
-            // Atualizar renderização com resultados filtrados
-        }
-
-        function openProductModal() {
-            editingProduct = null;
-            document.getElementById('product-modal-title').textContent = 'Novo Produto';
-            document.getElementById('prod-name').value = '';
-            document.getElementById('prod-price').value = '';
-            document.getElementById('prod-stock').value = '';
-            document.getElementById('prod-description').value = '';
-            document.getElementById('prod-image').value = '';
-            document.getElementById('product-modal').classList.add('active');
-        }
-
-        function editProduct(id) {
-            editingProduct = products.find(p => p.id === id);
-            if (!editingProduct) return;
-            
-            document.getElementById('product-modal-title').textContent = 'Editar Produto';
-            document.getElementById('prod-name').value = editingProduct.name;
-            document.getElementById('prod-category').value = editingProduct.category;
-            document.getElementById('prod-price').value = editingProduct.price;
-            document.getElementById('prod-stock').value = editingProduct.stock;
-            document.getElementById('prod-image').value = editingProduct.image;
-            document.getElementById('product-modal').classList.add('active');
-        }
-
-        function saveProduct() {
-            const name = document.getElementById('prod-name').value;
-            const price = parseFloat(document.getElementById('prod-price').value);
-            const stock = parseInt(document.getElementById('prod-stock').value);
-            
-            if (!name || !price) {
-                alert('Por favor preenche todos os campos obrigatórios.');
-                return;
+        
+        // ===== DASHBOARD =====
+        function initDashboardCharts() {
+            // Sales Chart
+            const salesCtx = document.getElementById('salesChart');
+            if (salesCtx) {
+                new Chart(salesCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['17 Mar', '18 Mar', '19 Mar', '20 Mar', '21 Mar', '22 Mar', '23 Mar'],
+                        datasets: [{
+                            label: 'Vendas (€)',
+                            data: [850, 920, 780, 1100, 950, 1200, 1247],
+                            borderColor: '#556B4F',
+                            backgroundColor: 'rgba(85, 107, 79, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
             }
             
-            if (editingProduct) {
-                editingProduct.name = name;
-                editingProduct.price = price;
-                editingProduct.stock = stock;
-                alert('Produto atualizado com sucesso!');
-            } else {
-                const newProduct = {
-                    id: 'p' + Date.now(),
-                    name: name,
-                    category: document.getElementById('prod-category').value,
-                    price: price,
-                    stock: stock,
-                    sales: 0,
-                    image: document.getElementById('prod-image').value || 'https://via.placeholder.com/100'
-                };
-                products.push(newProduct);
-                alert('Produto criado com sucesso!');
+            // Products Chart
+            const productsCtx = document.getElementById('productsChart');
+            if (productsCtx) {
+                new Chart(productsCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Essential Tee', 'Hoodie Beige', 'Summer Vibes', 'Joggers', 'Outros'],
+                        datasets: [{
+                            data: [128, 89, 156, 67, 120],
+                            backgroundColor: ['#556B4F', '#D8C6A5', '#98D8C8', '#E59866', '#AED6F1']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
             }
-            
-            closeProductModal();
-            renderProducts();
-            updateStats();
         }
-
-        function deleteProduct(id) {
-            if (!confirm('Tens a certeza que queres eliminar este produto?')) return;
-            products = products.filter(p => p.id !== id);
-            renderProducts();
-            updateStats();
-        }
-
-        function closeProductModal() {
-            document.getElementById('product-modal').classList.remove('active');
-        }
-
-        // ===== ENCOMENDAS =====
-        function renderOrders() {
-            let filtered = currentOrderFilter === 'all' 
-                ? orders 
-                : orders.filter(o => o.status === currentOrderFilter);
+        
+        // ===== RENDERIZAÇÃO DE TABELAS =====
+        function renderRecentOrders() {
+            const tbody = document.getElementById('recent-orders-table');
+            if (!tbody) return;
             
-            const searchQuery = document.getElementById('order-search')?.value?.toLowerCase() || '';
-            if (searchQuery) {
-                filtered = filtered.filter(o => 
-                    o.customer.toLowerCase().includes(searchQuery) || 
-                    o.id.toLowerCase().includes(searchQuery)
-                );
-            }
-            
-            const totalPages = Math.ceil(filtered.length / ordersPerPage);
-            const start = (currentOrderPage - 1) * ordersPerPage;
-            const paginated = filtered.slice(start, start + ordersPerPage);
-            
-            const tbody = document.getElementById('orders-table');
-            tbody.innerHTML = paginated.map(o => `
-                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
-                    <td class="py-4 px-6"><input type="checkbox" class="rounded border-nuca-green/30"></td>
-                    <td class="py-4 px-6 font-medium text-nuca-green">${o.id}</td>
-                    <td class="py-4 px-6">
-                        <p class="font-medium text-nuca-green">${o.customer}</p>
-                        <p class="text-xs text-nuca-green/60">${o.email}</p>
+            tbody.innerHTML = orders.slice(0, 5).map(order => `
+                <tr class="table-row border-b border-nuca-beige/50">
+                    <td class="py-3 font-medium text-nuca-green">${order.id}</td>
+                    <td class="py-3">${order.customer}</td>
+                    <td class="py-3">${order.items} itens</td>
+                    <td class="py-3 font-bold">€${order.total.toFixed(2)}</td>
+                    <td class="py-3"><span class="status-badge status-${order.status}">${getStatusLabel(order.status)}</span></td>
+                    <td class="py-3">
+                        <button onclick="viewOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark font-medium">Ver</button>
                     </td>
-                    <td class="py-4 px-6 text-sm text-nuca-green/70">${o.items} item(s)</td>
-                    <td class="py-4 px-6 font-medium text-nuca-green">€${o.total.toFixed(2)}</td>
-                    <td class="py-4 px-6">
-                        <select onchange="updateOrderStatus('${o.id}', this.value)" class="status-badge status-${o.status} border-0 cursor-pointer">
-                            <option value="pendente" ${o.status === 'pendente' ? 'selected' : ''}>Pendente</option>
-                            <option value="processamento" ${o.status === 'processamento' ? 'selected' : ''}>Em Processamento</option>
-                            <option value="enviado" ${o.status === 'enviado' ? 'selected' : ''}>Enviado</option>
-                            <option value="entregue" ${o.status === 'entregue' ? 'selected' : ''}>Entregue</option>
-                            <option value="cancelado" ${o.status === 'cancelado' ? 'selected' : ''}>Cancelado</option>
+                </tr>
+            `).join('');
+        }
+        
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table');
+            if (!tbody) return;
+            
+            tbody.innerHTML = orders.map(order => `
+                <tr class="table-row border-b border-nuca-beige/50">
+                    <td class="py-3 px-4"><input type="checkbox" class="order-checkbox" data-id="${order.id}"></td>
+                    <td class="py-3 px-4 font-medium text-nuca-green">${order.id}</td>
+                    <td class="py-3 px-4">${formatDate(order.date)}</td>
+                    <td class="py-3 px-4">${order.customer}</td>
+                    <td class="py-3 px-4">${order.items}</td>
+                    <td class="py-3 px-4 font-bold">€${order.total.toFixed(2)}</td>
+                    <td class="py-3 px-4">
+                        <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-sm py-1 px-2 rounded-lg border border-nuca-beige">
+                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendente</option>
+                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Em processamento</option>
+                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviado</option>
+                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
+                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
                         </select>
                     </td>
-                    <td class="py-4 px-6 text-sm text-nuca-green/70">${o.date}</td>
-                    <td class="py-4 px-6">
-                        <button onclick="viewOrder('${o.id}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <td class="py-3 px-4">
+                        <button onclick="viewOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark mr-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                        <button onclick="printOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                         </button>
                     </td>
                 </tr>
             `).join('');
+        }
+        
+        function renderProducts() {
+            const tbody = document.getElementById('products-table');
+            if (!tbody) return;
             
-            document.getElementById('orders-showing').textContent = paginated.length;
-            document.getElementById('orders-total').textContent = filtered.length;
-            document.getElementById('page-indicator').textContent = currentOrderPage;
-            document.getElementById('btn-prev').disabled = currentOrderPage === 1;
-            document.getElementById('btn-next').disabled = currentOrderPage >= totalPages;
+            tbody.innerHTML = products.map(product => `
+                <tr class="table-row border-b border-nuca-beige/50">
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${product.image}" alt="${product.name}" class="w-10 h-10 rounded-lg object-cover">
+                            <span class="font-medium">${product.name}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 capitalize">${product.category}</td>
+                    <td class="py-3 px-4 font-bold">€${product.price.toFixed(2)}</td>
+                    <td class="py-3 px-4 ${product.stock < 5 ? 'stock-low' : product.stock < 15 ? 'stock-medium' : 'stock-good'}">${product.stock}</td>
+                    <td class="py-3 px-4">${product.sales}</td>
+                    <td class="py-3 px-4">
+                        <span class="status-badge ${product.status === 'active' ? 'status-shipped' : 'status-cancelled'}">${product.status === 'active' ? 'Ativo' : 'Inativo'}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button onclick="editProduct(${product.id})" class="text-nuca-green hover:text-nuca-dark mr-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="deleteProduct(${product.id})" class="text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
         }
-
-        function filterOrders(filter) {
-            currentOrderFilter = filter;
-            currentOrderPage = 1;
-            document.querySelectorAll('#tab-encomendas .tab-btn').forEach(btn => {
-                const isActive = btn.dataset.filter === filter;
-                btn.classList.toggle('active', isActive);
-                btn.classList.toggle('text-nuca-green', !isActive);
-            });
-            renderOrders();
+        
+        function renderStock() {
+            const alertsDiv = document.getElementById('stock-alerts');
+            const tbody = document.getElementById('stock-table');
+            
+            if (alertsDiv) {
+                const lowStock = stockData.filter(s => s.current <= s.min);
+                alertsDiv.innerHTML = lowStock.length === 0 
+                    ? '<p class="text-green-600 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Não há alertas de stock</p>'
+                    : lowStock.map(s => `
+                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span class="font-medium">${s.product} (Tamanho ${s.size})</span>
+                            </div>
+                            <span class="text-red-600 font-bold">${s.current} unidades</span>
+                        </div>
+                    `).join('');
+            }
+            
+            if (tbody) {
+                tbody.innerHTML = stockData.map(item => `
+                    <tr class="table-row border-b border-nuca-beige/50">
+                        <td class="py-3 px-4 font-medium">${item.product}</td>
+                        <td class="py-3 px-4">${item.size}</td>
+                        <td class="py-3 px-4 ${item.current <= item.min ? 'stock-low' : item.current <= item.min + 5 ? 'stock-medium' : 'stock-good'}">${item.current}</td>
+                        <td class="py-3 px-4">${item.min}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-2">
+                                <div class="progress-bar w-24">
+                                    <div class="progress-fill" style="width: ${Math.min(100, (item.current / (item.min * 3)) * 100)}%"></div>
+                                </div>
+                                <span class="text-xs ${item.current <= item.min ? 'text-red-600' : 'text-green-600'}">${item.current <= item.min ? 'Crítico' : item.current <= item.min + 5 ? 'Baixo' : 'OK'}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-sm text-nuca-green/60">${formatDate(item.lastUpdate)}</td>
+                        <td class="py-3 px-4">
+                            <button onclick="updateStock('${item.product}', '${item.size}')" class="text-nuca-green hover:text-nuca-dark font-medium">Atualizar</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
-
-        function searchOrders() {
-            currentOrderPage = 1;
-            renderOrders();
+        
+        function renderCustomers() {
+            const tbody = document.getElementById('customers-table');
+            if (!tbody) return;
+            
+            tbody.innerHTML = customers.map(customer => `
+                <tr class="table-row border-b border-nuca-beige/50">
+                    <td class="py-3 px-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-nuca-green text-white flex items-center justify-center font-bold">${customer.name.charAt(0)}</div>
+                            <span class="font-medium">${customer.name}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-nuca-green/70">${customer.email}</td>
+                    <td class="py-3 px-4">${customer.orders}</td>
+                    <td class="py-3 px-4 font-bold">€${customer.total.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-nuca-green/70">${formatDate(customer.lastPurchase)}</td>
+                    <td class="py-3 px-4">
+                        <button onclick="viewCustomer(${customer.id})" class="text-nuca-green hover:text-nuca-dark font-medium">Ver perfil</button>
+                    </td>
+                </tr>
+            `).join('');
         }
-
-        function changePage(direction) {
-            currentOrderPage += direction;
-            renderOrders();
+        
+        function renderPromotions() {
+            const tbody = document.getElementById('promotions-table');
+            if (!tbody) return;
+            
+            tbody.innerHTML = promotions.map(promo => `
+                <tr class="table-row border-b border-nuca-beige/50">
+                    <td class="py-3 px-4 font-mono font-bold text-nuca-green">${promo.code}</td>
+                    <td class="py-3 px-4 capitalize">${promo.type === 'percentage' ? 'Percentagem' : promo.type === 'shipping' ? 'Envio Grátis' : 'Valor Fixo'}</td>
+                    <td class="py-3 px-4 font-bold">${promo.type === 'percentage' ? promo.value + '%' : promo.type === 'shipping' ? 'Grátis' : '€' + promo.value}</td>
+                    <td class="py-3 px-4">${promo.uses}/${promo.maxUses}</td>
+                    <td class="py-3 px-4">${formatDate(promo.validUntil)}</td>
+                    <td class="py-3 px-4">
+                        <span class="status-badge ${promo.status === 'active' ? 'status-shipped' : 'status-cancelled'}">${promo.status === 'active' ? 'Ativo' : 'Expirado'}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <button onclick="editPromo('${promo.code}')" class="text-nuca-green hover:text-nuca-dark mr-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                        </button>
+                        <button onclick="deletePromo('${promo.code}')" class="text-red-500 hover:text-red-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
         }
-
-        function updateOrderStatus(id, status) {
-            const order = orders.find(o => o.id === id);
+        
+        // ===== ANÁLISES =====
+        function initAnalyticsCharts() {
+            const seasonCtx = document.getElementById('seasonChart');
+            if (seasonCtx) {
+                new Chart(seasonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Primavera', 'Verão', 'Outono', 'Inverno'],
+                        datasets: [{
+                            label: 'Vendas (€)',
+                            data: [3240, 4560, 3890, 2130],
+                            backgroundColor: ['#98D8C8', '#F7DC6F', '#E59866', '#AED6F1']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+            
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                new Chart(categoryCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['T-shirts', 'Hoodies', 'Calças', 'Acessórios'],
+                        datasets: [{
+                            data: [540, 380, 220, 145],
+                            backgroundColor: ['#556B4F', '#D8C6A5', '#98D8C8', '#E59866']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+            
+            const monthlyCtx = document.getElementById('monthlyChart');
+            if (monthlyCtx) {
+                new Chart(monthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                        datasets: [{
+                            label: 'Vendas 2025',
+                            data: [8900, 10200, 13820, 0, 0, 0],
+                            borderColor: '#556B4F',
+                            backgroundColor: 'rgba(85, 107, 79, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }, {
+                            label: 'Vendas 2024',
+                            data: [7200, 8500, 9800, 11200, 12500, 11800],
+                            borderColor: '#D8C6A5',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // ===== AÇÕES =====
+        function getStatusLabel(status) {
+            const labels = {
+                pending: 'Pendente',
+                processing: 'Em processamento',
+                shipped: 'Enviado',
+                delivered: 'Entregue',
+                cancelled: 'Cancelado'
+            };
+            return labels[status] || status;
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('pt-PT');
+        }
+        
+        function viewOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+            
+            const content = document.getElementById('order-modal-content');
+            content.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-nuca-dark mb-3">Informações do Cliente</h4>
+                        <div class="bg-nuca-light/30 p-4 rounded-xl space-y-2">
+                            <p><span class="text-nuca-green/70">Nome:</span> ${order.customer}</p>
+                            <p><span class="text-nuca-green/70">Email:</span> ${order.email}</p>
+                            <p><span class="text-nuca-green/70">Telefone:</span> ${order.phone}</p>
+                            <p><span class="text-nuca-green/70">Morada:</span> ${order.address}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-nuca-dark mb-3">Detalhes da Encomenda</h4>
+                        <div class="bg-nuca-light/30 p-4 rounded-xl space-y-2">
+                            <p><span class="text-nuca-green/70">ID:</span> ${order.id}</p>
+                            <p><span class="text-nuca-green/70">Data:</span> ${formatDate(order.date)}</p>
+                            <p><span class="text-nuca-green/70">Itens:</span> ${order.items}</p>
+                            <p><span class="text-nuca-green/70">Total:</span> <span class="font-bold text-nuca-green">€${order.total.toFixed(2)}</span></p>
+                            <p><span class="text-nuca-green/70">Estado:</span> <span class="status-badge status-${order.status}">${getStatusLabel(order.status)}</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <h4 class="font-bold text-nuca-dark mb-3">Atualizar Estado</h4>
+                    <div class="flex gap-3">
+                        <button onclick="updateOrderStatus('${order.id}', 'pending')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Pendente</button>
+                        <button onclick="updateOrderStatus('${order.id}', 'processing')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Em processamento</button>
+                        <button onclick="updateOrderStatus('${order.id}', 'shipped')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Enviado</button>
+                        <button onclick="updateOrderStatus('${order.id}', 'delivered')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Entregue</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+        
+        function closeOrderModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+        
+        function updateOrderStatus(orderId, status) {
+            const order = orders.find(o => o.id === orderId);
             if (order) {
                 order.status = status;
                 renderOrders();
-                updateStats();
+                renderRecentOrders();
+                showNotification(`Estado da encomenda ${orderId} atualizado para ${getStatusLabel(status)}`);
+                closeOrderModal();
             }
         }
-
-        function viewOrder(id) {
-            alert('Detalhes da encomenda ' + id + ' (em desenvolvimento)');
+        
+        function printOrder(orderId) {
+            showNotification(`A imprimir encomenda ${orderId}...`);
         }
-
-        function exportOrders() {
-            alert('Exportação de encomendas em CSV (em desenvolvimento)');
-        }
-
-        // ===== STOCK =====
-        function renderStock() {
-            const critico = stockData.filter(s => s.stock < 5).length;
-            const baixo = stockData.filter(s => s.stock >= 5 && s.stock <= 15).length;
-            const ok = stockData.filter(s => s.stock > 15).length;
+        
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
             
-            document.getElementById('stock-critico-count').textContent = critico;
-            document.getElementById('stock-baixo-count').textContent = baixo;
-            document.getElementById('stock-ok-count').textContent = ok;
-            
-            const tbody = document.getElementById('stock-table');
-            tbody.innerHTML = stockData.map(s => {
-                const statusClass = s.stock < 5 ? 'stock-low' : s.stock <= 15 ? 'stock-medium' : 'stock-good';
-                const statusText = s.stock < 5 ? 'Crítico' : s.stock <= 15 ? 'Baixo' : 'OK';
-                return `
-                    <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
-                        <td class="py-4 px-6 font-medium text-nuca-green">${s.productName}</td>
-                        <td class="py-4 px-6 text-sm text-nuca-green/70">${s.size}</td>
-                        <td class="py-4 px-6 ${statusClass} font-medium">${s.stock}</td>
-                        <td class="py-4 px-6 text-sm text-nuca-green/70">${s.min}</td>
-                        <td class="py-4 px-6">
-                            <span class="status-badge ${statusClass === 'stock-low' ? 'bg-red-100 text-red-700' : statusClass === 'stock-medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700'}">${statusText}</span>
-                        </td>
-                        <td class="py-4 px-6">
-                            <button onclick="quickStockUpdate('${s.productId}', '${s.size}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openStockModal() {
-            const select = document.getElementById('stock-prod-select');
-            select.innerHTML = products.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-            document.getElementById('stock-quantity').value = '';
-            document.getElementById('stock-modal').classList.add('active');
-        }
-
-        function quickStockUpdate(productId, size) {
-            document.getElementById('stock-prod-select').value = productId;
-            document.getElementById('stock-size-select').value = size;
-            document.getElementById('stock-modal').classList.add('active');
-        }
-
-        function updateStock() {
-            const productId = document.getElementById('stock-prod-select').value;
-            const size = document.getElementById('stock-size-select').value;
-            const quantity = parseInt(document.getElementById('stock-quantity').value);
-            
-            if (isNaN(quantity)) {
-                alert('Por favor introduz uma quantidade válida.');
-                return;
-            }
-            
-            const item = stockData.find(s => s.productId === productId && s.size === size);
-            if (item) {
-                item.stock = Math.max(0, item.stock + quantity);
-                alert(`Stock atualizado! Novo stock: ${item.stock}`);
-            }
-            
-            closeStockModal();
-            renderStock();
-            updateBadges();
-        }
-
-        function closeStockModal() {
-            document.getElementById('stock-modal').classList.remove('active');
-        }
-
-        // ===== CLIENTES =====
-        function renderClients() {
-            const tbody = document.getElementById('clients-table');
-            tbody.innerHTML = clients.map(c => `
-                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
-                    <td class="py-4 px-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-nuca-green/10 flex items-center justify-center">
-                                <span class="font-bold text-nuca-green">${c.name.charAt(0)}</span>
-                            </div>
-                            <span class="font-medium text-nuca-green">${c.name}</span>
+            const content = document.getElementById('product-edit-content');
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-1">Nome do Produto</label>
+                        <input type="text" value="${product.name}" class="w-full">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-nuca-green mb-1">Preço (€)</label>
+                            <input type="number" step="0.01" value="${product.price}" class="w-full">
                         </div>
-                    </td>
-                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.email}</td>
-                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.orders}</td>
-                    <td class="py-4 px-6 font-medium text-nuca-green">€${c.spent.toFixed(2)}</td>
-                    <td class="py-4 px-6 text-sm text-nuca-green/70">${c.lastOrder}</td>
-                    <td class="py-4 px-6">
-                        <button onclick="viewClient('${c.email}')" class="p-2 hover:bg-nuca-green/10 rounded-lg transition-colors text-nuca-green">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function searchClients() {
-            const query = document.getElementById('client-search').value.toLowerCase();
-            // Implementar filtro
-        }
-
-        function viewClient(email) {
-            alert('Detalhes do cliente ' + email + ' (em desenvolvimento)');
-        }
-
-        // ===== PROMOÇÕES =====
-        function renderPromos() {
-            const grid = document.getElementById('promos-grid');
-            grid.innerHTML = promos.map(p => {
-                const isActive = new Date(p.end) >= new Date();
-                return `
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border-2 ${isActive ? 'border-nuca-green' : 'border-gray-200'}">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${isActive ? 'bg-nuca-green text-nuca-beige' : 'bg-gray-200 text-gray-600'}">${isActive ? 'ATIVO' : 'EXPIRADO'}</span>
-                                <h4 class="font-display text-2xl font-bold text-nuca-green mt-2">${p.code}</h4>
-                            </div>
-                            <button onclick="deletePromo('${p.code}')" class="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </button>
-                        </div>
-                        <div class="space-y-2 text-sm">
-                            <p class="flex justify-between"><span class="text-nuca-green/60">Desconto:</span> <span class="font-medium text-nuca-green">${p.type === 'percentage' ? p.value + '%' : '€' + p.value}</span></p>
-                            <p class="flex justify-between"><span class="text-nuca-green/60">Mínimo:</span> <span class="font-medium text-nuca-green">€${p.min}</span></p>
-                            <p class="flex justify-between"><span class="text-nuca-green/60">Válido até:</span> <span class="font-medium text-nuca-green">${p.end}</span></p>
-                            <p class="flex justify-between"><span class="text-nuca-green/60">Utilizações:</span> <span class="font-medium text-nuca-green">${p.uses}</span></p>
+                        <div>
+                            <label class="block text-sm font-medium text-nuca-green mb-1">Stock</label>
+                            <input type="number" value="${product.stock}" class="w-full">
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
-
-        function openPromoModal() {
-            document.getElementById('promo-code').value = '';
-            document.getElementById('promo-value').value = '';
-            document.getElementById('promo-min').value = '';
-            document.getElementById('promo-modal').classList.add('active');
-        }
-
-        function savePromo() {
-            const code = document.getElementById('promo-code').value.toUpperCase();
-            const type = document.getElementById('promo-type').value;
-            const value = parseFloat(document.getElementById('promo-value').value);
-            const start = document.getElementById('promo-start').value;
-            const end = document.getElementById('promo-end').value;
-            const min = parseFloat(document.getElementById('promo-min').value) || 0;
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-nuca-green mb-1">Categoria</label>
+                            <select class="w-full">
+                                <option value="tshirts" ${product.category === 'tshirts' ? 'selected' : ''}>T-shirts</option>
+                                <option value="hoodies" ${product.category === 'hoodies' ? 'selected' : ''}>Hoodies</option>
+                                <option value="pants" ${product.category === 'pants' ? 'selected' : ''}>Calças</option>
+                                <option value="accessories" ${product.category === 'accessories' ? 'selected' : ''}>Acessórios</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-nuca-green mb-1">Estação</label>
+                            <select class="w-full">
+                                <option value="all" ${product.season === 'all' ? 'selected' : ''}>Todas</option>
+                                <option value="spring" ${product.season === 'spring' ? 'selected' : ''}>Primavera</option>
+                                <option value="summer" ${product.season === 'summer' ? 'selected' : ''}>Verão</option>
+                                <option value="autumn" ${product.season === 'autumn' ? 'selected' : ''}>Outono</option>
+                                <option value="winter" ${product.season === 'winter' ? 'selected' : ''}>Inverno</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-nuca-green mb-1">Imagem URL</label>
+                        <input type="text" value="${product.image}" class="w-full">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="product-active" ${product.status === 'active' ? 'checked' : ''}>
+                        <label for="product-active">Produto ativo</label>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="saveProduct(${product.id})" class="btn-primary flex-1 py-3 rounded-lg">Guardar Alterações</button>
+                    <button onclick="closeProductEditModal()" class="px-6 py-3 rounded-lg border border-nuca-beige">Cancelar</button>
+                </div>
+            `;
             
-            if (!code || !value || !start || !end) {
-                alert('Por favor preenche todos os campos obrigatórios.');
-                return;
+            document.getElementById('product-edit-modal').classList.remove('hidden');
+        }
+        
+        function closeProductEditModal() {
+            document.getElementById('product-edit-modal').classList.add('hidden');
+        }
+        
+        function saveProduct(productId) {
+            showNotification('Produto atualizado com sucesso!');
+            closeProductEditModal();
+        }
+        
+        function deleteProduct(productId) {
+            if (confirm('Tens a certeza que queres eliminar este produto?')) {
+                showNotification('Produto eliminado com sucesso!');
             }
-            
-            promos.push({ code, type, value, start, end, min, uses: 0 });
-            alert('Promoção criada com sucesso!');
-            closePromoModal();
-            renderPromos();
         }
-
+        
+        function openProductModal() {
+            showNotification('Funcionalidade de novo produto em desenvolvimento');
+        }
+        
+        function updateStock(product, size) {
+            const newStock = prompt(`Atualizar stock para ${product} (Tamanho ${size}):`);
+            if (newStock !== null) {
+                showNotification('Stock atualizado com sucesso!');
+                renderStock();
+            }
+        }
+        
+        function openStockModal() {
+            showNotification('Funcionalidade de atualização de stock em desenvolvimento');
+        }
+        
+        function viewCustomer(customerId) {
+            const customer = customers.find(c => c.id === customerId);
+            if (customer) {
+                showNotification(`A ver perfil de ${customer.name}`);
+            }
+        }
+        
+        function exportCustomers() {
+            showNotification('A exportar clientes para CSV...');
+        }
+        
+        function openPromoModal() {
+            showNotification('Funcionalidade de nova promoção em desenvolvimento');
+        }
+        
+        function editPromo(code) {
+            showNotification(`A editar promoção ${code}`);
+        }
+        
         function deletePromo(code) {
-            if (!confirm('Tens a certeza que queres eliminar esta promoção?')) return;
-            promos = promos.filter(p => p.code !== code);
-            renderPromos();
+            if (confirm(`Tens a certeza que queres eliminar a promoção ${code}?`)) {
+                showNotification('Promoção eliminada com sucesso!');
+            }
         }
-
-        function closePromoModal() {
-            document.getElementById('promo-modal').classList.remove('active');
+        
+        function exportData() {
+            showNotification('A exportar dados...');
         }
-
-        // ===== GRÁFICOS =====
-        function initCharts() {
-            // Sales Chart
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            new Chart(salesCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-                    datasets: [{
-                        label: 'Vendas (€)',
-                        data: [120, 190, 150, 250, 220, 310, 280],
-                        borderColor: '#556B4F',
-                        backgroundColor: 'rgba(85, 107, 79, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-
-            // Products Chart
-            const productsCtx = document.getElementById('productsChart').getContext('2d');
-            new Chart(productsCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Camisetas', 'Hoodies', 'Acessórios', 'Estações'],
-                    datasets: [{
-                        data: [224, 106, 245, 304],
-                        backgroundColor: ['#556B4F', '#98D8C8', '#D8C6A5', '#E59866']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-
-            // Monthly Chart
-            const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-            new Chart(monthlyCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-                    datasets: [{
-                        label: 'Vendas (€)',
-                        data: [3200, 4100, 3800, 5200, 4800, 5600],
-                        backgroundColor: '#556B4F'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(85, 107, 79, 0.1)' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
-
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            new Chart(categoryCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Camisetas', 'Hoodies', 'Acessórios', 'Estações'],
-                    datasets: [{
-                        data: [35, 20, 25, 20],
-                        backgroundColor: ['#556B4F', '#98D8C8', '#D8C6A5', '#E59866']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { position: 'right' } }
-                }
-            });
-        }
-
-        // ===== ENCOMENDAS RECENTES =====
-        function renderRecentOrders() {
-            const tbody = document.getElementById('recent-orders-table');
-            const recent = orders.slice(0, 5);
-            tbody.innerHTML = recent.map(o => `
-                <tr class="border-b border-nuca-green/5 hover:bg-nuca-light/20 transition-colors">
-                    <td class="py-3 text-sm font-medium text-nuca-green">${o.id}</td>
-                    <td class="py-3 text-sm text-nuca-green/70">${o.customer}</td>
-                    <td class="py-3 text-sm text-nuca-green/70">${o.items} item(s)</td>
-                    <td class="py-3 text-sm font-medium text-nuca-green">€${o.total.toFixed(2)}</td>
-                    <td class="py-3"><span class="status-badge status-${o.status}">${o.status}</span></td>
-                    <td class="py-3 text-sm text-nuca-green/70">${o.date}</td>
-                </tr>
-            `).join('');
-        }
-
+        
         function refreshData() {
-            updateStats();
-            renderProducts();
+            showNotification('Dados atualizados!');
             renderOrders();
+            renderProducts();
             renderStock();
-            updateBadges();
-            alert('Dados atualizados!');
         }
+        
+        function saveSettings() {
+            showNotification('Configurações guardadas com sucesso!');
+        }
+        
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboardCharts();
+            renderRecentOrders();
+            renderOrders();
+            renderProducts();
+            renderStock();
+            renderCustomers();
+            renderPromotions();
+        });
     </script>
 </body>
 </html>
