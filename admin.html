@@ -1618,25 +1618,38 @@
                 return;
             }
             
-            const csv = [['Nome', 'Email', 'Telefone', 'Cidade', 'Total Compras', 'Nº Encomendas', 'Total Gasto (€)'].join(',')];
-            allCustomers.forEach(c => {
-                csv.push([
-                    `"${(c.name || '').replace(/"/g, '""')}"`,
-                    `"${(c.email || '').replace(/"/g, '""')}"`,
-                    `"${(c.phone || '').replace(/"/g, '""')}"`,
-                    `"${(c.city || '').replace(/"/g, '""')}"`,
-                    c.total_orders || 0,
-                    (c.total_purchases || 0).toFixed(2)
-                ].join(','));
-            });
+            // Cabeçalhos corretos
+            const headers = ['Nome', 'Email', 'Telefone', 'Cidade', 'Total Gasto (€)', 'Nº Encomendas', 'Última Compra'];
             
-            const blob = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            // Dados dos clientes
+            const rows = allCustomers.map(customer => [
+                `"${(customer.name || '').replace(/"/g, '""')}"`,
+                `"${(customer.email || '').replace(/"/g, '""')}"`,
+                `"${(customer.phone || '').replace(/"/g, '""')}"`,
+                `"${(customer.city || '').replace(/"/g, '""')}"`,
+                (customer.total_purchases || 0).toFixed(2).replace('.', ','),
+                customer.total_orders || 0,
+                customer.last_purchase_date ? new Date(customer.last_purchase_date).toLocaleDateString('pt-PT') : ''
+            ]);
+            
+            // Construir CSV
+            const csvContent = [
+                headers.join(';'),
+                ...rows.map(row => row.join(';'))
+            ].join('\n');
+            
+            // Adicionar BOM para UTF-8 com caracteres especiais
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
+            a.href = url;
             a.download = `clientes_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
             a.click();
-            URL.revokeObjectURL(a.href);
-            showToast('Clientes exportados!', 'success');
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast(`${allCustomers.length} clientes exportados com sucesso!`, 'success');
         }
     
         // ============================================
