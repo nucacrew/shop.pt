@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NUCA - Moda minimalista. Peças essenciais, atemporais e versáteis para o teu dia a dia.">
-    <title>NUCA - Essencial. Atemporal. Teu.</title>
+    <meta name="description" content="NUCA - Moda minimalista. Peças versáteis para o teu dia a dia.">
+    <title>NUCA</title>
 
     <!-- Fontes -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
@@ -764,7 +764,7 @@
 
         <div class="relative z-10 text-center max-w-5xl mx-auto w-full">
             <div class="mb-6 sm:mb-8 inline-block">
-                <span class="px-4 py-2 border border-nuca-green rounded-full text-xs sm:text-sm font-medium tracking-wider uppercase animate-fade-in">Edição 2025</span>
+                <span class="px-4 py-2 border border-nuca-green rounded-full text-xs sm:text-sm font-medium tracking-wider uppercase animate-fade-in">LOJA ONLINE</span>
             </div>
             <h1 class="nuca-logo hero-text text-nuca-green mb-4 sm:mb-6 animate-slide-up" style="animation-delay: 0.2s">NUCA</h1>
             <p class="text-nuca-green/70 max-w-lg mx-auto mb-8 sm:mb-12 animate-slide-up text-sm sm:text-base leading-relaxed" style="animation-delay: 0.6s">Peças pensadas para durar. Design limpo, materiais de qualidade e versatilidade para o teu dia a dia. Sem excessos, só o essencial.</p>
@@ -956,7 +956,7 @@
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
             <div class="col-span-2 md:col-span-1 space-y-3 sm:space-y-4">
                 <span class="nuca-logo text-3xl sm:text-4xl block">NUCA</span>
-                <p class="text-nuca-beige/60 text-sm">Essencial. Atemporal. Teu.</p>
+                <p class="text-nuca-beige/60 text-sm">Moda minimalista</p>
                 <div class="flex flex-wrap gap-3 pt-2">
                     <span class="trust-badge text-nuca-beige/60"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
                     <span class="trust-badge text-nuca-beige/60"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
@@ -965,11 +965,11 @@
             <div>
                 <h4 class="font-bold mb-3 sm:mb-4 text-nuca-light text-sm sm:text-base">Loja</h4>
                 <ul class="space-y-2 text-nuca-beige/60 text-xs sm:text-sm">
-                    <li><a href="#shop" onclick="filterFromFooter('camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
-                    <li><a href="#shop" onclick="filterFromFooter('hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
-                    <li><a href="#shop" onclick="filterFromFooter('acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
-                    <li><a href="#seasons-collection" class="hover:text-nuca-beige transition-colors">Coleção Estações</a></li>
-                    <li><a href="#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li>
+                    <li><button onclick="filterFromFooter('camisetas', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Camisetas</button></li>
+                    <li><button onclick="filterFromFooter('hoodies', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Hoodies</button></li>
+                    <li><button onclick="filterFromFooter('acessorios', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Acessórios</button></li>
+                    <li><button onclick="scrollToSection('seasons-collection', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Coleção Estações</button></li>
+                    <li><button onclick="scrollToSection('packs', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Packs</button></li>
                 </ul>
             </div>
             <div>
@@ -1214,6 +1214,17 @@
                     back: 'https://images.unsplash.com/photo-1605218427306-022ba6c08417?w=600&q=80'
                 }
             },
+            // Meias NUCA - cores: preto, branco
+            meias: {
+                preto: {
+                    front: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80',
+                    back: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80'
+                },
+                branco: {
+                    front: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80',
+                    back: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80'
+                }
+            },
             // Estações - cada estação tem sua cor
             estacoes: {
                 primavera: {
@@ -1305,6 +1316,19 @@
                 ],
                 images: productImages.chaveiro,
                 description: 'Chaveiro NUCA em couro sintético premium. Logo gravado e acabamento de qualidade. O detalhe que marca a diferença. Disponível em bege, preto e verde.'
+            },
+            {
+                id: 'meias-nuca',
+                name: 'Meias-NUCA',
+                category: 'acessorios',
+                basePrice: 7.99,
+                sizes: ['S', 'M', 'L'],
+                colors: [
+                    { name: 'Preto', hex: '#2C3328', key: 'preto' },
+                    { name: 'Branco', hex: '#FFFFFF', key: 'branco' }
+                ],
+                images: productImages.meias,
+                description: 'Meias NUCA em algodão premium. Conforto e durabilidade para o teu dia a dia. Disponível em preto e branco.'
             },
             // Coleção Estações - mesmos produtos mas com seleção de estação
             {
@@ -1437,6 +1461,12 @@
         }
 
         // ===== PRODUTOS =====
+        const categoryLabels = {
+            'camisetas': 'Camisetas',
+            'hoodies': 'Hoodies',
+            'acessorios': 'Acessórios'
+        };
+
         function renderProducts(filter) {
             const grid = document.getElementById('products-grid');
             const filtered = filter === 'all'
@@ -1449,6 +1479,8 @@
                     ? product.images[firstColor.key].front 
                     : (product.images ? product.images.bege.front : '');
                 
+                const categoryLabel = categoryLabels[product.category] || product.category;
+                
                 return `
                 <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${product.id}')">
                     <div class="relative overflow-hidden aspect-[4/5]">
@@ -1458,7 +1490,7 @@
                         </div>
                     </div>
                     <div class="p-4 sm:p-5">
-                        <span class="text-xs font-medium text-nuca-green/60 uppercase tracking-wider">${product.category}</span>
+                        <span class="text-xs font-medium text-nuca-green/60 uppercase tracking-wider">${categoryLabel}</span>
                         <h3 class="font-display text-base sm:text-lg font-bold text-nuca-green mt-1">${product.name}</h3>
                         <p class="text-nuca-green font-bold mt-2">€${product.basePrice.toFixed(2)}</p>
                         <div class="flex gap-1 mt-3 flex-wrap">
@@ -1482,9 +1514,15 @@
 
         function filterProducts(category) { renderProducts(category); }
 
-        function filterFromFooter(category) {
+        function filterFromFooter(category, event) {
+            if (event) event.preventDefault();
             renderProducts(category);
             document.getElementById('shop').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function scrollToSection(sectionId, event) {
+            if (event) event.preventDefault();
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
         }
 
         // ===== CARROSSEL DE ESTAÇÕES =====
