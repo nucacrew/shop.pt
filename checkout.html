@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - NUCA</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         tailwind.config = {
@@ -85,6 +85,28 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        
+        .cta-primary {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            transition: all 0.3s ease;
+        }
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85, 107, 79, 0.4);
+        }
+        
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: #556B4F;
+        }
+        .trust-badge svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
     </style>
 <base target="_blank">
 </head>
@@ -153,9 +175,13 @@
                             <span id="checkout-total">€0.00</span>
                         </div>
                     </div>
-                    <button onclick="goToStep(2)" id="btn-continuar" class="w-full mt-6 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">
+                    <button onclick="goToStep(2)" id="btn-continuar" class="cta-primary w-full mt-6 text-nuca-beige py-4 rounded-full font-bold">
                         Continuar para Envio
                     </button>
+                    <div class="flex justify-center gap-4 pt-4">
+                        <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
+                        <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
+                    </div>
                 </div>
 
                 <!-- Step 2: Envio -->
@@ -201,7 +227,7 @@
                     </form>
                     <div class="flex gap-4 mt-6">
                         <button onclick="goToStep(1)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">Voltar</button>
-                        <button onclick="validateShipping()" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors">Continuar</button>
+                        <button onclick="validateShipping()" class="cta-primary flex-1 text-nuca-beige py-4 rounded-full font-bold">Continuar</button>
                     </div>
                 </div>
 
@@ -239,7 +265,7 @@
 
                         <div class="flex flex-col sm:flex-row gap-4">
                             <button onclick="goToStep(2)" class="flex-1 border-2 border-nuca-green text-nuca-green py-4 rounded-full font-bold hover:bg-nuca-green/5 transition-colors">Voltar</button>
-                            <button onclick="processOrder()" id="confirm-btn" class="flex-1 bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                            <button onclick="processOrder()" id="confirm-btn" class="cta-primary flex-1 text-nuca-beige py-4 rounded-full font-bold flex items-center justify-center gap-2 whitespace-nowrap">
                                 <span>Confirmar e Abrir WhatsApp</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                             </button>
@@ -311,6 +337,13 @@
                             <h4 class="font-bold text-nuca-green">Pagamento via WhatsApp</h4>
                         </div>
                         <p class="text-sm text-nuca-green/60">Finaliza o teu pedido através do WhatsApp. Coordenaremos o pagamento diretamente contigo.</p>
+                    </div>
+                    
+                    <div class="bg-white/30 rounded-3xl p-4 border border-nuca-green/10">
+                        <div class="flex flex-wrap justify-center gap-3">
+                            <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
+                            <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -543,10 +576,11 @@
                 if (item.shoeSize) details.push(`Calçado ${item.shoeSize}`);
                 
                 const detailsText = details.length > 0 ? `(${details.join(', ')})` : '';
+                const freeTag = isFree ? ' <span class="text-xs text-yellow-600 font-bold">[OFERTA]</span>' : '';
                 
                 itemsHtml += `
                     <div class="flex justify-between py-1">
-                        <span class="text-nuca-green">${item.name} x${qty} <span class="text-nuca-green/60 text-xs">${detailsText}</span> ${isFree ? '<span class="text-xs text-yellow-600 font-bold">[OFERTA]</span>' : ''}</span>
+                        <span class="text-nuca-green">${item.name} x${qty} <span class="text-nuca-green/60 text-xs">${detailsText}</span>${freeTag}</span>
                         <span class="text-nuca-green">${isFree ? 'GRÁTIS' : '€' + total.toFixed(2)}</span>
                     </div>
                 `;
