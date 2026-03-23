@@ -1265,20 +1265,50 @@
     
         async function confirmDelete() {
             if (!orderToDelete) return;
+            
             try {
                 if (!supabaseClient) throw new Error('Supabase não inicializado');
-                const { error } = await supabaseClient.from('orders').delete().eq('id', orderToDelete);
+                
+                // Mostrar loading no botão
+                const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
+                const originalText = deleteBtn.textContent;
+                deleteBtn.textContent = 'A eliminar...';
+                deleteBtn.disabled = true;
+                
+                // Eliminar da base de dados
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .delete()
+                    .eq('id', orderToDelete);
+                
                 if (error) throw error;
+                
+                // Atualizar arrays locais
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
+                
+                // Reaplicar filtros para atualizar a tabela
                 applyFilters();
-                showToast('Encomenda eliminada', 'success');
+                
+                // Recarregar dashboard e clientes para atualizar estatísticas
                 loadDashboard();
-                loadCustomers(); // Recarregar clientes para atualizar totais
+                loadCustomers();
+                
+                showToast('Encomenda eliminada com sucesso!', 'success');
+                
+                // Fechar modal
+                closeDeleteModal();
+                
             } catch (error) {
                 console.error('Erro ao eliminar encomenda:', error);
-                showToast('Erro ao eliminar encomenda', 'error');
+                showToast('Erro ao eliminar encomenda: ' + error.message, 'error');
+            } finally {
+                // Restaurar botão
+                const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
+                if (deleteBtn) {
+                    deleteBtn.textContent = 'Eliminar';
+                    deleteBtn.disabled = false;
+                }
             }
-            closeDeleteModal();
         }
     
         // ============================================
