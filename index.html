@@ -1173,18 +1173,6 @@
                     back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80'
                 }
             },
-            // Meias NUCA
-                meias: {
-                    preto: {
-                        front: 'https://images.unsplash.com/photo-1586350977771-b3b0abd50c7c?w=600&q=80',
-                        back: 'https://images.unsplash.com/photo-1586350977771-b3b0abd50c7c?w=600&q=80'
-                    },
-                    branco: {
-                        front: 'https://images.unsplash.com/photo-1605034313761-73ea4a0cfbf3?w=600&q=80',
-                        back: 'https://images.unsplash.com/photo-1605034313761-73ea4a0cfbf3?w=600&q=80'
-                    }
-                }
-            };
             // Boné NUCA - cores: bege, preto, verde
             bone: {
                 bege: {
@@ -1277,19 +1265,6 @@
                 images: productImages.hoodie,
                 description: 'O hoodie essencial NUCA. Oversize em algodão de peso médio. Interior felpudo para aquecer nos dias mais frescos. Capuz duplo e bolsos canguru. Disponível em bege, preto e verde.'
             },
-            {
-                id: 'meias-nuca',
-                name: 'Meias-NUCA',
-                category: 'acessorios',
-                basePrice: 12.99,
-                sizes: ['S', 'M', 'L', 'XL'],
-                colors: [
-                    { name: 'Preto', hex: '#2C3328', key: 'preto' },
-                    { name: 'Branco', hex: '#FFFFFF', key: 'branco' }
-                ],
-                images: productImages.meias,
-                description: 'Meias confortáveis da NUCA. Algodão de alta qualidade, reforço no calcanhar e ponta dos dedos. O detalhe que completa o teu look com estilo. Disponível em preto e branco.'
-            }
             {
                 id: 'bone-nuca',
                 name: 'Boné-NUCA',
@@ -1388,9 +1363,9 @@
         const packs = {
             nuca: [
                 { id: 'p1', name: 'Pack NUCA Duo', description: 'Tshirt + Hoodie com 15% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca'], discount: 15, price: 72.23, originalPrice: 84.98, type: 'nuca' },
-                { id: 'p2', name: 'Pack NUCA Acessórios', description: 'Boné + Tote Bag + Meias + Chaveiro com 20% de desconto.', items: ['bone-nuca', 'tote-nuca', 'meias-nuca', 'chaveiro-nuca'], discount: 20, price: 54.37, originalPrice: 67.96, type: 'nuca' },
-                { id: 'p3', name: 'Pack NUCA Completo', description: 'Tshirt + Hoodie + Boné + Tote + Meias com 25% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'meias-nuca'], discount: 25, price: 106.46, originalPrice: 142.95, type: 'nuca' },
-                { id: 'p4', name: 'Pack NUCA Total', description: 'Toda a coleção NUCA com 30% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'meias-nuca', 'chaveiro-nuca'], discount: 30, price: 105.14, originalPrice: 152.94, type: 'nuca' }
+                { id: 'p2', name: 'Pack NUCA Acessórios', description: 'Boné + Tote Bag + Chaveiro com 20% de desconto.', items: ['bone-nuca', 'tote-nuca', 'chaveiro-nuca'], discount: 20, price: 43.18, originalPrice: 54.97, type: 'nuca' },
+                { id: 'p3', name: 'Pack NUCA Completo', description: 'Tshirt + Hoodie + Boné + Tote com 25% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca'], discount: 25, price: 96.71, originalPrice: 128.96, type: 'nuca' },
+                { id: 'p4', name: 'Pack NUCA Total', description: 'Toda a coleção NUCA com 30% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'chaveiro-nuca'], discount: 30, price: 97.47, originalPrice: 139.95, type: 'nuca' }
             ],
             seasons: [
                 { id: 'ps1', name: 'Pack 4 Estações', description: 'Todas as 4 estações com 20% de desconto.', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao', 'tote-estacao'], discount: 20, price: 102.34, originalPrice: 127.96, seasonChoice: true, type: 'seasons' },
