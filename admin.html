@@ -314,7 +314,7 @@
             .modal-content {
                 background: white;
                 border-radius: 1rem;
-                max-width: 500px;
+                max-width: 600px;
                 width: 100%;
                 max-height: 90vh;
                 overflow-y: auto;
@@ -330,6 +330,41 @@
             }
             .filter-tab:hover {
                 background-color: rgba(85, 107, 79, 0.1);
+            }
+            
+            .form-input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                border: 2px solid #E8DCC4;
+                border-radius: 0.75rem;
+                transition: all 0.3s;
+                background-color: rgba(255,255,255,0.7);
+            }
+            .form-input:focus {
+                outline: none;
+                border-color: #556B4F;
+                background-color: white;
+            }
+            .form-label {
+                display: block;
+                font-size: 0.875rem;
+                font-weight: 600;
+                color: #556B4F;
+                margin-bottom: 0.5rem;
+            }
+            
+            .customer-detail-card {
+                background: linear-gradient(135deg, rgba(85,107,79,0.05) 0%, rgba(44,51,40,0.02) 100%);
+                border-radius: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .order-item-card {
+                background: white;
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                border: 1px solid rgba(85,107,79,0.1);
             }
         </style>
     <base target="_blank">
@@ -563,6 +598,12 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-display text-2xl font-bold text-nuca-green">Clientes</h3>
                         <div class="flex gap-3">
+                            <button onclick="openAddCustomerModal()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Novo Cliente
+                            </button>
                             <button onclick="exportCustomers()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Exportar
@@ -594,7 +635,7 @@
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
                                         <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                      </tr>
+                                    </tr>
                                 </thead>
                                 <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
                                     <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
@@ -652,6 +693,83 @@
         </main>
     </div>
     
+    <!-- Add Customer Modal -->
+    <div id="add-customer-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="p-6 border-b border-nuca-green/10">
+                <h3 class="font-display text-xl font-bold text-nuca-green">Novo Cliente</h3>
+                <p class="text-sm text-nuca-green/60 mt-1">Preencha as informações do cliente</p>
+            </div>
+            <div class="p-6">
+                <form id="add-customer-form" class="space-y-4">
+                    <div>
+                        <label class="form-label">Nome Completo *</label>
+                        <input type="text" id="customer-name" required class="form-input" placeholder="Ex: Ana Silva">
+                    </div>
+                    <div>
+                        <label class="form-label">Email *</label>
+                        <input type="email" id="customer-email" required class="form-input" placeholder="cliente@exemplo.com">
+                    </div>
+                    <div>
+                        <label class="form-label">Telefone *</label>
+                        <input type="tel" id="customer-phone" required class="form-input" placeholder="912345678">
+                    </div>
+                    <div>
+                        <label class="form-label">Data de Nascimento</label>
+                        <input type="date" id="customer-birth-date" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">NIF</label>
+                        <input type="text" id="customer-nif" class="form-input" placeholder="123456789">
+                    </div>
+                    <div>
+                        <label class="form-label">Morada</label>
+                        <input type="text" id="customer-address" class="form-input" placeholder="Rua, nº, andar">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label">Cidade</label>
+                            <input type="text" id="customer-city" class="form-input" placeholder="Lisboa">
+                        </div>
+                        <div>
+                            <label class="form-label">Código Postal</label>
+                            <input type="text" id="customer-postal-code" class="form-input" placeholder="1000-001">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label">Notas / Observações</label>
+                        <textarea id="customer-notes" rows="3" class="form-input" placeholder="Informações adicionais..."></textarea>
+                    </div>
+                    <div class="flex gap-4 justify-end pt-4">
+                        <button type="button" onclick="closeAddCustomerModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-nuca-green text-white rounded-full hover:bg-nuca-dark transition-colors flex items-center gap-2">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                            Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Customer Detail Modal -->
+    <div id="customer-detail-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center">
+                <div>
+                    <h3 class="font-display text-xl font-bold text-nuca-green" id="customer-detail-name">Ficha do Cliente</h3>
+                    <p class="text-sm text-nuca-green/60 mt-1" id="customer-detail-email">-</p>
+                </div>
+                <button onclick="closeCustomerDetailModal()" class="text-nuca-green hover:text-nuca-dark">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div id="customer-detail-content" class="p-6">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+    
     <!-- Delete Confirmation Modal -->
     <div id="delete-modal" class="modal-overlay">
         <div class="modal-content">
@@ -695,7 +813,6 @@
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Inicializar Supabase
             try {
                 supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 console.log('Supabase inicializado com sucesso');
@@ -714,6 +831,7 @@
             });
             
             document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('add-customer-form').addEventListener('submit', addCustomer);
         });
     
         // ============================================
@@ -796,10 +914,7 @@
         // ============================================
         async function loadDashboard() {
             try {
-                if (!supabaseClient) {
-                    console.warn('Supabase não inicializado');
-                    return;
-                }
+                if (!supabaseClient) return;
                 
                 const { data: orders, error } = await supabaseClient
                     .from('orders')
@@ -881,10 +996,7 @@
         // ============================================
         async function loadOrders() {
             try {
-                if (!supabaseClient) {
-                    console.warn('Supabase não inicializado');
-                    return;
-                }
+                if (!supabaseClient) return;
                 
                 const { data: orders, error } = await supabaseClient
                     .from('orders')
@@ -973,13 +1085,7 @@
             const tbody = document.getElementById('orders-table-body');
             
             if (orders.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">
-                            Nenhuma encomenda encontrada
-                        </td>
-                    </tr>
-                `;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda encontrada</td></tr>`;
                 return;
             }
             
@@ -1019,15 +1125,10 @@
                         <td class="px-4 py-4">
                             <div class="flex items-center justify-center gap-2">
                                 <button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExpanded ? 'expanded' : ''}" title="Ver detalhes">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="6 9 12 15 18 9"/>
-                                    </svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                                 </button>
                                 <button onclick="confirmDeleteOrder('${order.id}')" class="action-btn delete" title="Eliminar">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                    </svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </div>
                         </td>
@@ -1090,7 +1191,6 @@
     
         function filterOrders(status) {
             currentFilter = status;
-            
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 if (tab.dataset.filter === status) {
                     tab.classList.add('tab-active');
@@ -1098,7 +1198,6 @@
                     tab.classList.remove('tab-active');
                 }
             });
-            
             applyFilters();
         }
     
@@ -1135,16 +1234,8 @@
                     select.className = `status-select ${getStatusClass(newStatus)}`;
                 }
                 
-                const statusLabels = {
-                    pending: 'Pendente',
-                    pending_payment: 'Pendente',
-                    processing: 'A Processar',
-                    shipped: 'Enviada',
-                    delivered: 'Entregue',
-                    cancelled: 'Cancelada'
-                };
+                const statusLabels = { pending: 'Pendente', pending_payment: 'Pendente', processing: 'A Processar', shipped: 'Enviada', delivered: 'Entregue', cancelled: 'Cancelada' };
                 showToast(`Estado atualizado para "${statusLabels[newStatus]}"`, 'success');
-                
                 loadDashboard();
             } catch (error) {
                 console.error('Erro ao atualizar status:', error);
@@ -1164,17 +1255,10 @@
     
         async function confirmDelete() {
             if (!orderToDelete) return;
-            
             try {
                 if (!supabaseClient) throw new Error('Supabase não inicializado');
-                
-                const { error } = await supabaseClient
-                    .from('orders')
-                    .delete()
-                    .eq('id', orderToDelete);
-                
+                const { error } = await supabaseClient.from('orders').delete().eq('id', orderToDelete);
                 if (error) throw error;
-                
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
                 applyFilters();
                 showToast('Encomenda eliminada', 'success');
@@ -1183,7 +1267,6 @@
                 console.error('Erro ao eliminar encomenda:', error);
                 showToast('Erro ao eliminar encomenda', 'error');
             }
-            
             closeDeleteModal();
         }
     
@@ -1192,10 +1275,7 @@
         // ============================================
         async function loadCustomers() {
             try {
-                if (!supabaseClient) {
-                    console.warn('Supabase não inicializado');
-                    return;
-                }
+                if (!supabaseClient) return;
                 
                 const { data: customers, error } = await supabaseClient
                     .from('customers')
@@ -1239,17 +1319,18 @@
                             <p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || '-')}</p>
                         </div>
                     </td>
+                    <td class="px-6 py-4">${customer.total_orders || 0}</td>
+                    <td class="px-6 py-4 font-bold">€${(parseFloat(customer.total_purchases) || 0).toFixed(2)}</td>
                     <td class="px-6 py-4">
-                        ${customer.total_orders || 0}
-                    </td>
-                    <td class="px-6 py-4 font-bold">
-                        €${(parseFloat(customer.total_purchases) || 0).toFixed(2)}
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex justify-center">
-                            <button onclick="viewCustomerOrders('${customer.email}')" class="action-btn" title="Ver encomendas">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="viewCustomerDetails('${customer.email}')" class="action-btn" title="Ver ficha do cliente">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                            <button onclick="viewCustomerOrders('${customer.email}')" class="action-btn" title="Ver encomendas">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                 </svg>
                             </button>
                         </div>
@@ -1275,6 +1356,112 @@
             renderCustomersTable(filtered);
         }
     
+        async function viewCustomerDetails(email) {
+            try {
+                if (!supabaseClient) return;
+                
+                const { data: customer, error } = await supabaseClient
+                    .from('customers')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+                
+                if (error) throw error;
+                
+                const { data: customerOrders, error: ordersError } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_email', email)
+                    .order('created_at', { ascending: false });
+                
+                if (ordersError) throw ordersError;
+                
+                document.getElementById('customer-detail-name').textContent = customer.name || 'Cliente';
+                document.getElementById('customer-detail-email').textContent = customer.email || '-';
+                
+                const content = document.getElementById('customer-detail-content');
+                content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="customer-detail-card">
+                            <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                Informações Pessoais
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="text-nuca-green/60">Nome:</span> ${escapeHtml(customer.name || '-')}</p>
+                                <p><span class="text-nuca-green/60">Email:</span> ${escapeHtml(customer.email || '-')}</p>
+                                <p><span class="text-nuca-green/60">Telefone:</span> ${escapeHtml(customer.phone || '-')}</p>
+                                <p><span class="text-nuca-green/60">Data Nascimento:</span> ${customer.birth_date ? formatDate(customer.birth_date) : '-'}</p>
+                                <p><span class="text-nuca-green/60">NIF:</span> ${escapeHtml(customer.nif || '-')}</p>
+                            </div>
+                        </div>
+                        <div class="customer-detail-card">
+                            <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 7H7M17 12H7M17 17H7"/></svg>
+                                Morada
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <p><span class="text-nuca-green/60">Morada:</span> ${escapeHtml(customer.address || '-')}</p>
+                                <p><span class="text-nuca-green/60">Cidade:</span> ${escapeHtml(customer.city || '-')}</p>
+                                <p><span class="text-nuca-green/60">Código Postal:</span> ${escapeHtml(customer.postal_code || '-')}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="customer-detail-card mb-6">
+                        <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M9 12h6M7 18h10"/></svg>
+                            Estatísticas
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="bg-white/50 p-3 rounded-lg">
+                                <p class="text-2xl font-bold text-nuca-green">${customer.total_orders || 0}</p>
+                                <p class="text-xs text-nuca-green/60">Encomendas</p>
+                            </div>
+                            <div class="bg-white/50 p-3 rounded-lg">
+                                <p class="text-2xl font-bold text-nuca-green">€${(parseFloat(customer.total_purchases) || 0).toFixed(2)}</p>
+                                <p class="text-xs text-nuca-green/60">Total Gasto</p>
+                            </div>
+                        </div>
+                        ${customer.last_purchase_date ? `<p class="text-xs text-nuca-green/60 mt-3 text-center">Última compra: ${formatDate(customer.last_purchase_date)}</p>` : ''}
+                    </div>
+                    <div class="customer-detail-card">
+                        <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            Histórico de Encomendas
+                        </h4>
+                        ${customerOrders && customerOrders.length > 0 ? `
+                            <div class="space-y-3 max-h-96 overflow-y-auto">
+                                ${customerOrders.map(order => `
+                                    <div class="order-item-card">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <p class="font-bold text-nuca-green">${order.order_number || order.id?.slice(0, 8)}</p>
+                                                <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
+                                            </div>
+                                            <span class="status-badge ${getStatusClass(order.status)} text-xs px-2 py-1 rounded-full">${order.status === 'pending' ? 'Pendente' : order.status === 'processing' ? 'A Processar' : order.status === 'shipped' ? 'Enviada' : order.status === 'delivered' ? 'Entregue' : 'Cancelada'}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <p class="text-sm">${parseItems(order.items).length} itens</p>
+                                            <p class="font-bold">€${(parseFloat(order.total) || 0).toFixed(2)}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p class="text-nuca-green/60 text-center py-4">Nenhuma encomenda registada</p>'}
+                    </div>
+                `;
+                
+                document.getElementById('customer-detail-modal').classList.add('active');
+            } catch (error) {
+                console.error('Erro ao carregar detalhes do cliente:', error);
+                showToast('Erro ao carregar ficha do cliente', 'error');
+            }
+        }
+    
+        function closeCustomerDetailModal() {
+            document.getElementById('customer-detail-modal').classList.remove('active');
+        }
+    
         function viewCustomerOrders(email) {
             if (!email) return;
             currentFilter = 'all';
@@ -1282,6 +1469,68 @@
             if (searchInput) searchInput.value = email;
             showSection('orders');
             applyFilters();
+        }
+    
+        async function addCustomer(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('customer-name').value;
+            const email = document.getElementById('customer-email').value;
+            const phone = document.getElementById('customer-phone').value;
+            const birth_date = document.getElementById('customer-birth-date').value || null;
+            const nif = document.getElementById('customer-nif').value || null;
+            const address = document.getElementById('customer-address').value || null;
+            const city = document.getElementById('customer-city').value || null;
+            const postal_code = document.getElementById('customer-postal-code').value || null;
+            const notes = document.getElementById('customer-notes').value || null;
+            
+            if (!name || !email || !phone) {
+                showToast('Preencha os campos obrigatórios', 'error');
+                return;
+            }
+            
+            try {
+                if (!supabaseClient) throw new Error('Supabase não inicializado');
+                
+                const { data, error } = await supabaseClient
+                    .from('customers')
+                    .insert([{
+                        name,
+                        email,
+                        phone,
+                        birth_date,
+                        nif,
+                        address,
+                        city,
+                        postal_code,
+                        notes,
+                        total_purchases: 0,
+                        total_orders: 0,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    }])
+                    .select();
+                
+                if (error) throw error;
+                
+                showToast('Cliente adicionado com sucesso!', 'success');
+                closeAddCustomerModal();
+                loadCustomers();
+                
+                document.getElementById('add-customer-form').reset();
+            } catch (error) {
+                console.error('Erro ao adicionar cliente:', error);
+                showToast('Erro ao adicionar cliente', 'error');
+            }
+        }
+    
+        function openAddCustomerModal() {
+            document.getElementById('add-customer-modal').classList.add('active');
+        }
+    
+        function closeAddCustomerModal() {
+            document.getElementById('add-customer-modal').classList.remove('active');
+            document.getElementById('add-customer-form').reset();
         }
     
         function exportCustomers() {
