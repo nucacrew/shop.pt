@@ -157,17 +157,30 @@
             box-shadow: 0 0 0 3px #556B4F;
         }
         
+        /* ===== ESTILOS MINIMALISTAS PARA SELEÇÃO DE ESTAÇÕES ===== */
         .season-selector {
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.6);
         }
-        .season-selector:hover { transform: scale(1.05); }
+        .season-selector:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+        }
         .season-selector.active {
-            background-color: #556B4F;
+            background: #556B4F;
             color: #D8C6A5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(85, 107, 79, 0.2);
         }
-        
-        .season-icon { width: 20px; height: 20px; }
-        .gift-icon { width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 4px; }
+        .season-selector.active .season-icon {
+            stroke: #D8C6A5;
+        }
+        .season-icon-wrapper {
+            transition: all 0.3s ease;
+        }
         
         .carousel-container {
             overflow: hidden;
@@ -324,7 +337,7 @@
             margin-right: 4px;
         }
 
-        /* Modal de Conteúdo Legal - Apenas para Privacidade e Termos */
+        /* ===== MODAL LEGAL MINIMALISTA ===== */
         .legal-modal {
             position: fixed;
             inset: 0;
@@ -334,7 +347,7 @@
             justify-content: center;
             visibility: hidden;
             opacity: 0;
-            transition: visibility 0.3s, opacity 0.3s;
+            transition: visibility 0.3s ease, opacity 0.3s ease;
         }
         .legal-modal.active {
             visibility: visible;
@@ -343,16 +356,16 @@
         .legal-modal-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
+            background: rgba(44, 51, 40, 0.6);
+            backdrop-filter: blur(8px);
         }
         .legal-modal-content {
             position: relative;
-            background: #D8C6A5;
+            background: #F5F1EA;
             width: 90%;
             max-width: 800px;
             max-height: 85vh;
-            border-radius: 2rem;
+            border-radius: 1.5rem;
             overflow: hidden;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             transform: scale(0.95);
@@ -366,14 +379,14 @@
             justify-content: space-between;
             align-items: center;
             padding: 1.5rem 2rem;
-            border-bottom: 1px solid rgba(85, 107, 79, 0.2);
-            background: #E8DCC4;
+            border-bottom: 1px solid rgba(85, 107, 79, 0.15);
+            background: #FFFFFF;
         }
         .legal-modal-header h3 {
             font-family: 'Syne', sans-serif;
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #556B4F;
+            font-weight: 700;
+            color: #2C3328;
         }
         .legal-modal-close {
             background: none;
@@ -381,39 +394,147 @@
             cursor: pointer;
             padding: 0.5rem;
             border-radius: 50%;
-            transition: background 0.2s;
+            transition: all 0.2s;
             color: #556B4F;
         }
         .legal-modal-close:hover {
             background: rgba(85, 107, 79, 0.1);
+            transform: rotate(90deg);
         }
         .legal-modal-body {
-            padding: 2rem;
+            padding: 0;
             overflow-y: auto;
             max-height: calc(85vh - 80px);
             color: #2C3328;
-            line-height: 1.6;
+            line-height: 1.7;
         }
-        .legal-modal-body h4 {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.25rem;
-            font-weight: bold;
+        
+        /* Estilos do conteúdo legal minimalista */
+        .legal-content {
+            padding: 2rem;
+        }
+        .legal-intro {
+            background: rgba(85, 107, 79, 0.05);
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid #556B4F;
+        }
+        .legal-intro p {
+            font-size: 1rem;
             color: #556B4F;
-            margin-top: 1.5rem;
+            margin: 0;
+            font-weight: 400;
+        }
+        .legal-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(85, 107, 79, 0.1);
+        }
+        .legal-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .legal-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
-        .legal-modal-body h4:first-child {
-            margin-top: 0;
+        .legal-section-number {
+            width: 28px;
+            height: 28px;
+            background: #556B4F;
+            color: #F5F1EA;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
         }
-        .legal-modal-body p {
-            margin-bottom: 1rem;
+        .legal-section h4 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2C3328;
+            margin: 0;
         }
-        .legal-modal-body ul {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
+        .legal-section p {
+            margin-bottom: 0.75rem;
+            color: #556B4F;
+            padding-left: 2.5rem;
+            font-size: 0.95rem;
         }
-        .legal-modal-body li {
+        .legal-section ul {
+            margin-bottom: 0.75rem;
+            padding-left: 4rem;
+            list-style: none;
+        }
+        .legal-section li {
             margin-bottom: 0.5rem;
+            color: #556B4F;
+            position: relative;
+            padding-left: 1.25rem;
+            font-size: 0.95rem;
+        }
+        .legal-section li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 5px;
+            height: 5px;
+            background: #556B4F;
+            border-radius: 50%;
+        }
+        .legal-footer {
+            background: rgba(85, 107, 79, 0.03);
+            padding: 1.25rem 2rem;
+            border-top: 1px solid rgba(85, 107, 79, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .legal-footer p {
+            margin: 0;
+            font-size: 0.875rem;
+            color: #556B4F;
+        }
+        .legal-footer strong {
+            color: #2C3328;
+            font-weight: 600;
+        }
+        
+        /* Scrollbar personalizada para o modal legal */
+        .legal-modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .legal-modal-body::-webkit-scrollbar-track {
+            background: rgba(85, 107, 79, 0.05);
+        }
+        .legal-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(85, 107, 79, 0.2);
+            border-radius: 3px;
+        }
+        .legal-modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(85, 107, 79, 0.3);
+        }
+
+        /* Pack season selection no modal */
+        .pack-season-btn {
+            transition: all 0.3s ease;
+        }
+        .pack-season-btn.active {
+            background: #556B4F;
+            color: #D8C6A5;
+            border-color: #556B4F;
+        }
+        .pack-season-btn.active .season-icon {
+            stroke: #D8C6A5;
         }
     </style>
 </head>
@@ -476,7 +597,7 @@
         </div>
     </div>
     
-    <!-- Legal Modal (Apenas para Política de Privacidade e Termos de Uso) -->
+    <!-- Legal Modal (Minimalista) -->
     <div id="legal-modal" class="legal-modal">
         <div class="legal-modal-overlay" onclick="closeLegalModal()"></div>
         <div class="legal-modal-content">
@@ -486,9 +607,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-            <div class="legal-modal-body" id="legal-modal-body">
-                <!-- Conteúdo será inserido dinamicamente -->
-            </div>
+            <div class="legal-modal-body" id="legal-modal-body"></div>
         </div>
     </div>
     
@@ -512,94 +631,324 @@
     <div class="bg-nuca-green text-nuca-beige py-4 overflow-hidden"><div class="marquee-container"><div class="marquee-content font-display text-xl font-bold tracking-wider">ENVIO GRÁTIS EM COMPRAS ACIMA DE 50€ • PRODUZIDO EM PORTUGAL • DESDE LISBOA • COLEÇÃO ESTAÇÕES DO ANO DISPONÍVEL •</div></div></div>
     
     <!-- Shop Section -->
-    <section id="shop" class="py-24 px-6 lg:px-12 bg-nuca-light/30"><div class="max-w-7xl mx-auto"><div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6"><div><span class="inline-block px-3 py-1 bg-nuca-green text-nuca-beige rounded-full text-xs font-bold tracking-wider uppercase mb-3">Coleção Principal</span><h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">A Nossa Loja</h2><p class="text-nuca-green/70">As peças essenciais NUCA, disponíveis todo o ano.</p></div><div class="flex flex-wrap gap-2"><button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige bg-nuca-green text-nuca-beige" data-filter="all">Tudo</button><button onclick="filterProducts('camisetas')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="camisetas">Camisetas</button><button onclick="filterProducts('hoodies')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="hoodies">Hoodies</button><button onclick="filterProducts('acessorios')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="acessorios">Acessórios</button></div></div><div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div></div></section>
+    <section id="shop" class="py-24 px-6 lg:px-12 bg-nuca-light/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-nuca-green text-nuca-beige rounded-full text-xs font-bold tracking-wider uppercase mb-3">Coleção Principal</span>
+                    <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">A Nossa Loja</h2>
+                    <p class="text-nuca-green/70">As peças essenciais NUCA, disponíveis todo o ano.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige bg-nuca-green text-nuca-beige" data-filter="all">Tudo</button>
+                    <button onclick="filterProducts('camisetas')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="camisetas">Camisetas</button>
+                    <button onclick="filterProducts('hoodies')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="hoodies">Hoodies</button>
+                    <button onclick="filterProducts('acessorios')" class="filter-btn px-6 py-2 rounded-full border border-nuca-green text-sm font-medium transition-all hover:bg-nuca-green hover:text-nuca-beige text-nuca-green" data-filter="acessorios">Acessórios</button>
+                </div>
+            </div>
+            <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
     
     <!-- Seasons Collection -->
-    <section id="seasons-collection" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden"><div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-nuca-light/30 to-transparent"></div><div class="max-w-7xl mx-auto relative z-10"><div class="text-center mb-16"><span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Edição Especial</span><h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Coleção: Estações do Ano</h2><p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Cada peça inspirada numa estação. Escolhe a tua favorita ou colecciona todas!</p></div><div class="carousel-container relative px-12"><button onclick="moveCarousel(-1)" class="carousel-btn prev" id="carousel-prev"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button><div class="carousel-track" id="seasons-track"></div><button onclick="moveCarousel(1)" class="carousel-btn next" id="carousel-next"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div><div class="flex justify-center gap-2 mt-8" id="carousel-indicators"></div></div></section>
+    <section id="seasons-collection" class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-nuca-light/30 to-transparent"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Edição Especial</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Coleção: Estações do Ano</h2>
+                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Cada peça inspirada numa estação. Escolhe a tua favorita ou colecciona todas!</p>
+            </div>
+            <div class="carousel-container relative px-12">
+                <button onclick="moveCarousel(-1)" class="carousel-btn prev" id="carousel-prev"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <div class="carousel-track" id="seasons-track"></div>
+                <button onclick="moveCarousel(1)" class="carousel-btn next" id="carousel-next"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>
+            <div class="flex justify-center gap-2 mt-8" id="carousel-indicators"></div>
+        </div>
+    </section>
     
     <!-- Packs Section -->
-    <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-light/30"><div class="max-w-7xl mx-auto"><div class="text-center mb-12"><span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Packs Especiais</span><h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Packs NUCA</h2><p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Combinações perfeitas com descontos especiais. Incluímos ofertas em packs selecionados!</p></div><div class="flex justify-center mb-12"><div class="inline-flex bg-nuca-beige rounded-full p-1.5 shadow-lg border border-nuca-green/10"><button onclick="switchPackTab('nuca')" id="tab-nuca" class="pack-tab active px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all">Packs NUCA</button><button onclick="switchPackTab('seasons')" id="tab-seasons" class="pack-tab px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all text-nuca-green">Packs Estações</button></div></div><div id="packs-nuca-section" class="packs-section active"><div class="packs-grid" id="packs-nuca-grid"></div></div><div id="packs-seasons-section" class="packs-section"><div class="packs-grid" id="packs-seasons-grid"></div></div></div></section>
+    <section id="packs" class="py-24 px-6 lg:px-12 bg-nuca-light/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-2 bg-nuca-green text-nuca-beige rounded-full text-sm font-medium tracking-wider uppercase mb-4">Packs Especiais</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-4">Packs NUCA</h2>
+                <p class="text-nuca-green/70 max-w-2xl mx-auto text-lg">Combinações perfeitas com descontos especiais. Incluímos ofertas em packs selecionados!</p>
+            </div>
+            <div class="flex justify-center mb-12">
+                <div class="inline-flex bg-nuca-beige rounded-full p-1.5 shadow-lg border border-nuca-green/10">
+                    <button onclick="switchPackTab('nuca')" id="tab-nuca" class="pack-tab active px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all">Packs NUCA</button>
+                    <button onclick="switchPackTab('seasons')" id="tab-seasons" class="pack-tab px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-all text-nuca-green">Packs Estações</button>
+                </div>
+            </div>
+            <div id="packs-nuca-section" class="packs-section active"><div class="packs-grid" id="packs-nuca-grid"></div></div>
+            <div id="packs-seasons-section" class="packs-section"><div class="packs-grid" id="packs-seasons-grid"></div></div>
+        </div>
+    </section>
     
     <!-- About Section -->
-    <section id="about" class="py-24 px-6 lg:px-12"><div class="max-w-7xl mx-auto"><div class="grid md:grid-cols-2 gap-16 items-center"><div class="space-y-8"><h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green">A Nossa História</h2><div class="space-y-6 text-lg text-nuca-green/80 leading-relaxed"><p>A NUCA nasceu em Lisboa, da vontade de criar peças de roupa simples, confortáveis e atemporais. Acreditamos que menos é mais, e que a qualidade está nos detalhes.</p><div class="grid grid-cols-3 gap-8 pt-8 border-t border-nuca-green/10"><div><span class="block font-display text-3xl font-bold text-nuca-green">100%</span><span class="text-sm text-nuca-green/60">Produção Nacional</span></div><div><span class="block font-display text-3xl font-bold text-nuca-green">2</span><span class="text-sm text-nuca-green/60">Coleções</span></div><div><span class="block font-display text-3xl font-bold text-nuca-green">Lisboa</span><span class="text-sm text-nuca-green/60">Nossa Base</span></div></div></div></div><div class="relative"><div class="aspect-square rounded-3xl overflow-hidden bg-nuca-light"><img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" alt="NUCA Concept" class="w-full h-full object-cover"></div><div class="absolute -bottom-6 -left-6 bg-nuca-green text-nuca-beige p-8 rounded-2xl max-w-xs hidden md:block"><p class="font-display text-xl font-bold mb-2">Tudo começa na #NUCA — o resto vem depois.</p><p class="text-sm opacity-80">— NUCA, Lisboa</p></div></div></div></div></section>
+    <section id="about" class="py-24 px-6 lg:px-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green">A Nossa História</h2>
+                    <div class="space-y-6 text-lg text-nuca-green/80 leading-relaxed">
+                        <p>A NUCA nasceu em Lisboa, da vontade de criar peças de roupa simples, confortáveis e atemporais. Acreditamos que menos é mais, e que a qualidade está nos detalhes.</p>
+                        <div class="grid grid-cols-3 gap-8 pt-8 border-t border-nuca-green/10">
+                            <div><span class="block font-display text-3xl font-bold text-nuca-green">100%</span><span class="text-sm text-nuca-green/60">Produção Nacional</span></div>
+                            <div><span class="block font-display text-3xl font-bold text-nuca-green">2</span><span class="text-sm text-nuca-green/60">Coleções</span></div>
+                            <div><span class="block font-display text-3xl font-bold text-nuca-green">Lisboa</span><span class="text-sm text-nuca-green/60">Nossa Base</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="aspect-square rounded-3xl overflow-hidden bg-nuca-light">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" alt="NUCA Concept" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-nuca-green text-nuca-beige p-8 rounded-2xl max-w-xs hidden md:block">
+                        <p class="font-display text-xl font-bold mb-2">Tudo começa na #NUCA — o resto vem depois.</p>
+                        <p class="text-sm opacity-80">— NUCA, Lisboa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <!-- Values Section -->
-    <section class="py-24 px-6 lg:px-12 bg-nuca-green text-nuca-beige"><div class="max-w-7xl mx-auto"><div class="text-center mb-16"><h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Porquê Escolher a NUCA?</h2><p class="text-nuca-beige/70 max-w-2xl mx-auto">Estamos no início da nossa jornada, mas com valores sólidos que nos guiam todos os dias.</p></div><div class="grid md:grid-cols-3 gap-8"><div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors"><div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg></div><h3 class="font-display text-xl font-bold mb-3">Produção Local</h3><p class="text-nuca-beige/70">Todas as peças são produzidas em Portugal, apoiando a economia local e garantindo qualidade.</p></div><div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors"><div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3 class="font-display text-xl font-bold mb-3">Qualidade Primeiro</h3><p class="text-nuca-beige/70">Selecionamos os melhores materiais para criar peças que duram e mantêm a forma.</p></div><div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors"><div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3 class="font-display text-xl font-bold mb-3">Apoio Personalizado</h3><p class="text-nuca-beige/70">Como loja online, estamos sempre disponíveis para ajudar com tamanhos, trocas ou dúvidas.</p></div></div></div></section>
+    <section class="py-24 px-6 lg:px-12 bg-nuca-green text-nuca-beige">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">Porquê Escolher a NUCA?</h2>
+                <p class="text-nuca-beige/70 max-w-2xl mx-auto">Estamos no início da nossa jornada, mas com valores sólidos que nos guiam todos os dias.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
+                    <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/></svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3">Produção Local</h3>
+                    <p class="text-nuca-beige/70">Todas as peças são produzidas em Portugal, apoiando a economia local e garantindo qualidade.</p>
+                </div>
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
+                    <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3">Qualidade Primeiro</h3>
+                    <p class="text-nuca-beige/70">Selecionamos os melhores materiais para criar peças que duram e mantêm a forma.</p>
+                </div>
+                <div class="bg-nuca-beige/10 p-8 rounded-3xl text-center hover:bg-nuca-beige/20 transition-colors">
+                    <div class="w-16 h-16 bg-nuca-beige/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3">Apoio Personalizado</h3>
+                    <p class="text-nuca-beige/70">Como loja online, estamos sempre disponíveis para ajudar com tamanhos, trocas ou dúvidas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <!-- Instagram Section -->
-    <section class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden"><div class="absolute top-0 right-0 w-96 h-96 bg-nuca-green/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div><div class="absolute bottom-0 left-0 w-64 h-64 bg-nuca-light rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div><div class="max-w-6xl mx-auto relative z-10"><div class="text-center mb-16"><span class="inline-block px-4 py-2 border border-nuca-green/30 rounded-full text-sm font-medium tracking-wider uppercase text-nuca-green mb-6">Comunidade</span><h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-6">Segue a NUCA</h2><p class="text-nuca-green/70 text-lg max-w-md mx-auto mb-8">Fica a par das novidades, drops exclusivos e behind-the-scenes da nossa jornada em Lisboa.</p><a href="https://instagram.com/nuca.pt" target="_blank" class="inline-flex items-center gap-3 bg-nuca-green text-nuca-beige px-8 py-4 rounded-full font-bold hover:bg-nuca-dark transition-all hover:scale-105 hover:shadow-xl group"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:rotate-12 transition-transform"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>@nuca.pt</a></div><p class="text-center text-nuca-green/50 text-sm mt-12">Conteúdo exclusivo, antecipação de drops e muito mais</p></div></section>
+    <section class="py-24 px-6 lg:px-12 bg-nuca-beige relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-nuca-green/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-nuca-light rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block px-4 py-2 border border-nuca-green/30 rounded-full text-sm font-medium tracking-wider uppercase text-nuca-green mb-6">Comunidade</span>
+                <h2 class="font-display text-4xl md:text-6xl font-bold text-nuca-green mb-6">Segue a NUCA</h2>
+                <p class="text-nuca-green/70 text-lg max-w-md mx-auto mb-8">Fica a par das novidades, drops exclusivos e behind-the-scenes da nossa jornada em Lisboa.</p>
+                <a href="https://instagram.com/nuca.pt" target="_blank" class="inline-flex items-center gap-3 bg-nuca-green text-nuca-beige px-8 py-4 rounded-full font-bold hover:bg-nuca-dark transition-all hover:scale-105 hover:shadow-xl group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="group-hover:rotate-12 transition-transform"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>@nuca.pt
+                </a>
+            </div>
+            <p class="text-center text-nuca-green/50 text-sm mt-12">Conteúdo exclusivo, antecipação de drops e muito mais</p>
+        </div>
+    </section>
     
     <!-- Footer -->
-    <footer id="contact" class="bg-nuca-dark text-nuca-beige py-16 px-6 lg:px-12"><div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12"><div class="space-y-4"><span class="nuca-logo text-4xl block">NUCA</span><p class="text-nuca-beige/60 text-sm">Moda minimalista, feita em Portugal. Desde Lisboa para o mundo.</p><p class="text-nuca-beige/40 text-xs">Loja 100% Online</p></div><div><h4 class="font-bold mb-4 text-nuca-light">Loja</h4><ul class="space-y-2 text-nuca-beige/60 text-sm"><li><a href="#shop" onclick="filterFromFooter('camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li><li><a href="#shop" onclick="filterFromFooter('hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li><li><a href="#shop" onclick="filterFromFooter('acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li><li><a href="#seasons-collection" class="hover:text-nuca-beige transition-colors">Coleção Estações</a></li><li><a href="#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li></ul></div><div><h4 class="font-bold mb-4 text-nuca-light">Ajuda</h4><ul class="space-y-2 text-nuca-beige/60 text-sm"><li><a href="suporte.html?tab=trocas" class="hover:text-nuca-beige transition-colors">Trocas e Devoluções</a></li><li><a href="suporte.html?tab=tamanhos" class="hover:text-nuca-beige transition-colors">Guia de Tamanhos</a></li><li><a href="suporte.html?tab=suporte" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li></ul></div><div><h4 class="font-bold mb-4 text-nuca-light">Siga-nos</h4><div class="flex gap-4"><a href="https://instagram.com/nuca.pt" target="_blank" class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a></div><div class="mt-6 space-y-1"><p class="text-sm text-nuca-beige/60">Contactos:</p><a href="mailto:nuca.crew@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew@gmail.com</a><a href="mailto:nuca.crew.support@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew.support@gmail.com</a></div></div></div><div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-nuca-beige/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/40"><p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p><div class="flex gap-6"><a href="#" onclick="openLegalModal('privacidade')" class="hover:text-nuca-beige transition-colors">Política de Privacidade</a><a href="#" onclick="openLegalModal('termos')" class="hover:text-nuca-beige transition-colors">Termos de Uso</a></div></div></footer>
+    <footer id="contact" class="bg-nuca-dark text-nuca-beige py-16 px-6 lg:px-12">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="space-y-4">
+                <span class="nuca-logo text-4xl block">NUCA</span>
+                <p class="text-nuca-beige/60 text-sm">Moda minimalista, feita em Portugal. Desde Lisboa para o mundo.</p>
+                <p class="text-nuca-beige/40 text-xs">Loja 100% Online</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Loja</h4>
+                <ul class="space-y-2 text-nuca-beige/60 text-sm">
+                    <li><a href="#shop" onclick="filterFromFooter('camisetas')" class="hover:text-nuca-beige transition-colors">Camisetas</a></li>
+                    <li><a href="#shop" onclick="filterFromFooter('hoodies')" class="hover:text-nuca-beige transition-colors">Hoodies</a></li>
+                    <li><a href="#shop" onclick="filterFromFooter('acessorios')" class="hover:text-nuca-beige transition-colors">Acessórios</a></li>
+                    <li><a href="#seasons-collection" class="hover:text-nuca-beige transition-colors">Coleção Estações</a></li>
+                    <li><a href="#packs" class="hover:text-nuca-beige transition-colors">Packs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Ajuda</h4>
+                <ul class="space-y-2 text-nuca-beige/60 text-sm">
+                    <li><a href="suporte.html?tab=trocas" class="hover:text-nuca-beige transition-colors">Trocas e Devoluções</a></li>
+                    <li><a href="suporte.html?tab=tamanhos" class="hover:text-nuca-beige transition-colors">Guia de Tamanhos</a></li>
+                    <li><a href="suporte.html?tab=suporte" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-nuca-light">Siga-nos</h4>
+                <div class="flex gap-4">
+                    <a href="https://instagram.com/nuca.pt" target="_blank" class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 hover:scale-110 transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                </div>
+                <div class="mt-6 space-y-1">
+                    <p class="text-sm text-nuca-beige/60">Contactos:</p>
+                    <a href="mailto:nuca.crew@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew@gmail.com</a>
+                    <a href="mailto:nuca.crew.support@gmail.com" class="text-nuca-beige hover:underline block text-sm">nuca.crew.support@gmail.com</a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-nuca-beige/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-nuca-beige/40">
+            <p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p>
+            <div class="flex gap-6">
+                <button onclick="openLegalModal('privacidade')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer">Política de Privacidade</button>
+                <button onclick="openLegalModal('termos')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer">Termos de Uso</button>
+            </div>
+        </div>
+    </footer>
     
     <!-- Product Modal -->
-    <div id="product-modal" class="fixed inset-0 z-50 hidden"><div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeProductModal()"></div><div class="absolute inset-0 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl transform transition-transform scale-95 opacity-0" id="modal-content"><button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="w-full md:w-1/2 bg-nuca-light relative"><img id="modal-image" src="" alt="" class="w-full h-full object-cover"><div id="collection-badge" class="absolute top-4 left-4 hidden"><span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider"></span></div></div><div class="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto"><div class="space-y-6"><div><span id="modal-category" class="text-sm font-medium text-nuca-green/60 uppercase tracking-wider"></span><h2 id="modal-title" class="font-display text-4xl font-bold text-nuca-green mt-2"></h2><p id="modal-price" class="text-2xl font-bold text-nuca-green mt-4"></p></div><p id="modal-description" class="text-nuca-green/70 leading-relaxed"></p><div class="shipping-notice p-4 rounded-r-xl flex items-start gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg><div><p class="text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p><p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p></div></div><div id="season-section" class="hidden"><label class="block text-sm font-bold text-nuca-green mb-3">Estação</label><div class="flex gap-3 flex-wrap" id="modal-seasons"></div></div><div id="color-section" class="hidden"><label class="block text-sm font-bold text-nuca-green mb-3">Cor</label><div class="flex gap-3" id="modal-colors"></div></div><div id="size-section"><label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label><div class="flex gap-3 flex-wrap" id="modal-sizes"></div></div><div class="pt-6 border-t border-nuca-green/10 space-y-4"><button onclick="addToCartFromModal()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">Adicionar ao Carrinho<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button></div></div></div></div></div>
+    <div id="product-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeProductModal()"></div>
+        <div class="absolute inset-0 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl transform transition-transform scale-95 opacity-0" id="modal-content">
+            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="w-full md:w-1/2 bg-nuca-light relative">
+                <img id="modal-image" src="" alt="" class="w-full h-full object-cover">
+                <div id="collection-badge" class="absolute top-4 left-4 hidden"><span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider"></span></div>
+            </div>
+            <div class="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto">
+                <div class="space-y-6">
+                    <div>
+                        <span id="modal-category" class="text-sm font-medium text-nuca-green/60 uppercase tracking-wider"></span>
+                        <h2 id="modal-title" class="font-display text-4xl font-bold text-nuca-green mt-2"></h2>
+                        <p id="modal-price" class="text-2xl font-bold text-nuca-green mt-4"></p>
+                    </div>
+                    <p id="modal-description" class="text-nuca-green/70 leading-relaxed"></p>
+                    <div class="shipping-notice p-4 rounded-r-xl flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <div>
+                            <p class="text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p>
+                            <p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p>
+                        </div>
+                    </div>
+                    <div id="season-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-4">Escolhe a Estação</label>
+                        <div class="grid grid-cols-2 gap-3" id="modal-seasons"></div>
+                    </div>
+                    <div id="color-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-3">Cor</label>
+                        <div class="flex gap-3" id="modal-colors"></div>
+                    </div>
+                    <div id="size-section">
+                        <label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label>
+                        <div class="flex gap-3 flex-wrap" id="modal-sizes"></div>
+                    </div>
+                    <div class="pt-6 border-t border-nuca-green/10 space-y-4">
+                        <button onclick="addToCartFromModal()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">Adicionar ao Carrinho<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Pack Modal -->
-    <div id="pack-modal" class="fixed inset-0 z-50 hidden"><div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePackModal()"></div><div class="absolute inset-4 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col shadow-2xl transform transition-transform scale-95 opacity-0" id="pack-modal-content"><button onclick="closePackModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="flex-1 overflow-y-auto"><div class="grid md:grid-cols-2 h-full"><div class="bg-nuca-green text-nuca-beige p-8 md:p-12 flex flex-col justify-center relative overflow-hidden"><div class="absolute inset-0 opacity-10"><div class="absolute top-0 left-0 w-full h-full" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);"></div></div><div class="relative z-10"><span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4" id="pack-type-badge">Pack</span><h2 id="pack-modal-title" class="font-display text-4xl md:text-5xl font-bold mb-4"></h2><p id="pack-modal-description" class="text-nuca-beige/80 text-lg mb-6"></p><div class="flex items-baseline gap-3 mb-2"><span id="pack-modal-price" class="text-4xl font-bold"></span><span id="pack-modal-original" class="text-xl line-through text-nuca-beige/50"></span><span id="pack-modal-savings" class="text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span></div><div id="pack-free-items" class="mt-4 hidden"><span class="inline-block bg-yellow-400 text-nuca-dark px-3 py-1 rounded-full text-xs font-bold"><svg class="gift-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> OFERTAS INCLUÍDAS</span></div></div></div><div class="p-8 md:p-12 bg-nuca-beige overflow-y-auto"><h3 class="font-display text-2xl font-bold text-nuca-green mb-6">O Pack Inclui:</h3><div id="pack-modal-items" class="space-y-4 mb-8"></div><div class="shipping-notice p-4 rounded-r-xl flex items-start gap-3 mb-6"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg><div><p class="text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p><p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p></div></div><div class="space-y-4 pt-6 border-t border-nuca-green/10"><div class="bg-nuca-light/50 p-4 rounded-xl"><label class="block text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho base:</label><div class="flex gap-2 flex-wrap" id="pack-modal-sizes"><button onclick="selectPackSize('S')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="S">S</button><button onclick="selectPackSize('M')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige" data-size="M">M</button><button onclick="selectPackSize('L')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="L">L</button><button onclick="selectPackSize('XL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XL">XL</button><button onclick="selectPackSize('XXL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XXL">XXL</button></div></div><button onclick="addPackToCart()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">Adicionar Pack ao Carrinho<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button><button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-sm">Preferes escolher detalhes individualmente? Compra separadamente</button></div></div></div></div></div></div>
+    <div id="pack-modal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closePackModal()"></div>
+        <div class="absolute inset-4 md:inset-10 bg-nuca-beige md:rounded-3xl overflow-hidden flex flex-col shadow-2xl transform transition-transform scale-95 opacity-0" id="pack-modal-content">
+            <button onclick="closePackModal()" class="absolute top-4 right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="flex-1 overflow-y-auto">
+                <div class="grid md:grid-cols-2 h-full">
+                    <div class="bg-nuca-green text-nuca-beige p-8 md:p-12 flex flex-col justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute top-0 left-0 w-full h-full" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);"></div>
+                        </div>
+                        <div class="relative z-10">
+                            <span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase mb-4" id="pack-type-badge">Pack</span>
+                            <h2 id="pack-modal-title" class="font-display text-4xl md:text-5xl font-bold mb-4"></h2>
+                            <p id="pack-modal-description" class="text-nuca-beige/80 text-lg mb-6"></p>
+                            <div class="flex items-baseline gap-3 mb-2">
+                                <span id="pack-modal-price" class="text-4xl font-bold"></span>
+                                <span id="pack-modal-original" class="text-xl line-through text-nuca-beige/50"></span>
+                                <span id="pack-modal-savings" class="text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span>
+                            </div>
+                            <div id="pack-free-items" class="mt-4 hidden">
+                                <span class="inline-block bg-yellow-400 text-nuca-dark px-3 py-1 rounded-full text-xs font-bold"><svg class="gift-svg" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> OFERTAS INCLUÍDAS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-8 md:p-12 bg-nuca-beige overflow-y-auto">
+                        <h3 class="font-display text-2xl font-bold text-nuca-green mb-6">O Pack Inclui:</h3>
+                        <div id="pack-modal-items" class="space-y-4 mb-8"></div>
+                        <div class="shipping-notice p-4 rounded-r-xl flex items-start gap-3 mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <div>
+                                <p class="text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p>
+                                <p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4 pt-6 border-t border-nuca-green/10">
+                            <div class="bg-nuca-light/50 p-4 rounded-xl">
+                                <label class="block text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho base:</label>
+                                <div class="flex gap-2 flex-wrap" id="pack-modal-sizes">
+                                    <button onclick="selectPackSize('S')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="S">S</button>
+                                    <button onclick="selectPackSize('M')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige" data-size="M">M</button>
+                                    <button onclick="selectPackSize('L')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="L">L</button>
+                                    <button onclick="selectPackSize('XL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XL">XL</button>
+                                    <button onclick="selectPackSize('XXL')" class="pack-size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10" data-size="XXL">XXL</button>
+                                </div>
+                            </div>
+                            <button onclick="addPackToCart()" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">Adicionar Pack ao Carrinho<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></button>
+                            <button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-sm">Preferes escolher detalhes individualmente? Compra separadamente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
+    <!-- ==================== JAVASCRIPT ==================== -->
     <script>
         // ==================== CONTEÚDOS LEGAIS (Apenas Privacidade e Termos) ====================
         const legalContents = {
             privacidade: {
                 title: "Política de Privacidade",
-                content: `
-                    <h4>1. Introdução</h4>
-                    <p>A NUCA valoriza a tua privacidade e está comprometida em proteger os teus dados pessoais. Esta política explica como recolhemos, usamos e protegemos as tuas informações.</p>
-                    
-                    <h4>2. Dados Recolhidos</h4>
-                    <p>Recolhemos informações como nome, email, morada, número de telefone e dados de pagamento quando realizas uma compra na nossa loja online.</p>
-                    
-                    <h4>3. Utilização dos Dados</h4>
-                    <p>Utilizamos os teus dados para processar encomendas, comunicar atualizações de envio, responder a questões e melhorar os nossos serviços.</p>
-                    
-                    <h4>4. Partilha de Dados</h4>
-                    <p>Não partilhamos os teus dados pessoais com terceiros, exceto quando necessário para processar pagamentos ou entregar encomendas (transportadoras).</p>
-                    
-                    <h4>5. Segurança</h4>
-                    <p>Implementamos medidas de segurança para proteger os teus dados contra acesso não autorizado, alteração ou destruição.</p>
-                    
-                    <h4>6. Cookies</h4>
-                    <p>Utilizamos cookies para melhorar a experiência de navegação e analisar o tráfego do site. Podes desativá-los nas definições do teu navegador.</p>
-                    
-                    <h4>7. Os Teus Direitos</h4>
-                    <p>Tens direito a aceder, retificar ou solicitar a eliminação dos teus dados pessoais. Para tal, contacta-nos em nuca.crew.support@gmail.com.</p>
-                    
-                    <h4>8. Alterações</h4>
-                    <p>Esta política pode ser atualizada periodicamente. Recomendamos que a consultes regularmente.</p>
-                    
-                    <p><strong>Data de vigência:</strong> Janeiro 2026</p>
-                `
+                intro: "A NUCA valoriza a tua privacidade. Esta política explica como recolhemos, usamos e protegemos os teus dados pessoais.",
+                sections: [
+                    { title: "1. Dados Recolhidos", content: "Recolhemos informações como nome, email, morada de envio e dados de pagamento quando realizas uma compra na nossa loja online." },
+                    { title: "2. Utilização dos Dados", content: "Utilizamos os teus dados para processar encomendas, enviar atualizações sobre o teu pedido, responder a questões e melhorar os nossos serviços." },
+                    { title: "3. Partilha de Dados", content: "Não partilhamos os teus dados pessoais com terceiros, exceto quando necessário para processar pagamentos ou entregar encomendas (transportadoras)." },
+                    { title: "4. Segurança", content: "Implementamos medidas de segurança para proteger os teus dados contra acesso não autorizado, alteração ou destruição." },
+                    { title: "5. Cookies", content: "Utilizamos cookies para melhorar a experiência de navegação e analisar o tráfego do site. Podes desativá-los nas definições do teu navegador." },
+                    { title: "6. Os Teus Direitos", content: "Tens direito a aceder, retificar ou solicitar a eliminação dos teus dados pessoais. Para tal, contacta-nos em nuca.crew.support@gmail.com." },
+                    { title: "7. Alterações", content: "Esta política pode ser atualizada periodicamente. Recomendamos que a consultes regularmente." }
+                ],
+                footer: { left: "Última atualização: Março 2025", right: "Contacto: nuca.crew@gmail.com" }
             },
             termos: {
                 title: "Termos de Uso",
-                content: `
-                    <h4>1. Aceitação dos Termos</h4>
-                    <p>Ao aceder e utilizar o site da NUCA, concordas com estes Termos de Uso. Se não concordares, por favor não utilizes o site.</p>
-                    
-                    <h4>2. Produtos e Preços</h4>
-                    <p>Todos os produtos estão sujeitos a disponibilidade. Os preços podem ser alterados sem aviso prévio. As imagens são meramente ilustrativas.</p>
-                    
-                    <h4>3. Encomendas e Pagamentos</h4>
-                    <p>As encomendas são processadas após confirmação do pagamento. Reservamo-nos o direito de recusar ou cancelar encomendas em caso de indisponibilidade ou erro de preço.</p>
-                    
-                    <h4>4. Envios</h4>
-                    <p>Os envios são realizados para Portugal Continental e Ilhas, com prazos estimados de 3-5 dias úteis. A NUCA não é responsável por atrasos causados por transportadoras.</p>
-                    
-                    <h4>5. Trocas e Devoluções</h4>
-                    <p>Aceitamos trocas e devoluções até 14 dias após a receção do produto, desde que o artigo esteja em perfeitas condições, sem uso, com etiquetas originais e na embalagem original.</p>
-                    
-                    <h4>6. Propriedade Intelectual</h4>
-                    <p>Todo o conteúdo do site (textos, imagens, logótipos) é propriedade da NUCA e está protegido por direitos de autor.</p>
-                    
-                    <h4>7. Responsabilidade</h4>
-                    <p>A NUCA não se responsabiliza por danos indiretos ou perda de lucros decorrentes da utilização do site ou dos produtos adquiridos.</p>
-                    
-                    <h4>8. Legislação Aplicável</h4>
-                    <p>Estes Termos são regidos pela legislação portuguesa. Qualquer litígio será submetido à jurisdição dos tribunais de Lisboa.</p>
-                    
-                    <p><strong>Data de vigência:</strong> Janeiro 2026</p>
-                `
+                intro: "Ao usar o site da NUCA, concordas com estes termos. Lê atentamente antes de fazer uma compra.",
+                sections: [
+                    { title: "1. Aceitação dos Termos", content: "Ao aceder e utilizar o site da NUCA, concordas com estes Termos de Uso. Se não concordares, por favor não utilizes o site." },
+                    { title: "2. Produtos e Preços", content: "Todos os produtos estão sujeitos a disponibilidade. Os preços podem ser alterados sem aviso prévio. As imagens são meramente ilustrativas." },
+                    { title: "3. Encomendas e Pagamentos", content: "As encomendas são processadas após confirmação do pagamento. Reservamo-nos o direito de recusar ou cancelar encomendas em caso de indisponibilidade ou erro de preço." },
+                    { title: "4. Envios", content: "Os envios são realizados para Portugal Continental e Ilhas, com prazos estimados de 3-5 dias úteis. A NUCA não é responsável por atrasos causados por transportadoras." },
+                    { title: "5. Trocas e Devoluções", content: "Aceitamos trocas e devoluções até 14 dias após a receção do produto, desde que o artigo esteja em perfeitas condições, sem uso, com etiquetas originais e na embalagem original." },
+                    { title: "6. Propriedade Intelectual", content: "Todo o conteúdo do site (textos, imagens, logótipos) é propriedade da NUCA e está protegido por direitos de autor." },
+                    { title: "7. Responsabilidade", content: "A NUCA não se responsabiliza por danos indiretos ou perda de lucros decorrentes da utilização do site ou dos produtos adquiridos." },
+                    { title: "8. Legislação Aplicável", content: "Estes Termos são regidos pela legislação portuguesa. Qualquer litígio será submetido à jurisdição dos tribunais de Lisboa." }
+                ],
+                footer: { left: "Vigência: Março 2025", right: "Jurisdição: Portugal" }
             }
         };
         
@@ -612,7 +961,26 @@
             
             if (content) {
                 titleEl.textContent = content.title;
-                bodyEl.innerHTML = content.content;
+                bodyEl.innerHTML = `
+                    <div class="legal-content">
+                        <div class="legal-intro">
+                            <p>${content.intro}</p>
+                        </div>
+                        ${content.sections.map((section) => `
+                            <div class="legal-section">
+                                <div class="legal-section-header">
+                                    <span class="legal-section-number">${section.title.split('.')[0]}</span>
+                                    <h4>${section.title.split('. ')[1]}</h4>
+                                </div>
+                                <p>${section.content}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="legal-footer">
+                        <p>${content.footer.left}</p>
+                        <p><strong>${content.footer.right}</strong></p>
+                    </div>
+                `;
             }
             
             modal.classList.add('active');
@@ -629,6 +997,8 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeLegalModal();
+                closeProductModal();
+                closePackModal();
             }
         });
         
@@ -636,10 +1006,10 @@
         
         // Icons for seasons
         const seasonIcons = {
-            'Primavera': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5"><path d="M12 2v20M12 2c0 0 4 4 4 8s-4 4-4 4M12 2c0 0-4 4-4 8s4 4 4 4"/><circle cx="12" cy="14" r="2" fill="#D8C6A5"/></svg>`,
-            'Verão': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5"><circle cx="12" cy="12" r="5" fill="#D8C6A5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-            'Outono': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5"><path d="M12 2C7 2 3 6 3 11c0 3 2 5 2 5l7 6 7-6s2-2 2-5c0-5-4-9-9-9z" fill="#D8C6A5"/><path d="M12 6v10"/></svg>`,
-            'Inverno': `<svg class="season-icon" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="1.5"><path d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07M8 12l4-4 4 4-4 4-4-4z" fill="#D8C6A5"/></svg>`
+            'Primavera': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="M12 18v4"/><path d="M4.93 4.93l4.24 4.24"/><path d="M14.83 14.83l4.24 4.24"/><path d="M2 12h8"/><path d="M18 12h4"/><path d="M4.93 19.                        07l4.24-4.24"/><path d="M14.83 9.17l4.24-4.24"/></svg>`,
+            'Verão': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>`,
+            'Outono': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
+            'Inverno': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M3 12h18"/><path d="M5.6 5.6l12.8 12.8"/><path d="M18.4 5.6L5.6 18.4"/></svg>`
         };
         
         const seasonNames = { 'Primavera': 'Primavera', 'Verão': 'Verão', 'Outono': 'Outono', 'Inverno': 'Inverno' };
@@ -707,6 +1077,7 @@
         function renderProducts(filter) {
             const grid = document.getElementById('products-grid');
             const filtered = filter === 'all' ? nucaProducts : nucaProducts.filter(p => p.category === filter);
+            
             grid.innerHTML = filtered.map(product => {
                 let colorBadge = '';
                 if (product.hasColors && product.colors) {
@@ -722,7 +1093,7 @@
             
             track.innerHTML = seasonsProducts.filter(p => p.hasSeasons).map(product => {
                 const seasonPreviews = product.seasons.map(season => `<div class="flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity" onclick="event.stopPropagation(); openProductModal(${product.id})"><div class="w-10 h-10 rounded-full flex items-center justify-center border-2 border-nuca-green/30 bg-nuca-beige/50">${seasonIcons[season]}</div><span class="text-[10px] text-nuca-green/70 font-medium">${seasonNames[season]}</span></div>`).join('');
-                return `<div class="carousel-slide px-2"><div class="product-card group cursor-pointer h-full" onclick="openProductModal(${product.id})"><div class="aspect-[3/4] bg-nuca-light rounded-2xl overflow-hidden mb-4 relative"><img src="${product.seasonColors['Primavera'].image}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500"><div class="absolute top-4 left-4 collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold">${product.badge}</div><div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg"><p class="text-xs text-nuca-green/60 text-center mb-2 font-medium">4 estações disponíveis</p><div class="flex justify-around">${seasonPreviews}</div></div><div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100"><span class="bg-nuca-beige text-nuca-green px-6 py-3 rounded-full font-bold">Escolher Estação</span></div></div><div class="space-y-2"><div class="flex justify-between items-start"><div><h3 class="font-display text-xl font-bold text-nuca-green">${product.name}</h3><p class="text-xs text-nuca-green/60">${product.collection}</p></div><span class="font-bold text-nuca-green">€${product.basePrice}</span></div><p class="text-sm text-nuca-green/60 capitalize">${product.category}</p></div></div></div>`;
+                return `<div class="carousel-slide px-2"><div class="product-card group cursor-pointer h-full" onclick="openProductModal(${product.id})"><div class="aspect-[3/4] bg-nuca-light rounded-2xl overflow-hidden mb-4 relative"><img src="${product.seasonColors['Primavera'].image}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"><div class="absolute top-4 left-4 collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold">${product.badge}</div><div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-2xl p-3 shadow-lg"><p class="text-xs text-nuca-green/60 text-center mb-2 font-medium">4 estações disponíveis</p><div class="flex justify-around">${seasonPreviews}</div></div><div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100"><span class="bg-nuca-beige text-nuca-green px-6 py-3 rounded-full font-bold">Escolher Estação</span></div></div><div class="space-y-2"><div class="flex justify-between items-start"><div><h3 class="font-display text-xl font-bold text-nuca-green">${product.name}</h3><p class="text-xs text-nuca-green/60">${product.collection}</p></div><span class="font-bold text-nuca-green">€${product.basePrice}</span></div><p class="text-sm text-nuca-green/60 capitalize">${product.category}</p></div></div></div>`;
             }).join('');
             
             const totalSlides = seasonsProducts.filter(p => p.hasSeasons).length;
@@ -759,6 +1130,8 @@
             currentPackTab = tab;
             document.getElementById('tab-nuca').classList.toggle('active', tab === 'nuca');
             document.getElementById('tab-seasons').classList.toggle('active', tab === 'seasons');
+            document.getElementById('tab-nuca').classList.toggle('text-nuca-green', tab !== 'nuca');
+            document.getElementById('tab-seasons').classList.toggle('text-nuca-green', tab !== 'seasons');
             document.getElementById('packs-nuca-section').classList.toggle('active', tab === 'nuca');
             document.getElementById('packs-seasons-section').classList.toggle('active', tab === 'seasons');
         }
@@ -816,12 +1189,12 @@
             const seasonSection = document.getElementById('season-section');
             if (currentProduct.hasSeasons) {
                 seasonSection.classList.remove('hidden');
-                document.getElementById('modal-seasons').innerHTML = currentProduct.seasons.map((season, idx) => `<button onclick="selectSeason('${season}')" class="season-selector flex flex-col items-center justify-center gap-2 w-20 h-20 rounded-xl border-2 font-bold transition-all ${idx === 0 ? 'active bg-nuca-green text-nuca-beige border-nuca-green' : 'text-nuca-green hover:bg-nuca-green/10 border-nuca-green/40'}" data-season="${season}"><span class="season-icon">${seasonIcons[season]}</span><span class="text-[10px]">${seasonNames[season]}</span></button>`).join('');
+                document.getElementById('modal-seasons').innerHTML = currentProduct.seasons.map((season, idx) => `<button onclick="selectSeason('${season}')" class="season-selector flex flex-col items-center justify-center gap-2 p-4 rounded-xl border border-nuca-green/20 font-bold transition-all ${idx === 0 ? 'active bg-nuca-green text-nuca-beige border-nuca-green' : 'text-nuca-green hover:bg-nuca-green/10'}" data-season="${season}"><div class="season-icon-wrapper w-10 h-10 rounded-full bg-nuca-green/10 flex items-center justify-center">${seasonIcons[season]}</div><span class="text-sm">${seasonNames[season]}</span></button>`).join('');
             } else { seasonSection.classList.add('hidden'); }
             const colorSection = document.getElementById('color-section');
             if (currentProduct.hasColors && !currentProduct.hasSeasons) {
                 colorSection.classList.remove('hidden');
-                document.getElementById('modal-colors').innerHTML = currentProduct.colors.map((color, idx) => `<button onclick="selectColor('${color.name}')" class="color-selector w-10 h-10 rounded-full border-2 border-nuca-green/20 ${idx === 0 ? 'active' : ''}" data-color="${color.name}" style="background-color: ${color.hex};" title="${color.name}"></button>`).join('');
+                document.getElementById('modal-colors').innerHTML = currentProduct.colors.map((color, idx) => `<button onclick="selectColor('${color.name}')" class="color-selector w-10 h-10 rounded-full border-2 ${idx === 0 ? 'active border-nuca-green' : 'border-transparent'}" style="background-color: ${color.hex}" title="${color.name}"></button>`).join('');
             } else { colorSection.classList.add('hidden'); }
             const sizeSection = document.getElementById('size-section');
             const sizeLabel = document.getElementById('size-label');
@@ -832,7 +1205,7 @@
                 sizeSection.classList.remove('hidden');
             } else if (currentProduct.sizes) {
                 sizeLabel.textContent = 'Tamanho';
-                sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `<button onclick="selectSize('${size}')" class="size-btn w-12 h-12 rounded-full border border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" data-size="${size}">${size}</button>`).join('');
+                sizesContainer.innerHTML = currentProduct.sizes.map((size, idx) => `<button onclick="selectSize('${size}')" class="size-btn w-12 h-12 rounded-full border-2 border-nuca-green font-bold transition-all ${idx === 0 ? 'active' : 'text-nuca-green hover:bg-nuca-green/10'}" data-size="${size}">${size}</button>`).join('');
                 sizeSection.classList.remove('hidden');
             } else { sizeSection.classList.add('hidden'); }
             const modal = document.getElementById('product-modal');
@@ -861,14 +1234,14 @@
                 btn.classList.toggle('text-nuca-beige', isActive);
                 btn.classList.toggle('border-nuca-green', isActive);
                 btn.classList.toggle('text-nuca-green', !isActive);
-                btn.classList.toggle('border-nuca-green/40', !isActive);
+                btn.classList.toggle('border-nuca-green/20', !isActive);
             });
         }
         
         function selectColor(colorName) {
             selectedColor = currentProduct.colors.find(c => c.name === colorName);
             document.getElementById('modal-image').src = selectedColor.image;
-            document.querySelectorAll('.color-selector').forEach(btn => { btn.classList.toggle('active', btn.dataset.color === colorName); });
+            document.querySelectorAll('.color-selector').forEach(btn => { btn.classList.toggle('active', btn.title === colorName); });
         }
         
         function selectSize(size) {
@@ -899,7 +1272,7 @@
             const itemsContainer = document.getElementById('pack-modal-items');
             let itemsHtml = '';
             if (currentPack.seasonChoice) {
-                itemsHtml += `<div class="bg-nuca-light/50 p-4 rounded-xl mb-4"><h4 class="font-bold text-nuca-green text-sm mb-3">Escolhe a estação:</h4><div class="grid grid-cols-2 gap-2">${['Primavera', 'Verão', 'Outono', 'Inverno'].map(season => `<button onclick="selectPackSeason('${season}')" id="pack-season-${season}" class="pack-season-btn flex items-center gap-2 p-3 rounded-lg border-2 border-nuca-green/20 hover:bg-nuca-green/10 transition-all text-left"><span class="w-8 h-8 flex items-center justify-center bg-nuca-beige rounded-full">${seasonIcons[season]}</span><span class="text-sm font-bold text-nuca-green">${seasonNames[season]}</span></button>`).join('')}</div><p class="text-xs text-nuca-green/60 mt-2">* Clica na estação que queres incluir no pack</p></div>`;
+                itemsHtml += `<div class="bg-nuca-light/50 p-4 rounded-xl mb-4"><h4 class="font-bold text-nuca-green text-sm mb-3">Escolhe a estação:</h4><div class="grid grid-cols-2 gap-2">${['Primavera', 'Verão', 'Outono', 'Inverno'].map(s => `<button onclick="selectPackSeason('${s}')" id="pack-season-${s}" class="pack-season-btn flex items-center gap-2 p-3 rounded-xl border-2 border-nuca-green/20 transition-all text-left"><span class="w-8 h-8 flex items-center justify-center bg-nuca-beige rounded-full">${seasonIcons[s]}</span><span class="text-sm font-bold text-nuca-green">${seasonNames[s]}</span></button>`).join('')}</div><p class="text-xs text-nuca-green/60 mt-2">* Clica na estação que queres incluir no pack</p></div>`;
                 packProducts.forEach(p => {
                     itemsHtml += `<div class="flex items-center gap-4 bg-nuca-light/50 p-4 rounded-xl mb-2"><div class="w-16 h-16 rounded-lg overflow-hidden"><img src="${p.seasonColors ? p.seasonColors['Primavera'].image : (p.colors ? p.colors[0].image : '')}" alt="${p.name}" class="w-full h-full object-cover"></div><div class="flex-1"><h4 class="font-bold text-nuca-green">${p.name}</h4><p class="text-sm text-nuca-green/60">1x por estação selecionada</p></div></div>`;
                 });
@@ -911,7 +1284,11 @@
             if (currentPack.freeItems) {
                 itemsHtml += `<div class="mt-4 pt-4 border-t border-nuca-green/20"><p class="text-xs font-bold text-nuca-green/60 mb-2 uppercase tracking-wider">Ofertas</p>`;
                 currentPack.freeItems.forEach(item => {
-                    itemsHtml += `<div class="flex items-center gap-4 bg-yellow-100/50 p-4 rounded-xl border-2 border-yellow-400"><div class="w-16 h-16 rounded-lg bg-yellow-200 flex items-center justify-center">${giftIcon}</div><div class="flex-1"><h4 class="font-bold text-nuca-green">${item.name}</h4><p class="text-sm text-green-600 font-bold">OFERTA</p></div></div>`;
+                    if (item.id === 105 && selectedPackSeason) {
+                        itemsHtml += `<div class="flex items-center gap-4 bg-yellow-100/50 p-4 rounded-xl border-2 border-yellow-400"><div class="w-16 h-16 rounded-lg bg-yellow-200 flex items-center justify-center">${giftIcon}</div><div class="flex-1"><h4 class="font-bold text-nuca-green">${item.name} - ${seasonNames[selectedPackSeason]}</h4><p class="text-sm text-green-600 font-bold">OFERTA</p></div></div>`;
+                    } else {
+                        itemsHtml += `<div class="flex items-center gap-4 bg-yellow-100/50 p-4 rounded-xl border-2 border-yellow-400"><div class="w-16 h-16 rounded-lg bg-yellow-200 flex items-center justify-center">${giftIcon}</div><div class="flex-1"><h4 class="font-bold text-nuca-green">${item.name}</h4><p class="text-sm text-green-600 font-bold">OFERTA</p></div></div>`;
+                    }
                 });
                 itemsHtml += `</div>`;
             }
