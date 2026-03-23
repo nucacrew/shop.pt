@@ -1,394 +1,388 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - NUCA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'nuca-beige': '#D8C6A5',
-                        'nuca-green': '#556B4F',
-                        'nuca-dark': '#2C3328',
-                        'nuca-light': '#E8DCC4',
-                    },
-                    fontFamily: {
-                        'display': ['Syne', 'sans-serif'],
-                        'body': ['Space Grotesk', 'sans-serif'],
+    <html lang="pt-PT">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - NUCA</title>
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            'nuca-beige': '#D8C6A5',
+                            'nuca-green': '#556B4F',
+                            'nuca-dark': '#2C3328',
+                            'nuca-light': '#E8DCC4',
+                        },
+                        fontFamily: {
+                            'display': ['Syne', 'sans-serif'],
+                            'body': ['Space Grotesk', 'sans-serif'],
+                        }
                     }
                 }
             }
-        }
-    </script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #D8C6A5;
-            color: #556B4F;
-            font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .nuca-logo { 
-            font-family: 'Syne', sans-serif; 
-            font-weight: 800; 
-            letter-spacing: -0.02em; 
-        }
-
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-            width: 100%;
-            position: relative;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: white;
-            border-right: 1px solid rgba(85, 107, 79, 0.2);
-            height: 100vh;
-            position: sticky;
-            top: 0;
-            flex-shrink: 0;
-            overflow-y: auto;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-        }
-
-        .main-content {
-            flex: 1;
-            min-width: 0;
-            background-color: #D8C6A5;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                transform: translateX(-100%);
-                box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+        </script>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            .sidebar.mobile-visible { transform: translateX(0); }
-            .main-content { width: 100%; }
-            .menu-toggle { display: inline-flex; }
-        }
-
-        @media (min-width: 769px) {
-            .sidebar { transform: none !important; display: block !important; }
-            .menu-toggle { display: none; }
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-        .sidebar-overlay.visible { display: block; }
-
-        .sidebar-content {
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-
-        .sidebar-nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-top: 2rem;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 0.75rem;
-            color: #556B4F;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .sidebar-link:hover { background: rgba(85, 107, 79, 0.1); }
-        .sidebar-link.active { background: rgba(85, 107, 79, 0.15); border-right: 3px solid #556B4F; }
-
-        .status-pending { background-color: #FEF3C7; color: #92400E; }
-        .status-paid { background-color: #D1FAE5; color: #065F46; }
-        .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
-        .status-delivered { background-color: #E0E7FF; color: #3730A3; }
-        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
-        
-        .admin-card {
-            background-color: rgba(255,255,255,0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(85, 107, 79, 0.1);
-        }
-        
-        .order-row { transition: all 0.2s; }
-        .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
-        
-        .tab-active {
-            background-color: #556B4F;
-            color: #D8C6A5;
-        }
-        
-        .search-input {
-            background-color: rgba(255,255,255,0.7);
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .search-input:focus {
-            outline: none;
-            border-color: #556B4F;
-            background-color: white;
-        }
-        
-        .stats-card { background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%); }
-        
-        .loading-spinner {
-            border: 3px solid rgba(85, 107, 79, 0.3);
-            border-top: 3px solid #556B4F;
-            border-radius: 50%; width: 24px; height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .fade-in { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .section-content { display: none; }
-        .section-content.active { display: block; }
-        
-        .chart-wrapper { position: relative; height: 300px; width: 100%; }
-        .chart-wrapper-lg { position: relative; height: 400px; width: 100%; }
-        canvas { max-width: 100% !important; }
-        
-        .grain-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 50; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
-
-        @media print {
-            body * { visibility: hidden; }
-            #receipt-print, #receipt-print * { visibility: visible; }
-            #receipt-print {
-                position: absolute; left: 0; top: 0;
-                width: 100%; background: white; padding: 20px;
+    
+            body {
+                background-color: #D8C6A5;
+                color: #556B4F;
                 font-family: 'Space Grotesk', sans-serif;
+                overflow-x: hidden;
             }
-            .no-print { display: none !important; }
-        }
-
-        .receipt-container {
-            background: white; border-radius: 16px; padding: 24px;
-            max-width: 400px; margin: 0 auto;
-            font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .customer-actions-menu {
-            position: fixed;
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(85, 107, 79, 0.2);
-            z-index: 3000;
-            min-width: 180px;
-            overflow: hidden;
-            animation: fadeIn 0.15s ease-out;
-        }
-        
-        .customer-actions-menu button {
-            width: 100%;
-            text-align: left;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-            color: #556B4F;
-            transition: all 0.2s;
-            background: white;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .customer-actions-menu button:hover {
-            background: rgba(85, 107, 79, 0.1);
-        }
-        
-        .customer-actions-menu .divider {
-            height: 1px;
-            background: rgba(85, 107, 79, 0.1);
-            margin: 0.25rem 0;
-        }
-        
-        .period-selector {
-            background: white; border-radius: 0.75rem; padding: 0.5rem;
-            display: inline-flex; gap: 0.5rem; border: 1px solid rgba(85, 107, 79, 0.2);
-        }
-        .period-btn {
-            padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;
-            font-weight: 500; transition: all 0.2s; cursor: pointer;
-            background: transparent; border: none; color: #556B4F;
-        }
-        .period-btn.active { background: #556B4F; color: #D8C6A5; }
-        .period-btn:hover:not(.active) { background: rgba(85, 107, 79, 0.1); }
-        
-        .analytics-card {
-            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
-            border-radius: 1rem; padding: 1.5rem;
-        }
-        .stats-big-number { font-size: 2.5rem; font-weight: 700; color: #556B4F; }
-        
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .toast {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease-out;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            min-width: 300px;
-        }
-        
-        .toast.success { border-left: 4px solid #10B981; }
-        .toast.error { border-left: 4px solid #EF4444; }
-        .toast.info { border-left: 4px solid #3B82F6; }
-        
-        @keyframes slideIn { 
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1999;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            border: 1px solid rgba(85, 107, 79, 0.1);
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: rgba(85, 107, 79, 0.7);
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #556B4F;
-        }
-
-        .stat-change {
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-            color: rgba(85, 107, 79, 0.6);
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-            <div class="sidebar-content">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-nuca-green rounded-lg flex items-center justify-center">
-                        <span class="nuca-logo text-white text-lg">N</span>
-                    </div>
-                    <span class="nuca-logo text-xl text-nuca-green">NUCA</span>
+    
+            .nuca-logo { 
+                font-family: 'Syne', sans-serif; 
+                font-weight: 800; 
+                letter-spacing: -0.02em; 
+            }
+    
+            .app-container {
+                display: flex;
+                min-height: 100vh;
+                width: 100%;
+                position: relative;
+            }
+    
+            .sidebar {
+                width: 280px;
+                background: white;
+                border-right: 1px solid rgba(85, 107, 79, 0.2);
+                height: 100vh;
+                position: sticky;
+                top: 0;
+                flex-shrink: 0;
+                overflow-y: auto;
+                transition: transform 0.3s ease;
+                z-index: 1000;
+                box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            }
+    
+            .main-content {
+                flex: 1;
+                min-width: 0;
+                background-color: #D8C6A5;
+            }
+    
+            @media (max-width: 768px) {
+                .sidebar {
+                    position: fixed;
+                    left: 0;
+                    top: 0;
+                    transform: translateX(-100%);
+                    box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+                }
+                .sidebar.mobile-visible { transform: translateX(0); }
+                .main-content { width: 100%; }
+                .menu-toggle { display: inline-flex; }
+            }
+    
+            @media (min-width: 769px) {
+                .sidebar { transform: none !important; display: block !important; }
+                .menu-toggle { display: none; }
+            }
+    
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+            .sidebar-overlay.visible { display: block; }
+    
+            .sidebar-content {
+                padding: 1.5rem;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+            }
+    
+            .sidebar-nav {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 2rem;
+            }
+    
+            .sidebar-link {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+                border-radius: 0.75rem;
+                color: #556B4F;
+                font-weight: 500;
+                transition: all 0.2s;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            .sidebar-link:hover { background: rgba(85, 107, 79, 0.1); }
+            .sidebar-link.active { background: rgba(85, 107, 79, 0.15); border-right: 3px solid #556B4F; }
+    
+            .status-pending { background-color: #FEF3C7; color: #92400E; }
+            .status-paid { background-color: #D1FAE5; color: #065F46; }
+            .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
+            .status-delivered { background-color: #E0E7FF; color: #3730A3; }
+            .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+            
+            .admin-card {
+                background-color: rgba(255,255,255,0.5);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(85, 107, 79, 0.1);
+            }
+            
+            .order-row { transition: all 0.2s; }
+            .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
+            
+            .tab-active {
+                background-color: #556B4F;
+                color: #D8C6A5;
+            }
+            
+            .search-input {
+                background-color: rgba(255,255,255,0.7);
+                border: 2px solid transparent;
+                transition: all 0.3s;
+            }
+            .search-input:focus {
+                outline: none;
+                border-color: #556B4F;
+                background-color: white;
+            }
+            
+            .stats-card { background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%); }
+            
+            .loading-spinner {
+                border: 3px solid rgba(85, 107, 79, 0.3);
+                border-top: 3px solid #556B4F;
+                border-radius: 50%; width: 24px; height: 24px;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            
+            .fade-in { animation: fadeIn 0.3s ease-out; }
+            @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+            
+            .section-content { display: none; }
+            .section-content.active { display: block; }
+            
+            .chart-wrapper { position: relative; height: 300px; width: 100%; }
+            .chart-wrapper-sm { position: relative; height: 250px; width: 100%; }
+            canvas { max-width: 100% !important; }
+            
+            .grain-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                pointer-events: none; z-index: 50; opacity: 0.03;
+                background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            }
+    
+            @media print {
+                body * { visibility: hidden; }
+                #receipt-print, #receipt-print * { visibility: visible; }
+                #receipt-print {
+                    position: absolute; left: 0; top: 0;
+                    width: 100%; background: white; padding: 20px;
+                    font-family: 'Space Grotesk', sans-serif;
+                }
+                .no-print { display: none !important; }
+            }
+    
+            .receipt-container {
+                background: white; border-radius: 16px; padding: 24px;
+                max-width: 400px; margin: 0 auto;
+                font-family: 'Space Grotesk', sans-serif;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+    
+            /* Estilos para dropdown de ações do cliente */
+            .customer-actions-menu {
+                position: fixed;
+                background: white;
+                border-radius: 0.75rem;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+                border: 1px solid rgba(85, 107, 79, 0.2);
+                z-index: 3000;
+                min-width: 180px;
+                overflow: hidden;
+                animation: fadeIn 0.15s ease-out;
+            }
+            
+            .customer-actions-menu button {
+                width: 100%;
+                text-align: left;
+                padding: 0.75rem 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                font-size: 0.875rem;
+                color: #556B4F;
+                transition: all 0.2s;
+                background: white;
+                border: none;
+                cursor: pointer;
+            }
+            
+            .customer-actions-menu button:hover {
+                background: rgba(85, 107, 79, 0.1);
+            }
+            
+            .customer-actions-menu .divider {
+                height: 1px;
+                background: rgba(85, 107, 79, 0.1);
+                margin: 0.25rem 0;
+            }
+            
+            .period-selector {
+                background: white; border-radius: 0.75rem; padding: 0.5rem;
+                display: inline-flex; gap: 0.5rem; border: 1px solid rgba(85, 107, 79, 0.2);
+            }
+            .period-btn {
+                padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;
+                font-weight: 500; transition: all 0.2s; cursor: pointer;
+                background: transparent; border: none; color: #556B4F;
+            }
+            .period-btn.active { background: #556B4F; color: #D8C6A5; }
+            .period-btn:hover:not(.active) { background: rgba(85, 107, 79, 0.1); }
+            
+            .analytics-card {
+                background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
+                border-radius: 1rem; padding: 1.5rem;
+            }
+            .stats-big-number { font-size: 2.5rem; font-weight: 800; font-family: 'Syne', sans-serif; color: #556B4F; }
+            .trend-up { color: #10B981; }
+            .trend-down { color: #EF4444; }
+            
+            .customer-history-item {
+                transition: all 0.2s; border-left: 3px solid transparent;
+            }
+            .customer-history-item:hover {
+                background: rgba(85, 107, 79, 0.05); border-left-color: #556B4F;
+            }
+            
+            /* Tabs do modal */
+            .customer-tab { display: block; }
+            .customer-tab.hidden { display: none; }
+            .tab-button {
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .tab-button.active {
+                border-bottom-color: #556B4F;
+                color: #556B4F;
+            }
+        </style>
+    </head>
+    <body>
+    
+    <div class="grain-overlay"></div>
+    
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-[2000] flex items-center justify-center bg-nuca-beige">
+        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
+                <p class="text-nuca-green/60">Área de Administração</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
+                    <input type="email" id="login-email" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="admin@nuca.pt">
                 </div>
-                
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Password</label>
+                    <input type="password" id="login-password" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="••••••••">
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-nuca-green/30 text-nuca-green focus:ring-nuca-green">
+                    <label for="remember-me" class="text-sm text-nuca-green/70">Lembrar-me</label>
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                    <span id="login-text">Entrar</span>
+                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px;"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Admin Interface -->
+    <div id="admin-interface" class="hidden app-container">
+        
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="hideMobileSidebar()"></div>
+    
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="flex items-center justify-between">
+                    <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
+                    <button onclick="hideMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+    
                 <nav class="sidebar-nav">
-                    <button onclick="showSection('dashboard')" class="sidebar-link active" data-section="dashboard">
+                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                             <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                         </svg>
                         Dashboard
-                    </button>
-                    <button onclick="showSection('orders')" class="sidebar-link" data-section="orders">
+                    </a>
+                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
                         </svg>
                         Encomendas
-                    </button>
-                    <button onclick="showSection('customers')" class="sidebar-link" data-section="customers">
+                        <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                    </a>
+                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                        Produtos
+                    </a>
+                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                         </svg>
                         Clientes
-                    </button>
-                    <button onclick="showSection('analytics')" class="sidebar-link" data-section="analytics">
+                    </a>
+                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
                         </svg>
-                        Análise
-                    </button>
-                    <button onclick="showSection('products')" class="sidebar-link" data-section="products">
+                        Análises
+                    </a>
+                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/>
-                            <path d="M16 5v-1a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v1"/>
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                         </svg>
-                        Produtos
-                    </button>
+                        Configurações
+                    </a>
                 </nav>
-
-                <div class="border-t border-nuca-green/10 pt-4 mt-auto">
-                    <button onclick="logout()" class="sidebar-link w-full text-red-600 hover:bg-red-50">
+    
+                <div class="border-t border-nuca-green/10 pt-6 mt-auto">
+                    <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                         </svg>
@@ -397,137 +391,136 @@
                 </div>
             </div>
         </aside>
-
-        <!-- MAIN CONTENT -->
-        <main class="main-content overflow-y-auto">
-            <div class="p-8 max-w-7xl mx-auto">
-                <!-- DASHBOARD SECTION -->
-                <div id="section-dashboard" class="section-content active fade-in">
-                    <div class="mb-8">
-                        <h1 class="font-display text-4xl font-bold text-nuca-green mb-2">Dashboard</h1>
-                        <p class="text-nuca-green/60">Bem-vindo ao painel de controlo NUCA</p>
-                    </div>
-
-                    <!-- Key Stats -->
-                    <div class="stats-grid mb-8">
-                        <div class="stat-item">
-                            <div class="stat-label">Receita Total</div>
-                            <div class="stat-value" id="stat-revenue">€0</div>
-                            <div class="stat-change" id="stat-revenue-change">-</div>
+    
+        <main class="main-content">
+            <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
+                <div class="px-6 lg:px-12 py-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleMobileSidebar()" class="menu-toggle p-2 hover:bg-nuca-green/10 rounded-lg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                                </svg>
+                            </button>
+                            <div>
+                                <h2 id="page-title" class="font-display text-xl font-bold text-nuca-green">Dashboard</h2>
+                                <p id="current-date" class="text-sm text-nuca-green/60"></p>
+                            </div>
                         </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Encomendas</div>
-                            <div class="stat-value" id="stat-orders">0</div>
-                            <div class="stat-change" id="stat-orders-change">-</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Clientes Ativos</div>
-                            <div class="stat-value" id="stat-customers">0</div>
-                            <div class="stat-change" id="stat-customers-change">-</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Ticket Médio</div>
-                            <div class="stat-value" id="stat-avg-order">€0</div>
-                            <div class="stat-change" id="stat-avg-change">-</div>
-                        </div>
-                    </div>
-
-                    <!-- Charts -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="admin-card rounded-2xl p-6">
-                            <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Vendas por Dia</h3>
-                            <div class="chart-wrapper"><canvas id="dailySalesChart"></canvas></div>
-                        </div>
-                        <div class="admin-card rounded-2xl p-6">
-                            <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Status das Encomendas</h3>
-                            <div class="chart-wrapper"><canvas id="statusChart"></canvas></div>
-                        </div>
-                    </div>
-
-                    <!-- Recent Orders -->
-                    <div class="admin-card rounded-2xl p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-display text-lg font-bold text-nuca-green">Encomendas Recentes</h3>
-                            <button onclick="showSection('orders')" class="text-nuca-green hover:text-nuca-dark text-sm font-bold">Ver Todas →</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    <tr>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Encomenda</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Cliente</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Total</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Status</th>
-                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Data</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-orders-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">A carregar...</td></tr>
-                                </tbody>
-                            </table>
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                </svg>
+                                <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                            </button>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold" id="user-avatar">A</div>
+                                <div class="hidden md:block">
+                                    <p class="text-sm font-bold text-nuca-green" id="user-name">Admin</p>
+                                    <p class="text-xs text-nuca-green/60">Administrador</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- ORDERS SECTION -->
-                <div id="section-orders" class="section-content fade-in">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="font-display text-3xl font-bold text-nuca-green">Encomendas</h1>
-                        <button onclick="exportOrders()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Exportar
-                        </button>
-                    </div>
-
-                    <div class="admin-card rounded-2xl p-6 mb-6">
-                        <div class="flex flex-col lg:flex-row gap-4 justify-between">
-                            <div class="flex-1 relative">
-                                <input type="text" id="search-orders" placeholder="Pesquisar por número, cliente ou email..." class="search-input w-full px-4 py-3 pl-12 rounded-xl" onkeyup="searchOrders()">
-                                <svg class="absolute left-4 top-3.5 text-nuca-green/40" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            </header>
+    
+            <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
+                <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
+                    <h3 class="font-bold text-nuca-green">Notificações</h3>
+                    <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
+                </div>
+                <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
+                    <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>
+                </div>
+            </div>
+    
+            <div class="p-6 lg:p-12">
+                
+                <!-- DASHBOARD SECTION (resumido para brevidade) -->
+                <div id="section-dashboard" class="section-content active fade-in">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
+                                </div>
                             </div>
-                            <select id="filter-status" class="px-4 py-3 bg-white rounded-xl border border-nuca-green/20 text-nuca-green font-medium" onchange="filterOrdersByStatus()">
-                                <option value="">Todos os Status</option>
-                                <option value="paid">Pago</option>
-                                <option value="shipped">Enviado</option>
-                                <option value="delivered">Entregue</option>
-                                <option value="cancelled">Cancelado</option>
-                                <option value="pending">Pendente</option>
-                            </select>
-                            <button onclick="loadOrders()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
-                            </button>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
+                                    <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
+                    <div class="admin-card rounded-2xl p-6">
+                        <div class="chart-wrapper"><canvas id="salesChart"></canvas></div>
+                    </div>
+                </div>
+    
+                <!-- ORDERS SECTION (resumido) -->
+                <div id="section-orders" class="section-content fade-in">
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-4 justify-between">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm">Todas</button>
+                                <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm">Pendentes</button>
+                                <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm">Pagas</button>
+                            </div>
+                            <div class="relative flex-1 lg:w-64">
+                                <input type="text" id="search-orders" placeholder="Pesquisar..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
+                            </div>
+                        </div>
+                    </div>
                     <div class="admin-card rounded-2xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    <tr>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Nº Encomenda</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Status</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Data</th>
-                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                    </tr>
+                                <thead class="bg-nuca-green/5">
+                                    <tr><th class="px-6 py-4">Nº</th><th>Cliente</th><th>Total</th><th>Status</th><th>Ações</th></tr>
                                 </thead>
-                                <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">A carregar encomendas...</td></tr>
-                                </tbody>
+                                <tbody id="orders-table-body"></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
+    
+                <!-- PRODUCTS SECTION -->
+                <div id="section-products" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Gestão de Produtos</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
+                    </div>
+                </div>
+    
                 <!-- CUSTOMERS SECTION -->
                 <div id="section-customers" class="section-content fade-in">
                     <div class="flex justify-between items-center mb-6">
-                        <h1 class="font-display text-3xl font-bold text-nuca-green">Clientes</h1>
+                        <h3 class="font-display text-2xl font-bold text-nuca-green">Clientes</h3>
                         <div class="flex gap-3">
                             <button onclick="exportCustomers()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Exportar
+                                Exportar Clientes
                             </button>
                             <button onclick="openCustomerModal()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -535,7 +528,7 @@
                             </button>
                         </div>
                     </div>
-
+    
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <div class="flex flex-col lg:flex-row gap-4 justify-between">
                             <div class="flex-1 relative">
@@ -547,7 +540,7 @@
                             </button>
                         </div>
                     </div>
-
+    
                     <div class="admin-card rounded-2xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
@@ -557,630 +550,308 @@
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
-                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Membro Desde</th>
                                         <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                    </tr>
+                                     </tr>
                                 </thead>
                                 <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
-                                    <tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
+                                    <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-
+    
                 <!-- ANALYTICS SECTION -->
                 <div id="section-analytics" class="section-content fade-in">
-                    <div class="mb-8">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                            <h1 class="font-display text-3xl font-bold text-nuca-green">Análise de Vendas</h1>
-                            <div class="period-selector">
-                                <button onclick="setAnalyticsPeriod('daily')" id="period-daily" class="period-btn active">Diário</button>
-                                <button onclick="setAnalyticsPeriod('weekly')" id="period-weekly" class="period-btn">Semanal</button>
-                                <button onclick="setAnalyticsPeriod('monthly')" id="period-monthly" class="period-btn">Mensal</button>
-                                <button onclick="setAnalyticsPeriod('yearly')" id="period-yearly" class="period-btn">Anual</button>
+                    <div class="space-y-6">
+                        <div class="admin-card rounded-2xl p-6">
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <h3 class="font-display text-2xl font-bold text-nuca-green">Análise de Vendas</h3>
+                                <div class="period-selector">
+                                    <button onclick="setAnalyticsPeriod('daily')" id="period-daily" class="period-btn active">Diário</button>
+                                    <button onclick="setAnalyticsPeriod('weekly')" id="period-weekly" class="period-btn">Semanal</button>
+                                    <button onclick="setAnalyticsPeriod('monthly')" id="period-monthly" class="period-btn">Mensal</button>
+                                    <button onclick="setAnalyticsPeriod('yearly')" id="period-yearly" class="period-btn">Anual</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                        <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Receita Total</p><p class="stats-big-number" id="analytics-revenue">€0</p></div>
-                        <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Nº Encomendas</p><p class="stats-big-number" id="analytics-orders">0</p></div>
-                        <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Ticket Médio</p><p class="stats-big-number" id="analytics-avg-order">€0</p></div>
-                        <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Clientes Ativos</p><p class="stats-big-number" id="analytics-customers">0</p></div>
-                    </div>
-
-                    <div class="admin-card rounded-2xl p-6">
-                        <h3 class="font-display text-lg font-bold text-nuca-green mb-4">Evolução de Vendas</h3>
-                        <div class="chart-wrapper-lg"><canvas id="analyticsChart"></canvas></div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Receita Total</p><p class="stats-big-number" id="analytics-revenue">€0</p></div>
+                            <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Nº Encomendas</p><p class="stats-big-number" id="analytics-orders">0</p></div>
+                            <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Ticket Médio</p><p class="stats-big-number" id="analytics-avg-order">€0</p></div>
+                            <div class="analytics-card"><p class="text-sm text-nuca-green/60 mb-2">Clientes Ativos</p><p class="stats-big-number" id="analytics-customers">0</p></div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6">
+                            <div class="chart-wrapper" style="height: 400px;"><canvas id="analyticsChart"></canvas></div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- PRODUCTS SECTION -->
-                <div id="section-products" class="section-content fade-in">
+    
+                <!-- SETTINGS SECTION -->
+                <div id="section-settings" class="section-content">
                     <div class="admin-card rounded-2xl p-12 text-center">
-                        <h3 class="font-display text-2xl text-nuca-green mb-4">Gestão de Produtos</h3>
-                        <p class="text-nuca-green/60">Esta funcionalidade estará disponível em breve</p>
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Configurações</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
-
+    
     <!-- Customer Modal -->
     <div id="customer-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay" onclick="closeCustomerModal()"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white">
-                <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-customer-title">Ficha de Cliente</h2>
+        <div class="modal-overlay absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCustomerModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-customer-title">Ficha de Cliente</h2>
+                </div>
                 <button onclick="closeCustomerModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
             
             <div class="flex-1 overflow-y-auto p-6">
-                <form id="customer-form" class="space-y-6">
-                    <input type="hidden" id="customer-id">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Nome Completo *</label><input type="text" id="customer-name" required class="search-input w-full px-4 py-3 rounded-xl"></div>
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Email</label><input type="email" id="customer-email" class="search-input w-full px-4 py-3 rounded-xl"></div>
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Telefone *</label><input type="tel" id="customer-phone" required class="search-input w-full px-4 py-3 rounded-xl"></div>
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Data de Nascimento</label><input type="date" id="customer-birth" class="search-input w-full px-4 py-3 rounded-xl"></div>
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">NIF</label><input type="text" id="customer-nif" class="search-input w-full px-4 py-3 rounded-xl"></div>
-                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Cidade</label><input type="text" id="customer-city" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                <!-- Tabs -->
+                <div class="flex gap-2 border-b border-nuca-green/10 mb-6">
+                    <button onclick="switchCustomerTab('info')" id="tab-info" class="tab-button px-4 py-2 text-sm font-bold text-nuca-green border-b-2 border-transparent hover:border-nuca-green transition-all active">Informações</button>
+                    <button onclick="switchCustomerTab('history')" id="tab-history" class="tab-button px-4 py-2 text-sm font-bold text-nuca-green border-b-2 border-transparent hover:border-nuca-green transition-all">Histórico de Compras</button>
+                </div>
+                
+                <!-- Tab Informações -->
+                <div id="customer-info-tab" class="customer-tab">
+                    <form id="customer-form" class="space-y-6">
+                        <input type="hidden" id="customer-id">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Nome Completo *</label><input type="text" id="customer-name" required class="search-input w-full px-4 py-3 rounded-xl"></div>
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Email</label><input type="email" id="customer-email" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Telefone *</label><input type="tel" id="customer-phone" required class="search-input w-full px-4 py-3 rounded-xl"></div>
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Data de Nascimento</label><input type="date" id="customer-birth" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">NIF</label><input type="text" id="customer-nif" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                        </div>
+                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Morada</label><input type="text" id="customer-address" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Cidade</label><input type="text" id="customer-city" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                            <div><label class="block text-sm font-bold text-nuca-green mb-2">Código Postal</label><input type="text" id="customer-postal" class="search-input w-full px-4 py-3 rounded-xl"></div>
+                        </div>
+                        <div><label class="block text-sm font-bold text-nuca-green mb-2">Notas</label><textarea id="customer-notes" rows="3" class="search-input w-full px-4 py-3 rounded-xl"></textarea></div>
+                        <div class="flex justify-end gap-3 pt-6 border-t">
+                            <button type="button" onclick="closeCustomerModal()" class="px-6 py-3 border border-nuca-green/30 rounded-xl text-nuca-green hover:bg-nuca-green/5">Cancelar</button>
+                            <button type="submit" class="px-6 py-3 bg-nuca-green text-nuca-beige rounded-xl font-bold hover:bg-nuca-dark">Guardar Cliente</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Tab Histórico de Compras -->
+                <div id="customer-history-tab" class="customer-tab hidden">
+                    <div id="customer-history-content" class="space-y-4">
+                        <p class="text-center text-nuca-green/40 py-8">Selecione um cliente para ver o histórico</p>
                     </div>
-                    <div><label class="block text-sm font-bold text-nuca-green mb-2">Morada</label><input type="text" id="customer-address" class="search-input w-full px-4 py-3 rounded-xl"></div>
-                    <div><label class="block text-sm font-bold text-nuca-green mb-2">Código Postal</label><input type="text" id="customer-postal" class="search-input w-full px-4 py-3 rounded-xl"></div>
-                    <div><label class="block text-sm font-bold text-nuca-green mb-2">Notas</label><textarea id="customer-notes" class="search-input w-full px-4 py-3 rounded-xl" rows="3"></textarea></div>
-                </form>
-            </div>
-
-            <div class="p-6 border-t border-nuca-green/10 flex gap-3 justify-end bg-white">
-                <button onclick="closeCustomerModal()" class="px-6 py-3 rounded-full border border-nuca-green/20 text-nuca-green font-bold hover:bg-nuca-green/5 transition-colors">Cancelar</button>
-                <button onclick="saveCustomer()" class="px-6 py-3 rounded-full bg-nuca-green text-nuca-beige font-bold hover:bg-nuca-dark transition-colors">Guardar</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Order Detail Modal -->
+    
+    <!-- Order Modal -->
     <div id="order-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
-        <div class="modal-overlay" onclick="closeOrderModal()"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
-            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white">
-                <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-title">Detalhes da Encomenda</h2>
-                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </button>
+        <div class="modal-overlay absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeOrderModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
+                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
-            
             <div class="flex-1 overflow-y-auto p-6">
-                <div id="order-details-content"></div>
-            </div>
-
-            <div class="p-6 border-t border-nuca-green/10 flex gap-3 justify-end bg-white">
-                <button onclick="closeOrderModal()" class="px-6 py-3 rounded-full border border-nuca-green/20 text-nuca-green font-bold hover:bg-nuca-green/5 transition-colors">Fechar</button>
-                <button onclick="printOrder()" class="px-6 py-3 rounded-full bg-nuca-green text-nuca-beige font-bold hover:bg-nuca-dark transition-colors">Imprimir</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><p><strong>Cliente:</strong> <span id="modal-customer-name"></span></p></div>
+                    <div><p><strong>Total:</strong> <span id="modal-total"></span></p></div>
+                </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Receipt Print Template -->
+    <div id="receipt-print" class="hidden"></div>
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[2000] space-y-2"></div>
+    
     <script>
         // ============================================
-        // CONFIGURATION & INITIALIZATION
+        // SUPABASE CONFIG
         // ============================================
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_KEY';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+        // State
         let allOrders = [];
-        let allCustomers = [];
-        let currentAnalyticsPeriod = 'daily';
+        let filteredOrders = [];
+        let currentPage = 1;
+        let currentFilter = 'all';
+        let currentSection = 'dashboard';
+        let salesChart = null;
         let analyticsChart = null;
-        let dailySalesChart = null;
-        let statusChart = null;
-
+        let notifications = [];
+        let currentUser = null;
+        let currentAnalyticsPeriod = 'daily';
+    
         // ============================================
-        // SECTION NAVIGATION
+        // INIT
         // ============================================
-        function showSection(sectionName) {
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            window.addEventListener('resize', () => { if (window.innerWidth > 768) hideMobileSidebar(); });
+        });
+    
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('mobile-visible');
+            overlay.classList.toggle('visible');
+        }
+    
+        function hideMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-visible');
+            document.getElementById('sidebarOverlay').classList.remove('visible');
+        }
+    
+        function showSection(section) {
+            currentSection = section;
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            document.querySelector(`a[href="#${section}"]`).classList.add('active');
+            const titles = { 'dashboard': 'Dashboard', 'orders': 'Encomendas', 'products': 'Produtos', 'customers': 'Clientes', 'analytics': 'Análises', 'settings': 'Configurações' };
+            document.getElementById('page-title').textContent = titles[section];
             document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
-            
-            const section = document.getElementById(`section-${sectionName}`);
-            const link = document.querySelector(`[data-section="${sectionName}"]`);
-            
-            if (section) section.classList.add('active');
-            if (link) link.classList.add('active');
-
-            if (sectionName === 'dashboard') {
-                setTimeout(() => {
-                    loadDashboardData();
-                }, 100);
-            } else if (sectionName === 'orders') {
-                setTimeout(() => {
-                    loadOrders();
-                }, 100);
-            } else if (sectionName === 'customers') {
-                setTimeout(() => {
-                    loadCustomers();
-                }, 100);
-            } else if (sectionName === 'analytics') {
-                setTimeout(() => {
-                    loadAnalyticsData();
-                }, 100);
-            }
+            document.getElementById(`section-${section}`).classList.add('active');
+            hideMobileSidebar();
+            if (section === 'customers') loadCustomers();
+            if (section === 'analytics') loadAnalytics();
         }
-
+    
         // ============================================
-        // DASHBOARD
+        // AUTH
         // ============================================
-        async function loadDashboardData() {
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) { currentUser = session.user; showAdminInterface(); }
+        }
+    
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
             try {
-                const { data: orders } = await supabaseClient.from('orders').select('*');
-                const { data: customers } = await supabaseClient.from('customers').select('*');
-                
-                if (orders) {
-                    const totalRevenue = orders.filter(o => o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered').reduce((sum, o) => sum + (o.total || 0), 0);
-                    const avgOrder = orders.length > 0 ? totalRevenue / orders.length : 0;
-                    
-                    document.getElementById('stat-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
-                    document.getElementById('stat-orders').textContent = orders.length;
-                    document.getElementById('stat-avg-order').textContent = `€${avgOrder.toFixed(2)}`;
-                    
-                    renderRecentOrders(orders.slice(0, 5));
-                    renderDailySalesChart(orders);
-                    renderStatusChart(orders);
-                }
-                
-                if (customers) {
-                    document.getElementById('stat-customers').textContent = customers.length;
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dashboard:', error);
-                showToast('Erro ao carregar dados do dashboard', 'error');
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                showAdminInterface();
+                showToast('Bem-vindo!', 'success');
+            } catch (error) { showToast('Erro no login', 'error'); }
+        });
+    
+        function showAdminInterface() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-interface').classList.remove('hidden');
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.email.split('@')[0];
+                document.getElementById('user-avatar').textContent = currentUser.email.charAt(0).toUpperCase();
             }
+            loadOrders();
         }
-
-        function renderRecentOrders(orders) {
-            const tbody = document.getElementById('recent-orders-body');
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda encontrada</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = orders.map(order => `
-                <tr class="order-row">
-                    <td class="px-6 py-4"><span class="font-bold text-nuca-green">${escapeHtml(order.order_number)}</span></td>
-                    <td class="px-6 py-4"><span class="text-sm">${escapeHtml(order.customer_name)}</span></td>
-                    <td class="px-6 py-4"><span class="font-bold">€${(order.total || 0).toFixed(2)}</span></td>
-                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold status-${order.status}">${getStatusLabel(order.status)}</span></td>
-                    <td class="px-6 py-4"><span class="text-sm text-nuca-green/60">${formatDate(order.created_at)}</span></td>
-                </tr>
-            `).join('');
+    
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            document.getElementById('admin-interface').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
         }
-
-        function renderDailySalesChart(orders) {
-            const ctx = document.getElementById('dailySalesChart');
-            if (!ctx) return;
-
-            const last7Days = getLast7Days();
-            const data = last7Days.map(date => {
-                const dayOrders = orders.filter(o => o.created_at && o.created_at.split('T')[0] === date);
-                return dayOrders.reduce((sum, o) => sum + (o.total || 0), 0);
-            });
-
-            if (dailySalesChart) dailySalesChart.destroy();
-            dailySalesChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: last7Days.map(d => new Date(d).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric' })),
-                    datasets: [{
-                        label: 'Vendas (€)',
-                        data: data,
-                        borderColor: '#556B4F',
-                        backgroundColor: 'rgba(85, 107, 79, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        pointBackgroundColor: '#556B4F',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: v => '€' + v }
-                        }
-                    }
-                }
-            });
-        }
-
-        function renderStatusChart(orders) {
-            const ctx = document.getElementById('statusChart');
-            if (!ctx) return;
-
-            const statuses = {};
-            orders.forEach(o => {
-                statuses[o.status] = (statuses[o.status] || 0) + 1;
-            });
-
-            const labels = Object.keys(statuses).map(s => getStatusLabel(s));
-            const data = Object.values(statuses);
-            const colors = ['#D1FAE5', '#DBEAFE', '#E0E7FF', '#FEE2E2', '#FEF3C7'];
-
-            if (statusChart) statusChart.destroy();
-            statusChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors.slice(0, labels.length),
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-        }
-
+    
         // ============================================
-        // ORDERS
+        // ORDERS (resumido)
         // ============================================
         async function loadOrders() {
-            try {
-                const { data: orders, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                allOrders = orders || [];
-                renderOrders(allOrders);
-            } catch (error) {
-                console.error('Erro ao carregar encomendas:', error);
-                showToast('Erro ao carregar encomendas', 'error');
-            }
+            const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+            if (!error) { allOrders = data || []; filteredOrders = [...allOrders]; updateStats(); renderOrders(); updatePendingBadge(); }
         }
-
-        function renderOrders(orders) {
+    
+        function updateStats() {
+            document.getElementById('stat-total-orders').textContent = allOrders.length;
+            document.getElementById('stat-pending').textContent = allOrders.filter(o => o.status === 'pending_payment').length;
+            const revenue = allOrders.filter(o => ['paid','shipped','delivered'].includes(o.status)).reduce((s,o) => s + (o.total||0),0);
+            document.getElementById('stat-revenue').textContent = `€${revenue.toFixed(2)}`;
+            const todayOrders = allOrders.filter(o => new Date(o.created_at).toDateString() === new Date().toDateString()).length;
+            document.getElementById('stat-today').textContent = todayOrders;
+        }
+    
+        function renderOrders() {
             const tbody = document.getElementById('orders-table-body');
-            const searchTerm = document.getElementById('search-orders')?.value.toLowerCase() || '';
-            
-            let filtered = orders;
-            if (searchTerm) {
-                filtered = orders.filter(o => 
-                    o.order_number?.toLowerCase().includes(searchTerm) ||
-                    o.customer_name?.toLowerCase().includes(searchTerm) ||
-                    o.customer_email?.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda encontrada</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = filtered.map(order => `
-                <tr class="order-row">
-                    <td class="px-6 py-4"><span class="font-bold text-nuca-green cursor-pointer hover:underline" onclick="openOrderModal('${order.id}')">${escapeHtml(order.order_number)}</span></td>
-                    <td class="px-6 py-4"><div><p class="font-medium">${escapeHtml(order.customer_name)}</p><p class="text-xs text-nuca-green/60">${escapeHtml(order.customer_email)}</p></div></td>
-                    <td class="px-6 py-4"><span class="font-bold">€${(order.total || 0).toFixed(2)}</span></td>
-                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold status-${order.status}">${getStatusLabel(order.status)}</span></td>
-                    <td class="px-6 py-4"><span class="text-sm text-nuca-green/60">${formatDate(order.created_at)}</span></td>
-                    <td class="px-6 py-4"><div class="flex justify-center"><button onclick="openOrderActions(event, '${order.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Ações"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><circle cx="12" cy="5" r="1" fill="#556B4F"/><circle cx="12" cy="12" r="1" fill="#556B4F"/><circle cx="12" cy="19" r="1" fill="#556B4F"/></svg></button></div></td>
-                </tr>
-            `).join('');
+            const pageOrders = filteredOrders.slice(0, 10);
+            if (pageOrders.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8">Nenhuma encomenda</td></tr>'; return; }
+            tbody.innerHTML = pageOrders.map(o => `<tr><td class="px-6 py-4">${o.order_number}</td><td>${o.customer_name}</td><td>€${(o.total||0).toFixed(2)}</td><td><span class="px-2 py-1 rounded-full text-xs ${getStatusClass(o.status)}">${getStatusText(o.status)}</span></td><td><button onclick="openOrderDetail('${o.id}')" class="text-nuca-green">Ver</button></td></tr>`).join('');
         }
-
-        function searchOrders() {
-            renderOrders(allOrders);
-        }
-
-        function filterOrdersByStatus() {
-            const status = document.getElementById('filter-status').value;
-            const filtered = status ? allOrders.filter(o => o.status === status) : allOrders;
-            renderOrders(filtered);
-        }
-
-        function exportOrders() {
-            const csv = [['Nº Encomenda', 'Cliente', 'Email', 'Total', 'Status', 'Data'].join(',')];
-            allOrders.forEach(o => {
-                csv.push([
-                    `"${o.order_number || ''}"`,
-                    `"${o.customer_name || ''}"`,
-                    `"${o.customer_email || ''}"`,
-                    o.total || 0,
-                    o.status || '',
-                    o.created_at || ''
-                ].join(','));
-            });
-            downloadCSV(csv.join('\n'), `encomendas_${new Date().toISOString().split('T')[0]}.csv`);
-            showToast('Encomendas exportadas!', 'success');
-        }
-
+    
+        function getStatusClass(s) { return { pending_payment:'status-pending', paid:'status-paid', shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled' }[s] || 'status-pending'; }
+        function getStatusText(s) { return { pending_payment:'Pendente', paid:'Paga', shipped:'Enviada', delivered:'Entregue', cancelled:'Cancelada' }[s] || s; }
+        function filterOrders(status) { currentFilter = status; applyFilters(); }
+        function applyFilters() { filteredOrders = allOrders.filter(o => currentFilter === 'all' || o.status === currentFilter); renderOrders(); }
+        function searchOrders() { applyFilters(); }
+        function updatePendingBadge() { const p = allOrders.filter(o=>o.status==='pending_payment').length; const b = document.getElementById('sidebar-pending-badge'); if(p>0){ b.textContent=p; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
+        function openOrderDetail(id) { const order = allOrders.find(o=>o.id===id); if(order){ document.getElementById('modal-order-number').textContent = order.order_number; document.getElementById('modal-customer-name').textContent = order.customer_name; document.getElementById('modal-total').textContent = `€${(order.total||0).toFixed(2)}`; document.getElementById('order-modal').classList.remove('hidden'); } }
+        function closeOrderModal() { document.getElementById('order-modal').classList.add('hidden'); }
+    
         // ============================================
-        // CUSTOMERS
+        // CUSTOMERS - COM BOTÃO DE AÇÕES (TRÊS PONTOS)
         // ============================================
         async function loadCustomers() {
             try {
                 const { data: customers, error } = await supabaseClient.from('customers').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                allCustomers = customers || [];
-                renderCustomers(allCustomers);
-            } catch (error) {
-                console.error('Erro ao carregar clientes:', error);
-                showToast('Erro ao carregar clientes', 'error');
-            }
+                renderCustomers(customers || []);
+            } catch (error) { showToast('Erro ao carregar clientes', 'error'); }
         }
-
+    
         function renderCustomers(customers) {
             const tbody = document.getElementById('customers-table-body');
             const searchTerm = document.getElementById('search-customers')?.value.toLowerCase() || '';
-            
             let filtered = customers;
             if (searchTerm) {
-                filtered = customers.filter(c => 
-                    c.name?.toLowerCase().includes(searchTerm) ||
-                    c.email?.toLowerCase().includes(searchTerm) ||
-                    c.phone?.includes(searchTerm)
-                );
+                filtered = customers.filter(c => c.name?.toLowerCase().includes(searchTerm) || c.email?.toLowerCase().includes(searchTerm) || c.phone?.includes(searchTerm));
             }
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
-                return;
-            }
-
+            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>'; return; }
+            
             tbody.innerHTML = filtered.map(customer => `
                 <tr class="order-row">
                     <td class="px-6 py-4"><div><p class="font-bold text-nuca-green">${escapeHtml(customer.name)}</p><p class="text-xs text-nuca-green/60">${escapeHtml(customer.email || 'Sem email')}</p></div></td>
                     <td class="px-6 py-4"><div><p class="font-medium">${escapeHtml(customer.phone)}</p><p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || 'Sem morada')}</p></div></td>
                     <td class="px-6 py-4" id="orders-count-${customer.id}"><span class="text-nuca-green/40">-</span></td>
                     <td class="px-6 py-4 font-bold" id="total-spent-${customer.id}"><span class="text-nuca-green/40">-</span></td>
-                    <td class="px-6 py-4"><span class="text-sm text-nuca-green/60">${formatDate(customer.created_at)}</span></td>
                     <td class="px-6 py-4"><div class="flex justify-center"><button onclick="openCustomerActions(event, '${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Ações"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><circle cx="12" cy="5" r="1" fill="#556B4F"/><circle cx="12" cy="12" r="1" fill="#556B4F"/><circle cx="12" cy="19" r="1" fill="#556B4F"/></svg></button></div></td>
                 </tr>
             `).join('');
-
+            
             filtered.forEach(customer => loadCustomerOrdersStats(customer.id, customer.email));
         }
-
-        function searchCustomers() {
-            renderCustomers(allCustomers);
-        }
-
+    
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+    
         async function loadCustomerOrdersStats(customerId, customerEmail) {
-            if (!customerEmail) {
-                updateStatsDisplay(customerId, 0, 0);
-                return;
-            }
+            if (!customerEmail) { updateStatsDisplay(customerId, 0, 0); return; }
             try {
-                const { data } = await supabaseClient.from('orders').select('status, total').eq('customer_email', customerEmail);
+                const { data, error } = await supabaseClient.from('orders').select('status, total').eq('customer_email', customerEmail);
+                if (error) throw error;
                 const count = data ? data.length : 0;
                 const totalSpent = data ? data.filter(o => ['paid', 'shipped', 'delivered'].includes(o.status)).reduce((s, o) => s + (o.total || 0), 0) : 0;
                 updateStatsDisplay(customerId, count, totalSpent);
-            } catch (error) {
-                updateStatsDisplay(customerId, 0, 0);
-            }
+            } catch (error) { updateStatsDisplay(customerId, 0, 0); }
         }
-
+    
         function updateStatsDisplay(customerId, count, totalSpent) {
             const countEl = document.getElementById(`orders-count-${customerId}`);
             const totalEl = document.getElementById(`total-spent-${customerId}`);
             if (countEl) countEl.innerHTML = `${count} compra${count !== 1 ? 's' : ''}`;
             if (totalEl) totalEl.innerHTML = `€${totalSpent.toFixed(2)}`;
         }
-
-        function exportCustomers() {
-            const csv = [['Nome', 'Email', 'Telefone', 'NIF', 'Morada', 'Cidade', 'Código Postal', 'Data Registo'].join(',')];
-            allCustomers.forEach(c => {
-                csv.push([
-                    `"${c.name || ''}"`,
-                    `"${c.email || ''}"`,
-                    `"${c.phone || ''}"`,
-                    `"${c.nif || ''}"`,
-                    `"${c.address || ''}"`,
-                    `"${c.city || ''}"`,
-                    `"${c.postal_code || ''}"`,
-                    c.created_at || ''
-                ].join(','));
-            });
-            downloadCSV(csv.join('\n'), `clientes_${new Date().toISOString().split('T')[0]}.csv`);
-            showToast('Clientes exportados!', 'success');
-        }
-
-        // ============================================
-        // ANALYTICS
-        // ============================================
-        async function loadAnalyticsData() {
-            try {
-                const { data: orders } = await supabaseClient.from('orders').select('*');
-                if (orders) {
-                    const totalRevenue = orders.filter(o => o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered').reduce((sum, o) => sum + (o.total || 0), 0);
-                    const avgOrder = orders.length > 0 ? totalRevenue / orders.length : 0;
-
-                    document.getElementById('analytics-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
-                    document.getElementById('analytics-orders').textContent = orders.length;
-                    document.getElementById('analytics-avg-order').textContent = `€${avgOrder.toFixed(2)}`;
-
-                    const { data: customers } = await supabaseClient.from('customers').select('*');
-                    document.getElementById('analytics-customers').textContent = customers ? customers.length : 0;
-
-                    renderAnalyticsChart(orders);
-                }
-            } catch (error) {
-                console.error('Erro ao carregar análise:', error);
-                showToast('Erro ao carregar dados de análise', 'error');
-            }
-        }
-
-        function setAnalyticsPeriod(period) {
-            currentAnalyticsPeriod = period;
-            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`period-${period}`).classList.add('active');
-            loadAnalyticsData();
-        }
-
-        function renderAnalyticsChart(orders) {
-            const ctx = document.getElementById('analyticsChart');
-            if (!ctx) return;
-
-            let labels = [];
-            let data = [];
-
-            if (currentAnalyticsPeriod === 'daily') {
-                const last7Days = getLast7Days();
-                labels = last7Days.map(d => new Date(d).toLocaleDateString('pt-PT', { weekday: 'short', day: 'numeric' }));
-                data = last7Days.map(date => {
-                    return orders.filter(o => o.created_at && o.created_at.split('T')[0] === date)
-                        .reduce((sum, o) => sum + (o.total || 0), 0);
-                });
-            } else if (currentAnalyticsPeriod === 'weekly') {
-                const last12Weeks = getLast12Weeks();
-                labels = last12Weeks.map(w => `Sem ${w}`);
-                data = last12Weeks.map(week => {
-                    const weekStart = new Date();
-                    weekStart.setDate(weekStart.getDate() - (weekStart.getDay() + 7 * (12 - week)));
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6);
-                    return orders.filter(o => {
-                        const oDate = new Date(o.created_at);
-                        return oDate >= weekStart && oDate <= weekEnd;
-                    }).reduce((sum, o) => sum + (o.total || 0), 0);
-                });
-            } else if (currentAnalyticsPeriod === 'monthly') {
-                labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-                data = Array(12).fill(0);
-                orders.forEach(o => {
-                    const month = new Date(o.created_at).getMonth();
-                    data[month] += o.total || 0;
-                });
-            } else if (currentAnalyticsPeriod === 'yearly') {
-                const currentYear = new Date().getFullYear();
-                const years = [];
-                for (let i = 4; i >= 0; i--) {
-                    years.push(currentYear - i);
-                }
-                labels = years.map(y => y.toString());
-                data = years.map(year => {
-                    return orders.filter(o => new Date(o.created_at).getFullYear() === year)
-                        .reduce((sum, o) => sum + (o.total || 0), 0);
-                });
-            }
-
-            if (analyticsChart) analyticsChart.destroy();
-            analyticsChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Vendas (€)',
-                        data: data,
-                        backgroundColor: 'rgba(85, 107, 79, 0.7)',
-                        borderColor: '#556B4F',
-                        borderWidth: 2,
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { callback: v => '€' + v }
-                        }
-                    }
-                }
-            });
-        }
-
-        // ============================================
-        // MODALS
-        // ============================================
-        function openCustomerModal(customerId = null) {
-            const modal = document.getElementById('customer-modal');
-            const form = document.getElementById('customer-form');
-            
-            if (!customerId) {
-                document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
-                form.reset();
-                document.getElementById('customer-id').value = '';
-            } else {
-                const customer = allCustomers.find(c => c.id === customerId);
-                if (customer) {
-                    document.getElementById('modal-customer-title').textContent = `Editar Cliente - ${customer.name}`;
-                    document.getElementById('customer-id').value = customer.id;
-                    document.getElementById('customer-name').value = customer.name || '';
-                    document.getElementById('customer-email').value = customer.email || '';
-                    document.getElementById('customer-phone').value = customer.phone || '';
-                    document.getElementById('customer-birth').value = customer.birth_date || '';
-                    document.getElementById('customer-nif').value = customer.nif || '';
-                    document.getElementById('customer-address').value = customer.address || '';
-                    document.getElementById('customer-city').value = customer.city || '';
-                    document.getElementById('customer-postal').value = customer.postal_code || '';
-                    document.getElementById('customer-notes').value = customer.notes || '';
-                }
-            }
-            
-            modal.classList.remove('hidden');
-        }
-
-        function closeCustomerModal() {
-            document.getElementById('customer-modal').classList.add('hidden');
-        }
-
-        async function saveCustomer() {
-            const id = document.getElementById('customer-id').value;
-            const customerData = {
-                name: document.getElementById('customer-name').value,
-                email: document.getElementById('customer-email').value,
-                phone: document.getElementById('customer-phone').value,
-                birth_date: document.getElementById('customer-birth').value || null,
-                nif: document.getElementById('customer-nif').value || null,
-                address: document.getElementById('customer-address').value || null,
-                city: document.getElementById('customer-city').value || null,
-                postal_code: document.getElementById('customer-postal').value || null,
-                notes: document.getElementById('customer-notes').value || null
-            };
-
-            try {
-                if (id) {
-                    const { error } = await supabaseClient.from('customers').update(customerData).eq('id', id);
-                    if (error) throw error;
-                    showToast('Cliente atualizado com sucesso!', 'success');
-                } else {
-                    const { error } = await supabaseClient.from('customers').insert([customerData]);
-                    if (error) throw error;
-                    showToast('Cliente criado com sucesso!', 'success');
-                }
-                closeCustomerModal();
-                loadCustomers();
-            } catch (error) {
-                console.error('Erro ao guardar cliente:', error);
-                showToast('Erro ao guardar cliente', 'error');
-            }
-        }
-
+    
+        // Menu de ações do cliente (dropdown com três opções)
         let currentActionsMenu = null;
-
+    
         function openCustomerActions(event, customerId) {
             event.stopPropagation();
             if (currentActionsMenu) closeCustomerActionsMenu();
@@ -1191,14 +862,18 @@
             menu.style.top = `${rect.bottom + 5}px`;
             menu.style.left = `${rect.left - 100}px`;
             menu.innerHTML = `
-                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}')">
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Visualizar
+                </button>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     Editar
                 </button>
                 <div class="divider"></div>
-                <button onclick="closeCustomerActionsMenu(); deleteCustomer('${customerId}')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    Eliminar
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'history')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3M12 2a10 10 0 1 0 10 10"/><circle cx="12" cy="12" r="10"/></svg>
+                    Histórico de Compras
                 </button>
             `;
             document.body.appendChild(menu);
@@ -1208,7 +883,7 @@
                 document.addEventListener('click', closeCustomerActionsMenuOnClickOutside);
             }, 10);
         }
-
+    
         function closeCustomerActionsMenu() {
             if (currentActionsMenu) {
                 currentActionsMenu.remove();
@@ -1216,215 +891,207 @@
             }
             document.removeEventListener('click', closeCustomerActionsMenuOnClickOutside);
         }
-
+    
         function closeCustomerActionsMenuOnClickOutside(e) {
             if (currentActionsMenu && !currentActionsMenu.contains(e.target)) {
                 closeCustomerActionsMenu();
             }
         }
-
-        async function deleteCustomer(customerId) {
-            if (!confirm('Tem a certeza que deseja eliminar este cliente?')) return;
-            
-            try {
-                const { error } = await supabaseClient.from('customers').delete().eq('id', customerId);
-                if (error) throw error;
-                showToast('Cliente eliminado com sucesso!', 'success');
-                loadCustomers();
-            } catch (error) {
-                console.error('Erro ao eliminar cliente:', error);
-                showToast('Erro ao eliminar cliente', 'error');
-            }
-        }
-
-        async function openOrderModal(orderId) {
-            const order = allOrders.find(o => o.id === orderId);
-            if (!order) return;
-
-            const content = document.getElementById('order-details-content');
-            content.innerHTML = `
-                <div class="space-y-6">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><p class="text-sm text-nuca-green/60">Nº Encomenda</p><p class="font-bold text-lg">${escapeHtml(order.order_number)}</p></div>
-                        <div><p class="text-sm text-nuca-green/60">Status</p><p class="font-bold"><span class="px-3 py-1 rounded-full text-xs font-bold status-${order.status}">${getStatusLabel(order.status)}</span></p></div>
-                        <div><p class="text-sm text-nuca-green/60">Data</p><p class="font-bold">${formatDate(order.created_at)}</p></div>
-                        <div><p class="text-sm text-nuca-green/60">Método de Pagamento</p><p class="font-bold">${escapeHtml(order.payment_method || 'N/A')}</p></div>
-                    </div>
-
-                    <div class="border-t border-nuca-green/10 pt-4">
-                        <h4 class="font-bold text-nuca-green mb-3">Informações do Cliente</h4>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><p class="text-sm text-nuca-green/60">Nome</p><p class="font-medium">${escapeHtml(order.customer_name)}</p></div>
-                            <div><p class="text-sm text-nuca-green/60">Email</p><p class="font-medium">${escapeHtml(order.customer_email)}</p></div>
-                            <div><p class="text-sm text-nuca-green/60">Telefone</p><p class="font-medium">${escapeHtml(order.customer_phone)}</p></div>
-                            <div><p class="text-sm text-nuca-green/60">Cidade</p><p class="font-medium">${escapeHtml(order.shipping_address?.city || 'N/A')}</p></div>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-nuca-green/10 pt-4">
-                        <h4 class="font-bold text-nuca-green mb-3">Produtos</h4>
-                        <div class="space-y-2">
-                            ${order.items && Array.isArray(order.items) ? order.items.map(item => `
-                                <div class="flex justify-between items-center py-2 border-b border-nuca-green/5">
-                                    <div>
-                                        <p class="font-medium">${escapeHtml(item.name)}</p>
-                                        <p class="text-xs text-nuca-green/60">${item.size ? 'Tamanho: ' + item.size : ''} ${item.color ? 'Cor: ' + item.color : ''}</p>
-                                    </div>
-                                    <p class="font-bold">€${(item.price * item.quantity).toFixed(2)}</p>
-                                </div>
-                            `).join('') : '<p class="text-nuca-green/60">Sem produtos</p>'}
-                        </div>
-                    </div>
-
-                    <div class="border-t border-nuca-green/10 pt-4 space-y-2">
-                        <div class="flex justify-between"><span class="text-nuca-green/60">Subtotal:</span><span class="font-medium">€${(order.subtotal || 0).toFixed(2)}</span></div>
-                        ${order.discount > 0 ? `<div class="flex justify-between"><span class="text-nuca-green/60">Desconto:</span><span class="font-medium text-green-600">-€${(order.discount || 0).toFixed(2)}</span></div>` : ''}
-                        ${order.shipping > 0 ? `<div class="flex justify-between"><span class="text-nuca-green/60">Envio:</span><span class="font-medium">€${(order.shipping || 0).toFixed(2)}</span></div>` : ''}
-                        <div class="flex justify-between border-t border-nuca-green/10 pt-2"><span class="font-bold">Total:</span><span class="font-bold text-lg">€${(order.total || 0).toFixed(2)}</span></div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('modal-order-title').textContent = `Encomenda ${order.order_number}`;
-            document.getElementById('order-modal').classList.remove('hidden');
-        }
-
-        function closeOrderModal() {
-            document.getElementById('order-modal').classList.add('hidden');
-        }
-
-        function printOrder() {
-            window.print();
-        }
-
-        let currentOrderActionsMenu = null;
-
-        function openOrderActions(event, orderId) {
-            event.stopPropagation();
-            if (currentOrderActionsMenu) closeOrderActionsMenu();
-            
-            const rect = event.currentTarget.getBoundingClientRect();
-            const menu = document.createElement('div');
-            menu.className = 'customer-actions-menu';
-            menu.style.top = `${rect.bottom + 5}px`;
-            menu.style.left = `${rect.left - 100}px`;
-            menu.innerHTML = `
-                <button onclick="closeOrderActionsMenu(); openOrderModal('${orderId}')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    Visualizar
-                </button>
-            `;
-            document.body.appendChild(menu);
-            currentOrderActionsMenu = menu;
-            
-            setTimeout(() => {
-                document.addEventListener('click', closeOrderActionsMenuOnClickOutside);
-            }, 10);
-        }
-
-        function closeOrderActionsMenu() {
-            if (currentOrderActionsMenu) {
-                currentOrderActionsMenu.remove();
-                currentOrderActionsMenu = null;
-            }
-            document.removeEventListener('click', closeOrderActionsMenuOnClickOutside);
-        }
-
-        function closeOrderActionsMenuOnClickOutside(e) {
-            if (currentOrderActionsMenu && !currentOrderActionsMenu.contains(e.target)) {
-                closeOrderActionsMenu();
-            }
-        }
-
-        // ============================================
-        // UTILITIES
-        // ============================================
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
+    
+        function searchCustomers() { loadCustomers(); }
+    
+        function exportCustomers() {
+            supabaseClient.from('customers').select('*').then(({ data, error }) => {
+                if (error) { showToast('Erro ao exportar', 'error'); return; }
+                const csv = [['Nome', 'Email', 'Telefone', 'NIF', 'Morada', 'Cidade', 'Código Postal', 'Data Registo'].join(',')];
+                data.forEach(c => { csv.push([`"${c.name||''}"`, `"${c.email||''}"`, `"${c.phone||''}"`, `"${c.nif||''}"`, `"${c.address||''}"`, `"${c.city||''}"`, `"${c.postal_code||''}"`, c.created_at||''].join(',')); });
+                const blob = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `clientes_${new Date().toISOString().split('T')[0]}.csv`; a.click(); URL.revokeObjectURL(a.href);
+                showToast('Clientes exportados!', 'success');
             });
         }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-PT', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    
+        // Modal do cliente com tabs
+        let currentCustomerId = null;
+    
+        function switchCustomerTab(tab) {
+            const infoTab = document.getElementById('customer-info-tab');
+            const historyTab = document.getElementById('customer-history-tab');
+            const infoBtn = document.getElementById('tab-info');
+            const historyBtn = document.getElementById('tab-history');
+            if (tab === 'info') {
+                infoTab.classList.remove('hidden');
+                historyTab.classList.add('hidden');
+                infoBtn.classList.add('border-nuca-green', 'text-nuca-green');
+                infoBtn.classList.remove('border-transparent');
+                historyBtn.classList.remove('border-nuca-green');
+                historyBtn.classList.add('border-transparent');
+            } else {
+                infoTab.classList.add('hidden');
+                historyTab.classList.remove('hidden');
+                historyBtn.classList.add('border-nuca-green', 'text-nuca-green');
+                historyBtn.classList.remove('border-transparent');
+                infoBtn.classList.remove('border-nuca-green');
+                infoBtn.classList.add('border-transparent');
+            }
         }
-
-        function getStatusLabel(status) {
-            const labels = {
-                'paid': 'Pago',
-                'shipped': 'Enviado',
-                'delivered': 'Entregue',
-                'cancelled': 'Cancelado',
-                'pending': 'Pendente'
+    
+        async function openCustomerModal(customerId = null, mode = 'view') {
+            currentCustomerId = customerId;
+            document.getElementById('customer-modal').classList.remove('hidden');
+            
+            const isEditMode = mode === 'edit' || !customerId;
+            const formInputs = document.querySelectorAll('#customer-form input, #customer-form textarea');
+            const saveButton = document.querySelector('#customer-form button[type="submit"]');
+            const cancelButton = document.querySelector('#customer-form button[type="button"]');
+            
+            formInputs.forEach(input => {
+                input.readOnly = !isEditMode;
+                if (!isEditMode) { input.classList.add('bg-gray-100', 'cursor-not-allowed'); input.classList.remove('search-input'); }
+                else { input.classList.remove('bg-gray-100', 'cursor-not-allowed'); input.classList.add('search-input'); }
+            });
+            if (saveButton) saveButton.style.display = isEditMode ? 'inline-flex' : 'none';
+            if (cancelButton) cancelButton.textContent = isEditMode ? 'Cancelar' : 'Fechar';
+            
+            switchCustomerTab('info');
+            
+            if (customerId) {
+                const { data: customer, error } = await supabaseClient.from('customers').select('*').eq('id', customerId).single();
+                if (customer) {
+                    const titlePrefix = isEditMode ? 'Editar Cliente' : (mode === 'history' ? 'Histórico' : 'Ficha de Cliente');
+                    document.getElementById('modal-customer-title').textContent = `${titlePrefix} - ${customer.name}`;
+                    document.getElementById('customer-id').value = customer.id;
+                    document.getElementById('customer-name').value = customer.name || '';
+                    document.getElementById('customer-email').value = customer.email || '';
+                    document.getElementById('customer-phone').value = customer.phone || '';
+                    document.getElementById('customer-birth').value = customer.birth_date || '';
+                    document.getElementById('customer-nif').value = customer.nif || '';
+                    document.getElementById('customer-address').value = customer.address || '';
+                    document.getElementById('customer-city').value = customer.city || '';
+                    document.getElementById('customer-postal').value = customer.postal_code || '';
+                    document.getElementById('customer-notes').value = customer.notes || '';
+                    
+                    if (mode === 'history') {
+                        switchCustomerTab('history');
+                        loadCustomerHistory(customerId);
+                    }
+                }
+            } else {
+                document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
+                document.getElementById('customer-form').reset();
+                document.getElementById('customer-id').value = '';
+            }
+        }
+    
+        async function loadCustomerHistory(customerId) {
+            const historyContent = document.getElementById('customer-history-content');
+            try {
+                const { data: customer } = await supabaseClient.from('customers').select('email, name').eq('id', customerId).single();
+                if (!customer) { historyContent.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Erro ao carregar dados</p>'; return; }
+                
+                const { data: orders } = await supabaseClient.from('orders').select('*').eq('customer_email', customer.email).order('created_at', { ascending: false });
+                if (!orders || orders.length === 0) { historyContent.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Este cliente ainda não realizou nenhuma compra</p>'; return; }
+                
+                const totalSpent = orders.filter(o => ['paid','shipped','delivered'].includes(o.status)).reduce((s,o) => s + (o.total||0), 0);
+                historyContent.innerHTML = `
+                    <div class="bg-white/50 rounded-2xl p-4 mb-6"><div class="grid grid-cols-2 gap-4"><div><p class="text-xs text-nuca-green/60">Total de Compras</p><p class="text-2xl font-bold text-nuca-green">${orders.length}</p></div><div><p class="text-xs text-nuca-green/60">Total Gasto</p><p class="text-2xl font-bold text-nuca-green">€${totalSpent.toFixed(2)}</p></div></div></div>
+                    <div class="space-y-3">${orders.map(order => `
+                        <div class="customer-history-item bg-white/50 rounded-xl p-4 cursor-pointer" onclick="openOrderDetail('${order.id}')">
+                            <div class="flex justify-between items-start"><div><p class="font-bold text-nuca-green">${order.order_number}</p><p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p></div><span class="px-3 py-1 rounded-full text-xs font-bold ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></div>
+                            <div class="flex justify-between mt-3"><span class="text-sm text-nuca-green/60">${order.items ? order.items.length : 0} item(s)</span><span class="font-bold text-nuca-green">€${(order.total || 0).toFixed(2)}</span></div>
+                        </div>
+                    `).join('')}</div>
+                `;
+            } catch (error) { historyContent.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Erro ao carregar histórico</p>'; }
+        }
+    
+        function closeCustomerModal() {
+            document.getElementById('customer-modal').classList.add('hidden');
+            currentCustomerId = null;
+        }
+    
+        document.getElementById('customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const customerData = {
+                name: document.getElementById('customer-name').value,
+                email: document.getElementById('customer-email').value || null,
+                phone: document.getElementById('customer-phone').value,
+                birth_date: document.getElementById('customer-birth').value || null,
+                nif: document.getElementById('customer-nif').value || null,
+                address: document.getElementById('customer-address').value || null,
+                city: document.getElementById('customer-city').value || null,
+                postal_code: document.getElementById('customer-postal').value || null,
+                notes: document.getElementById('customer-notes').value || null,
+                updated_at: new Date().toISOString()
             };
-            return labels[status] || status;
-        }
-
-        function getLast7Days() {
-            const days = [];
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                days.push(date.toISOString().split('T')[0]);
-            }
-            return days;
-        }
-
-        function getLast12Weeks() {
-            return Array.from({length: 12}, (_, i) => i + 1).reverse();
-        }
-
-        function downloadCSV(csv, filename) {
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            link.click();
-            URL.revokeObjectURL(link.href);
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <div style="flex-shrink: 0;">
-                    ${type === 'success' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
-                    ${type === 'error' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' : ''}
-                    ${type === 'info' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>' : ''}
-                </div>
-                <span>${message}</span>
-            `;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
-        }
-
-        function logout() {
-            if (confirm('Tem a certeza que deseja sair?')) {
-                window.location.href = '/login';
-            }
-        }
-
-        // ============================================
-        // INITIALIZATION
-        // ============================================
-        document.addEventListener('DOMContentLoaded', () => {
-            showSection('dashboard');
-        });
-
-        // Close modals on escape
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
+            const customerId = document.getElementById('customer-id').value;
+            try {
+                if (customerId) {
+                    await supabaseClient.from('customers').update(customerData).eq('id', customerId);
+                    showToast('Cliente atualizado!', 'success');
+                } else {
+                    customerData.created_at = new Date().toISOString();
+                    await supabaseClient.from('customers').insert([customerData]);
+                    showToast('Cliente criado!', 'success');
+                }
+                loadCustomers();
                 closeCustomerModal();
-                closeOrderModal();
-            }
+            } catch (error) { showToast('Erro ao guardar', 'error'); }
         });
+    
+        // ============================================
+        // ANALYTICS
+        // ============================================
+        async function loadAnalytics() { await updateAnalyticsData(currentAnalyticsPeriod); }
+        function setAnalyticsPeriod(p) { currentAnalyticsPeriod = p; document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active')); document.getElementById(`period-${p}`).classList.add('active'); updateAnalyticsData(p); }
+        async function updateAnalyticsData(period) {
+            let orders = allOrders.filter(o => ['paid','shipped','delivered'].includes(o.status));
+            const now = new Date(); let startDate;
+            if(period==='daily') startDate = new Date(now.setDate(now.getDate()-30));
+            else if(period==='weekly') startDate = new Date(now.setDate(now.getDate()-90));
+            else if(period==='monthly') startDate = new Date(now.setMonth(now.getMonth()-12));
+            else startDate = new Date(now.setFullYear(now.getFullYear()-5));
+            orders = orders.filter(o => new Date(o.created_at) >= startDate);
+            const totalRevenue = orders.reduce((s,o)=>s+(o.total||0),0);
+            const totalOrders = orders.length;
+            const avgOrder = totalOrders>0 ? totalRevenue/totalOrders : 0;
+            const uniqueCustomers = [...new Set(orders.map(o=>o.customer_email))].length;
+            document.getElementById('analytics-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
+            document.getElementById('analytics-orders').textContent = totalOrders;
+            document.getElementById('analytics-avg-order').textContent = `€${avgOrder.toFixed(2)}`;
+            document.getElementById('analytics-customers').textContent = uniqueCustomers;
+            prepareAnalyticsChart(orders, period);
+        }
+        
+        function prepareAnalyticsChart(orders, period) {
+            const ctx = document.getElementById('analyticsChart')?.getContext('2d');
+            if(!ctx) return;
+            let labels=[], data=[];
+            if(period==='daily'){
+                for(let i=29;i>=0;i--){ let d=new Date(); d.setDate(d.getDate()-i); labels.push(d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit'})); }
+                data = labels.map((_,i)=>{ let d=new Date(); d.setDate(d.getDate()-(29-i)); return orders.filter(o=>new Date(o.created_at).toDateString()===d.toDateString()).reduce((s,o)=>s+(o.total||0),0); });
+            } else if(period==='weekly'){
+                for(let i=12;i>=0;i--){ let w=new Date(); w.setDate(w.getDate()-(i*7)); labels.push(`Sem ${w.getWeek()}`); }
+                data = labels.map((_,i)=>{ let start=new Date(); start.setDate(start.getDate()-(i*7)); let end=new Date(start); end.setDate(end.getDate()+7); return orders.filter(o=>{let od=new Date(o.created_at); return od>=start && od<end;}).reduce((s,o)=>s+(o.total||0),0); });
+            } else if(period==='monthly'){
+                for(let i=11;i>=0;i--){ let m=new Date(); m.setMonth(m.getMonth()-i); labels.push(m.toLocaleDateString('pt-PT',{month:'short',year:'numeric'})); }
+                data = labels.map((_,i)=>{ let m=new Date(); m.setMonth(m.getMonth()-(11-i)); return orders.filter(o=>{let od=new Date(o.created_at); return od.getMonth()===m.getMonth() && od.getFullYear()===m.getFullYear();}).reduce((s,o)=>s+(o.total||0),0); });
+            } else {
+                for(let i=4;i>=0;i--){ let y=new Date().getFullYear()-i; labels.push(y); }
+                data = labels.map(y=>orders.filter(o=>new Date(o.created_at).getFullYear()===y).reduce((s,o)=>s+(o.total||0),0));
+            }
+            if(analyticsChart) analyticsChart.destroy();
+            analyticsChart = new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Vendas (€)',data,borderColor:'#556B4F',backgroundColor:'rgba(85,107,79,0.1)',tension:0.4,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'€'+v}}}}});
+        }
+    
+        // ============================================
+        // UTILS
+        // ============================================
+        function formatDate(ds) { let d=new Date(ds); return d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+        function showToast(msg, type='info'){ const c=document.getElementById('toast-container'); const t=document.createElement('div'); t.className=`${type==='success'?'bg-green-500':type==='error'?'bg-red-500':'bg-nuca-green'} text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 animate-fade-in`; t.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span><span>${msg}</span>`; c.appendChild(t); setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000); }
+        function toggleNotifications(){ document.getElementById('notifications-panel').classList.toggle('hidden'); }
+        function markAllAsRead(){ notifications=[]; document.getElementById('notifications-list').innerHTML='<p class="text-center text-nuca-green/40 py-8">Sem notificações novas</p>'; document.getElementById('notification-badge').classList.add('hidden'); }
+        Date.prototype.getWeek = function(){ let d=new Date(this); d.setHours(0,0,0,0); d.setDate(d.getDate()+3-(d.getDay()+6)%7); let w1=new Date(d.getFullYear(),0,4); return 1+Math.round(((d-w1)/86400000-3+(w1.getDay()+6)%7)/7); };
     </script>
-</body>
+    </body>
 </html>
