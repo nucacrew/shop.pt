@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NUCA Admin - Painel de Gestão</title>
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700&display=swap" rel="stylesheet">
+    <title>Admin - NUCA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
@@ -20,10 +19,6 @@
                         'nuca-green': '#556B4F',
                         'nuca-dark': '#2C3328',
                         'nuca-light': '#E8DCC4',
-                        'spring': '#98D8C8',
-                        'summer': '#F7DC6F',
-                        'autumn': '#E59866',
-                        'winter': '#AED6F1',
                     },
                     fontFamily: {
                         'display': ['Syne', 'sans-serif'],
@@ -33,1355 +28,2044 @@
             }
         }
     </script>
-    
     <style>
+        /* ESTILOS BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #D8C6A5 0%, #E8DCC4 100%);
+            background-color: #D8C6A5;
+            color: #556B4F;
             font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .nuca-logo { 
+            font-family: 'Syne', sans-serif; 
+            font-weight: 800; 
+            letter-spacing: -0.02em; 
+        }
+
+        /* SIDEBAR - ESTRUTURA FIXA */
+        .app-container {
+            display: flex;
             min-height: 100vh;
+            width: 100%;
+            position: relative;
         }
-        
-        .admin-sidebar {
-            background: #2C3328;
-            min-height: 100vh;
-        }
-        
-        .nav-item {
-            transition: all 0.3s ease;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background: rgba(85, 107, 79, 0.3);
-            border-left: 3px solid #D8C6A5;
-        }
-        
-        .card {
+
+        .sidebar {
+            width: 280px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-right: 1px solid rgba(85, 107, 79, 0.2);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            flex-shrink: 0;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            background-color: #D8C6A5;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                transform: translateX(-100%);
+                box-shadow: 2px 0 20px rgba(0,0,0,0.15);
+            }
+
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
+            }
+        }
+
+        /* DESKTOP */
+        @media (min-width: 769px) {
+            .sidebar {
+                transform: none !important;
+                display: block !important;
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.visible {
+            display: block;
+        }
+
+        .sidebar-content {
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #556B4F;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(85, 107, 79, 0.1);
+        }
+
+        .sidebar-link.active {
+            background: rgba(85, 107, 79, 0.15);
+            border-right: 3px solid #556B4F;
+        }
+
+        /* ESTILOS DAS ENCOMENDAS */
+        .status-pending { background-color: #FEF3C7; color: #92400E; }
+        .status-paid { background-color: #D1FAE5; color: #065F46; }
+        .status-shipped { background-color: #DBEAFE; color: #1E40AF; }
+        .status-delivered { background-color: #E0E7FF; color: #3730A3; }
+        .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
+        
+        .admin-card {
+            background-color: rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(85, 107, 79, 0.1);
         }
         
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        .order-row { transition: all 0.2s; }
+        .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
+        
+        .tab-active {
+            background-color: #556B4F;
+            color: #D8C6A5;
         }
         
-        .stat-card {
-            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
-            color: white;
+        .priority-high { border-left: 4px solid #DC2626; }
+        .priority-medium { border-left: 4px solid #F59E0B; }
+        .priority-low { border-left: 4px solid #10B981; }
+        
+        .search-input {
+            background-color: rgba(255,255,255,0.7);
+            border: 2px solid transparent;
+            transition: all 0.3s;
         }
         
-        .btn-primary {
-            background: #556B4F;
-            color: white;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background: #2C3328;
-            transform: translateY(-1px);
-        }
-        
-        .btn-secondary {
-            background: #D8C6A5;
-            color: #2C3328;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-secondary:hover {
-            background: #E8DCC4;
-        }
-        
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .status-pending { background: #FEF3C7; color: #92400E; }
-        .status-processing { background: #DBEAFE; color: #1E40AF; }
-        .status-shipped { background: #D1FAE5; color: #065F46; }
-        .status-delivered { background: #E0E7FF; color: #3730A3; }
-        .status-cancelled { background: #FEE2E2; color: #991B1B; }
-        
-        .stock-low { color: #DC2626; font-weight: 600; }
-        .stock-medium { color: #F59E0B; font-weight: 600; }
-        .stock-good { color: #10B981; font-weight: 600; }
-        
-        .modal-overlay {
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-        }
-        
-        .season-spring { background: #98D8C8; }
-        .season-summer { background: #F7DC6F; }
-        .season-autumn { background: #E59866; }
-        .season-winter { background: #AED6F1; }
-        
-        input, select, textarea {
-            border: 2px solid #E8DCC4;
-            border-radius: 8px;
-            padding: 10px 14px;
-            transition: border-color 0.3s ease;
-        }
-        
-        input:focus, select:focus, textarea:focus {
+        .search-input:focus {
             outline: none;
             border-color: #556B4F;
+            background-color: white;
         }
         
-        .table-row:hover {
-            background: rgba(232, 220, 196, 0.3);
+        .stats-card {
+            background: linear-gradient(135deg, rgba(85, 107, 79, 0.1) 0%, rgba(44, 51, 40, 0.05) 100%);
         }
         
-        .notification {
-            animation: slideIn 0.3s ease;
+        .loading-spinner {
+            border: 3px solid rgba(85, 107, 79, 0.3);
+            border-top: 3px solid #556B4F;
+            border-radius: 50%; width: 24px; height: 24px;
+            animation: spin 1s linear infinite;
         }
         
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+        
+        .chart-wrapper { position: relative; height: 300px; width: 100%; }
+        .chart-wrapper-sm { position: relative; height: 250px; width: 100%; }
+        canvas { max-width: 100% !important; }
+        
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 50; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: #E8DCC4;
-            overflow: hidden;
+
+        /* ESTILOS PARA IMPRESSÃO */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #receipt-print, #receipt-print * {
+                visibility: visible;
+            }
+            #receipt-print {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                padding: 20px;
+                font-family: 'Space Grotesk', sans-serif;
+            }
+            .no-print {
+                display: none !important;
+            }
         }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #556B4F, #2C3328);
-            transition: width 0.5s ease;
+
+        .receipt-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            margin: 0 auto;
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #556B4F;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        .receipt-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #556B4F;
+        }
+
+        .receipt-details {
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .receipt-details p {
+            margin: 4px 0;
+        }
+
+        .receipt-items {
+            margin-bottom: 16px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .receipt-total {
+            font-size: 16px;
+        }
+
+        .receipt-total > div {
+            padding: 4px 0;
+        }
+
+        .receipt-discount {
+            color: #10B981;
+        }
+
+        .receipt-free-shipping {
+            color: #10B981;
         }
     </style>
 <base target="_blank">
 </head>
-<body class="text-nuca-dark">
-    <div class="flex">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar w-64 fixed left-0 top-0 h-full z-50 overflow-y-auto">
-            <div class="p-6">
-                <h1 class="font-display text-2xl font-bold text-nuca-beige">NUCA</h1>
-                <p class="text-nuca-beige/60 text-sm">Painel Administrativo</p>
+<body>
+
+    <div class="grain-overlay"></div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 z-[2000] flex items-center justify-center bg-nuca-beige">
+        <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <h1 class="nuca-logo text-4xl text-nuca-green mb-2">NUCA</h1>
+                <p class="text-nuca-green/60">Área de Administração</p>
             </div>
-            
-            <nav class="mt-4">
-                <a href="#dashboard" onclick="showTab('dashboard')" class="nav-item active flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                    Dashboard
-                </a>
-                <a href="#orders" onclick="showTab('orders')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                    Encomendas
-                    <span id="orders-badge" class="ml-auto bg-nuca-beige text-nuca-dark text-xs px-2 py-0.5 rounded-full">12</span>
-                </a>
-                <a href="#products" onclick="showTab('products')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                    Produtos
-                </a>
-                <a href="#stock" onclick="showTab('stock')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                    Stock
-                    <span id="stock-badge" class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">3</span>
-                </a>
-                <a href="#customers" onclick="showTab('customers')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                    Clientes
-                </a>
-                <a href="#promotions" onclick="showTab('promotions')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                    Promoções
-                </a>
-                <a href="#analytics" onclick="showTab('analytics')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                    Análises
-                </a>
-                <a href="#settings" onclick="showTab('settings')" class="nav-item flex items-center gap-3 px-6 py-3 text-nuca-beige/80 hover:text-nuca-beige">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Configurações
-                </a>
-            </nav>
-            
-            <div class="absolute bottom-0 left-0 right-0 p-6 border-t border-nuca-beige/20">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-nuca-beige flex items-center justify-center text-nuca-dark font-bold">A</div>
-                    <div>
-                        <p class="text-nuca-beige font-medium">Admin</p>
-                        <p class="text-nuca-beige/60 text-sm">nuca.crew@gmail.com</p>
-                    </div>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
+                    <input type="email" id="login-email" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="admin@nuca.pt">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-nuca-green mb-2">Password</label>
+                    <input type="password" id="login-password" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="••••••••">
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-nuca-green/30 text-nuca-green focus:ring-nuca-green">
+                    <label for="remember-me" class="text-sm text-nuca-green/70">Lembrar-me</label>
+                </div>
+                <button type="submit" id="login-btn" class="w-full bg-nuca-green text-nuca-beige py-4 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center justify-center gap-2">
+                    <span id="login-text">Entrar</span>
+                    <div id="login-spinner" class="loading-spinner hidden" style="width: 20px; height: 20px;"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Interface -->
+    <div id="admin-interface" class="hidden app-container">
+        
+        <!-- Overlay para mobile -->
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="hideMobileSidebar()"></div>
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-content">
+                <div class="flex items-center justify-between">
+                    <h1 class="nuca-logo text-2xl text-nuca-green">NUCA Admin</h1>
+                    <button onclick="hideMobileSidebar()" class="lg:hidden p-2 hover:bg-nuca-green/10 rounded-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a href="#dashboard" onclick="showSection('dashboard'); return false;" class="sidebar-link active">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#orders" onclick="showSection('orders'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>
+                        Encomendas
+                        <span id="sidebar-pending-badge" class="ml-auto bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                    </a>
+                    <a href="#products" onclick="showSection('products'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                        Produtos
+                    </a>
+                    <a href="#customers" onclick="showSection('customers'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Clientes
+                    </a>
+                    <a href="#analytics" onclick="showSection('analytics'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Análises
+                    </a>
+                    <a href="#settings" onclick="showSection('settings'); return false;" class="sidebar-link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        Configurações
+                    </a>
+                </nav>
+
+                <div class="border-t border-nuca-green/10 pt-6 mt-auto">
+                    <button onclick="logout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 font-medium hover:bg-red-50 w-full transition-colors">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Sair
+                    </button>
                 </div>
             </div>
         </aside>
-        
+
         <!-- Main Content -->
-        <main class="flex-1 ml-64 p-8">
-            <!-- Notifications Container -->
-            <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
-            
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Dashboard</h2>
-                        <p class="text-nuca-green/70">Visão geral da tua loja</p>
+        <main class="main-content">
+            <!-- Header -->
+            <header class="sticky top-0 z-40 bg-nuca-beige/95 backdrop-blur-md border-b border-nuca-green/10">
+                <div class="px-6 lg:px-12 py-4">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleMobileSidebar()" class="menu-toggle p-2 hover:bg-nuca-green/10 rounded-lg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+                                </svg>
+                            </button>
+                            <div>
+                                <h2 id="page-title" class="font-display text-xl font-bold text-nuca-green">Dashboard</h2>
+                                <p id="current-date" class="text-sm text-nuca-green/60"></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                </svg>
+                                <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
+                            </button>
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold" id="user-avatar">A</div>
+                                <div class="hidden md:block">
+                                    <p class="text-sm font-bold text-nuca-green" id="user-name">Admin</p>
+                                    <p class="text-xs text-nuca-green/60">Administrador</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="exportData()" class="btn-secondary px-4 py-2 rounded-lg flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                            Exportar
+                </div>
+            </header>
+
+            <!-- Notifications Panel -->
+            <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
+                <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
+                    <h3 class="font-bold text-nuca-green">Notificações</h3>
+                    <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
+                </div>
+                <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
+                    <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>
+                </div>
+            </div>
+
+            <!-- Content Sections -->
+            <div class="p-6 lg:p-12">
+                
+                <!-- DASHBOARD SECTION -->
+                <div id="section-dashboard" class="section-content active fade-in">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-nuca-green/10 rounded-xl flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
+                                    <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="admin-card rounded-2xl p-6 stats-card">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
+                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-2 admin-card rounded-2xl p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-display text-xl font-bold text-nuca-green">Vendas (Últimos 7 dias)</h3>
+                                <select id="chart-period" onchange="updateChart()" class="bg-white border border-nuca-green/20 rounded-lg px-3 py-1 text-sm">
+                                    <option value="7">7 dias</option>
+                                    <option value="30">30 dias</option>
+                                    <option value="90">3 meses</option>
+                                </select>
+                            </div>
+                            <div class="chart-wrapper">
+                                <canvas id="salesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="admin-card rounded-2xl p-6">
+                            <h3 class="font-display text-xl font-bold text-nuca-green mb-6">Status das Encomendas</h3>
+                            <div class="chart-wrapper-sm">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="admin-card rounded-2xl p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-display text-xl font-bold text-nuca-green">Encomendas Recentes</h3>
+                            <button onclick="showSection('orders')" class="text-sm text-nuca-green hover:underline">Ver todas</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Nº</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Total</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Status</th>
+                                        <th class="text-left px-4 py-3 text-xs font-bold text-nuca-green uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-orders-table" class="divide-y divide-nuca-green/10">
+                                    <tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">A carregar...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ORDERS SECTION -->
+                <div id="section-orders" class="section-content fade-in">
+                    <!-- Filters -->
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-4 justify-between items-start lg:items-center">
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
+                                <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="pending_payment">Pendentes</button>
+                                <button onclick="filterOrders('paid')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="paid">Pagas</button>
+                                <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="shipped">Enviadas</button>
+                                <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="delivered">Entregues</button>
+                                <button onclick="filterOrders('cancelled')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10 text-nuca-green" data-filter="cancelled">Canceladas</button>
+                            </div>
+                            <div class="flex gap-3 w-full lg:w-auto">
+                                <div class="relative flex-1 lg:w-64">
+                                    <input type="text" id="search-orders" placeholder="Pesquisar..." class="search-input w-full px-4 py-2 pl-10 rounded-xl text-sm" onkeyup="searchOrders()">
+                                    <svg class="absolute left-3 top-2.5 text-nuca-green/40" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                                </div>
+                                <button onclick="refreshOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                                </button>
+                                <button onclick="exportOrders()" class="p-2 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="admin-card rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
+                                    <tr>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Nº Encomenda</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Data</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Status</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Prioridade</th>
+                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orders-table-body" class="divide-y divide-nuca-green/10">
+                                    <tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">A carregar...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-6 py-4 border-t border-nuca-green/10 flex justify-between items-center">
+                            <span class="text-sm text-nuca-green/60" id="showing-text">A mostrar 0 encomendas</span>
+                            <div class="flex gap-2">
+                                <button onclick="changePage(-1)" id="prev-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Anterior</button>
+                                <button onclick="changePage(1)" id="next-page" class="px-4 py-2 rounded-lg border border-nuca-green/20 text-nuca-green hover:bg-nuca-green/5 disabled:opacity-50">Próxima</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCTS SECTION -->
+                <div id="section-products" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Gestão de Produtos</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
+                    </div>
+                </div>
+
+                <!-- CUSTOMERS SECTION -->
+                <div id="section-customers" class="section-content fade-in">
+                    <!-- Header com ações -->
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-display text-2xl font-bold text-nuca-green">Clientes</h3>
+                        <button onclick="openCustomerModal()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Novo Cliente
                         </button>
-                        <button onclick="refreshData()" class="btn-primary px-4 py-2 rounded-lg flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            Atualizar
-                        </button>
                     </div>
-                </div>
-                
-                <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="card stat-card p-6">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-nuca-beige/70 text-sm">Vendas Hoje</p>
-                                <h3 class="text-3xl font-bold mt-1">€1,247</h3>
-                                <p class="text-green-400 text-sm mt-2 flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                                    +12.5%
-                                </p>
+
+                    <!-- Filtros e pesquisa -->
+                    <div class="admin-card rounded-2xl p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row gap-4 justify-between">
+                            <div class="flex-1 relative">
+                                <input type="text" id="search-customers" placeholder="Pesquisar por nome, email ou telefone..." class="search-input w-full px-4 py-3 pl-12 rounded-xl" onkeyup="searchCustomers()">
+                                <svg class="absolute left-4 top-3.5 text-nuca-green/40" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                                </svg>
                             </div>
-                            <div class="w-12 h-12 rounded-xl bg-nuca-beige/20 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-nuca-beige" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="flex gap-3">
+                                <button onclick="loadCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Atualizar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg>
+                                </button>
+                                <button onclick="exportCustomers()" class="px-4 py-3 bg-nuca-green/10 rounded-xl hover:bg-nuca-green/20 transition-colors" title="Exportar">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#556B4F"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-nuca-green/70 text-sm">Encomendas</p>
-                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">24</h3>
-                                <p class="text-green-600 text-sm mt-2 flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                                    +8.2%
-                                </p>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-nuca-green/10 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-nuca-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-nuca-green/70 text-sm">Clientes Novos</p>
-                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">18</h3>
-                                <p class="text-red-500 text-sm mt-2 flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
-                                    -2.4%
-                                </p>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-nuca-green/10 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-nuca-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <p class="text-nuca-green/70 text-sm">Stock Baixo</p>
-                                <h3 class="text-3xl font-bold text-nuca-dark mt-1">3</h3>
-                                <p class="text-orange-500 text-sm mt-2">Ação necessária</p>
-                            </div>
-                            <div class="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                            </div>
+
+                    <!-- Lista de Clientes -->
+                    <div class="admin-card rounded-2xl overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
+                                    <tr>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
+                                        <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
+                                        <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
+                                    <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Charts Row -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas dos Últimos 7 Dias</h3>
-                        <canvas id="salesChart" height="200"></canvas>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Produtos Mais Vendidos</h3>
-                        <canvas id="productsChart" height="200"></canvas>
+
+                <!-- ANALYTICS SECTION -->
+                <div id="section-analytics" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Análises</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
                     </div>
                 </div>
-                
-                <!-- Recent Orders -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark">Encomendas Recentes</h3>
-                        <button onclick="showTab('orders')" class="text-nuca-green hover:text-nuca-dark font-medium">Ver todas</button>
+
+                <!-- SETTINGS SECTION -->
+                <div id="section-settings" class="section-content">
+                    <div class="admin-card rounded-2xl p-12 text-center">
+                        <h3 class="font-display text-2xl text-nuca-green mb-4">Configurações</h3>
+                        <p class="text-nuca-green/60">Em desenvolvimento</p>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">ID</th>
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Cliente</th>
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Produtos</th>
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Total</th>
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Estado</th>
-                                    <th class="text-left py-3 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recent-orders-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Orders Tab -->
-            <div id="orders" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Encomendas</h2>
-                        <p class="text-nuca-green/70">Gestão de todas as encomendas</p>
-                    </div>
-                    <div class="flex gap-3">
-                        <input type="text" id="order-search" placeholder="Pesquisar encomenda..." class="px-4 py-2 w-64">
-                        <select id="order-filter" class="px-4 py-2">
-                            <option value="all">Todos os estados</option>
-                            <option value="pending">Pendente</option>
-                            <option value="processing">Em processamento</option>
-                            <option value="shipped">Enviado</option>
-                            <option value="delivered">Entregue</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium"><input type="checkbox" id="select-all-orders"></th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">ID</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Data</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Cliente</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Itens</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Total</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-nuca-beige">
-                        <p class="text-nuca-green/70 text-sm">Mostrando 1-10 de 156 encomendas</p>
-                        <div class="flex gap-2">
-                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">Anterior</button>
-                            <button class="px-3 py-1 rounded-lg bg-nuca-green text-white">1</button>
-                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">2</button>
-                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">3</button>
-                            <button class="px-3 py-1 rounded-lg border border-nuca-beige text-nuca-green hover:bg-nuca-beige/20">Próximo</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Products Tab -->
-            <div id="products" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Produtos</h2>
-                        <p class="text-nuca-green/70">Gestão do catálogo de produtos</p>
-                    </div>
-                    <button onclick="openProductModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        Novo Produto
-                    </button>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" id="product-search" placeholder="Pesquisar produto..." class="flex-1 px-4 py-2">
-                        <select id="product-category" class="px-4 py-2">
-                            <option value="all">Todas as categorias</option>
-                            <option value="tshirts">T-shirts</option>
-                            <option value="hoodies">Hoodies</option>
-                            <option value="pants">Calças</option>
-                            <option value="accessories">Acessórios</option>
-                        </select>
-                        <select id="product-season" class="px-4 py-2">
-                            <option value="all">Todas as estações</option>
-                            <option value="spring">Primavera</option>
-                            <option value="summer">Verão</option>
-                            <option value="autumn">Outono</option>
-                            <option value="winter">Inverno</option>
-                        </select>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Produto</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Categoria</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Preço</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Stock</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Vendas</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Stock Tab -->
-            <div id="stock" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Gestão de Stock</h2>
-                        <p class="text-nuca-green/70">Controlo de inventário e alertas</p>
-                    </div>
-                    <button onclick="openStockModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                        Atualizar Stock
-                    </button>
-                </div>
-                
-                <!-- Stock Alerts -->
-                <div class="card p-6 mb-6 border-l-4 border-red-500">
-                    <h3 class="font-display text-lg font-bold text-nuca-dark mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                        Alertas de Stock Baixo
-                    </h3>
-                    <div id="stock-alerts" class="space-y-3">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Produto</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Tamanho</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Stock Atual</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Mínimo</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Status</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Última Atualização</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stock-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Customers Tab -->
-            <div id="customers" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Clientes</h2>
-                        <p class="text-nuca-green/70">Base de clientes e histórico</p>
-                    </div>
-                    <button onclick="exportCustomers()" class="btn-secondary px-6 py-3 rounded-lg flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        Exportar CSV
-                    </button>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="flex gap-4 mb-6">
-                        <input type="text" id="customer-search" placeholder="Pesquisar cliente..." class="flex-1 px-4 py-2">
-                        <select id="customer-sort" class="px-4 py-2">
-                            <option value="recent">Mais recentes</option>
-                            <option value="orders">Mais encomendas</option>
-                            <option value="spent">Mais gasto</option>
-                        </select>
-                    </div>
-                    
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Cliente</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Email</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Encomendas</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Total Gasto</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Última Compra</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customers-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Promotions Tab -->
-            <div id="promotions" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Promoções</h2>
-                        <p class="text-nuca-green/70">Códigos promocionais e campanhas</p>
-                    </div>
-                    <button onclick="openPromoModal()" class="btn-primary px-6 py-3 rounded-lg flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        Nova Promoção
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="card p-6 text-center">
-                        <p class="text-nuca-green/70 text-sm">Promoções Ativas</p>
-                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">5</h3>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <p class="text-nuca-green/70 text-sm">Desconto Médio</p>
-                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">15%</h3>
-                    </div>
-                    <div class="card p-6 text-center">
-                        <p class="text-nuca-green/70 text-sm">Usos este mês</p>
-                        <h3 class="text-4xl font-bold text-nuca-dark mt-2">127</h3>
-                    </div>
-                </div>
-                
-                <div class="card p-6">
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b border-nuca-beige">
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Código</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Tipo</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Valor</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Usos</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Válido até</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Estado</th>
-                                    <th class="text-left py-3 px-4 text-nuca-green/70 font-medium">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="promotions-table">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Analytics Tab -->
-            <div id="analytics" class="tab-content">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 class="font-display text-3xl font-bold text-nuca-dark">Análises</h2>
-                        <p class="text-nuca-green/70">Métricas e relatórios detalhados</p>
-                    </div>
-                    <select id="analytics-period" class="px-4 py-2">
-                        <option value="7d">Últimos 7 dias</option>
-                        <option value="30d">Últimos 30 dias</option>
-                        <option value="90d">Últimos 3 meses</option>
-                        <option value="1y">Último ano</option>
-                    </select>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas por Estação</h3>
-                        <canvas id="seasonChart" height="250"></canvas>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Vendas por Categoria</h3>
-                        <canvas id="categoryChart" height="250"></canvas>
-                    </div>
-                </div>
-                
-                <div class="card p-6">
-                    <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Desempenho Mensal</h3>
-                    <canvas id="monthlyChart" height="100"></canvas>
-                </div>
-            </div>
-            
-            <!-- Settings Tab -->
-            <div id="settings" class="tab-content">
-                <div class="mb-8">
-                    <h2 class="font-display text-3xl font-bold text-nuca-dark">Configurações</h2>
-                    <p class="text-nuca-green/70">Personaliza a tua loja</p>
-                </div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Informações da Loja</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Nome da Loja</label>
-                                <input type="text" value="NUCA" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Email de Contacto</label>
-                                <input type="email" value="nuca.crew@gmail.com" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Telefone</label>
-                                <input type="tel" value="+351 912 345 678" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Morada</label>
-                                <textarea class="w-full" rows="2">Rua da Moda 123, Lisboa</textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Envio e Pagamento</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Portes Grátis Acima De (€)</label>
-                                <input type="number" value="50" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Custo de Envio (€)</label>
-                                <input type="number" value="4.99" class="w-full">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Prazo de Entrega (dias)</label>
-                                <input type="number" value="3-5" class="w-full">
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="cash-on-delivery" checked>
-                                <label for="cash-on-delivery">Pagamento à cobrança</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Alertas de Stock</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-nuca-green mb-1">Nível Mínimo de Alerta</label>
-                                <input type="number" value="5" class="w-full">
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="email-alerts" checked>
-                                <label for="email-alerts">Receber alertas por email</label>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" id="dashboard-alerts" checked>
-                                <label for="dashboard-alerts">Mostrar no dashboard</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-6">
-                        <h3 class="font-display text-xl font-bold text-nuca-dark mb-4">Integrações</h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold">P</div>
-                                    <div>
-                                        <p class="font-medium">PayPal</p>
-                                        <p class="text-sm text-nuca-green/60">Pagamentos online</p>
-                                    </div>
-                                </div>
-                                <button class="text-nuca-green font-medium">Configurar</button>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center text-white font-bold">S</div>
-                                    <div>
-                                        <p class="font-medium">Stripe</p>
-                                        <p class="text-sm text-nuca-green/60">Cartões de crédito</p>
-                                    </div>
-                                </div>
-                                <button class="text-nuca-green font-medium">Configurar</button>
-                            </div>
-                            <div class="flex items-center justify-between p-3 bg-nuca-light/30 rounded-lg">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center text-white font-bold">M</div>
-                                    <div>
-                                        <p class="font-medium">Mailchimp</p>
-                                        <p class="text-sm text-nuca-green/60">Email marketing</p>
-                                    </div>
-                                </div>
-                                <button class="text-nuca-green font-medium">Configurar</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-6 flex justify-end">
-                    <button onclick="saveSettings()" class="btn-primary px-8 py-3 rounded-lg">Guardar Alterações</button>
                 </div>
             </div>
         </main>
     </div>
-    
-    <!-- Order Detail Modal -->
-    <div id="order-modal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-overlay absolute inset-0" onclick="closeOrderModal()"></div>
-        <div class="absolute inset-4 md:inset-10 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-            <div class="p-6 border-b border-nuca-beige flex justify-between items-center">
-                <h3 class="font-display text-2xl font-bold text-nuca-dark">Detalhes da Encomenda</h3>
-                <button onclick="closeOrderModal()" class="text-nuca-green hover:text-nuca-dark">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+
+    <!-- Customer Modal (Ficha do Cliente) -->
+    <div id="customer-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeCustomerModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-customer-title">Ficha de Cliente</h2>
+                </div>
+                <button onclick="closeCustomerModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 </button>
             </div>
-            <div id="order-modal-content" class="flex-1 overflow-auto p-6">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- Product Edit Modal -->
-    <div id="product-edit-modal" class="fixed inset-0 z-50 hidden">
-        <div class="modal-overlay absolute inset-0" onclick="closeProductEditModal()"></div>
-        <div class="absolute right-0 top-0 h-full w-full md:w-[600px] bg-white shadow-2xl overflow-auto">
-            <div class="p-6 border-b border-nuca-beige flex justify-between items-center">
-                <h3 class="font-display text-2xl font-bold text-nuca-dark">Editar Produto</h3>
-                <button onclick="closeProductEditModal()" class="text-nuca-green hover:text-nuca-dark">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <div id="product-edit-content" class="p-6">
-                <!-- Populated by JS -->
+            
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Informação do Cliente -->
+                <div id="customer-info-tab">
+                    <form id="customer-form" class="space-y-6">
+                        <input type="hidden" id="customer-id">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Nome Completo *</label>
+                                <input type="text" id="customer-name" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="Nome do cliente">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Email</label>
+                                <input type="email" id="customer-email" class="search-input w-full px-4 py-3 rounded-xl" placeholder="email@exemplo.pt">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Telefone *</label>
+                                <input type="tel" id="customer-phone" required class="search-input w-full px-4 py-3 rounded-xl" placeholder="912345678">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Data de Nascimento</label>
+                                <input type="date" id="customer-birth" class="search-input w-full px-4 py-3 rounded-xl">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">NIF</label>
+                                <input type="text" id="customer-nif" class="search-input w-full px-4 py-3 rounded-xl" placeholder="123456789">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Morada</label>
+                            <input type="text" id="customer-address" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Rua, número">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Cidade</label>
+                                <input type="text" id="customer-city" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Cidade">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-nuca-green mb-2">Código Postal</label>
+                                <input type="text" id="customer-postal" class="search-input w-full px-4 py-3 rounded-xl" placeholder="1000-001">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-nuca-green mb-2">Notas</label>
+                            <textarea id="customer-notes" rows="3" class="search-input w-full px-4 py-3 rounded-xl" placeholder="Informações adicionais..."></textarea>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-6 border-t">
+                            <button type="button" onclick="closeCustomerModal()" class="px-6 py-3 border border-nuca-green/30 rounded-xl text-nuca-green hover:bg-nuca-green/5">Cancelar</button>
+                            <button type="submit" class="px-6 py-3 bg-nuca-green text-nuca-beige rounded-xl font-bold hover:bg-nuca-dark">Guardar Cliente</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // ===== DADOS SIMULADOS =====
-        const orders = [
-            { id: 'NUC-2025-001', date: '2025-03-23', customer: 'Ana Silva', email: 'ana.silva@email.com', items: 3, total: 89.97, status: 'pending', address: 'Rua das Flores 45, Lisboa', phone: '+351 912 345 678' },
-            { id: 'NUC-2025-002', date: '2025-03-23', customer: 'João Santos', email: 'joao.santos@email.com', items: 2, total: 59.98, status: 'processing', address: 'Av. Liberdade 123, Porto', phone: '+351 923 456 789' },
-            { id: 'NUC-2025-003', date: '2025-03-22', customer: 'Maria Costa', email: 'maria.costa@email.com', items: 1, total: 34.99, status: 'shipped', address: 'Rua do Comércio 78, Braga', phone: '+351 934 567 890' },
-            { id: 'NUC-2025-004', date: '2025-03-22', customer: 'Pedro Ferreira', email: 'pedro.ferreira@email.com', items: 4, total: 129.96, status: 'delivered', address: 'Rua Nova 12, Coimbra', phone: '+351 945 678 901' },
-            { id: 'NUC-2025-005', date: '2025-03-21', customer: 'Sofia Oliveira', email: 'sofia.oliveira@email.com', items: 2, total: 69.98, status: 'pending', address: 'Av. dos Descobrimentos 56, Faro', phone: '+351 956 789 012' },
-            { id: 'NUC-2025-006', date: '2025-03-21', customer: 'Rui Mendes', email: 'rui.mendes@email.com', items: 1, total: 29.99, status: 'cancelled', address: 'Rua Central 34, Aveiro', phone: '+351 967 890 123' },
-            { id: 'NUC-2025-007', date: '2025-03-20', customer: 'Carla Rodrigues', email: 'carla.rodrigues@email.com', items: 3, total: 94.97, status: 'processing', address: 'Rua do Sol 89, Setúbal', phone: '+351 978 901 234' },
-            { id: 'NUC-2025-008', date: '2025-03-20', customer: 'Miguel Pereira', email: 'miguel.pereira@email.com', items: 2, total: 54.98, status: 'shipped', address: 'Av. da República 67, Leiria', phone: '+351 989 012 345' },
-            { id: 'NUC-2025-009', date: '2025-03-19', customer: 'Inês Martins', email: 'ines.martins@email.com', items: 1, total: 39.99, status: 'delivered', address: 'Rua das Acácias 23, Viseu', phone: '+351 990 123 456' },
-            { id: 'NUC-2025-010', date: '2025-03-19', customer: 'Tiago Lopes', email: 'tiago.lopes@email.com', items: 5, total: 149.95, status: 'pending', address: 'Rua do Mar 45, Funchal', phone: '+351 901 234 567' },
-        ];
-        
-        const products = [
-            { id: 1, name: 'NUCA Essential Tee', category: 'tshirts', price: 29.99, stock: 45, sales: 128, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100' },
-            { id: 2, name: 'NUCA Hoodie Beige', category: 'hoodies', price: 59.99, stock: 23, sales: 89, status: 'active', season: 'autumn', image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
-            { id: 3, name: 'NUCA Summer Vibes', category: 'tshirts', price: 24.99, stock: 67, sales: 156, status: 'active', season: 'summer', image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=100' },
-            { id: 4, name: 'NUCA Winter Warmth', category: 'hoodies', price: 64.99, stock: 3, sales: 45, status: 'active', season: 'winter', image: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=100' },
-            { id: 5, name: 'NUCA Spring Bloom', category: 'tshirts', price: 27.99, stock: 8, sales: 78, status: 'active', season: 'spring', image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=100' },
-            { id: 6, name: 'NUCA Joggers', category: 'pants', price: 44.99, stock: 34, sales: 67, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1517438476312-10d79c077509?w=100' },
-            { id: 7, name: 'NUCA Cap', category: 'accessories', price: 19.99, stock: 2, sales: 34, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=100' },
-            { id: 8, name: 'NUCA Tote Bag', category: 'accessories', price: 14.99, stock: 56, sales: 92, status: 'active', season: 'all', image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=100' },
-        ];
-        
-        const stockData = [
-            { product: 'NUCA Essential Tee', size: 'S', current: 12, min: 10, lastUpdate: '2025-03-20' },
-            { product: 'NUCA Essential Tee', size: 'M', current: 18, min: 10, lastUpdate: '2025-03-20' },
-            { product: 'NUCA Essential Tee', size: 'L', current: 15, min: 10, lastUpdate: '2025-03-20' },
-            { product: 'NUCA Hoodie Beige', size: 'S', current: 5, min: 5, lastUpdate: '2025-03-19' },
-            { product: 'NUCA Hoodie Beige', size: 'M', current: 3, min: 5, lastUpdate: '2025-03-19' },
-            { product: 'NUCA Hoodie Beige', size: 'L', current: 8, min: 5, lastUpdate: '2025-03-19' },
-            { product: 'NUCA Winter Warmth', size: 'S', current: 1, min: 5, lastUpdate: '2025-03-18' },
-            { product: 'NUCA Winter Warmth', size: 'M', current: 0, min: 5, lastUpdate: '2025-03-18' },
-            { product: 'NUCA Winter Warmth', size: 'L', current: 2, min: 5, lastUpdate: '2025-03-18' },
-            { product: 'NUCA Spring Bloom', size: 'S', current: 2, min: 5, lastUpdate: '2025-03-21' },
-            { product: 'NUCA Spring Bloom', size: 'M', current: 4, min: 5, lastUpdate: '2025-03-21' },
-            { product: 'NUCA Spring Bloom', size: 'L', current: 2, min: 5, lastUpdate: '2025-03-21' },
-            { product: 'NUCA Cap', size: 'Único', current: 2, min: 10, lastUpdate: '2025-03-15' },
-        ];
-        
-        const customers = [
-            { id: 1, name: 'Ana Silva', email: 'ana.silva@email.com', orders: 5, total: 345.50, lastPurchase: '2025-03-23' },
-            { id: 2, name: 'João Santos', email: 'joao.santos@email.com', orders: 3, total: 189.97, lastPurchase: '2025-03-23' },
-            { id: 3, name: 'Maria Costa', email: 'maria.costa@email.com', orders: 8, total: 523.45, lastPurchase: '2025-03-22' },
-            { id: 4, name: 'Pedro Ferreira', email: 'pedro.ferreira@email.com', orders: 2, total: 129.96, lastPurchase: '2025-03-22' },
-            { id: 5, name: 'Sofia Oliveira', email: 'sofia.oliveira@email.com', orders: 4, total: 278.93, lastPurchase: '2025-03-21' },
-            { id: 6, name: 'Rui Mendes', email: 'rui.mendes@email.com', orders: 1, total: 29.99, lastPurchase: '2025-03-21' },
-            { id: 7, name: 'Carla Rodrigues', email: 'carla.rodrigues@email.com', orders: 6, total: 412.78, lastPurchase: '2025-03-20' },
-            { id: 8, name: 'Miguel Pereira', email: 'miguel.pereira@email.com', orders: 3, total: 167.94, lastPurchase: '2025-03-20' },
-        ];
-        
-        const promotions = [
-            { code: 'NUCA10', type: 'percentage', value: 10, uses: 45, maxUses: 100, validUntil: '2025-04-30', status: 'active' },
-            { code: 'PRIMAVERA20', type: 'percentage', value: 20, uses: 23, maxUses: 50, validUntil: '2025-04-15', status: 'active' },
-            { code: 'FRETE0', type: 'shipping', value: 0, uses: 89, maxUses: 200, validUntil: '2025-05-31', status: 'active' },
-            { code: 'PACK15', type: 'percentage', value: 15, uses: 12, maxUses: 100, validUntil: '2025-06-30', status: 'active' },
-            { code: 'BOASVINDAS', type: 'percentage', value: 15, uses: 156, maxUses: 500, validUntil: '2025-12-31', status: 'active' },
-            { code: 'INVERNO25', type: 'percentage', value: 25, uses: 67, maxUses: 67, validUntil: '2025-02-28', status: 'expired' },
-        ];
-        
-        // ===== NAVEGAÇÃO =====
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.closest('.nav-item').classList.add('active');
-            
-            if (tabId === 'analytics') {
-                setTimeout(initAnalyticsCharts, 100);
-            }
-        }
-        
-        // ===== NOTIFICAÇÕES =====
-        function showNotification(message, type = 'success') {
-            const container = document.getElementById('notifications');
-            const notification = document.createElement('div');
-            notification.className = `notification px-6 py-4 rounded-xl shadow-lg ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'} text-white`;
-            notification.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>' : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'}
-                    </svg>
-                    <span>${message}</span>
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="hidden fixed inset-0 z-[2000] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeOrderModal()"></div>
+        <div class="bg-nuca-beige rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative z-10 flex flex-col">
+            <div class="p-6 border-b border-nuca-green/10 flex justify-between items-center bg-white/50">
+                <div>
+                    <h2 class="font-display text-2xl font-bold text-nuca-green" id="modal-order-number"></h2>
+                    <p class="text-sm text-nuca-green/60" id="modal-order-date"></p>
                 </div>
-            `;
-            container.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+                <button onclick="closeOrderModal()" class="p-2 hover:bg-nuca-green/10 rounded-full">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Cliente</h3>
+                            <p class="font-medium" id="modal-customer-name"></p>
+                            <p class="text-sm text-nuca-green/60" id="modal-customer-email"></p>
+                        </div>
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Morada</h3>
+                            <p class="text-sm" id="modal-shipping-address"></p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Itens</h3>
+                            <div id="modal-items" class="space-y-3"></div>
+                        </div>
+                        <div class="bg-white/50 rounded-2xl p-4">
+                            <h3 class="font-bold text-nuca-green mb-3">Resumo</h3>
+                            <div class="space-y-2">
+                                <div class="flex justify-between"><span>Subtotal</span><span id="modal-subtotal"></span></div>
+                                <div class="flex justify-between"><span>Desconto</span><span id="modal-discount" class="text-green-600"></span></div>
+                                <div class="flex justify-between"><span>Portes</span><span id="modal-shipping"></span></div>
+                                <div class="flex justify-between text-lg font-bold pt-2 border-t">Total<span id="modal-total"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 pt-6 border-t flex gap-3 flex-wrap" id="modal-actions"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Print Template (Hidden) -->
+    <div id="receipt-print" class="hidden"></div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[2000] space-y-2"></div>
+
+    <script>
+        // ============================================
+        // SUPABASE CONFIG
+        // ============================================
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ============================================
+        // STATE
+        // ============================================
+        let allOrders = [];
+        let filteredOrders = [];
+        let currentPage = 1;
+        const ordersPerPage = 10;
+        let currentFilter = 'all';
+        let currentSection = 'dashboard';
+        let salesChart = null;
+        let statusChart = null;
+        let notifications = [];
+        let currentUser = null;
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) hideMobileSidebar();
+            });
+        });
+
+        // ============================================
+        // SIDEBAR CONTROLS
+        // ============================================
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('mobile-visible');
+            overlay.classList.toggle('visible');
+            document.body.style.overflow = sidebar.classList.contains('mobile-visible') ? 'hidden' : '';
         }
-        
-        // ===== DASHBOARD =====
-        function initDashboardCharts() {
-            // Sales Chart
-            const salesCtx = document.getElementById('salesChart');
-            if (salesCtx) {
-                new Chart(salesCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['17 Mar', '18 Mar', '19 Mar', '20 Mar', '21 Mar', '22 Mar', '23 Mar'],
-                        datasets: [{
-                            label: 'Vendas (€)',
-                            data: [850, 920, 780, 1100, 950, 1200, 1247],
-                            borderColor: '#556B4F',
-                            backgroundColor: 'rgba(85, 107, 79, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
+
+        function hideMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('mobile-visible');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        // ============================================
+        // NAVEGAÇÃO
+        // ============================================
+        function showSection(section) {
+            currentSection = section;
+            
+            document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+            const activeLink = document.querySelector(`a[href="#${section}"]`);
+            if (activeLink) activeLink.classList.add('active');
+            
+            const titles = {
+                'dashboard': 'Dashboard', 'orders': 'Encomendas', 'products': 'Produtos',
+                'customers': 'Clientes', 'analytics': 'Análises', 'settings': 'Configurações'
+            };
+            document.getElementById('page-title').textContent = titles[section];
+            
+            document.querySelectorAll('.section-content').forEach(el => el.classList.remove('active'));
+            const targetSection = document.getElementById(`section-${section}`);
+            if (targetSection) targetSection.classList.add('active');
+            
+            hideMobileSidebar();
+            
+            if (section === 'dashboard' && !salesChart) initCharts();
+            if (section === 'customers') loadCustomers();
+        }
+
+        // ============================================
+        // AUTH
+        // ============================================
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showAdminInterface();
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            setLoginLoading(true);
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                currentUser = data.user;
+                if (rememberMe) localStorage.setItem('nuca_admin_remember', 'true');
+                showAdminInterface();
+                showToast('Bem-vindo!', 'success');
+            } catch (error) {
+                showToast('Erro no login', 'error');
+            } finally {
+                setLoginLoading(false);
+            }
+        });
+
+        function setLoginLoading(loading) {
+            document.getElementById('login-btn').disabled = loading;
+            document.getElementById('login-text').classList.toggle('hidden', loading);
+            document.getElementById('login-spinner').classList.toggle('hidden', !loading);
+        }
+
+        function showAdminInterface() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('admin-interface').classList.remove('hidden');
+            
+            if (currentUser) {
+                document.getElementById('user-name').textContent = currentUser.email.split('@')[0];
+                document.getElementById('user-avatar').textContent = currentUser.email.charAt(0).toUpperCase();
             }
             
-            // Products Chart
-            const productsCtx = document.getElementById('productsChart');
-            if (productsCtx) {
-                new Chart(productsCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Essential Tee', 'Hoodie Beige', 'Summer Vibes', 'Joggers', 'Outros'],
-                        datasets: [{
-                            data: [128, 89, 156, 67, 120],
-                            backgroundColor: ['#556B4F', '#D8C6A5', '#98D8C8', '#E59866', '#AED6F1']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
+            loadOrders();
+            setupRealtimeSubscription();
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            localStorage.removeItem('nuca_admin_remember');
+            currentUser = null;
+            document.getElementById('admin-interface').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }
+
+        // ============================================
+        // ORDERS - CRUD COMPLETO
+        // ============================================
+        async function loadOrders() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allOrders = data || [];
+                filteredOrders = [...allOrders];
+                
+                updateStats();
+                renderOrders();
+                renderRecentOrders();
+                updateChartsData();
+                updatePendingBadge();
+
+            } catch (error) {
+                console.error('Erro ao carregar encomendas:', error);
+                showToast('Erro ao carregar encomendas', 'error');
             }
         }
+
+        function setupRealtimeSubscription() {
+            supabaseClient
+                .channel('orders-channel')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'orders' },
+                    (payload) => {
+                        loadOrders();
+                    }
+                )
+                .subscribe();
+        }
         
-        // ===== RENDERIZAÇÃO DE TABELAS =====
+        function updateStats() {
+            const total = allOrders.length;
+            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
+            const revenue = allOrders
+                .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                .reduce((sum, o) => sum + (o.total || 0), 0);
+            const today = new Date().toDateString();
+            const todayOrders = allOrders.filter(o => new Date(o.created_at).toDateString() === today).length;
+
+            document.getElementById('stat-total-orders').textContent = total;
+            document.getElementById('stat-pending').textContent = pending;
+            document.getElementById('stat-revenue').textContent = `€${revenue.toFixed(2)}`;
+            document.getElementById('stat-today').textContent = todayOrders;
+        }
+
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            const start = (currentPage - 1) * ordersPerPage;
+            const end = start + ordersPerPage;
+            const pageOrders = filteredOrders.slice(start, end);
+
+            if (pageOrders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pageOrders.map(order => {
+                const priority = calculatePriority(order);
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+
+                return `<tr class="order-row cursor-pointer ${priority}" onclick="openOrderDetail('${order.id}')">
+                    <td class="px-6 py-4"><span class="font-mono font-bold">${order.order_number}</span></td>
+                    <td class="px-6 py-4"><div><p class="font-medium">${order.customer_name}</p><p class="text-xs text-nuca-green/60">${order.customer_email}</p></div></td>
+                    <td class="px-6 py-4 text-sm">${formatDate(order.created_at)}</td>
+                    <td class="px-6 py-4 font-bold">€${(order.total || 0).toFixed(2)}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
+                    <td class="px-6 py-4">${getPriorityBadge(priority)}</td>
+                    <td class="px-6 py-4"><div class="flex justify-center gap-2">${getActionButtons(order)}</div></td>
+                </tr>`;
+            }).join('');
+            
+            updatePagination();
+        }
+
         function renderRecentOrders() {
             const tbody = document.getElementById('recent-orders-table');
-            if (!tbody) return;
-            
-            tbody.innerHTML = orders.slice(0, 5).map(order => `
-                <tr class="table-row border-b border-nuca-beige/50">
-                    <td class="py-3 font-medium text-nuca-green">${order.id}</td>
-                    <td class="py-3">${order.customer}</td>
-                    <td class="py-3">${order.items} itens</td>
-                    <td class="py-3 font-bold">€${order.total.toFixed(2)}</td>
-                    <td class="py-3"><span class="status-badge status-${order.status}">${getStatusLabel(order.status)}</span></td>
-                    <td class="py-3">
-                        <button onclick="viewOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark font-medium">Ver</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        function renderOrders() {
-            const tbody = document.getElementById('orders-table');
-            if (!tbody) return;
-            
-            tbody.innerHTML = orders.map(order => `
-                <tr class="table-row border-b border-nuca-beige/50">
-                    <td class="py-3 px-4"><input type="checkbox" class="order-checkbox" data-id="${order.id}"></td>
-                    <td class="py-3 px-4 font-medium text-nuca-green">${order.id}</td>
-                    <td class="py-3 px-4">${formatDate(order.date)}</td>
-                    <td class="py-3 px-4">${order.customer}</td>
-                    <td class="py-3 px-4">${order.items}</td>
-                    <td class="py-3 px-4 font-bold">€${order.total.toFixed(2)}</td>
-                    <td class="py-3 px-4">
-                        <select onchange="updateOrderStatus('${order.id}', this.value)" class="text-sm py-1 px-2 rounded-lg border border-nuca-beige">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendente</option>
-                            <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>Em processamento</option>
-                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviado</option>
-                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelado</option>
-                        </select>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button onclick="viewOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark mr-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                        <button onclick="printOrder('${order.id}')" class="text-nuca-green hover:text-nuca-dark">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        function renderProducts() {
-            const tbody = document.getElementById('products-table');
-            if (!tbody) return;
-            
-            tbody.innerHTML = products.map(product => `
-                <tr class="table-row border-b border-nuca-beige/50">
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-3">
-                            <img src="${product.image}" alt="${product.name}" class="w-10 h-10 rounded-lg object-cover">
-                            <span class="font-medium">${product.name}</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 capitalize">${product.category}</td>
-                    <td class="py-3 px-4 font-bold">€${product.price.toFixed(2)}</td>
-                    <td class="py-3 px-4 ${product.stock < 5 ? 'stock-low' : product.stock < 15 ? 'stock-medium' : 'stock-good'}">${product.stock}</td>
-                    <td class="py-3 px-4">${product.sales}</td>
-                    <td class="py-3 px-4">
-                        <span class="status-badge ${product.status === 'active' ? 'status-shipped' : 'status-cancelled'}">${product.status === 'active' ? 'Ativo' : 'Inativo'}</span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button onclick="editProduct(${product.id})" class="text-nuca-green hover:text-nuca-dark mr-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        </button>
-                        <button onclick="deleteProduct(${product.id})" class="text-red-500 hover:text-red-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        function renderStock() {
-            const alertsDiv = document.getElementById('stock-alerts');
-            const tbody = document.getElementById('stock-table');
-            
-            if (alertsDiv) {
-                const lowStock = stockData.filter(s => s.current <= s.min);
-                alertsDiv.innerHTML = lowStock.length === 0 
-                    ? '<p class="text-green-600 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Não há alertas de stock</p>'
-                    : lowStock.map(s => `
-                        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                <span class="font-medium">${s.product} (Tamanho ${s.size})</span>
-                            </div>
-                            <span class="text-red-600 font-bold">${s.current} unidades</span>
-                        </div>
-                    `).join('');
+            const recent = allOrders.slice(0, 5);
+
+            if (recent.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-nuca-green/40">Nenhuma encomenda</td></tr>';
+                return;
             }
-            
-            if (tbody) {
-                tbody.innerHTML = stockData.map(item => `
-                    <tr class="table-row border-b border-nuca-beige/50">
-                        <td class="py-3 px-4 font-medium">${item.product}</td>
-                        <td class="py-3 px-4">${item.size}</td>
-                        <td class="py-3 px-4 ${item.current <= item.min ? 'stock-low' : item.current <= item.min + 5 ? 'stock-medium' : 'stock-good'}">${item.current}</td>
-                        <td class="py-3 px-4">${item.min}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center gap-2">
-                                <div class="progress-bar w-24">
-                                    <div class="progress-fill" style="width: ${Math.min(100, (item.current / (item.min * 3)) * 100)}%"></div>
-                                </div>
-                                <span class="text-xs ${item.current <= item.min ? 'text-red-600' : 'text-green-600'}">${item.current <= item.min ? 'Crítico' : item.current <= item.min + 5 ? 'Baixo' : 'OK'}</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 text-sm text-nuca-green/60">${formatDate(item.lastUpdate)}</td>
-                        <td class="py-3 px-4">
-                            <button onclick="updateStock('${item.product}', '${item.size}')" class="text-nuca-green hover:text-nuca-dark font-medium">Atualizar</button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
+
+            tbody.innerHTML = recent.map(order => {
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+
+                return `<tr class="order-row cursor-pointer" onclick="openOrderDetail('${order.id}')">
+                    <td class="px-4 py-3"><span class="font-mono font-bold">${order.order_number}</span></td>
+                    <td class="px-4 py-3"><p class="font-medium">${order.customer_name}</p></td>
+                    <td class="px-4 py-3 font-bold">€${(order.total || 0).toFixed(2)}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${statusClass}">${statusText}</span></td>
+                    <td class="px-4 py-3"><button onclick="event.stopPropagation(); openOrderDetail('${order.id}')" class="text-nuca-green hover:underline">Ver</button></td>
+                </tr>`;
+            }).join('');
         }
-        
-        function renderCustomers() {
-            const tbody = document.getElementById('customers-table');
-            if (!tbody) return;
-            
-            tbody.innerHTML = customers.map(customer => `
-                <tr class="table-row border-b border-nuca-beige/50">
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-nuca-green text-white flex items-center justify-center font-bold">${customer.name.charAt(0)}</div>
-                            <span class="font-medium">${customer.name}</span>
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 text-nuca-green/70">${customer.email}</td>
-                    <td class="py-3 px-4">${customer.orders}</td>
-                    <td class="py-3 px-4 font-bold">€${customer.total.toFixed(2)}</td>
-                    <td class="py-3 px-4 text-nuca-green/70">${formatDate(customer.lastPurchase)}</td>
-                    <td class="py-3 px-4">
-                        <button onclick="viewCustomer(${customer.id})" class="text-nuca-green hover:text-nuca-dark font-medium">Ver perfil</button>
-                    </td>
-                </tr>
-            `).join('');
+
+        function calculatePriority(order) {
+            const age = new Date() - new Date(order.created_at);
+            const hours = age / (1000 * 60 * 60);
+            if (order.status === 'pending_payment' && hours > 24) return 'priority-high';
+            if (order.status === 'pending_payment' && hours > 12) return 'priority-medium';
+            if (order.status === 'paid' && hours > 48) return 'priority-medium';
+            return 'priority-low';
         }
-        
-        function renderPromotions() {
-            const tbody = document.getElementById('promotions-table');
-            if (!tbody) return;
-            
-            tbody.innerHTML = promotions.map(promo => `
-                <tr class="table-row border-b border-nuca-beige/50">
-                    <td class="py-3 px-4 font-mono font-bold text-nuca-green">${promo.code}</td>
-                    <td class="py-3 px-4 capitalize">${promo.type === 'percentage' ? 'Percentagem' : promo.type === 'shipping' ? 'Envio Grátis' : 'Valor Fixo'}</td>
-                    <td class="py-3 px-4 font-bold">${promo.type === 'percentage' ? promo.value + '%' : promo.type === 'shipping' ? 'Grátis' : '€' + promo.value}</td>
-                    <td class="py-3 px-4">${promo.uses}/${promo.maxUses}</td>
-                    <td class="py-3 px-4">${formatDate(promo.validUntil)}</td>
-                    <td class="py-3 px-4">
-                        <span class="status-badge ${promo.status === 'active' ? 'status-shipped' : 'status-cancelled'}">${promo.status === 'active' ? 'Ativo' : 'Expirado'}</span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <button onclick="editPromo('${promo.code}')" class="text-nuca-green hover:text-nuca-dark mr-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                        </button>
-                        <button onclick="deletePromo('${promo.code}')" class="text-red-500 hover:text-red-700">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        // ===== ANÁLISES =====
-        function initAnalyticsCharts() {
-            const seasonCtx = document.getElementById('seasonChart');
-            if (seasonCtx) {
-                new Chart(seasonCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Primavera', 'Verão', 'Outono', 'Inverno'],
-                        datasets: [{
-                            label: 'Vendas (€)',
-                            data: [3240, 4560, 3890, 2130],
-                            backgroundColor: ['#98D8C8', '#F7DC6F', '#E59866', '#AED6F1']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            }
-            
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                new Chart(categoryCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['T-shirts', 'Hoodies', 'Calças', 'Acessórios'],
-                        datasets: [{
-                            data: [540, 380, 220, 145],
-                            backgroundColor: ['#556B4F', '#D8C6A5', '#98D8C8', '#E59866']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
-            }
-            
-            const monthlyCtx = document.getElementById('monthlyChart');
-            if (monthlyCtx) {
-                new Chart(monthlyCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-                        datasets: [{
-                            label: 'Vendas 2025',
-                            data: [8900, 10200, 13820, 0, 0, 0],
-                            borderColor: '#556B4F',
-                            backgroundColor: 'rgba(85, 107, 79, 0.1)',
-                            fill: true,
-                            tension: 0.4
-                        }, {
-                            label: 'Vendas 2024',
-                            data: [7200, 8500, 9800, 11200, 12500, 11800],
-                            borderColor: '#D8C6A5',
-                            backgroundColor: 'transparent',
-                            borderDash: [5, 5],
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                            x: { grid: { display: false } }
-                        }
-                    }
-                });
-            }
-        }
-        
-        // ===== AÇÕES =====
-        function getStatusLabel(status) {
-            const labels = {
-                pending: 'Pendente',
-                processing: 'Em processamento',
-                shipped: 'Enviado',
-                delivered: 'Entregue',
-                cancelled: 'Cancelado'
+
+        function getPriorityBadge(priority) {
+            const badges = {
+                'priority-high': '<span class="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">ALTA</span>',
+                'priority-medium': '<span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">MÉDIA</span>',
+                'priority-low': '<span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">NORMAL</span>'
             };
-            return labels[status] || status;
+            return badges[priority] || badges['priority-low'];
         }
-        
-        function formatDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('pt-PT');
+
+        function getStatusClass(status) {
+            const classes = {
+                'pending_payment': 'status-pending', 'paid': 'status-paid',
+                'shipped': 'status-shipped', 'delivered': 'status-delivered', 'cancelled': 'status-cancelled'
+            };
+            return classes[status] || 'status-pending';
         }
-        
-        function viewOrder(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
+
+        function getStatusText(status) {
+            const texts = {
+                'pending_payment': 'Pendente', 'paid': 'Paga', 'shipped': 'Enviada',
+                'delivered': 'Entregue', 'cancelled': 'Cancelada'
+            };
+            return texts[status] || status;
+        }
+
+        function getActionButtons(order) {
+            let buttons = '';
             
-            const content = document.getElementById('order-modal-content');
-            content.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="font-bold text-nuca-dark mb-3">Informações do Cliente</h4>
-                        <div class="bg-nuca-light/30 p-4 rounded-xl space-y-2">
-                            <p><span class="text-nuca-green/70">Nome:</span> ${order.customer}</p>
-                            <p><span class="text-nuca-green/70">Email:</span> ${order.email}</p>
-                            <p><span class="text-nuca-green/70">Telefone:</span> ${order.phone}</p>
-                            <p><span class="text-nuca-green/70">Morada:</span> ${order.address}</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-nuca-dark mb-3">Detalhes da Encomenda</h4>
-                        <div class="bg-nuca-light/30 p-4 rounded-xl space-y-2">
-                            <p><span class="text-nuca-green/70">ID:</span> ${order.id}</p>
-                            <p><span class="text-nuca-green/70">Data:</span> ${formatDate(order.date)}</p>
-                            <p><span class="text-nuca-green/70">Itens:</span> ${order.items}</p>
-                            <p><span class="text-nuca-green/70">Total:</span> <span class="font-bold text-nuca-green">€${order.total.toFixed(2)}</span></p>
-                            <p><span class="text-nuca-green/70">Estado:</span> <span class="status-badge status-${order.status}">${getStatusLabel(order.status)}</span></p>
-                        </div>
-                    </div>
+            buttons += `<button onclick="event.stopPropagation(); printReceipt('${order.id}')" class="btn-action px-3 py-1 bg-nuca-green text-white rounded-lg text-xs font-bold hover:bg-nuca-dark">Imprimir</button>`;
+            
+            if (order.status === 'pending_payment') {
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'paid')" class="btn-action px-3 py-1 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600">Pago</button>
+                           <button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'cancelled')" class="btn-action px-3 py-1 bg-red-500 text-white rounded-lg text-xs font-bold hover:bg-red-600">Cancelar</button>`;
+            } else if (order.status === 'paid') {
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'shipped')" class="btn-action px-3 py-1 bg-blue-500 text-white rounded-lg text-xs font-bold hover:bg-blue-600">Enviar</button>`;
+            } else if (order.status === 'shipped') {
+                buttons += `<button onclick="event.stopPropagation(); updateOrderStatus('${order.id}', 'delivered')" class="btn-action px-3 py-1 bg-purple-500 text-white rounded-lg text-xs font-bold hover:bg-purple-600">Entregue</button>`;
+            }
+            
+            return buttons;
+        }
+
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const button = event?.target;
+                const originalText = button?.innerHTML;
+                if (button) {
+                    button.innerHTML = 'A atualizar...';
+                    button.disabled = true;
+                }
+        
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ 
+                        status: newStatus,
+                    })
+                    .eq('id', orderId);
+        
+                if (error) throw error;
+        
+                const order = allOrders.find(o => o.id === orderId);
+                const statusText = getStatusText(newStatus);
+                
+                addNotification(`Encomenda ${order.order_number} atualizada para ${statusText}`, 'status-update');
+                showToast(`Status atualizado para ${statusText}!`, 'success');
+                
+                await loadOrders();
+                closeOrderModal();
+                
+            } catch (error) {
+                console.error('Erro detalhado:', error);
+                showToast(`Erro: ${error.message}`, 'error');
+            } finally {
+                if (event?.target) {
+                    setTimeout(() => {
+                        event.target.innerHTML = originalText;
+                        event.target.disabled = false;
+                    }, 1000);
+                }
+            }
+        }
+
+        function printReceipt(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+        
+            const receiptDiv = document.getElementById('receipt-print');
+            
+            const items = order.items || [];
+            const itemsHtml = items.map(item => `
+                <div class="receipt-item">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>€${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
-                <div class="mt-6">
-                    <h4 class="font-bold text-nuca-dark mb-3">Atualizar Estado</h4>
-                    <div class="flex gap-3">
-                        <button onclick="updateOrderStatus('${order.id}', 'pending')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Pendente</button>
-                        <button onclick="updateOrderStatus('${order.id}', 'processing')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Em processamento</button>
-                        <button onclick="updateOrderStatus('${order.id}', 'shipped')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Enviado</button>
-                        <button onclick="updateOrderStatus('${order.id}', 'delivered')" class="px-4 py-2 rounded-lg border border-nuca-beige hover:bg-nuca-beige/20">Entregue</button>
+            `).join('');
+        
+            const address = order.shipping_address || {};
+            const date = new Date(order.created_at).toLocaleDateString('pt-PT', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        
+            const subtotal = order.subtotal || 0;
+            const discount = order.discount || 0;
+            
+            let shipping = 0;
+            if (order.shipping_cost !== undefined && order.shipping_cost !== null) {
+                shipping = order.shipping_cost;
+            } else if (order.shipping !== undefined && order.shipping !== null) {
+                shipping = order.shipping;
+            } else if (order.delivery_cost !== undefined && order.delivery_cost !== null) {
+                shipping = order.delivery_cost;
+            } else if (order.portes !== undefined && order.portes !== null) {
+                shipping = order.portes;
+            } else {
+                shipping = subtotal < 50 ? 3.99 : 0;
+            }
+            
+            const total = order.total || (subtotal - discount + shipping);
+        
+            receiptDiv.innerHTML = `
+                <div class="receipt-container">
+                    <div class="receipt-header">
+                        <div class="receipt-title">NUCA</div>
+                        <div style="font-size: 12px; color: #666;">Comprovativo de Pagamento</div>
+                    </div>
+                    
+                    <div class="receipt-details">
+                        <p><strong>Encomenda:</strong> ${order.order_number}</p>
+                        <p><strong>Data:</strong> ${date}</p>
+                        <p><strong>Cliente:</strong> ${order.customer_name}</p>
+                        <p><strong>Email:</strong> ${order.customer_email}</p>
+                        <p><strong>Morada:</strong> ${address.address || ''}, ${address.postal || ''} ${address.city || ''}</p>
+                        <p><strong>Status:</strong> ${getStatusText(order.status)}</p>
+                        ${order.payment_method ? `<p><strong>Pagamento:</strong> ${order.payment_method}</p>` : ''}
+                    </div>
+        
+                    <div class="receipt-items">
+                        <h3 style="font-weight: bold; margin-bottom: 8px;">Itens</h3>
+                        ${itemsHtml}
+                    </div>
+        
+                    <div class="receipt-total">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Subtotal:</span>
+                            <span>€${subtotal.toFixed(2)}</span>
+                        </div>
+                        
+                        ${discount > 0 ? `
+                        <div style="display: flex; justify-content: space-between; color: #10B981;">
+                            <span>Desconto:</span>
+                            <span>-€${discount.toFixed(2)}</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="display: flex; justify-content: space-between; ${shipping === 0 ? 'color: #10B981;' : ''}">
+                            <span>Portes:</span>
+                            ${shipping > 0 ? 
+                                `<span>€${shipping.toFixed(2)}</span>` : 
+                                `<span>Grátis</span>`
+                            }
+                        </div>
+                        
+                        ${subtotal >= 50 && shipping === 0 ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #10B981; font-style: italic;">
+                            <span>Portes Grátis (compra ≥ 50€)</span>
+                            <span>€0.00</span>
+                        </div>
+                        ` : ''}
+                        
+                        <div style="display: flex; justify-content: space-between; font-weight: bold; margin-top: 12px; padding-top: 12px; border-top: 2px solid #556B4F; font-size: 18px;">
+                            <span>TOTAL:</span>
+                            <span>€${total.toFixed(2)}</span>
+                        </div>
+                    </div>
+        
+                    <div style="text-align: center; margin-top: 24px; font-size: 12px; color: #666;">
+                        <p>Obrigado pela sua compra!</p>
+                        <p>NUCA - Qualidade e Tradição</p>
+                        ${order.notes ? `<p style="margin-top: 8px; font-style: italic;">Notas: ${order.notes}</p>` : ''}
                     </div>
                 </div>
             `;
+        
+            receiptDiv.classList.remove('hidden');
             
-            document.getElementById('order-modal').classList.remove('hidden');
+            const printWindow = window.open('', '_blank');
+            if (printWindow) {
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Recibo NUCA - ${order.order_number}</title>
+                            <style>
+                                * { margin: 0; padding: 0; box-sizing: border-box; }
+                                @page { margin: 0; size: auto; }
+                                body {
+                                    margin: 0; padding: 0; min-height: 100vh;
+                                    display: flex; justify-content: center; align-items: center;
+                                    font-family: 'Space Grotesk', sans-serif; background: #f5f5f5;
+                                }
+                                .receipt-container {
+                                    width: 400px; max-width: 90%; background: white;
+                                    padding: 30px 24px; border-radius: 16px;
+                                    box-shadow: 0 8px 20px rgba(0,0,0,0.1); margin: 20px;
+                                }
+                                .receipt-header {
+                                    text-align: center;
+                                    border-bottom: 2px dashed #556B4F;
+                                    padding-bottom: 16px; margin-bottom: 16px;
+                                }
+                                .receipt-title {
+                                    font-family: 'Syne', sans-serif; font-size: 28px;
+                                    font-weight: 800; color: #556B4F; letter-spacing: -0.02em;
+                                }
+                                .receipt-details { margin-bottom: 20px; font-size: 14px; line-height: 1.6; }
+                                .receipt-details p { margin: 6px 0; }
+                                .receipt-items { margin-bottom: 20px; }
+                                .receipt-items h3 { font-size: 16px; margin-bottom: 12px; color: #556B4F; }
+                                .receipt-item {
+                                    display: flex; justify-content: space-between;
+                                    padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px;
+                                }
+                                .receipt-total { font-size: 16px; }
+                                .receipt-total > div { padding: 6px 0; }
+                                .receipt-footer {
+                                    text-align: center; margin-top: 30px;
+                                    padding-top: 16px; border-top: 1px solid #eee;
+                                    font-size: 12px; color: #666;
+                                }
+                            </style>
+                        </head>
+                        <body>${receiptDiv.innerHTML}</body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 250);
+            } else {
+                window.print();
+            }
+            
+            receiptDiv.classList.add('hidden');
         }
         
+        function openOrderDetail(orderId) {
+            const order = allOrders.find(o => o.id === orderId);
+            if (!order) return;
+
+            document.getElementById('modal-order-number').textContent = order.order_number;
+            document.getElementById('modal-order-date').textContent = `Realizada em ${formatDate(order.created_at)}`;
+            document.getElementById('modal-customer-name').textContent = order.customer_name;
+            document.getElementById('modal-customer-email').textContent = order.customer_email;
+
+            const address = order.shipping_address || {};
+            document.getElementById('modal-shipping-address').innerHTML = `${address.address || ''}<br>${address.postal || ''} ${address.city || ''}`;
+
+            const items = order.items || [];
+            document.getElementById('modal-items').innerHTML = items.map(item => `
+                <div class="flex justify-between py-2 border-b">
+                    <div><p class="font-medium">${item.name}</p><p class="text-xs">Qtd: ${item.quantity}</p></div>
+                    <span class="font-bold">€${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            const subtotal = order.subtotal || 0;
+            const discount = order.discount || 0;
+            const shipping = order.shipping_cost || 0;
+            const total = order.total || 0;
+
+            document.getElementById('modal-subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('modal-discount').textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            document.getElementById('modal-shipping').textContent = shipping > 0 ? `€${shipping.toFixed(2)}` : 'Grátis';
+            document.getElementById('modal-total').textContent = `€${total.toFixed(2)}`;
+
+            let actions = '';
+            
+            actions += `<button onclick="printReceipt('${order.id}')" class="flex-1 bg-nuca-green text-white py-3 rounded-xl font-bold">Imprimir Recibo</button>`;
+            
+            if (order.status === 'pending_payment') {
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'paid')" class="flex-1 bg-green-500 text-white py-3 rounded-xl font-bold">Marcar como Pago</button>
+                           <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold">Cancelar</button>`;
+            } else if (order.status === 'paid') {
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'shipped')" class="flex-1 bg-blue-500 text-white py-3 rounded-xl font-bold">Marcar como Enviada</button>`;
+            } else if (order.status === 'shipped') {
+                actions += `<button onclick="updateOrderStatus('${order.id}', 'delivered')" class="flex-1 bg-purple-500 text-white py-3 rounded-xl font-bold">Marcar como Entregue</button>`;
+            }
+            
+            document.getElementById('modal-actions').innerHTML = actions;
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+
         function closeOrderModal() {
             document.getElementById('order-modal').classList.add('hidden');
         }
-        
-        function updateOrderStatus(orderId, status) {
-            const order = orders.find(o => o.id === orderId);
-            if (order) {
-                order.status = status;
+
+        // ============================================
+        // FILTERS
+        // ============================================
+        function filterOrders(status) {
+            currentFilter = status;
+            currentPage = 1;
+
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.filter === status) {
+                    tab.classList.add('tab-active');
+                    tab.classList.remove('text-nuca-green', 'hover:bg-nuca-green/10');
+                } else {
+                    tab.classList.remove('tab-active');
+                    tab.classList.add('text-nuca-green', 'hover:bg-nuca-green/10');
+                }
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-orders').value.toLowerCase();
+            filteredOrders = allOrders.filter(order => {
+                const matchesStatus = currentFilter === 'all' || order.status === currentFilter;
+                const matchesSearch = order.order_number.toLowerCase().includes(searchTerm) ||
+                    order.customer_name.toLowerCase().includes(searchTerm) ||
+                    order.customer_email.toLowerCase().includes(searchTerm);
+                return matchesStatus && matchesSearch;
+            });
+            renderOrders();
+        }
+
+        function searchOrders() {
+            currentPage = 1;
+            applyFilters();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            const showingStart = (currentPage - 1) * ordersPerPage + 1;
+            const showingEnd = Math.min(currentPage * ordersPerPage, filteredOrders.length);
+            document.getElementById('showing-text').textContent = `A mostrar ${filteredOrders.length > 0 ? showingStart : 0}-${showingEnd} de ${filteredOrders.length} encomendas`;
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage >= totalPages;
+        }
+
+        function changePage(direction) {
+            const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
                 renderOrders();
-                renderRecentOrders();
-                showNotification(`Estado da encomenda ${orderId} atualizado para ${getStatusLabel(status)}`);
-                closeOrderModal();
+            }
+        }
+
+        function refreshOrders() {
+            showToast('A atualizar...', 'info');
+            loadOrders();
+        }
+
+        function exportOrders() {
+            const csvContent = [
+                ['Nº Encomenda', 'Data', 'Cliente', 'Email', 'Total', 'Status'].join(','),
+                ...filteredOrders.map(o => [
+                    o.order_number, new Date(o.created_at).toISOString(), `"${o.customer_name}"`, o.customer_email, o.total, o.status
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `encomendas_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('CSV exportado!', 'success');
+        }
+
+        // ============================================
+        // CUSTOMERS MANAGEMENT
+        // ============================================
+        async function loadCustomers() {
+            try {
+                const { data: customers, error: customersError } = await supabaseClient
+                    .from('customers')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+        
+                if (customersError) throw customersError;
+        
+                renderCustomers(customers || []);
+            } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
+                showToast('Erro ao carregar clientes', 'error');
             }
         }
         
-        function printOrder(orderId) {
-            showNotification(`A imprimir encomenda ${orderId}...`);
+        function renderCustomers(customers) {
+            const tbody = document.getElementById('customers-table-body');
+
+            if (customers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = customers.map(customer => {
+                return `<tr class="order-row">
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-bold text-nuca-green">${customer.name}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.email || 'Sem email'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-medium">${customer.phone}</p>
+                            <p class="text-xs text-nuca-green/60">${customer.city || 'Sem morada'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4" id="orders-count-${customer.id}">
+                        <span class="text-nuca-green/40">-</span>
+                    </td>
+                    <td class="px-6 py-4 font-bold" id="total-spent-${customer.id}">
+                        <span class="text-nuca-green/40">-</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex justify-center gap-2">
+                            <button onclick="openCustomerActions(event, '${customer.id}')" class="p-2 bg-nuca-green/10 rounded-lg hover:bg-nuca-green/20 transition-colors" title="Ações">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2">
+                                    <circle cx="12" cy="5" r="1" fill="#556B4F"/>
+                                    <circle cx="12" cy="12" r="1" fill="#556B4F"/>
+                                    <circle cx="12" cy="19" r="1" fill="#556B4F"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Carregar estatísticas de encomendas para cada cliente
+            customers.forEach(customer => {
+                loadCustomerOrdersStats(customer.id, customer.email);
+            });
         }
-        
-        function editProduct(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            const content = document.getElementById('product-edit-content');
-            content.innerHTML = `
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-1">Nome do Produto</label>
-                        <input type="text" value="${product.name}" class="w-full">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-nuca-green mb-1">Preço (€)</label>
-                            <input type="number" step="0.01" value="${product.price}" class="w-full">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-nuca-green mb-1">Stock</label>
-                            <input type="number" value="${product.stock}" class="w-full">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-nuca-green mb-1">Categoria</label>
-                            <select class="w-full">
-                                <option value="tshirts" ${product.category === 'tshirts' ? 'selected' : ''}>T-shirts</option>
-                                <option value="hoodies" ${product.category === 'hoodies' ? 'selected' : ''}>Hoodies</option>
-                                <option value="pants" ${product.category === 'pants' ? 'selected' : ''}>Calças</option>
-                                <option value="accessories" ${product.category === 'accessories' ? 'selected' : ''}>Acessórios</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-nuca-green mb-1">Estação</label>
-                            <select class="w-full">
-                                <option value="all" ${product.season === 'all' ? 'selected' : ''}>Todas</option>
-                                <option value="spring" ${product.season === 'spring' ? 'selected' : ''}>Primavera</option>
-                                <option value="summer" ${product.season === 'summer' ? 'selected' : ''}>Verão</option>
-                                <option value="autumn" ${product.season === 'autumn' ? 'selected' : ''}>Outono</option>
-                                <option value="winter" ${product.season === 'winter' ? 'selected' : ''}>Inverno</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-nuca-green mb-1">Imagem URL</label>
-                        <input type="text" value="${product.image}" class="w-full">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="product-active" ${product.status === 'active' ? 'checked' : ''}>
-                        <label for="product-active">Produto ativo</label>
-                    </div>
-                </div>
-                <div class="mt-6 flex gap-3">
-                    <button onclick="saveProduct(${product.id})" class="btn-primary flex-1 py-3 rounded-lg">Guardar Alterações</button>
-                    <button onclick="closeProductEditModal()" class="px-6 py-3 rounded-lg border border-nuca-beige">Cancelar</button>
-                </div>
+
+        async function loadCustomerOrdersStats(customerId, customerEmail) {
+            if (!customerEmail) {
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+                if (countEl) countEl.innerHTML = '0 compras';
+                if (totalEl) totalEl.innerHTML = '€0.00';
+                return;
+            }
+
+            try {
+                // Buscar todas as encomendas do cliente
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('status, total')
+                    .eq('customer_email', customerEmail);
+
+                if (error) throw error;
+
+                const count = data ? data.length : 0;
+
+                // Calcular total gasto (só encomendas pagas, enviadas ou entregues)
+                const totalSpent = data ? data
+                    .filter(o => ['paid', 'shipped', 'delivered'].includes(o.status))
+                    .reduce((sum, o) => sum + (o.total || 0), 0) : 0;
+
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+
+                if (countEl) {
+                    countEl.innerHTML = `${count} compra${count !== 1 ? 's' : ''}`;
+                }
+                if (totalEl) {
+                    totalEl.innerHTML = `€${totalSpent.toFixed(2)}`;
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+                const countEl = document.getElementById(`orders-count-${customerId}`);
+                const totalEl = document.getElementById(`total-spent-${customerId}`);
+                if (countEl) countEl.innerHTML = '0 compras';
+                if (totalEl) totalEl.innerHTML = '€0.00';
+            }
+        }
+
+        // Menu de ações do cliente (dropdown)
+        function openCustomerActions(event, customerId) {
+            event.stopPropagation();
+
+            // Remover menu existente se houver
+            const existingMenu = document.getElementById('customer-actions-menu');
+            if (existingMenu) existingMenu.remove();
+
+            // Criar menu dropdown
+            const menu = document.createElement('div');
+            menu.id = 'customer-actions-menu';
+            menu.className = 'fixed bg-white rounded-xl shadow-2xl border border-nuca-green/10 py-2 z-[3000] min-w-[200px]';
+            menu.style.cssText = `
+                top: ${event.pageY}px;
+                left: ${event.pageX}px;
+                transform: translate(-50%, 10px);
             `;
-            
-            document.getElementById('product-edit-modal').classList.remove('hidden');
+
+            menu.innerHTML = `
+                <div class="px-4 py-2 text-xs font-bold text-nuca-green/60 uppercase border-b border-nuca-green/10 mb-1">Ações do Cliente</div>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Ver Informação
+                </button>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'view')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    Histórico de Compras
+                </button>
+                <div class="border-t border-nuca-green/10 my-1"></div>
+                <button onclick="closeCustomerActionsMenu(); openCustomerModal('${customerId}', 'edit')" 
+                    class="w-full text-left px-4 py-2.5 hover:bg-nuca-green/5 text-nuca-green flex items-center gap-2 transition-colors">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Editar Cliente
+                </button>
+            `;
+
+            document.body.appendChild(menu);
+
+            // Fechar menu ao clicar fora
+            setTimeout(() => {
+                document.addEventListener('click', closeCustomerActionsMenuOnClickOutside);
+            }, 100);
         }
-        
-        function closeProductEditModal() {
-            document.getElementById('product-edit-modal').classList.add('hidden');
-        }
-        
-        function saveProduct(productId) {
-            showNotification('Produto atualizado com sucesso!');
-            closeProductEditModal();
-        }
-        
-        function deleteProduct(productId) {
-            if (confirm('Tens a certeza que queres eliminar este produto?')) {
-                showNotification('Produto eliminado com sucesso!');
+
+        function closeCustomerActionsMenu() {
+            const menu = document.getElementById('customer-actions-menu');
+            if (menu) {
+                menu.remove();
+                document.removeEventListener('click', closeCustomerActionsMenuOnClickOutside);
             }
         }
-        
-        function openProductModal() {
-            showNotification('Funcionalidade de novo produto em desenvolvimento');
-        }
-        
-        function updateStock(product, size) {
-            const newStock = prompt(`Atualizar stock para ${product} (Tamanho ${size}):`);
-            if (newStock !== null) {
-                showNotification('Stock atualizado com sucesso!');
-                renderStock();
+
+        function closeCustomerActionsMenuOnClickOutside(e) {
+            const menu = document.getElementById('customer-actions-menu');
+            if (menu && !menu.contains(e.target)) {
+                closeCustomerActionsMenu();
             }
         }
-        
-        function openStockModal() {
-            showNotification('Funcionalidade de atualização de stock em desenvolvimento');
-        }
-        
-        function viewCustomer(customerId) {
-            const customer = customers.find(c => c.id === customerId);
-            if (customer) {
-                showNotification(`A ver perfil de ${customer.name}`);
+
+        async function openCustomerModal(customerId = null, mode = 'view') {
+            document.getElementById('customer-modal').classList.remove('hidden');
+
+            // Configurar modo (view ou edit)
+            const isEditMode = mode === 'edit' || !customerId;
+            const formInputs = document.querySelectorAll('#customer-form input, #customer-form textarea');
+            const saveButton = document.querySelector('#customer-form button[type="submit"]');
+            const cancelButton = document.querySelector('#customer-form button[type="button"]');
+
+            formInputs.forEach(input => {
+                input.readOnly = !isEditMode;
+                if (!isEditMode) {
+                    input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    input.classList.remove('search-input');
+                } else {
+                    input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    input.classList.add('search-input');
+                }
+            });
+
+            if (saveButton) saveButton.style.display = isEditMode ? 'inline-flex' : 'none';
+            if (cancelButton) cancelButton.textContent = isEditMode ? 'Cancelar' : 'Fechar';
+
+            if (customerId) {
+                const { data: customer, error } = await supabaseClient
+                    .from('customers')
+                    .select('*')
+                    .eq('id', customerId)
+                    .single();
+
+                if (customer) {
+                    const titlePrefix = isEditMode ? 'Editar Cliente' : 'Ficha de Cliente';
+                    document.getElementById('modal-customer-title').textContent = `${titlePrefix} - ${customer.name}`;
+                    document.getElementById('customer-id').value = customer.id;
+                    document.getElementById('customer-name').value = customer.name || '';
+                    document.getElementById('customer-email').value = customer.email || '';
+                    document.getElementById('customer-phone').value = customer.phone || '';
+                    document.getElementById('customer-birth').value = customer.birth_date || '';
+                    document.getElementById('customer-nif').value = customer.nif || '';
+                    document.getElementById('customer-address').value = customer.address || '';
+                    document.getElementById('customer-city').value = customer.city || '';
+                    document.getElementById('customer-postal').value = customer.postal_code || '';
+                    document.getElementById('customer-notes').value = customer.notes || '';
+                }
+
+                await loadCustomerOrders(customerId);
+            } else {
+                document.getElementById('modal-customer-title').textContent = 'Novo Cliente';
+                document.getElementById('customer-form').reset();
+                document.getElementById('customer-id').value = '';
             }
         }
-        
-        function exportCustomers() {
-            showNotification('A exportar clientes para CSV...');
+
+        function closeCustomerModal() {
+            document.getElementById('customer-modal').classList.add('hidden');
         }
-        
-        function openPromoModal() {
-            showNotification('Funcionalidade de nova promoção em desenvolvimento');
-        }
-        
-        function editPromo(code) {
-            showNotification(`A editar promoção ${code}`);
-        }
-        
-        function deletePromo(code) {
-            if (confirm(`Tens a certeza que queres eliminar a promoção ${code}?`)) {
-                showNotification('Promoção eliminada com sucesso!');
+
+        // ============================================
+        // CUSTOMER FORM SUBMIT
+        // ============================================
+        document.getElementById('customer-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const customerData = {
+                name: document.getElementById('customer-name').value,
+                email: document.getElementById('customer-email').value || null,
+                phone: document.getElementById('customer-phone').value,
+                birth_date: document.getElementById('customer-birth').value || null,
+                nif: document.getElementById('customer-nif').value || null,
+                address: document.getElementById('customer-address').value || null,
+                city: document.getElementById('customer-city').value || null,
+                postal_code: document.getElementById('customer-postal').value || null,
+                notes: document.getElementById('customer-notes').value || null
+            };
+
+            const customerId = document.getElementById('customer-id').value;
+
+            try {
+                if (customerId) {
+                    const { error } = await supabaseClient
+                        .from('customers')
+                        .update(customerData)
+                        .eq('id', customerId);
+
+                    if (error) throw error;
+                    showToast('Cliente atualizado com sucesso!', 'success');
+                } else {
+                    const { data, error } = await supabaseClient
+                        .from('customers')
+                        .insert([customerData])
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+
+                    showToast('Cliente criado com sucesso!', 'success');
+                }
+
+                loadCustomers();
+                closeCustomerModal();
+            } catch (error) {
+                console.error('Erro ao guardar cliente:', error);
+                showToast('Erro ao guardar cliente', 'error');
             }
-        }
-        
-        function exportData() {
-            showNotification('A exportar dados...');
-        }
-        
-        function refreshData() {
-            showNotification('Dados atualizados!');
-            renderOrders();
-            renderProducts();
-            renderStock();
-        }
-        
-        function saveSettings() {
-            showNotification('Configurações guardadas com sucesso!');
-        }
-        
-        // ===== INICIALIZAÇÃO =====
-        document.addEventListener('DOMContentLoaded', () => {
-            initDashboardCharts();
-            renderRecentOrders();
-            renderOrders();
-            renderProducts();
-            renderStock();
-            renderCustomers();
-            renderPromotions();
         });
+
+        async function loadCustomerOrders(customerId) {
+            const historyDiv = document.getElementById('customer-orders-history');
+            if (!historyDiv) return;
+
+            try {
+                // 1. Buscar o email do cliente
+                const { data: customerData, error: customerError } = await supabaseClient
+                    .from('customers')
+                    .select('email')
+                    .eq('id', customerId)
+                    .single();
+
+                if (customerError || !customerData || !customerData.email) {
+                    return;
+                }
+
+                const customerEmail = customerData.email;
+
+                // 2. Buscar encomendas pelo email
+                const { data, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .eq('customer_email', customerEmail)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                // 3. Atualizar o modal com o histórico se existir
+                if (data && data.length > 0) {
+                    // Podemos adicionar um pequeno indicador no modal
+                    const modalContent = document.querySelector('#customer-modal .flex-1');
+                    const historyIndicator = document.createElement('div');
+                    historyIndicator.className = 'mt-4 p-4 bg-nuca-green/5 rounded-xl';
+                    historyIndicator.innerHTML = `
+                        <p class="text-sm text-nuca-green"><strong>${data.length}</strong> compra${data.length !== 1 ? 's' : ''} encontrada${data.length !== 1 ? 's' : ''}</p>
+                    `;
+                    
+                    // Remover indicador anterior se existir
+                    const oldIndicator = document.getElementById('customer-history-indicator');
+                    if (oldIndicator) oldIndicator.remove();
+                    
+                    historyIndicator.id = 'customer-history-indicator';
+                    modalContent?.appendChild(historyIndicator);
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+
+        // ============================================
+        // CHARTS
+        // ============================================
+        function initCharts() {
+            if (salesChart) salesChart.destroy();
+            if (statusChart) statusChart.destroy();
+
+            const salesCtx = document.getElementById('salesChart')?.getContext('2d');
+            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+            
+            if (!salesCtx || !statusCtx) return;
+
+            salesChart = new Chart(salesCtx, {
+                type: 'line',
+                data: { 
+                    labels: [], 
+                    datasets: [{ 
+                        label: 'Vendas (€)', 
+                        data: [], 
+                        borderColor: '#556B4F', 
+                        backgroundColor: 'rgba(85,107,79,0.1)', 
+                        tension: 0.4, 
+                        fill: true 
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(85, 107, 79, 0.1)' },
+                            ticks: { color: '#556B4F' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#556B4F' }
+                        }
+                    }
+                }
+            });
+
+            statusChart = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: { 
+                    labels: ['Pendentes', 'Pagas', 'Enviadas', 'Entregues', 'Canceladas'], 
+                    datasets: [{ 
+                        data: [0,0,0,0,0], 
+                        backgroundColor: ['#F59E0B','#10B981','#3B82F6','#8B5CF6','#EF4444'],
+                        borderWidth: 0
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#556B4F', font: { family: 'Space Grotesk' } }
+                        }
+                    }
+                }
+            });
+
+            updateChartsData();
+        }
+
+        function updateChartsData() {
+            if (!salesChart || !statusChart) return;
+            
+            const days = parseInt(document.getElementById('chart-period')?.value || 7);
+            const labels = [];
+            const data = [];
+
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('pt-PT', { weekday: 'short' }));
+                const dayTotal = allOrders
+                    .filter(o => {
+                        const orderDate = new Date(o.created_at);
+                        return orderDate.toDateString() === date.toDateString() && 
+                               ['paid','shipped','delivered'].includes(o.status);
+                    })
+                    .reduce((sum, o) => sum + (o.total || 0), 0);
+                data.push(dayTotal);
+            }
+
+            salesChart.data.labels = labels;
+            salesChart.data.datasets[0].data = data;
+            salesChart.update();
+
+            const statusCounts = { pending_payment:0, paid:0, shipped:0, delivered:0, cancelled:0 };
+            allOrders.forEach(o => { 
+                if (statusCounts[o.status] !== undefined) statusCounts[o.status]++; 
+            });
+            statusChart.data.datasets[0].data = [
+                statusCounts.pending_payment, statusCounts.paid, statusCounts.shipped, 
+                statusCounts.delivered, statusCounts.cancelled
+            ];
+            statusChart.update();
+        }
+
+        function updateChart() {
+            updateChartsData();
+        }
+
+        // ============================================
+        // NOTIFICATIONS
+        // ============================================
+        function toggleNotifications() {
+            const panel = document.getElementById('notifications-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function addNotification(message, type) {
+            const notification = { 
+                id: Date.now(), 
+                message, 
+                type, 
+                time: new Date(), 
+                read: false 
+            };
+            notifications.unshift(notification);
+            updateNotificationsList();
+            
+            const badge = document.getElementById('notification-badge');
+            badge.classList.remove('hidden');
+            badge.textContent = notifications.filter(n => !n.read).length;
+        }
+
+        function updateNotificationsList() {
+            const list = document.getElementById('notifications-list');
+            if (notifications.length === 0) {
+                list.innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações novas</p>';
+                return;
+            }
+            list.innerHTML = notifications.map(n => `
+                <div class="p-3 rounded-xl ${n.read ? 'bg-gray-50' : 'bg-nuca-green/5'} cursor-pointer hover:bg-nuca-green/10 transition-colors" onclick="markAsRead(${n.id})">
+                    <p class="text-sm font-medium text-nuca-green">${n.message}</p>
+                    <p class="text-xs text-nuca-green/60 mt-1">${formatTime(n.time)}</p>
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.read = true;
+                updateNotificationsList();
+                const unreadCount = notifications.filter(n => !n.read).length;
+                const badge = document.getElementById('notification-badge');
+                if (unreadCount === 0) {
+                    badge.classList.add('hidden');
+                } else {
+                    badge.textContent = unreadCount;
+                }
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNotificationsList();
+            document.getElementById('notification-badge').classList.add('hidden');
+        }
+
+        function updatePendingBadge() {
+            const pending = allOrders.filter(o => o.status === 'pending_payment').length;
+            const badge = document.getElementById('sidebar-pending-badge');
+            if (pending > 0) {
+                badge.textContent = pending;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // ============================================
+        // UTILS
+        // ============================================
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-PT', { 
+                day:'2-digit', 
+                month:'2-digit', 
+                year:'numeric', 
+                hour:'2-digit', 
+                minute:'2-digit' 
+            });
+        }
+
+        function formatTime(date) {
+            const diff = Math.floor((new Date() - date) / 1000 / 60);
+            if (diff < 1) return 'Agora';
+            if (diff < 60) return `Há ${diff} min`;
+            if (diff < 1440) return `Há ${Math.floor(diff / 60)} h`;
+            return date.toLocaleDateString('pt-PT');
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = { 
+                success: 'bg-green-500', 
+                error: 'bg-red-500', 
+                info: 'bg-nuca-green',
+                warning: 'bg-yellow-500'
+            };
+            const icons = {
+                success: '✓',
+                error: '✕',
+                info: 'ℹ',
+                warning: '⚠'
+            };
+            
+            toast.className = `${colors[type] || colors.info} text-white px-6 py-3 rounded-xl shadow-lg min-w-[300px] flex items-center gap-3 animate-fade-in`;
+            toast.innerHTML = `
+                <span class="text-lg">${icons[type] || icons.info}</span>
+                <span class="font-medium">${message}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function searchCustomers() {
+            const searchTerm = document.getElementById('search-customers').value.toLowerCase();
+            loadCustomers();
+        }
+
+        function exportCustomers() {
+            showToast('Exportação em desenvolvimento', 'info');
+        }
+
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('notifications-panel');
+            const btn = document.querySelector('button[onclick="toggleNotifications()"]');
+            if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fade-in {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in {
+                animation: fade-in 0.3s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
