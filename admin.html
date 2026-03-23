@@ -1263,25 +1263,47 @@
             orderToDelete = null;
         }
     
-        async function confirmDelete() {
-            if (!orderToDelete) return;
+                async function confirmDelete() {
+            if (!orderToDelete) {
+                showToast('Nenhuma encomenda selecionada', 'error');
+                return;
+            }
             
             try {
-                if (!supabaseClient) throw new Error('Supabase não inicializado');
+                if (!supabaseClient) {
+                    showToast('Erro: Supabase não inicializado', 'error');
+                    return;
+                }
+                
+                console.log('A eliminar encomenda com ID:', orderToDelete);
                 
                 // Mostrar loading no botão
                 const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
-                const originalText = deleteBtn.textContent;
-                deleteBtn.textContent = 'A eliminar...';
-                deleteBtn.disabled = true;
+                const cancelBtn = document.querySelector('#delete-modal .border');
+                if (deleteBtn) {
+                    deleteBtn.textContent = 'A eliminar...';
+                    deleteBtn.disabled = true;
+                }
+                if (cancelBtn) cancelBtn.disabled = true;
                 
                 // Eliminar da base de dados
-                const { error } = await supabaseClient
+                const { data, error } = await supabaseClient
                     .from('orders')
                     .delete()
-                    .eq('id', orderToDelete);
+                    .eq('id', orderToDelete)
+                    .select();
                 
-                if (error) throw error;
+                console.log('Resultado da eliminação:', { data, error });
+                
+                if (error) {
+                    console.error('Erro detalhado:', error);
+                    throw new Error(error.message);
+                }
+                
+                if (data && data.length === 0) {
+                    showToast('Encomenda não encontrada na base de dados', 'error');
+                    return;
+                }
                 
                 // Atualizar arrays locais
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
@@ -1290,8 +1312,8 @@
                 applyFilters();
                 
                 // Recarregar dashboard e clientes para atualizar estatísticas
-                loadDashboard();
-                loadCustomers();
+                await loadDashboard();
+                await loadCustomers();
                 
                 showToast('Encomenda eliminada com sucesso!', 'success');
                 
@@ -1302,12 +1324,14 @@
                 console.error('Erro ao eliminar encomenda:', error);
                 showToast('Erro ao eliminar encomenda: ' + error.message, 'error');
             } finally {
-                // Restaurar botão
+                // Restaurar botões
                 const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
+                const cancelBtn = document.querySelector('#delete-modal .border');
                 if (deleteBtn) {
                     deleteBtn.textContent = 'Eliminar';
                     deleteBtn.disabled = false;
                 }
+                if (cancelBtn) cancelBtn.disabled = false;
             }
         }
     
