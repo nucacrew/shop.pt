@@ -179,7 +179,6 @@
                 background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             }
     
-            /* ===== STATUS DROPDOWN - ESTILO NUCA ===== */
             .status-select-wrapper {
                 position: relative;
                 display: inline-block;
@@ -215,67 +214,15 @@
                 border-color: #556B4F;
             }
             
-            /* Status colors */
-            .status-pending { 
-                background-color: #FEF3C7; 
-                color: #92400E; 
-            }
-            .status-pending option {
-                background-color: #FEF3C7;
-                color: #92400E;
-            }
+            .status-pending { background-color: #FEF3C7; color: #92400E; }
+            .status-processing { background-color: #DBEAFE; color: #1E40AF; }
+            .status-shipped { background-color: #E0E7FF; color: #3730A3; }
+            .status-delivered { background-color: #D1FAE5; color: #065F46; }
+            .status-cancelled { background-color: #FEE2E2; color: #991B1B; }
             
-            .status-processing { 
-                background-color: #DBEAFE; 
-                color: #1E40AF; 
-            }
-            .status-processing option {
-                background-color: #DBEAFE;
-                color: #1E40AF;
-            }
-            
-            .status-shipped { 
-                background-color: #E0E7FF; 
-                color: #3730A3; 
-            }
-            .status-shipped option {
-                background-color: #E0E7FF;
-                color: #3730A3;
-            }
-            
-            .status-delivered { 
-                background-color: #D1FAE5; 
-                color: #065F46; 
-            }
-            .status-delivered option {
-                background-color: #D1FAE5;
-                color: #065F46;
-            }
-            
-            .status-cancelled { 
-                background-color: #FEE2E2; 
-                color: #991B1B; 
-            }
-            .status-cancelled option {
-                background-color: #FEE2E2;
-                color: #991B1B;
-            }
-            
-            .status-paid { 
-                background-color: #D1FAE5; 
-                color: #065F46; 
-            }
-    
-            /* ===== ORDER ROW EXPANSION ===== */
-            .order-row { 
-                transition: all 0.2s;
-            }
-            .order-row:hover { 
-                background-color: rgba(85, 107, 79, 0.05);
-            }
-            .order-row.expanded {
-                background-color: rgba(85, 107, 79, 0.08);
-            }
+            .order-row { transition: all 0.2s; }
+            .order-row:hover { background-color: rgba(85, 107, 79, 0.05); }
+            .order-row.expanded { background-color: rgba(85, 107, 79, 0.08); }
             
             .order-details {
                 max-height: 0;
@@ -290,7 +237,6 @@
                 padding: 1rem 1.5rem;
             }
     
-            /* ===== EXPAND BUTTON ===== */
             .expand-btn {
                 width: 32px;
                 height: 32px;
@@ -304,19 +250,9 @@
                 border: none;
                 cursor: pointer;
             }
-            .expand-btn:hover {
-                background: rgba(85, 107, 79, 0.2);
-            }
-            .expand-btn.expanded {
-                transform: rotate(180deg);
-                background: #556B4F;
-                color: #D8C6A5;
-            }
-            .expand-btn svg {
-                transition: transform 0.3s ease;
-            }
+            .expand-btn:hover { background: rgba(85, 107, 79, 0.2); }
+            .expand-btn.expanded { transform: rotate(180deg); background: #556B4F; color: #D8C6A5; }
     
-            /* Action buttons */
             .action-btn {
                 padding: 0.5rem;
                 border-radius: 0.5rem;
@@ -332,34 +268,12 @@
             .action-btn:hover { background-color: rgba(85, 107, 79, 0.1); }
             .action-btn.delete:hover { background-color: #FEE2E2; color: #991B1B; }
     
-            /* Sort indicators */
             .sortable {
                 cursor: pointer;
                 user-select: none;
             }
             .sortable:hover { background-color: rgba(85, 107, 79, 0.05); }
-            .sort-icon {
-                display: inline-block;
-                width: 0;
-                height: 0;
-                margin-left: 0.25rem;
-                vertical-align: middle;
-                opacity: 0.3;
-            }
-            .sort-asc .sort-icon {
-                border-left: 4px solid transparent;
-                border-right: 4px solid transparent;
-                border-bottom: 4px solid currentColor;
-                opacity: 1;
-            }
-            .sort-desc .sort-icon {
-                border-left: 4px solid transparent;
-                border-right: 4px solid transparent;
-                border-top: 4px solid currentColor;
-                opacity: 1;
-            }
-    
-            /* Toast notifications */
+            
             .toast-container {
                 position: fixed;
                 bottom: 1rem;
@@ -385,7 +299,6 @@
                 to { transform: translateX(0); opacity: 1; }
             }
     
-            /* Modal */
             .modal-overlay {
                 position: fixed;
                 inset: 0;
@@ -412,7 +325,6 @@
                 to { transform: scale(1); opacity: 1; }
             }
     
-            /* Filter tabs */
             .filter-tab {
                 transition: all 0.2s;
             }
@@ -426,7 +338,6 @@
     
     <div class="grain-overlay"></div>
     
-    <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
     
     <!-- Login Screen -->
@@ -545,12 +456,6 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <button onclick="toggleNotifications()" class="relative p-2 hover:bg-nuca-green/10 rounded-full">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-                                </svg>
-                                <span id="notification-badge" class="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold hidden">0</span>
-                            </button>
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-nuca-green rounded-full flex items-center justify-center text-nuca-beige font-bold" id="user-avatar">A</div>
                                 <div class="hidden md:block">
@@ -563,51 +468,33 @@
                 </div>
             </header>
     
-            <div id="notifications-panel" class="hidden fixed top-20 right-6 w-96 bg-white rounded-2xl shadow-2xl border border-nuca-green/10 z-50 max-h-96 overflow-hidden">
-                <div class="p-4 border-b border-nuca-green/10 flex justify-between items-center">
-                    <h3 class="font-bold text-nuca-green">Notificações</h3>
-                    <button onclick="markAllAsRead()" class="text-xs text-nuca-green hover:underline">Marcar todas como lidas</button>
-                </div>
-                <div id="notifications-list" class="overflow-y-auto max-h-80 p-2 space-y-2">
-                    <p class="text-center text-nuca-green/40 py-8 text-sm">Sem notificações novas</p>
-                </div>
-            </div>
-    
             <div class="p-6 lg:p-12">
                 
                 <!-- DASHBOARD SECTION -->
                 <div id="section-dashboard" class="section-content active fade-in">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
-                                </div>
+                            <div>
+                                <p class="text-sm text-nuca-green/60 mb-1">Total Encomendas</p>
+                                <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-total-orders">0</h3>
                             </div>
                         </div>
                         <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
-                                    <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
-                                </div>
+                            <div>
+                                <p class="text-sm text-nuca-green/60 mb-1">Pendentes</p>
+                                <h3 class="text-3xl font-display font-bold text-orange-600" id="stat-pending">0</h3>
                             </div>
                         </div>
                         <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
-                                </div>
+                            <div>
+                                <p class="text-sm text-nuca-green/60 mb-1">Receita Total</p>
+                                <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-revenue">€0</h3>
                             </div>
                         </div>
                         <div class="admin-card rounded-2xl p-6 stats-card">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
-                                    <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
-                                </div>
+                            <div>
+                                <p class="text-sm text-nuca-green/60 mb-1">Hoje</p>
+                                <h3 class="text-3xl font-display font-bold text-nuca-green" id="stat-today">0</h3>
                             </div>
                         </div>
                     </div>
@@ -616,14 +503,13 @@
                     </div>
                 </div>
     
-                <!-- ORDERS SECTION - MELHORADO COM EXPAND/COLLAPSE -->
+                <!-- ORDERS SECTION -->
                 <div id="section-orders" class="section-content fade-in">
-                    <!-- Filtros e Pesquisa -->
                     <div class="admin-card rounded-2xl p-6 mb-6">
                         <div class="flex flex-col lg:flex-row gap-4 justify-between">
                             <div class="flex flex-wrap gap-2">
                                 <button onclick="filterOrders('all')" class="filter-tab tab-active px-4 py-2 rounded-full text-sm font-medium transition-all" data-filter="all">Todas</button>
-                                <button onclick="filterOrders('pending_payment')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10" data-filter="pending_payment">Pendentes</button>
+                                <button onclick="filterOrders('pending')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10" data-filter="pending">Pendentes</button>
                                 <button onclick="filterOrders('processing')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10" data-filter="processing">A Processar</button>
                                 <button onclick="filterOrders('shipped')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10" data-filter="shipped">Enviadas</button>
                                 <button onclick="filterOrders('delivered')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-nuca-green/10" data-filter="delivered">Entregues</button>
@@ -638,30 +524,17 @@
                         </div>
                     </div>
     
-                    <!-- Tabela de Encomendas -->
                     <div class="admin-card rounded-2xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
                                     <tr>
-                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('order_number')">
-                                            Nº Encomenda <span class="sort-icon"></span>
-                                        </th>
-                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('customer_name')">
-                                            Cliente <span class="sort-icon"></span>
-                                        </th>
-                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('total')">
-                                            Total <span class="sort-icon"></span>
-                                        </th>
-                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider">
-                                            Estado
-                                        </th>
-                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('created_at')">
-                                            Data <span class="sort-icon"></span>
-                                        </th>
-                                        <th class="px-4 py-4 text-center text-xs font-bold text-nuca-green uppercase tracking-wider">
-                                            Ações
-                                        </th>
+                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('order_number')">Nº Encomenda</th>
+                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('customer_name')">Cliente</th>
+                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('total')">Total</th>
+                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider">Estado</th>
+                                        <th class="px-4 py-4 text-left text-xs font-bold text-nuca-green uppercase tracking-wider sortable" onclick="sortOrders('created_at')">Data</th>
+                                        <th class="px-4 py-4 text-center text-xs font-bold text-nuca-green uppercase tracking-wider">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="orders-table-body">
@@ -721,7 +594,7 @@
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Total Gasto</th>
                                         <th class="text-center px-6 py-4 text-xs font-bold text-nuca-green uppercase">Ações</th>
-                                     </tr>
+                                      </tr>
                                 </thead>
                                 <tbody id="customers-table-body" class="divide-y divide-nuca-green/10">
                                     <tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">A carregar clientes...</td></tr>
@@ -799,10 +672,10 @@
         // ============================================
         // CONFIGURAÇÃO SUPABASE
         // ============================================
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_KEY = 'your-anon-key';
+        const SUPABASE_URL = 'https://zrzlyrobfzlcxcbokgnl.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpyemx5cm9iZnpsY3hjYm9rZ25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxNTg3NDcsImV4cCI6MjA4ODczNDc0N30.LlCGKSu1O4oYlqEs1U04xpFfT5xH2qJVc6wGwFdtRsY';
         let supabaseClient = null;
-    
+        
         // ============================================
         // ESTADO DA APLICAÇÃO
         // ============================================
@@ -815,7 +688,6 @@
         let currentAnalyticsPeriod = 'daily';
         let salesChart = null;
         let analyticsChart = null;
-        let notifications = [];
         let orderToDelete = null;
         let expandedOrders = new Set();
     
@@ -823,18 +695,24 @@
         // INICIALIZAÇÃO
         // ============================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Verificar se há sessão guardada
+            // Inicializar Supabase
+            try {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase inicializado com sucesso');
+            } catch (error) {
+                console.error('Erro ao inicializar Supabase:', error);
+                supabaseClient = null;
+            }
+            
             const savedSession = localStorage.getItem('nuca_admin_session');
             if (savedSession) {
                 showAdminInterface();
             }
             
-            // Configurar data atual
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
             });
             
-            // Login form
             document.getElementById('login-form').addEventListener('submit', handleLogin);
         });
     
@@ -850,7 +728,6 @@
             document.getElementById('login-text').classList.add('hidden');
             document.getElementById('login-spinner').classList.remove('hidden');
             
-            // Simular login (substituir por autenticação real)
             setTimeout(() => {
                 if (remember) {
                     localStorage.setItem('nuca_admin_session', JSON.stringify({ email, timestamp: Date.now() }));
@@ -864,13 +741,6 @@
         function showAdminInterface() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('admin-interface').classList.remove('hidden');
-            
-            // Inicializar Supabase
-            if (typeof supabase !== 'undefined') {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            }
-            
-            // Carregar dados
             loadDashboard();
             loadOrders();
             loadCustomers();
@@ -887,15 +757,12 @@
         function showSection(section) {
             currentSection = section;
             
-            // Atualizar sidebar
             document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
             document.querySelector(`.sidebar-link[href="#${section}"]`)?.classList.add('active');
             
-            // Mostrar secção
             document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
             document.getElementById(`section-${section}`).classList.add('active');
             
-            // Atualizar título
             const titles = {
                 dashboard: 'Dashboard',
                 orders: 'Encomendas',
@@ -906,10 +773,8 @@
             };
             document.getElementById('page-title').textContent = titles[section] || section;
             
-            // Fechar sidebar mobile
             hideMobileSidebar();
             
-            // Carregar dados específicos
             if (section === 'dashboard') loadDashboard();
             if (section === 'orders') loadOrders();
             if (section === 'customers') loadCustomers();
@@ -931,55 +796,71 @@
         // ============================================
         async function loadDashboard() {
             try {
-                // Simular dados (substituir por chamada real à API)
-                const stats = {
-                    totalOrders: 156,
-                    pending: 12,
-                    revenue: 8947.50,
-                    today: 3
-                };
-                
-                document.getElementById('stat-total-orders').textContent = stats.totalOrders;
-                document.getElementById('stat-pending').textContent = stats.pending;
-                document.getElementById('stat-revenue').textContent = `€${stats.revenue.toFixed(2)}`;
-                document.getElementById('stat-today').textContent = stats.today;
-                
-                // Atualizar badge de pendentes
-                if (stats.pending > 0) {
-                    const badge = document.getElementById('sidebar-pending-badge');
-                    badge.textContent = stats.pending;
-                    badge.classList.remove('hidden');
+                if (!supabaseClient) {
+                    console.warn('Supabase não inicializado');
+                    return;
                 }
                 
-                // Renderizar gráfico
-                renderSalesChart();
+                const { data: orders, error } = await supabaseClient
+                    .from('orders')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                const totalOrders = orders?.length || 0;
+                const pendingOrders = orders?.filter(o => o.status === 'pending' || o.status === 'pending_payment').length || 0;
+                const totalRevenue = orders?.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                
+                const today = new Date().toISOString().split('T')[0];
+                const todayOrders = orders?.filter(o => o.created_at?.split('T')[0] === today).length || 0;
+                
+                document.getElementById('stat-total-orders').textContent = totalOrders;
+                document.getElementById('stat-pending').textContent = pendingOrders;
+                document.getElementById('stat-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
+                document.getElementById('stat-today').textContent = todayOrders;
+                
+                if (pendingOrders > 0) {
+                    const badge = document.getElementById('sidebar-pending-badge');
+                    badge.textContent = pendingOrders;
+                    badge.classList.remove('hidden');
+                } else {
+                    document.getElementById('sidebar-pending-badge').classList.add('hidden');
+                }
+                
+                renderSalesChart(orders);
             } catch (error) {
+                console.error('Erro ao carregar dashboard:', error);
                 showToast('Erro ao carregar dashboard', 'error');
             }
         }
     
-        function renderSalesChart() {
+        function renderSalesChart(orders) {
             const ctx = document.getElementById('salesChart')?.getContext('2d');
             if (!ctx) return;
             
             if (salesChart) salesChart.destroy();
             
-            const labels = [];
-            const data = [];
+            const last7Days = [];
+            const salesData = [];
+            
             for (let i = 6; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(d.getDate() - i);
-                labels.push(d.toLocaleDateString('pt-PT', { weekday: 'short' }));
-                data.push(Math.floor(Math.random() * 500) + 200);
+                const dateStr = d.toISOString().split('T')[0];
+                last7Days.push(d.toLocaleDateString('pt-PT', { weekday: 'short' }));
+                
+                const dailyTotal = orders?.filter(o => o.created_at?.split('T')[0] === dateStr)
+                    .reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                salesData.push(dailyTotal);
             }
             
             salesChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels,
+                    labels: last7Days,
                     datasets: [{
                         label: 'Vendas (€)',
-                        data,
+                        data: salesData,
                         backgroundColor: '#556B4F',
                         borderRadius: 8
                     }]
@@ -1000,97 +881,22 @@
         // ============================================
         async function loadOrders() {
             try {
-                // Simular dados (substituir por chamada real à API)
-                allOrders = [
-                    {
-                        id: 1,
-                        order_number: 'NUCA-2025-001',
-                        customer_name: 'João Silva',
-                        customer_email: 'joao@email.com',
-                        customer_phone: '912345678',
-                        address: 'Rua das Flores, 123',
-                        city: 'Lisboa',
-                        postal_code: '1000-001',
-                        total: 84.98,
-                        status: 'pending_payment',
-                        created_at: new Date().toISOString(),
-                        items: [
-                            { name: 'Tshirt-NUCA', quantity: 1, price: 24.99, size: 'M', color: 'Bege' },
-                            { name: 'Hoodie-Nuca', quantity: 1, price: 59.99, size: 'L', color: 'Preto' }
-                        ]
-                    },
-                    {
-                        id: 2,
-                        order_number: 'NUCA-2025-002',
-                        customer_name: 'Maria Santos',
-                        customer_email: 'maria@email.com',
-                        customer_phone: '923456789',
-                        address: 'Avenida Principal, 45',
-                        city: 'Porto',
-                        postal_code: '4000-002',
-                        total: 44.98,
-                        status: 'processing',
-                        created_at: new Date(Date.now() - 86400000).toISOString(),
-                        items: [
-                            { name: 'Tshirt-NUCA', quantity: 1, price: 24.99, size: 'S', color: 'Branca' },
-                            { name: 'Chaveiro-NUCA', quantity: 1, price: 9.99, size: 'Único', color: 'Verde' }
-                        ]
-                    },
-                    {
-                        id: 3,
-                        order_number: 'NUCA-2025-003',
-                        customer_name: 'Pedro Costa',
-                        customer_email: 'pedro@email.com',
-                        customer_phone: '934567890',
-                        address: 'Rua do Comércio, 78',
-                        city: 'Braga',
-                        postal_code: '4700-003',
-                        total: 124.97,
-                        status: 'shipped',
-                        created_at: new Date(Date.now() - 172800000).toISOString(),
-                        items: [
-                            { name: 'Hoodie-Nuca', quantity: 1, price: 59.99, size: 'XL', color: 'Verde' },
-                            { name: 'Boné-NUCA', quantity: 1, price: 24.99, size: 'Único', color: 'Bege' },
-                            { name: 'Tote Bag-NUCA', quantity: 1, price: 19.99, size: 'Único', color: 'Preta' },
-                            { name: 'Chaveiro-NUCA', quantity: 2, price: 9.99, size: 'Único', color: 'Preto' }
-                        ]
-                    },
-                    {
-                        id: 4,
-                        order_number: 'NUCA-2025-004',
-                        customer_name: 'Ana Ferreira',
-                        customer_email: 'ana@email.com',
-                        customer_phone: '945678901',
-                        address: 'Rua Nova, 12',
-                        city: 'Coimbra',
-                        postal_code: '3000-004',
-                        total: 29.99,
-                        status: 'delivered',
-                        created_at: new Date(Date.now() - 259200000).toISOString(),
-                        items: [
-                            { name: 'Boné-NUCA', quantity: 1, price: 24.99, size: 'Único', color: 'Verde' }
-                        ]
-                    },
-                    {
-                        id: 5,
-                        order_number: 'NUCA-2025-005',
-                        customer_name: 'Carlos Oliveira',
-                        customer_email: 'carlos@email.com',
-                        customer_phone: '956789012',
-                        address: 'Avenida Central, 90',
-                        city: 'Faro',
-                        postal_code: '8000-005',
-                        total: 59.99,
-                        status: 'cancelled',
-                        created_at: new Date(Date.now() - 345600000).toISOString(),
-                        items: [
-                            { name: 'Hoodie-Nuca', quantity: 1, price: 59.99, size: 'M', color: 'Bege' }
-                        ]
-                    }
-                ];
+                if (!supabaseClient) {
+                    console.warn('Supabase não inicializado');
+                    return;
+                }
                 
+                const { data: orders, error } = await supabaseClient
+                    .from('orders')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allOrders = orders || [];
                 applyFilters();
             } catch (error) {
+                console.error('Erro ao carregar encomendas:', error);
                 showToast('Erro ao carregar encomendas', 'error');
             }
         }
@@ -1098,22 +904,19 @@
         function applyFilters() {
             let filtered = [...allOrders];
             
-            // Aplicar filtro de estado
             if (currentFilter !== 'all') {
                 filtered = filtered.filter(o => o.status === currentFilter);
             }
             
-            // Aplicar pesquisa
             const searchTerm = document.getElementById('search-orders')?.value?.toLowerCase() || '';
             if (searchTerm) {
                 filtered = filtered.filter(o => 
-                    o.order_number.toLowerCase().includes(searchTerm) ||
-                    o.customer_name.toLowerCase().includes(searchTerm) ||
-                    o.customer_email.toLowerCase().includes(searchTerm)
+                    (o.order_number || '').toLowerCase().includes(searchTerm) ||
+                    (o.customer_name || '').toLowerCase().includes(searchTerm) ||
+                    (o.customer_email || '').toLowerCase().includes(searchTerm)
                 );
             }
             
-            // Aplicar ordenação
             filtered.sort((a, b) => {
                 let aVal = a[sortField];
                 let bVal = b[sortField];
@@ -1133,6 +936,39 @@
             renderOrdersTable(filtered);
         }
     
+        function parseItems(items) {
+            if (!items) return [];
+            try {
+                if (typeof items === 'string') return JSON.parse(items);
+                if (Array.isArray(items)) return items;
+                return [];
+            } catch (e) {
+                return [];
+            }
+        }
+    
+        function parseAddress(address) {
+            if (!address) return { address: '', city: '', postal: '' };
+            try {
+                if (typeof address === 'string') return JSON.parse(address);
+                return address;
+            } catch (e) {
+                return { address: '', city: '', postal: '' };
+            }
+        }
+    
+        function getStatusClass(status) {
+            const classes = {
+                pending: 'status-pending',
+                pending_payment: 'status-pending',
+                processing: 'status-processing',
+                shipped: 'status-shipped',
+                delivered: 'status-delivered',
+                cancelled: 'status-cancelled'
+            };
+            return classes[status] || 'status-pending';
+        }
+    
         function renderOrdersTable(orders) {
             const tbody = document.getElementById('orders-table-body');
             
@@ -1149,84 +985,87 @@
             
             tbody.innerHTML = orders.map(order => {
                 const isExpanded = expandedOrders.has(order.id);
+                const items = parseItems(order.items);
+                const address = parseAddress(order.shipping_address);
+                const statusClass = getStatusClass(order.status);
+                const orderNumber = order.order_number || order.id?.slice(0, 8) || '-';
+                
                 return `
-                    <tbody class="order-group" data-order-id="${order.id}">
-                        <tr class="order-row ${isExpanded ? 'expanded' : ''}" data-order-id="${order.id}">
-                            <td class="px-4 py-4 font-medium">${order.order_number}</td>
-                            <td class="px-4 py-4">
-                                <div>
-                                    <p class="font-medium">${escapeHtml(order.customer_name)}</p>
-                                    <p class="text-xs text-nuca-green/60">${escapeHtml(order.customer_email)}</p>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 font-bold">€${order.total.toFixed(2)}</td>
-                            <td class="px-4 py-4">
-                                <div class="status-select-wrapper">
-                                    <select 
-                                        class="status-select status-${order.status}" 
-                                        onchange="updateOrderStatus(${order.id}, this.value)"
-                                        data-order-id="${order.id}"
-                                    >
-                                        <option value="pending_payment" ${order.status === 'pending_payment' ? 'selected' : ''}>Pendente</option>
-                                        <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>A Processar</option>
-                                        <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviada</option>
-                                        <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
-                                        <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelada</option>
-                                    </select>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 text-sm">${formatDate(order.created_at)}</td>
-                            <td class="px-4 py-4">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button onclick="toggleOrderDetails(${order.id})" class="expand-btn ${isExpanded ? 'expanded' : ''}" title="Ver detalhes">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="6 9 12 15 18 9"/>
-                                        </svg>
-                                    </button>
-                                    <button onclick="confirmDeleteOrder(${order.id})" class="action-btn delete" title="Eliminar">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="3 6 5 6 21 6"/>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="order-details-row">
-                            <td colspan="6" class="p-0">
-                                <div class="order-details ${isExpanded ? 'expanded' : ''}" id="order-details-${order.id}">
-                                    <div class="grid md:grid-cols-2 gap-6">
-                                        <div>
-                                            <h4 class="font-bold text-nuca-green mb-3">Itens do Pedido</h4>
-                                            <div class="space-y-2">
-                                                ${order.items.map(item => `
-                                                    <div class="flex justify-between items-center bg-white/50 p-3 rounded-lg">
-                                                        <div>
-                                                            <p class="font-medium text-sm">${item.name}</p>
-                                                            <p class="text-xs text-nuca-green/60">${item.size} / ${item.color}</p>
-                                                        </div>
-                                                        <div class="text-right">
-                                                            <p class="font-bold text-sm">€${item.price.toFixed(2)}</p>
-                                                            <p class="text-xs text-nuca-green/60">x${item.quantity}</p>
-                                                        </div>
+                    <tr class="order-row ${isExpanded ? 'expanded' : ''}" data-order-id="${order.id}">
+                        <td class="px-4 py-4 font-medium">${escapeHtml(orderNumber)}</td>
+                        <td class="px-4 py-4">
+                            <div>
+                                <p class="font-medium">${escapeHtml(order.customer_name || '-')}</p>
+                                <p class="text-xs text-nuca-green/60">${escapeHtml(order.customer_email || '-')}</p>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 font-bold">€${(parseFloat(order.total) || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4">
+                            <div class="status-select-wrapper">
+                                <select 
+                                    class="status-select ${statusClass}" 
+                                    onchange="updateOrderStatus('${order.id}', this.value)"
+                                    data-order-id="${order.id}"
+                                >
+                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pendente</option>
+                                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>A Processar</option>
+                                    <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Enviada</option>
+                                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Entregue</option>
+                                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelada</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="px-4 py-4 text-sm">${formatDate(order.created_at)}</td>
+                        <td class="px-4 py-4">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExpanded ? 'expanded' : ''}" title="Ver detalhes">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                                <button onclick="confirmDeleteOrder('${order.id}')" class="action-btn delete" title="Eliminar">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="order-details-row">
+                        <td colspan="6" class="p-0">
+                            <div class="order-details ${isExpanded ? 'expanded' : ''}" id="order-details-${order.id}">
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-bold text-nuca-green mb-3">Itens do Pedido</h4>
+                                        <div class="space-y-2">
+                                            ${items.length > 0 ? items.map(item => `
+                                                <div class="flex justify-between items-center bg-white/50 p-3 rounded-lg">
+                                                    <div>
+                                                        <p class="font-medium text-sm">${escapeHtml(item.name)}</p>
+                                                        <p class="text-xs text-nuca-green/60">${item.size || '-'} / ${item.color || '-'}</p>
                                                     </div>
-                                                `).join('')}
-                                            </div>
+                                                    <div class="text-right">
+                                                        <p class="font-bold text-sm">€${(item.price || 0).toFixed(2)}</p>
+                                                        <p class="text-xs text-nuca-green/60">x${item.quantity || 1}</p>
+                                                    </div>
+                                                </div>
+                                            `).join('') : '<p class="text-nuca-green/60 text-sm">Sem itens disponíveis</p>'}
                                         </div>
-                                        <div>
-                                            <h4 class="font-bold text-nuca-green mb-3">Dados de Envio</h4>
-                                            <div class="bg-white/50 p-4 rounded-lg space-y-2 text-sm">
-                                                <p><span class="text-nuca-green/60">Morada:</span> ${escapeHtml(order.address)}</p>
-                                                <p><span class="text-nuca-green/60">Cidade:</span> ${escapeHtml(order.city)}</p>
-                                                <p><span class="text-nuca-green/60">Código Postal:</span> ${escapeHtml(order.postal_code)}</p>
-                                                <p><span class="text-nuca-green/60">Telefone:</span> ${escapeHtml(order.customer_phone)}</p>
-                                            </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-nuca-green mb-3">Dados de Envio</h4>
+                                        <div class="bg-white/50 p-4 rounded-lg space-y-2 text-sm">
+                                            <p><span class="text-nuca-green/60">Morada:</span> ${escapeHtml(address.address || '-')}</p>
+                                            <p><span class="text-nuca-green/60">Cidade:</span> ${escapeHtml(address.city || '-')}</p>
+                                            <p><span class="text-nuca-green/60">Código Postal:</span> ${escapeHtml(address.postal || '-')}</p>
+                                            <p><span class="text-nuca-green/60">Telefone:</span> ${escapeHtml(order.customer_phone || '-')}</p>
                                         </div>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
+                            </div>
+                        </td>
+                    </tr>
                 `;
             }).join('');
         }
@@ -1234,25 +1073,24 @@
         function toggleOrderDetails(orderId) {
             const details = document.getElementById(`order-details-${orderId}`);
             const row = document.querySelector(`.order-row[data-order-id="${orderId}"]`);
-            const btn = row.querySelector('.expand-btn');
+            const btn = row?.querySelector('.expand-btn');
             
             if (expandedOrders.has(orderId)) {
                 expandedOrders.delete(orderId);
-                details.classList.remove('expanded');
-                row.classList.remove('expanded');
-                btn.classList.remove('expanded');
+                if (details) details.classList.remove('expanded');
+                if (row) row.classList.remove('expanded');
+                if (btn) btn.classList.remove('expanded');
             } else {
                 expandedOrders.add(orderId);
-                details.classList.add('expanded');
-                row.classList.add('expanded');
-                btn.classList.add('expanded');
+                if (details) details.classList.add('expanded');
+                if (row) row.classList.add('expanded');
+                if (btn) btn.classList.add('expanded');
             }
         }
     
         function filterOrders(status) {
             currentFilter = status;
             
-            // Atualizar tabs
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 if (tab.dataset.filter === status) {
                     tab.classList.add('tab-active');
@@ -1275,42 +1113,43 @@
                 sortField = field;
                 sortDirection = 'desc';
             }
-            
-            // Atualizar indicadores visuais
-            document.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
-            const th = document.querySelector(`th[onclick="sortOrders('${field}')"]`);
-            if (th) {
-                th.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
-            }
-            
             applyFilters();
         }
     
         async function updateOrderStatus(orderId, newStatus) {
-            const order = allOrders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            // Atualizar localmente
-            order.status = newStatus;
-            
-            // Atualizar classe do select
-            const select = document.querySelector(`select[data-order-id="${orderId}"]`);
-            if (select) {
-                select.className = `status-select status-${newStatus}`;
+            try {
+                if (!supabaseClient) throw new Error('Supabase não inicializado');
+                
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .update({ status: newStatus, updated_at: new Date().toISOString() })
+                    .eq('id', orderId);
+                
+                if (error) throw error;
+                
+                const order = allOrders.find(o => o.id === orderId);
+                if (order) order.status = newStatus;
+                
+                const select = document.querySelector(`select[data-order-id="${orderId}"]`);
+                if (select) {
+                    select.className = `status-select ${getStatusClass(newStatus)}`;
+                }
+                
+                const statusLabels = {
+                    pending: 'Pendente',
+                    pending_payment: 'Pendente',
+                    processing: 'A Processar',
+                    shipped: 'Enviada',
+                    delivered: 'Entregue',
+                    cancelled: 'Cancelada'
+                };
+                showToast(`Estado atualizado para "${statusLabels[newStatus]}"`, 'success');
+                
+                loadDashboard();
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                showToast('Erro ao atualizar estado', 'error');
             }
-            
-            // Mostrar toast
-            const statusLabels = {
-                pending_payment: 'Pendente',
-                processing: 'A Processar',
-                shipped: 'Enviada',
-                delivered: 'Entregue',
-                cancelled: 'Cancelada'
-            };
-            showToast(`Estado atualizado para "${statusLabels[newStatus]}"`, 'success');
-            
-            // Aqui faria a chamada à API para atualizar no servidor
-            // await supabaseClient.from('orders').update({ status: newStatus }).eq('id', orderId);
         }
     
         function confirmDeleteOrder(orderId) {
@@ -1326,15 +1165,26 @@
         async function confirmDelete() {
             if (!orderToDelete) return;
             
-            // Remover localmente
-            allOrders = allOrders.filter(o => o.id !== orderToDelete);
-            applyFilters();
+            try {
+                if (!supabaseClient) throw new Error('Supabase não inicializado');
+                
+                const { error } = await supabaseClient
+                    .from('orders')
+                    .delete()
+                    .eq('id', orderToDelete);
+                
+                if (error) throw error;
+                
+                allOrders = allOrders.filter(o => o.id !== orderToDelete);
+                applyFilters();
+                showToast('Encomenda eliminada', 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error('Erro ao eliminar encomenda:', error);
+                showToast('Erro ao eliminar encomenda', 'error');
+            }
             
-            showToast('Encomenda eliminada', 'success');
             closeDeleteModal();
-            
-            // Aqui faria a chamada à API para eliminar no servidor
-            // await supabaseClient.from('orders').delete().eq('id', orderToDelete);
         }
     
         // ============================================
@@ -1342,17 +1192,22 @@
         // ============================================
         async function loadCustomers() {
             try {
-                // Simular dados
-                allCustomers = [
-                    { id: 1, name: 'João Silva', email: 'joao@email.com', phone: '912345678', city: 'Lisboa', created_at: new Date().toISOString() },
-                    { id: 2, name: 'Maria Santos', email: 'maria@email.com', phone: '923456789', city: 'Porto', created_at: new Date().toISOString() },
-                    { id: 3, name: 'Pedro Costa', email: 'pedro@email.com', phone: '934567890', city: 'Braga', created_at: new Date().toISOString() },
-                    { id: 4, name: 'Ana Ferreira', email: 'ana@email.com', phone: '945678901', city: 'Coimbra', created_at: new Date().toISOString() },
-                    { id: 5, name: 'Carlos Oliveira', email: 'carlos@email.com', phone: '956789012', city: 'Faro', created_at: new Date().toISOString() }
-                ];
+                if (!supabaseClient) {
+                    console.warn('Supabase não inicializado');
+                    return;
+                }
                 
+                const { data: customers, error } = await supabaseClient
+                    .from('customers')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                allCustomers = customers || [];
                 renderCustomersTable(allCustomers);
             } catch (error) {
+                console.error('Erro ao carregar clientes:', error);
                 showToast('Erro ao carregar clientes', 'error');
             }
         }
@@ -1370,25 +1225,25 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-nuca-green/10 rounded-full flex items-center justify-center font-bold text-nuca-green">
-                                ${customer.name.charAt(0).toUpperCase()}
+                                ${(customer.name || '?').charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <p class="font-medium">${escapeHtml(customer.name)}</p>
-                                <p class="text-xs text-nuca-green/60">${escapeHtml(customer.email)}</p>
+                                <p class="font-medium">${escapeHtml(customer.name || '-')}</p>
+                                <p class="text-xs text-nuca-green/60">${escapeHtml(customer.email || '-')}</p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4">
                         <div>
-                            <p class="font-medium">${escapeHtml(customer.phone)}</p>
-                            <p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || 'Sem morada')}</p>
+                            <p class="font-medium">${escapeHtml(customer.phone || '-')}</p>
+                            <p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || '-')}</p>
                         </div>
                     </td>
-                    <td class="px-6 py-4" id="orders-count-${customer.id}">
-                        <span class="text-nuca-green/40">-</span>
+                    <td class="px-6 py-4">
+                        ${customer.total_orders || 0}
                     </td>
-                    <td class="px-6 py-4 font-bold" id="total-spent-${customer.id}">
-                        <span class="text-nuca-green/40">-</span>
+                    <td class="px-6 py-4 font-bold">
+                        €${(parseFloat(customer.total_purchases) || 0).toFixed(2)}
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex justify-center">
@@ -1401,14 +1256,6 @@
                     </td>
                 </tr>
             `).join('');
-            
-            // Simular estatísticas de encomendas
-            customers.forEach(customer => {
-                const count = Math.floor(Math.random() * 5) + 1;
-                const total = (Math.random() * 200 + 50).toFixed(2);
-                document.getElementById(`orders-count-${customer.id}`).innerHTML = `${count} compra${count !== 1 ? 's' : ''}`;
-                document.getElementById(`total-spent-${customer.id}`).innerHTML = `€${total}`;
-            });
         }
     
         function searchCustomers() {
@@ -1420,9 +1267,9 @@
             }
             
             const filtered = allCustomers.filter(c => 
-                c.name.toLowerCase().includes(searchTerm) ||
-                c.email.toLowerCase().includes(searchTerm) ||
-                c.phone.includes(searchTerm)
+                (c.name || '').toLowerCase().includes(searchTerm) ||
+                (c.email || '').toLowerCase().includes(searchTerm) ||
+                (c.phone || '').includes(searchTerm)
             );
             
             renderCustomersTable(filtered);
@@ -1431,15 +1278,28 @@
         function viewCustomerOrders(email) {
             if (!email) return;
             currentFilter = 'all';
-            document.getElementById('search-orders').value = email;
+            const searchInput = document.getElementById('search-orders');
+            if (searchInput) searchInput.value = email;
             showSection('orders');
             applyFilters();
         }
     
         function exportCustomers() {
-            const csv = [['Nome', 'Email', 'Telefone', 'Cidade', 'Data Registo'].join(',')];
+            if (allCustomers.length === 0) {
+                showToast('Não há clientes para exportar', 'error');
+                return;
+            }
+            
+            const csv = [['Nome', 'Email', 'Telefone', 'Cidade', 'Total Compras', 'Nº Encomendas'].join(',')];
             allCustomers.forEach(c => {
-                csv.push([`"${c.name||''}"`, `"${c.email||''}"`, `"${c.phone||''}"`, `"${c.city||''}"`, c.created_at||''].join(','));
+                csv.push([
+                    `"${(c.name || '').replace(/"/g, '""')}"`,
+                    `"${(c.email || '').replace(/"/g, '""')}"`,
+                    `"${(c.phone || '').replace(/"/g, '""')}"`,
+                    `"${(c.city || '').replace(/"/g, '""')}"`,
+                    c.total_purchases || 0,
+                    c.total_orders || 0
+                ].join(','));
             });
             
             const blob = new Blob(["\uFEFF" + csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
@@ -1470,46 +1330,75 @@
         }
     
         async function updateAnalyticsData(period) {
-            // Simular dados
-            const totalRevenue = 8947.50;
-            const totalOrders = 156;
-            const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-            const uniqueCustomers = 89;
-            
-            document.getElementById('analytics-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
-            document.getElementById('analytics-orders').textContent = totalOrders;
-            document.getElementById('analytics-avg-order').textContent = `€${avgOrder.toFixed(2)}`;
-            document.getElementById('analytics-customers').textContent = uniqueCustomers;
-            
-            prepareAnalyticsChart(period);
+            try {
+                if (!supabaseClient) return;
+                
+                const { data: orders, error } = await supabaseClient
+                    .from('orders')
+                    .select('*');
+                
+                if (error) throw error;
+                
+                const totalRevenue = orders?.reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                const totalOrders = orders?.length || 0;
+                const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+                const uniqueCustomers = new Set(orders?.map(o => o.customer_email).filter(Boolean)).size;
+                
+                document.getElementById('analytics-revenue').textContent = `€${totalRevenue.toFixed(2)}`;
+                document.getElementById('analytics-orders').textContent = totalOrders;
+                document.getElementById('analytics-avg-order').textContent = `€${avgOrder.toFixed(2)}`;
+                document.getElementById('analytics-customers').textContent = uniqueCustomers;
+                
+                prepareAnalyticsChart(period, orders);
+            } catch (error) {
+                console.error('Erro ao carregar analytics:', error);
+            }
         }
         
-        function prepareAnalyticsChart(period) {
+        function prepareAnalyticsChart(period, orders) {
             const ctx = document.getElementById('analyticsChart')?.getContext('2d');
             if (!ctx) return;
             
             let labels = [], data = [];
+            const now = new Date();
             
             if (period === 'daily') {
                 for (let i = 29; i >= 0; i--) {
                     let d = new Date();
-                    d.setDate(d.getDate() - i);
+                    d.setDate(now.getDate() - i);
                     labels.push(d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' }));
+                    
+                    const dateStr = d.toISOString().split('T')[0];
+                    const dailyTotal = orders?.filter(o => o.created_at?.split('T')[0] === dateStr)
+                        .reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                    data.push(dailyTotal);
                 }
-                data = labels.map(() => Math.floor(Math.random() * 300) + 100);
             } else if (period === 'weekly') {
-                for (let i = 12; i >= 0; i--) {
+                for (let i = 11; i >= 0; i--) {
                     labels.push(`Sem ${13 - i}`);
+                    const weekStart = new Date(now);
+                    weekStart.setDate(now.getDate() - (i * 7));
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekStart.getDate() + 7);
+                    
+                    const weekTotal = orders?.filter(o => {
+                        const orderDate = new Date(o.created_at);
+                        return orderDate >= weekStart && orderDate < weekEnd;
+                    }).reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                    data.push(weekTotal);
                 }
-                data = labels.map(() => Math.floor(Math.random() * 1500) + 500);
             } else if (period === 'monthly') {
                 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
                 for (let i = 11; i >= 0; i--) {
                     let m = new Date();
-                    m.setMonth(m.getMonth() - i);
+                    m.setMonth(now.getMonth() - i);
                     labels.push(months[m.getMonth()]);
+                    
+                    const monthStr = `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, '0')}`;
+                    const monthTotal = orders?.filter(o => o.created_at?.startsWith(monthStr))
+                        .reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
+                    data.push(monthTotal);
                 }
-                data = labels.map(() => Math.floor(Math.random() * 5000) + 2000);
             }
             
             if (analyticsChart) analyticsChart.destroy();
@@ -1542,6 +1431,7 @@
         // UTILITÁRIOS
         // ============================================
         function formatDate(dateString) {
+            if (!dateString) return '-';
             const date = new Date(dateString);
             return date.toLocaleDateString('pt-PT', {
                 day: '2-digit',
@@ -1554,7 +1444,7 @@
     
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
+            return String(str).replace(/[&<>]/g, function(m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
@@ -1569,16 +1459,6 @@
             toast.textContent = message;
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
-        }
-    
-        function toggleNotifications() {
-            document.getElementById('notifications-panel').classList.toggle('hidden');
-        }
-    
-        function markAllAsRead() {
-            notifications = [];
-            document.getElementById('notifications-list').innerHTML = '<p class="text-center text-nuca-green/40 py-8">Sem notificações novas</p>';
-            document.getElementById('notification-badge').classList.add('hidden');
         }
     </script>
     </body>
