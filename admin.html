@@ -227,14 +227,40 @@
             .order-details {
                 max-height: 0;
                 overflow: hidden;
-                transition: max-height 0.4s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
+                transition: max-height 0.5s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
                 opacity: 0;
                 background-color: rgba(85, 107, 79, 0.03);
             }
             .order-details.expanded {
-                max-height: 500px;
+                max-height: 2000px;
                 opacity: 1;
                 padding: 1rem 1.5rem;
+            }
+            
+            /* Para garantir que os itens não ultrapassam os limites */
+            .order-details .space-y-2 {
+                max-height: 500px;
+                overflow-y: auto;
+                padding-right: 0.5rem;
+            }
+            
+            /* Estilizar a barra de scroll */
+            .order-details .space-y-2::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            .order-details .space-y-2::-webkit-scrollbar-track {
+                background: rgba(85, 107, 79, 0.1);
+                border-radius: 3px;
+            }
+            
+            .order-details .space-y-2::-webkit-scrollbar-thumb {
+                background: #556B4F;
+                border-radius: 3px;
+            }
+            
+            .order-details .space-y-2::-webkit-scrollbar-thumb:hover {
+                background: #2C3328;
             }
     
             .expand-btn {
@@ -808,7 +834,7 @@
         let currentSection = 'dashboard';
         let allOrders = [];
         let allCustomers = [];
-        let customerStats = new Map(); // Para armazenar totais por cliente
+        let customerStats = new Map();
         let currentFilter = 'all';
         let sortField = 'created_at';
         let sortDirection = 'desc';
@@ -1246,7 +1272,7 @@
                 const statusLabels = { pending: 'Pendente', pending_payment: 'Pendente', processing: 'A Processar', shipped: 'Enviada', delivered: 'Entregue', cancelled: 'Cancelada' };
                 showToast(`Estado atualizado para "${statusLabels[newStatus]}"`, 'success');
                 loadDashboard();
-                loadCustomers(); // Recarregar clientes para atualizar totais
+                loadCustomers();
             } catch (error) {
                 console.error('Erro ao atualizar status:', error);
                 showToast('Erro ao atualizar estado', 'error');
@@ -1263,7 +1289,7 @@
             orderToDelete = null;
         }
     
-                async function confirmDelete() {
+        async function confirmDelete() {
             if (!orderToDelete) {
                 showToast('Nenhuma encomenda selecionada', 'error');
                 return;
@@ -1277,7 +1303,6 @@
                 
                 console.log('A eliminar encomenda com ID:', orderToDelete);
                 
-                // Mostrar loading no botão
                 const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
                 const cancelBtn = document.querySelector('#delete-modal .border');
                 if (deleteBtn) {
@@ -1286,7 +1311,6 @@
                 }
                 if (cancelBtn) cancelBtn.disabled = true;
                 
-                // Eliminar da base de dados
                 const { data, error } = await supabaseClient
                     .from('orders')
                     .delete()
@@ -1295,36 +1319,20 @@
                 
                 console.log('Resultado da eliminação:', { data, error });
                 
-                if (error) {
-                    console.error('Erro detalhado:', error);
-                    throw new Error(error.message);
-                }
+                if (error) throw new Error(error.message);
                 
-                if (data && data.length === 0) {
-                    showToast('Encomenda não encontrada na base de dados', 'error');
-                    return;
-                }
-                
-                // Atualizar arrays locais
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
-                
-                // Reaplicar filtros para atualizar a tabela
                 applyFilters();
-                
-                // Recarregar dashboard e clientes para atualizar estatísticas
                 await loadDashboard();
                 await loadCustomers();
                 
                 showToast('Encomenda eliminada com sucesso!', 'success');
-                
-                // Fechar modal
                 closeDeleteModal();
                 
             } catch (error) {
                 console.error('Erro ao eliminar encomenda:', error);
                 showToast('Erro ao eliminar encomenda: ' + error.message, 'error');
             } finally {
-                // Restaurar botões
                 const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
                 const cancelBtn = document.querySelector('#delete-modal .border');
                 if (deleteBtn) {
@@ -1336,13 +1344,12 @@
         }
     
         // ============================================
-        // CLIENTES - COM CÁLCULO DE TOTAL GASTO
+        // CLIENTES
         // ============================================
         async function loadCustomers() {
             try {
                 if (!supabaseClient) return;
                 
-                // Buscar todos os clientes
                 const { data: customers, error } = await supabaseClient
                     .from('customers')
                     .select('*')
@@ -1350,14 +1357,12 @@
                 
                 if (error) throw error;
                 
-                // Buscar todas as encomendas para calcular totais
                 const { data: orders, error: ordersError } = await supabaseClient
                     .from('orders')
                     .select('customer_email, total, status, created_at');
                 
                 if (ordersError) throw ordersError;
                 
-                // Calcular totais por cliente (apenas encomendas não canceladas)
                 const customerTotals = new Map();
                 const customerOrderCount = new Map();
                 const customerLastPurchase = new Map();
@@ -1366,17 +1371,14 @@
                     const email = order.customer_email;
                     if (!email) return;
                     
-                    // Ignorar encomendas canceladas para o total gasto
                     if (order.status !== 'cancelled') {
                         const currentTotal = customerTotals.get(email) || 0;
                         customerTotals.set(email, currentTotal + (parseFloat(order.total) || 0));
                     }
                     
-                    // Contar todas as encomendas (incluindo canceladas)
                     const currentCount = customerOrderCount.get(email) || 0;
                     customerOrderCount.set(email, currentCount + 1);
                     
-                    // Última compra
                     const orderDate = new Date(order.created_at);
                     const lastDate = customerLastPurchase.get(email);
                     if (!lastDate || orderDate > lastDate) {
@@ -1384,7 +1386,6 @@
                     }
                 });
                 
-                // Atualizar clientes com os totais calculados
                 const customersWithStats = customers.map(customer => {
                     const email = customer.email;
                     return {
@@ -1479,7 +1480,6 @@
                 
                 if (error) throw error;
                 
-                // Buscar encomendas do cliente
                 const { data: customerOrders, error: ordersError } = await supabaseClient
                     .from('orders')
                     .select('*')
@@ -1488,7 +1488,6 @@
                 
                 if (ordersError) throw ordersError;
                 
-                // Calcular total gasto (apenas encomendas não canceladas)
                 const totalSpent = customerOrders?.filter(o => o.status !== 'cancelled')
                     .reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0) || 0;
                 const orderCount = customerOrders?.length || 0;
@@ -1613,7 +1612,6 @@
             try {
                 if (!supabaseClient) throw new Error('Supabase não inicializado');
                 
-                // Verificar se email já existe
                 const { data: existing, error: checkError } = await supabaseClient
                     .from('customers')
                     .select('email')
@@ -1672,10 +1670,8 @@
                 return;
             }
             
-            // Cabeçalhos corretos
             const headers = ['Nome', 'Email', 'Telefone', 'Cidade', 'Total Gasto (€)', 'Nº Encomendas', 'Última Compra'];
             
-            // Dados dos clientes
             const rows = allCustomers.map(customer => [
                 `"${(customer.name || '').replace(/"/g, '""')}"`,
                 `"${(customer.email || '').replace(/"/g, '""')}"`,
@@ -1686,13 +1682,11 @@
                 customer.last_purchase_date ? new Date(customer.last_purchase_date).toLocaleDateString('pt-PT') : ''
             ]);
             
-            // Construir CSV
             const csvContent = [
                 headers.join(';'),
                 ...rows.map(row => row.join(';'))
             ].join('\n');
             
-            // Adicionar BOM para UTF-8 com caracteres especiais
             const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const a = document.createElement('a');
             const url = URL.createObjectURL(blob);
