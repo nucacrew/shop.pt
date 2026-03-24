@@ -693,6 +693,53 @@
             stroke-width: 2;
             fill: none;
         }
+        
+        /* ===== BADGE DE OFERTA PARA O MODAL ===== */
+        .modal-offer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%);
+            color: #2C3328;
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.4);
+            margin-bottom: 1rem;
+        }
+        
+        .modal-offer-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .modal-offer-badge:hover::before {
+            left: 100%;
+        }
+        
+        .modal-offer-badge svg {
+            width: 18px;
+            height: 18px;
+            stroke: #2C3328;
+            stroke-width: 2;
+            fill: none;
+        }
+        
+        .offer-text {
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
     </style>
 <base target="_blank">
 </head>
@@ -1111,11 +1158,12 @@
                                 <span id="pack-modal-original" class="text-lg sm:text-xl line-through text-nuca-beige/50"></span>
                                 <span id="pack-modal-savings" class="text-xs sm:text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span>
                             </div>
-                            <div id="pack-free-items" class="mt-3 sm:mt-4 hidden"></div>
+                            <div id="pack-free-items" class="mt-3 sm:mt-4"></div>
                         </div>
                     </div>
 
                     <div class="p-5 sm:p-8 md:p-12 bg-nuca-beige overflow-y-auto pack-modal-right">
+                        <div id="modal-offer-badge-container" class="mb-4"></div>
                         <h3 class="font-display text-xl sm:text-2xl font-bold text-nuca-green mb-4 sm:mb-6">O Pack Inclui:</h3>
                         <div id="pack-modal-items" class="space-y-3 sm:space-y-4 mb-6 sm:mb-8"></div>
                         <div class="shipping-notice p-3 sm:p-4 rounded-r-xl flex items-start gap-3 mb-4 sm:mb-6">
@@ -1134,6 +1182,15 @@
                                     <button onclick="selectPackSize('L')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="L">L</button>
                                     <button onclick="selectPackSize('XL')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="XL">XL</button>
                                     <button onclick="selectPackSize('XXL')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="XXL">XXL</button>
+                                </div>
+                            </div>
+                            <div id="pack-season-selection" class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4 hidden">
+                                <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação:</label>
+                                <div class="grid grid-cols-2 gap-2" id="pack-season-buttons">
+                                    <button onclick="selectPackSeason('Primavera')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg><span class="font-medium">Primavera</span></button>
+                                    <button onclick="selectPackSeason('Verão')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><span class="font-medium">Verão</span></button>
+                                    <button onclick="selectPackSeason('Outono')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg><span class="font-medium">Outono</span></button>
+                                    <button onclick="selectPackSeason('Inverno')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg><span class="font-medium">Inverno</span></button>
                                 </div>
                             </div>
                             <button onclick="addPackToCart()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">
@@ -1197,7 +1254,7 @@
             { id: 'meias-estacao', name: 'Meias-NUCA Estação', category: 'seasons', basePrice: 9.99, hasSeasons: true, sizes: ['S','M','L'], seasonImages: productImages.estacoes, description: 'Meias NUCA da Coleção Estações do Ano.' }
         ];
 
-        // ===== DADOS DOS PACKS (SEM BADGE DE OFERTA NOS CARDS) =====
+        // ===== DADOS DOS PACKS COM OFERTA NO MODAL =====
         const packs = {
             nuca: [
                 { id: 'p1', name: 'Pack NUCA Duo', description: 'Tshirt + Hoodie com 15% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca'], discount: 15, price: 72.23, originalPrice: 84.98, type: 'nuca', freeGift: null },
@@ -1206,19 +1263,19 @@
                 { id: 'p4', name: 'Pack NUCA Total', description: 'Toda a coleção NUCA com 30% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'chaveiro-nuca', 'meias-nuca'], discount: 30, price: 96.47, originalPrice: 137.94, type: 'nuca', freeGift: null }
             ],
             seasons: [
-                { id: 'ps1', name: 'Pack Essencial', description: 'T-shirt Estações + Meias Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', seasonChoice: true },
-                { id: 'ps2', name: 'Pack Daily Wear', description: 'T-shirt Estações + Boné Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', seasonChoice: true },
-                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie Estações + Meias Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', seasonChoice: true },
-                { id: 'ps4', name: 'Pack Full Estações', description: 'T-shirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', seasonChoice: true }
+                { id: 'ps1', name: 'Pack Essencial', description: 'T-shirt Estações + Meias Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
+                { id: 'ps2', name: 'Pack Daily Wear', description: 'T-shirt Estações + Boné Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
+                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie Estações + Meias Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag Estações' },
+                { id: 'ps4', name: 'Pack Full Estações', description: 'T-shirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag + Chaveiro Estações' }
             ]
         };
 
         // ===== ÍCONES DAS ESTAÇÕES =====
         const seasonIcons = {
-            'Primavera': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
-            'Verão': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
-            'Outono': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
-            'Inverno': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
+            'Primavera': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
+            'Verão': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+            'Outono': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
+            'Inverno': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
         };
 
         const seasonColors = {
@@ -1386,7 +1443,7 @@
                 }).join('');
                 const moreCount = packProducts.length - 3;
                 
-                // Tag PACK com estrela apenas para packs de estações (sem badge de oferta)
+                // Tag PACK com estrela para packs de estações (sem badge de oferta visível)
                 const packTag = pack.type === 'seasons' ? `
                     <div class="pack-tag-star">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1427,6 +1484,21 @@
             document.getElementById('pack-modal-price').textContent = `€${currentPack.price.toFixed(2)}`;
             document.getElementById('pack-modal-original').textContent = `€${currentPack.originalPrice.toFixed(2)}`;
             document.getElementById('pack-modal-savings').textContent = `-${currentPack.discount}%`;
+            
+            // Badge de oferta no modal (aparece apenas quando clica no pack)
+            const offerBadgeContainer = document.getElementById('modal-offer-badge-container');
+            if (currentPack.freeGift) {
+                offerBadgeContainer.innerHTML = `
+                    <div class="modal-offer-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                        <span class="offer-text">+ ${currentPack.freeGift}</span>
+                    </div>
+                `;
+            } else {
+                offerBadgeContainer.innerHTML = '';
+            }
             
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
             document.getElementById('pack-modal-items').innerHTML = packProducts.map(p => {
