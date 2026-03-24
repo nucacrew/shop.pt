@@ -176,6 +176,7 @@
             position: relative;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
         }
         .season-selector:hover {
             transform: translateY(-2px);
@@ -1273,15 +1274,18 @@
             }
         };
 
-        // Produtos da Loja NUCA
-        const allProducts = [
+        // Produtos da Loja NUCA (APENAS os produtos principais, sem os da coleção estações)
+        const mainProducts = [
             { id: 'tshirt-nuca', name: 'Tshirt-NUCA', category: 'camisetas', basePrice: 24.99, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, description: 'A camiseta essencial NUCA. Corte clássico, 100% algodão orgânico.' },
             { id: 'hoodie-nuca', name: 'Hoodie-NUCA', category: 'hoodies', basePrice: 59.99, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, description: 'O hoodie essencial NUCA. Oversize em algodão de peso médio.' },
             { id: 'bone-nuca', name: 'Boné-NUCA', category: 'acessorios', basePrice: 24.99, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, description: 'Boné clássico com logo NUCA bordado.' },
             { id: 'tote-nuca', name: 'Tote Bag-NUCA', category: 'acessorios', basePrice: 19.99, sizes: ['Único'], colors: [], images: productImages.tote, description: 'Tote bag espaçosa em algodão orgânico.' },
             { id: 'chaveiro-nuca', name: 'Chaveiro-NUCA', category: 'acessorios', basePrice: 9.99, sizes: ['Único'], colors: [], images: productImages.chaveiro, description: 'Chaveiro NUCA em couro sintético premium.' },
-            { id: 'meias-nuca', name: 'Meias-NUCA', category: 'acessorios', basePrice: 7.99, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, description: 'Meias NUCA em algodão premium. Tamanhos europeus: 35-38, 39-42, 43-46.' },
-            // Coleção Estações - com cores adicionadas
+            { id: 'meias-nuca', name: 'Meias-NUCA', category: 'acessorios', basePrice: 7.99, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, description: 'Meias NUCA em algodão premium. Tamanhos europeus: 35-38, 39-42, 43-46.' }
+        ];
+
+        // Produtos da Coleção Estações (APENAS para o carrossel e modais)
+        const seasonProducts = [
             { id: 'tshirt-estacao', name: 'Tshirt-NUCA Estação', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, seasonImages: productImages.estacoes, description: 'Tshirt NUCA da Coleção Estações do Ano. Escolhe a estação e a cor que combina contigo.' },
             { id: 'hoodie-estacao', name: 'Hoodie-Nuca Estação', category: 'seasons', basePrice: 64.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, seasonImages: productImages.estacoes, description: 'Hoodie NUCA da Coleção Estações do Ano. O mesmo conforto com a cor da tua estação favorita.' },
             { id: 'bone-estacao', name: 'Boné-NUCA Estação', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, seasonImages: productImages.estacoes, description: 'Boné NUCA da Coleção Estações do Ano. O acessório perfeito com a cor da tua estação.' },
@@ -1289,6 +1293,9 @@
             { id: 'chaveiro-estacao', name: 'Chaveiro-NUCA Estação', category: 'seasons', basePrice: 12.99, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.chaveiro, seasonImages: productImages.estacoes, description: 'Chaveiro NUCA da Coleção Estações do Ano. O pequeno detalhe com a cor da tua estação.' },
             { id: 'meias-estacao', name: 'Meias-NUCA Estação', category: 'seasons', basePrice: 9.99, hasSeasons: true, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, seasonImages: productImages.estacoes, description: 'Meias NUCA da Coleção Estações do Ano. Conforto e estilo com a cor da tua estação favorita.' }
         ];
+
+        // Combinar todos os produtos para o modal (mas a loja mostra apenas os principais)
+        const allProducts = [...mainProducts, ...seasonProducts];
 
         // ===== DADOS DOS PACKS =====
         const packs = {
@@ -1336,18 +1343,6 @@
             'Preta': 'preta',
             'Preto': 'preto',
             'Branco': 'branco'
-        };
-
-        // Mapeamento de tamanhos para meias (formato amigável)
-        const sizeDisplayMap = {
-            'S': 'S',
-            'M': 'M',
-            'L': 'L',
-            'XL': 'XL',
-            'XXL': 'XXL',
-            '35-38': '35-38',
-            '39-42': '39-42',
-            '43-46': '43-46'
         };
 
         // ===== ÍCONES DAS ESTAÇÕES =====
@@ -1412,12 +1407,11 @@
 
         function renderProducts(filter) {
             const grid = document.getElementById('products-grid');
-            const filtered = filter === 'all' ? allProducts : allProducts.filter(p => p.category === filter);
+            // Apenas os produtos principais (sem os da coleção estações)
+            const filtered = filter === 'all' ? mainProducts : mainProducts.filter(p => p.category === filter);
             grid.innerHTML = filtered.map(product => {
                 let imageUrl = '';
-                if (product.hasSeasons) {
-                    imageUrl = product.seasonImages?.primavera?.front || '';
-                } else if (product.colors && product.colors.length > 0) {
+                if (product.colors && product.colors.length > 0) {
                     imageUrl = product.images[product.colors[0].key]?.front || '';
                 } else if (product.images) {
                     imageUrl = product.images[Object.keys(product.images)[0]]?.front || '';
@@ -1435,10 +1429,8 @@
         function renderSeasonsCarousel() {
             const track = document.getElementById('seasons-track');
             const indicators = document.getElementById('carousel-indicators');
-            const seasonProducts = allProducts.filter(p => p.hasSeasons);
             track.innerHTML = seasonProducts.map(product => {
                 const imageUrl = product.seasonImages ? product.seasonImages.primavera.front : '';
-                const categoryLabel = 'Coleção Estações';
                 return `<div class="carousel-slide"><div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${product.id}')"><div class="relative overflow-hidden aspect-[4/5]"><img src="${imageUrl}" alt="${product.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy"><div class="absolute top-4 left-4"><span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider">EDIÇÃO ESPECIAL</span></div></div><div class="p-4 sm:p-6"><h3 class="font-display text-lg sm:text-xl font-bold text-nuca-green">${product.name}</h3><p class="text-nuca-green/70 text-xs sm:text-sm mt-2 line-clamp-2">${product.description}</p><p class="text-nuca-green font-bold text-base sm:text-lg mt-3 sm:mt-4">€${product.basePrice.toFixed(2)}</p></div></div></div>`;
             }).join('');
             indicators.innerHTML = seasonProducts.map((_, i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-nuca-green w-6' : 'bg-nuca-green/30'}" aria-label="Slide ${i + 1}"></button>`).join('');
@@ -1479,7 +1471,6 @@
                 colorSection.classList.remove('hidden');
                 const seasons = ['Primavera', 'Verão', 'Outono', 'Inverno'];
                 document.getElementById('modal-seasons').innerHTML = seasons.map(season => `<button onclick="selectSeason('${season}')" class="season-selector flex items-center gap-2 p-3 rounded-xl border border-nuca-green/20 transition-all"><div class="w-8 h-8 rounded-full bg-nuca-green/10 flex items-center justify-center">${seasonIcons[season]}</div><span>${season}</span></button>`).join('');
-                // Cores para produtos da coleção estações
                 if (currentProduct.colors && currentProduct.colors.length > 0) {
                     document.getElementById('modal-colors').innerHTML = currentProduct.colors.map((color, i) => `<button onclick="selectColor(${i})" class="color-selector w-9 h-9 rounded-full border-2" style="background-color: ${color.hex}" title="${color.name}"></button>`).join('');
                     variantThumbnails.innerHTML = currentProduct.colors.map((color, i) => `<div class="variant-thumbnail" onclick="selectColor(${i})"><img src="${currentProduct.images[color.key].front}" alt="${color.name}"></div>`).join('');
@@ -1510,6 +1501,11 @@
         
         function selectSeason(season) { 
             selectedSeason = season; 
+            // Atualizar estilo dos botões de estação
+            document.querySelectorAll('#modal-seasons .season-selector').forEach(btn => {
+                const btnText = btn.querySelector('span')?.innerText;
+                btn.classList.toggle('active', btnText === season);
+            });
             const seasonKey = season.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a');
             const seasonImages = currentProduct.seasonImages[seasonKey];
             if (seasonImages) {
