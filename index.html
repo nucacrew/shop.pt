@@ -752,6 +752,36 @@
                 gap: 0.75rem;
             }
         }
+        
+        /* ===== SELETOR DE CORES DO PACK ===== */
+        .pack-color-selector {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 0 0 1px #E8DCC4;
+        }
+        .pack-color-selector:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px #000000;
+        }
+        .pack-color-selector.active {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 2px #000000;
+            border: 2px solid #000000;
+        }
+        
+        .pack-item-color-row {
+            background: rgba(85, 107, 79, 0.05);
+            border-radius: 12px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        .pack-item-color-row:last-child {
+            margin-bottom: 0;
+        }
     </style>
 <base target="_blank">
 </head>
@@ -1069,7 +1099,7 @@
         </div>
     </footer>
 
-    <!-- ===== MODAL DE PRODUTO - LADO A LADO RESPONSIVO ===== -->
+    <!-- ===== MODAL DE PRODUTO ===== -->
     <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeProductModal()"></div>
         <div class="absolute inset-0 sm:inset-4 md:inset-10 bg-nuca-beige sm:rounded-3xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0" id="modal-content">
@@ -1165,6 +1195,10 @@
                         <div id="modal-offer-badge-container" class="mb-4"></div>
                         <h3 class="font-display text-xl sm:text-2xl font-bold text-nuca-green mb-4 sm:mb-6">O Pack Inclui:</h3>
                         <div id="pack-modal-items" class="space-y-3 sm:space-y-4 mb-6 sm:mb-8"></div>
+                        
+                        <!-- Seleção de cores para cada item do pack -->
+                        <div id="pack-colors-section" class="mb-6"></div>
+                        
                         <div class="shipping-notice p-3 sm:p-4 rounded-r-xl flex items-start gap-3 mb-4 sm:mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
                             <div>
@@ -1185,12 +1219,7 @@
                             </div>
                             <div id="pack-season-selection" class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4 hidden">
                                 <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação:</label>
-                                <div class="grid grid-cols-2 gap-2" id="pack-season-buttons">
-                                    <button onclick="selectPackSeason('Primavera')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg><span class="font-medium">Primavera</span></button>
-                                    <button onclick="selectPackSeason('Verão')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><span class="font-medium">Verão</span></button>
-                                    <button onclick="selectPackSeason('Outono')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg><span class="font-medium">Outono</span></button>
-                                    <button onclick="selectPackSeason('Inverno')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg><span class="font-medium">Inverno</span></button>
-                                </div>
+                                <div class="grid grid-cols-2 gap-2" id="pack-season-buttons"></div>
                             </div>
                             <button onclick="addPackToCart()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">
                                 Adicionar Pack ao Carrinho
@@ -1269,6 +1298,40 @@
             ]
         };
 
+        // Definição das cores disponíveis por tipo de produto
+        const productColorOptions = {
+            'tshirt-nuca': ['Bege', 'Branca', 'Preta'],
+            'hoodie-nuca': ['Bege', 'Preta', 'Verde'],
+            'bone-nuca': ['Preto', 'Branco'],
+            'meias-nuca': ['Preto', 'Branco'],
+            'tote-nuca': [],
+            'chaveiro-nuca': [],
+            'tshirt-estacao': [],
+            'hoodie-estacao': [],
+            'bone-estacao': [],
+            'tote-estacao': [],
+            'chaveiro-estacao': [],
+            'meias-estacao': []
+        };
+
+        const colorHexMap = {
+            'Bege': '#D8C6A5',
+            'Branca': '#FFFFFF',
+            'Preta': '#2C3328',
+            'Verde': '#556B4F',
+            'Preto': '#2C3328',
+            'Branco': '#FFFFFF'
+        };
+
+        const colorKeyMap = {
+            'Bege': 'bege',
+            'Branca': 'branca',
+            'Preta': 'preta',
+            'Verde': 'verde',
+            'Preto': 'preto',
+            'Branco': 'branco'
+        };
+
         // ===== ÍCONES DAS ESTAÇÕES =====
         const seasonIcons = {
             'Primavera': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
@@ -1293,6 +1356,7 @@
         let currentPack = null;
         let selectedPackSeason = null;
         let selectedPackSize = 'M';
+        let selectedPackColors = {}; // { productId: colorName }
         let carouselPosition = 0;
         let currentImageIndex = 0;
 
@@ -1476,7 +1540,8 @@
         function openPackModal(packId) {
             currentPack = [...packs.nuca, ...packs.seasons].find(p => p.id === packId);
             if (!currentPack) return;
-            selectedPackSeason = null; selectedPackSize = 'M';
+            selectedPackSeason = null; selectedPackSize = 'M'; selectedPackColors = {};
+            
             document.getElementById('pack-modal-title').textContent = currentPack.name;
             document.getElementById('pack-modal-description').textContent = currentPack.description;
             document.getElementById('pack-modal-price').textContent = `€${currentPack.price.toFixed(2)}`;
@@ -1502,8 +1567,42 @@
                 let imgUrl = '';
                 if (p.images) { const firstKey = Object.keys(p.images)[0]; imgUrl = p.images[firstKey]?.front || ''; }
                 else if (p.seasonImages) imgUrl = p.seasonImages.primavera?.front;
-                return `<div class="flex items-center gap-3 bg-nuca-light/50 p-3 rounded-xl"><img src="${imgUrl}" alt="${p.name}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0"><div><h4 class="font-bold text-nuca-green text-sm">${p.name}</h4><p class="text-xs text-nuca-green/60">€${p.basePrice.toFixed(2)}</p></div></div>`;
+                return `<div class="flex items-center gap-3 bg-nuca-light/50 p-3 rounded-xl">
+                            <img src="${imgUrl}" alt="${p.name}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0">
+                            <div>
+                                <h4 class="font-bold text-nuca-green text-sm">${p.name}</h4>
+                                <p class="text-xs text-nuca-green/60">€${p.basePrice.toFixed(2)}</p>
+                            </div>
+                        </div>`;
             }).join('');
+            
+            // Seletor de cores para cada item do pack
+            const colorsSection = document.getElementById('pack-colors-section');
+            const colorOptions = packProducts.filter(p => productColorOptions[p.id] && productColorOptions[p.id].length > 0);
+            
+            if (colorOptions.length > 0) {
+                colorsSection.innerHTML = `
+                    <div class="bg-nuca-light/30 p-4 rounded-xl mb-4">
+                        <h4 class="font-bold text-nuca-green text-sm mb-3">Escolhe as cores:</h4>
+                        ${colorOptions.map(product => `
+                            <div class="pack-item-color-row">
+                                <p class="text-xs font-medium text-nuca-green mb-2">${product.name}:</p>
+                                <div class="flex gap-2 flex-wrap" id="color-selector-${product.id}">
+                                    ${productColorOptions[product.id].map(color => `
+                                        <button onclick="selectPackItemColor('${product.id}', '${color}')" 
+                                            class="pack-color-selector ${selectedPackColors[product.id] === color ? 'active' : ''}" 
+                                            style="background-color: ${colorHexMap[color]}" 
+                                            title="${color}"></button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                        <p class="text-xs text-nuca-green/50 mt-2">* Escolhe a cor para cada item do pack</p>
+                    </div>
+                `;
+            } else {
+                colorsSection.innerHTML = '';
+            }
             
             const existingSeasonDiv = document.getElementById('pack-season-selection');
             if (existingSeasonDiv) existingSeasonDiv.remove();
@@ -1533,27 +1632,88 @@
             setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
         }
         
+        function selectPackItemColor(productId, color) {
+            selectedPackColors[productId] = color;
+            const container = document.getElementById(`color-selector-${productId}`);
+            if (container) {
+                const buttons = container.querySelectorAll('.pack-color-selector');
+                buttons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('title') === color) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+        
         function closePackModal() { const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content'); content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300); }
         function selectPackSeason(season) { selectedPackSeason = season; document.querySelectorAll('#pack-season-buttons .pack-season-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(season))); }
         function selectPackSize(size) { selectedPackSize = size; updatePackSizeButtons(); }
         function updatePackSizeButtons() { document.querySelectorAll('.pack-size-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.size === selectedPackSize); btn.classList.toggle('bg-nuca-green', btn.dataset.size === selectedPackSize); btn.classList.toggle('text-nuca-beige', btn.dataset.size === selectedPackSize); }); }
+        
         function addPackToCart() {
             if (!currentPack) return;
             if (currentPack.seasonChoice && !selectedPackSeason) { alert('Por favor seleciona uma estação para continuar.'); return; }
+            
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
+            
+            // Verificar se todas as cores foram selecionadas para produtos que têm opções de cor
+            const missingColors = [];
+            packProducts.forEach(product => {
+                const colorOptions = productColorOptions[product.id];
+                if (colorOptions && colorOptions.length > 0 && !selectedPackColors[product.id]) {
+                    missingColors.push(product.name);
+                }
+            });
+            
+            if (missingColors.length > 0) {
+                alert(`Por favor seleciona a cor para: ${missingColors.join(', ')}`);
+                return;
+            }
+            
             const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
             const discountedPrice = totalPrice * (1 - currentPack.discount / 100);
             const discountPerItem = (totalPrice - discountedPrice) / packProducts.length;
+            
             packProducts.forEach(product => {
                 const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
                 let imageUrl = '';
-                if (product.hasSeasons && selectedPackSeason && product.seasonImages) { const seasonKey = selectedPackSeason.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a'); imageUrl = product.seasonImages[seasonKey]?.front || ''; }
-                else if (product.images) { const firstKey = Object.keys(product.images)[0]; imageUrl = product.images[firstKey]?.front || ''; }
-                const item = { id: product.id + '_pack_' + Date.now(), name: product.hasSeasons ? `${product.name} - ${selectedPackSeason}` : product.name, price: adjustedPrice, originalPrice: product.basePrice, size: product.sizes && product.sizes[0] !== 'Único' ? selectedPackSize : 'Único', color: product.hasSeasons && selectedPackSeason ? seasonColors[selectedPackSeason]?.name : null, image: imageUrl, isPackItem: true };
+                let colorName = null;
+                
+                // Obter a cor selecionada para este produto
+                const selectedColor = selectedPackColors[product.id];
+                
+                if (product.hasSeasons && selectedPackSeason && product.seasonImages) {
+                    const seasonKey = selectedPackSeason.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a');
+                    imageUrl = product.seasonImages[seasonKey]?.front || '';
+                    colorName = seasonColors[selectedPackSeason]?.name;
+                } else if (selectedColor && product.images) {
+                    const colorKey = colorKeyMap[selectedColor];
+                    if (colorKey && product.images[colorKey]) {
+                        imageUrl = product.images[colorKey]?.front || '';
+                    }
+                    colorName = selectedColor;
+                } else if (product.images) {
+                    const firstKey = Object.keys(product.images)[0];
+                    imageUrl = product.images[firstKey]?.front || '';
+                }
+                
+                const item = {
+                    id: product.id + '_pack_' + Date.now() + (selectedColor || ''),
+                    name: product.hasSeasons ? `${product.name} - ${selectedPackSeason}` : product.name,
+                    price: adjustedPrice,
+                    originalPrice: product.basePrice,
+                    size: product.sizes && product.sizes[0] !== 'Único' ? selectedPackSize : 'Único',
+                    color: colorName,
+                    image: imageUrl,
+                    isPackItem: true
+                };
                 cart.push(item);
             });
+            
             updateCartUI(); closePackModal(); toggleCart();
         }
+        
         function buyPackItemsIndividually() { closePackModal(); if (currentPack) currentPack.items.forEach(id => openProductModal(id)); }
 
         function toggleCart() { const sidebar = document.getElementById('cart-sidebar'); const overlay = document.getElementById('cart-overlay'); const isOpen = sidebar.classList.contains('open'); sidebar.classList.toggle('open'); overlay.classList.toggle('active'); document.body.classList.toggle('overflow-hidden', !isOpen); }
