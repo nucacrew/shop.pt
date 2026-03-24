@@ -34,7 +34,6 @@
                         'float': 'float 6s ease-in-out infinite',
                         'fade-in': 'fadeIn 1s ease-out forwards',
                         'slide-up': 'slideUp 0.8s ease-out forwards',
-                        'shimmer': 'shimmer 2s infinite',
                     },
                     keyframes: {
                         float: {
@@ -48,10 +47,6 @@
                         slideUp: {
                             '0%': { opacity: '0', transform: 'translateY(30px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
-                        },
-                        shimmer: {
-                            '0%': { backgroundPosition: '-200% 0' },
-                            '100%': { backgroundPosition: '200% 0' },
                         }
                     }
                 }
@@ -68,8 +63,6 @@
             color: #556B4F;
             font-family: 'Space Grotesk', sans-serif;
             overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
         /* ===== TIPOGRAFIA ===== */
@@ -162,97 +155,7 @@
             box-shadow: 0 20px 40px rgba(85, 107, 79, 0.3);
         }
 
-        /* ===== BADGE DE OFERTA MELHORADA (SEM EMOJIS) ===== */
-        .offer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%);
-            color: #2C3328;
-            padding: 0.375rem 0.875rem;
-            border-radius: 100px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .offer-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .pack-card:hover .offer-badge::before {
-            left: 100%;
-        }
-        
-        .offer-badge svg {
-            width: 14px;
-            height: 14px;
-            stroke: #2C3328;
-            stroke-width: 2;
-            fill: none;
-        }
-        
-        /* ===== BADGE DE OFERTA PARA O MODAL ===== */
-        .modal-offer-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%);
-            color: #2C3328;
-            padding: 0.5rem 1rem;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            border: 1px solid rgba(255,255,255,0.4);
-            margin-bottom: 1rem;
-        }
-        
-        .modal-offer-badge::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        .modal-offer-badge:hover::before {
-            left: 100%;
-        }
-        
-        .modal-offer-badge svg {
-            width: 18px;
-            height: 18px;
-            stroke: #2C3328;
-            stroke-width: 2;
-            fill: none;
-        }
-        
-        .offer-text {
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== SELETOR DE CORES ===== */
+        /* ===== SELETOR DE CORES - COM BORDA PRETA ===== */
         .color-selector {
             transition: all 0.2s ease;
             box-shadow: 0 0 0 1px #E8DCC4;
@@ -426,6 +329,13 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        .gift-svg {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
 
         /* ===== MODAL LEGAL ===== */
         .legal-modal {
@@ -498,6 +408,7 @@
         .legal-modal-body::-webkit-scrollbar { width: 6px; }
         .legal-modal-body::-webkit-scrollbar-track { background: rgba(85, 107, 79, 0.05); }
         .legal-modal-body::-webkit-scrollbar-thumb { background: rgba(85, 107, 79, 0.2); border-radius: 3px; }
+        .legal-modal-body::-webkit-scrollbar-thumb:hover { background: rgba(85, 107, 79, 0.3); }
 
         /* ===== CONTEÚDO LEGAL ===== */
         .legal-content { padding: 1.5rem; }
@@ -532,6 +443,18 @@
         }
         .legal-section h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 600; color: #2C3328; margin: 0; }
         .legal-section p { margin-bottom: 0.75rem; color: #556B4F; padding-left: 2.5rem; font-size: 0.9rem; }
+        .legal-section ul { margin-bottom: 0.75rem; padding-left: 3.5rem; list-style: none; }
+        .legal-section li { margin-bottom: 0.5rem; color: #556B4F; position: relative; padding-left: 1.25rem; font-size: 0.9rem; }
+        .legal-section li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 5px;
+            height: 5px;
+            background: #556B4F;
+            border-radius: 50%;
+        }
         .legal-footer {
             background: rgba(85, 107, 79, 0.03);
             padding: 1rem 1.5rem;
@@ -553,6 +476,78 @@
             border-color: #556B4F;
         }
         .pack-season-btn.active .season-icon { stroke: #D8C6A5; }
+
+        /* ===== RESPONSIVIDADE: MODAL DE PRODUTO ===== */
+        @media (max-width: 767px) {
+            .product-modal-inner {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .product-modal-image {
+                width: 100%;
+                height: 55vw;
+                min-height: 220px;
+                max-height: 320px;
+            }
+            .product-modal-details {
+                width: 100%;
+                padding: 1.25rem;
+            }
+        }
+
+        /* ===== RESPONSIVIDADE: MODAL DE PACK ===== */
+        @media (max-width: 767px) {
+            .pack-modal-inner {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+            .pack-modal-left {
+                padding: 1.5rem;
+            }
+            .pack-modal-right {
+                padding: 1.25rem;
+            }
+        }
+
+        /* ===== RESPONSIVIDADE: FILTROS DA LOJA ===== */
+        @media (max-width: 480px) {
+            .filter-scroll {
+                display: flex;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 0.5rem;
+                padding-bottom: 0.25rem;
+            }
+            .filter-scroll::-webkit-scrollbar { display: none; }
+            .filter-scroll button { flex-shrink: 0; }
+        }
+
+        /* ===== RESPONSIVIDADE: TABS DE PACKS ===== */
+        @media (max-width: 480px) {
+            .pack-tabs-wrapper {
+                width: 100%;
+            }
+            .pack-tabs-wrapper .inline-flex {
+                width: 100%;
+            }
+            .pack-tab {
+                flex: 1;
+                text-align: center;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ===== RESPONSIVIDADE: FOOTER ===== */
+        @media (max-width: 767px) {
+            .footer-legal {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+        }
 
         /* ===== TRUST BADGES ===== */
         .trust-badge {
@@ -593,7 +588,6 @@
             position: relative;
             width: 100%;
             height: 100%;
-            min-height: 400px;
         }
         .gallery-image {
             position: absolute;
@@ -653,6 +647,10 @@
         .gallery-arrow.next { right: 0.5rem; }
 
         /* ===== COLOR/SEASON IMAGE SELECTOR ===== */
+        .variant-image-preview {
+            position: relative;
+            overflow: hidden;
+        }
         .variant-thumbnail {
             width: 60px;
             height: 60px;
@@ -674,95 +672,26 @@
             height: 100%;
             object-fit: cover;
         }
-
-        /* ===== MODAL DE PRODUTO - RESPONSIVO ===== */
-        .product-modal-container {
-            display: flex;
-            height: 100%;
-            min-height: 500px;
-        }
-        .product-modal-image-side {
-            flex: 1;
-            position: relative;
-            background: #E8DCC4;
-            min-height: 500px;
-        }
-        .product-modal-info-side {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem;
-        }
-        @media (max-width: 768px) {
-            .product-modal-container {
-                flex-direction: column;
-                min-height: auto;
-                height: 100%;
-            }
-            .product-modal-image-side {
-                min-height: 40vh;
-                height: 40vh;
-                max-height: 40vh;
-            }
-            .product-modal-info-side {
-                padding: 1.25rem;
-                max-height: 60vh;
-                overflow-y: auto;
-            }
-            .image-gallery {
-                min-height: 40vh;
-                height: 40vh;
-            }
-        }
-
-        /* ===== MODAL DE PACK ===== */
-        @media (max-width: 768px) {
-            .pack-modal-left {
-                padding: 1.5rem;
-            }
-            .pack-modal-right {
-                padding: 1.25rem;
-                max-height: 60vh;
-                overflow-y: auto;
-            }
-        }
-
-        /* ===== RESPONSIVIDADE ===== */
-        @media (max-width: 480px) {
-            .filter-scroll {
-                display: flex;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                gap: 0.5rem;
-                padding-bottom: 0.25rem;
-            }
-            .filter-scroll::-webkit-scrollbar { display: none; }
-            .filter-scroll button { flex-shrink: 0; }
-            .pack-tab {
-                flex: 1;
-                text-align: center;
-                padding-left: 0.75rem;
-                padding-right: 0.75rem;
-                font-size: 0.75rem;
-            }
-        }
         
-        /* ===== PACK FREE GIFT STYLES ===== */
-        .pack-free-gift {
-            background: linear-gradient(135deg, rgba(232, 184, 107, 0.15) 0%, rgba(212, 162, 89, 0.15) 100%);
-            border-left: 3px solid #E8B86B;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+        /* ===== TAG PACK COM ESTRELA ===== */
+        .pack-tag-star {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(216, 198, 165, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
-        
-        .pack-free-gift:hover {
-            background: linear-gradient(135deg, rgba(232, 184, 107, 0.25) 0%, rgba(212, 162, 89, 0.25) 100%);
-            transform: translateX(4px);
-        }
-        
-        .gift-icon {
-            color: #E8B86B;
-            flex-shrink: 0;
+        .pack-tag-star svg {
+            width: 12px;
+            height: 12px;
+            stroke: #D8C6A5;
+            stroke-width: 2;
+            fill: none;
         }
     </style>
 <base target="_blank">
@@ -777,6 +706,8 @@
     <nav id="navbar" class="fixed top-0 w-full z-40 transition-transform duration-300 nav-hidden bg-nuca-beige/90 backdrop-blur-md border-b border-nuca-green/10">
         <div class="w-full px-4 sm:px-6 lg:px-12 py-3 sm:py-4 flex justify-between items-center">
             <a href="#home" class="nuca-logo text-2xl sm:text-3xl text-nuca-green hover:opacity-80 transition-opacity">NUCA</a>
+
+            <!-- Links desktop -->
             <div class="hidden md:flex items-center gap-6 lg:gap-8">
                 <a href="#shop" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Loja</a>
                 <a href="#seasons-collection" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Coleção Estações</a>
@@ -784,6 +715,8 @@
                 <a href="#about" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Sobre</a>
                 <a href="#contact" class="text-sm font-medium hover:text-nuca-dark transition-colors uppercase tracking-wider">Contacto</a>
             </div>
+
+            <!-- Ações -->
             <div class="flex items-center gap-2 sm:gap-4">
                 <button onclick="toggleCart()" class="relative p-2 hover:bg-nuca-green/10 rounded-full transition-colors" aria-label="Abrir carrinho">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -832,7 +765,7 @@
             <button onclick="goToCheckout()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold">Finalizar Compra</button>
             <div class="flex justify-center gap-4 pt-2">
                 <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
-                <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
+                <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas fáceis</span>
             </div>
         </div>
     </div>
@@ -856,6 +789,7 @@
         <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none" aria-hidden="true">
             <span class="nuca-logo text-[40vw] leading-none">NUCA</span>
         </div>
+
         <div class="relative z-10 text-center max-w-5xl mx-auto w-full">
             <div class="mb-6 sm:mb-8 inline-block">
                 <span class="px-4 py-2 border border-nuca-green rounded-full text-xs sm:text-sm font-medium tracking-wider uppercase animate-fade-in">LOJA ONLINE</span>
@@ -863,10 +797,14 @@
             <h1 class="nuca-logo hero-text text-nuca-green mb-4 sm:mb-6 animate-slide-up" style="animation-delay: 0.2s">NUCA</h1>
             <p class="text-nuca-green/70 max-w-lg mx-auto mb-8 sm:mb-12 animate-slide-up text-sm sm:text-base leading-relaxed" style="animation-delay: 0.6s">Peças pensadas para durar. Design limpo, materiais de qualidade e versatilidade para o teu dia a dia. Sem excessos, só o essencial.</p>
             <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center animate-slide-up px-4 sm:px-0" style="animation-delay: 0.8s">
-                <a href="#shop" onclick="scrollToShop(event)" class="cta-primary text-nuca-beige px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold inline-flex items-center justify-center gap-2 text-sm sm:text-base">Explorar Loja</a>
+                <a href="#shop" onclick="scrollToShop(event)" class="cta-primary text-nuca-beige px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold inline-flex items-center justify-center gap-2 text-sm sm:text-base">
+                    Explorar Loja
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
                 <a href="#seasons-collection" class="cta-secondary text-nuca-green px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold inline-flex items-center justify-center gap-2 text-sm sm:text-base">Coleção Estações</a>
             </div>
         </div>
+
         <div class="absolute bottom-6 sm:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
@@ -959,9 +897,18 @@
                         <p>NUCA nasce da vontade de simplificar. De criar peças que funcionam em qualquer ocasião, que não saem de moda e que resistem ao tempo.</p>
                         <p>Cada artigo é pensado para ser versátil. Uma camiseta que serve para trabalhar ou para sair. Um hoodie que aquece sem pesar. Acessórios que completam sem sobrecarregar.</p>
                         <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-6 sm:pt-8 border-t border-nuca-green/10">
-                            <div><span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">100%</span><span class="text-xs sm:text-sm text-nuca-green/60">Algodão</span></div>
-                            <div><span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">2</span><span class="text-xs sm:text-sm text-nuca-green/60">Coleções</span></div>
-                            <div><span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">∞</span><span class="text-xs sm:text-sm text-nuca-green/60">Possibilidades</span></div>
+                            <div>
+                                <span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">100%</span>
+                                <span class="text-xs sm:text-sm text-nuca-green/60">Algodão</span>
+                            </div>
+                            <div>
+                                <span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">2</span>
+                                <span class="text-xs sm:text-sm text-nuca-green/60">Coleções</span>
+                            </div>
+                            <div>
+                                <span class="block font-display text-2xl sm:text-3xl font-bold text-nuca-green">∞</span>
+                                <span class="text-xs sm:text-sm text-nuca-green/60">Possibilidades</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1072,6 +1019,7 @@
                 </div>
             </div>
         </div>
+
         <div class="max-w-7xl mx-auto mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-nuca-beige/10 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-nuca-beige/40 footer-legal">
             <p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p>
             <div class="flex gap-4 sm:gap-6">
@@ -1084,36 +1032,56 @@
     <!-- ===== MODAL DE PRODUTO ===== -->
     <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeProductModal()"></div>
-        <div class="absolute inset-0 sm:inset-4 md:inset-10 bg-nuca-beige sm:rounded-3xl overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0" id="modal-content">
-            <button onclick="closeProductModal()" class="absolute top-4 right-4 z-20 p-2 bg-nuca-beige/90 rounded-full hover:bg-nuca-beige transition-colors shadow-md" aria-label="Fechar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <div class="absolute inset-0 sm:inset-4 md:inset-10 bg-nuca-beige sm:rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-2xl transform transition-all scale-95 opacity-0" id="modal-content">
+            <button onclick="closeProductModal()" class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2 bg-nuca-beige/80 rounded-full hover:bg-nuca-beige transition-colors" aria-label="Fechar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
-            <div class="product-modal-container">
-                <div class="product-modal-image-side">
-                    <div class="image-gallery" id="modal-image-gallery"></div>
-                    <div id="collection-badge" class="absolute top-4 left-4 hidden">
-                        <span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider"></span>
-                    </div>
+
+            <div class="w-full md:w-1/2 bg-nuca-light relative product-modal-image" style="min-height: 300px; max-height: 50vh;">
+                <div class="image-gallery" id="modal-image-gallery"></div>
+                <div id="collection-badge" class="absolute top-4 left-4 hidden">
+                    <span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider"></span>
                 </div>
-                <div class="product-modal-info-side">
-                    <div class="space-y-5">
+            </div>
+
+            <div class="w-full md:w-1/2 p-5 sm:p-8 md:p-12 overflow-y-auto product-modal-details">
+                <div class="space-y-4 sm:space-y-6">
+                    <div>
+                        <span id="modal-category" class="text-xs sm:text-sm font-medium text-nuca-green/60 uppercase tracking-wider"></span>
+                        <h2 id="modal-title" class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-nuca-green mt-1 sm:mt-2"></h2>
+                        <p id="modal-price" class="text-xl sm:text-2xl font-bold text-nuca-green mt-3 sm:mt-4"></p>
+                    </div>
+                    <p id="modal-description" class="text-nuca-green/70 leading-relaxed text-sm sm:text-base"></p>
+                    
+                    <div id="variant-thumbnails" class="flex gap-2 flex-wrap"></div>
+                    
+                    <div class="shipping-notice p-3 sm:p-4 rounded-r-xl flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
                         <div>
-                            <span id="modal-category" class="text-xs sm:text-sm font-medium text-nuca-green/60 uppercase tracking-wider"></span>
-                            <h2 id="modal-title" class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-nuca-green mt-1"></h2>
-                            <p id="modal-price" class="text-2xl sm:text-3xl font-bold text-nuca-green mt-3"></p>
+                            <p class="text-xs sm:text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p>
+                            <p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p>
                         </div>
-                        <p id="modal-description" class="text-nuca-green/70 leading-relaxed text-sm sm:text-base"></p>
-                        <div id="variant-thumbnails" class="flex gap-2 flex-wrap"></div>
-                        <div class="shipping-notice p-3 rounded-r-xl flex items-start gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <div><p class="text-xs sm:text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p><p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p></div>
-                        </div>
-                        <div id="season-section" class="hidden"><label class="block text-sm font-bold text-nuca-green mb-3">Escolhe a Estação</label><div class="grid grid-cols-2 gap-2" id="modal-seasons"></div></div>
-                        <div id="color-section" class="hidden"><label class="block text-sm font-bold text-nuca-green mb-3">Cor</label><div class="flex gap-3 flex-wrap" id="modal-colors"></div></div>
-                        <div id="size-section"><label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label><div class="flex gap-2 flex-wrap" id="modal-sizes"></div></div>
-                        <div class="pt-4 border-t border-nuca-green/10 space-y-3">
-                            <button onclick="addToCartFromModal()" class="cta-primary w-full text-nuca-beige py-3 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">Adicionar ao Carrinho</button>
-                            <div class="flex justify-center gap-4"><span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span><span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span></div>
+                    </div>
+                    <div id="season-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-3">Escolhe a Estação</label>
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3" id="modal-seasons"></div>
+                    </div>
+                    <div id="color-section" class="hidden">
+                        <label class="block text-sm font-bold text-nuca-green mb-3">Cor</label>
+                        <div class="flex gap-3 flex-wrap" id="modal-colors"></div>
+                    </div>
+                    <div id="size-section">
+                        <label id="size-label" class="block text-sm font-bold text-nuca-green mb-3">Tamanho</label>
+                        <div class="flex gap-2 sm:gap-3 flex-wrap" id="modal-sizes"></div>
+                    </div>
+                    <div class="pt-4 sm:pt-6 border-t border-nuca-green/10 space-y-3">
+                        <button onclick="addToCartFromModal()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">
+                            Adicionar ao Carrinho
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        </button>
+                        <div class="flex justify-center gap-4 pt-2">
+                            <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
+                            <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
                         </div>
                     </div>
                 </div>
@@ -1143,17 +1111,19 @@
                                 <span id="pack-modal-original" class="text-lg sm:text-xl line-through text-nuca-beige/50"></span>
                                 <span id="pack-modal-savings" class="text-xs sm:text-sm bg-nuca-beige text-nuca-green px-3 py-1 rounded-full font-bold"></span>
                             </div>
-                            <div id="pack-free-items" class="mt-3 sm:mt-4"></div>
+                            <div id="pack-free-items" class="mt-3 sm:mt-4 hidden"></div>
                         </div>
                     </div>
 
                     <div class="p-5 sm:p-8 md:p-12 bg-nuca-beige overflow-y-auto pack-modal-right">
-                        <div id="modal-offer-badge-container" class="mb-4"></div>
                         <h3 class="font-display text-xl sm:text-2xl font-bold text-nuca-green mb-4 sm:mb-6">O Pack Inclui:</h3>
                         <div id="pack-modal-items" class="space-y-3 sm:space-y-4 mb-6 sm:mb-8"></div>
                         <div class="shipping-notice p-3 sm:p-4 rounded-r-xl flex items-start gap-3 mb-4 sm:mb-6">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2" class="flex-shrink-0 mt-0.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
-                            <div><p class="text-xs sm:text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p><p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p></div>
+                            <div>
+                                <p class="text-xs sm:text-sm font-bold text-nuca-green">Envio: 3-5 dias úteis</p>
+                                <p class="text-xs text-nuca-green/60">As encomendas são processadas e enviadas no prazo máximo de 5 dias úteis.</p>
+                            </div>
                         </div>
                         <div class="space-y-3 sm:space-y-4 pt-4 sm:pt-6 border-t border-nuca-green/10">
                             <div class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl">
@@ -1166,17 +1136,13 @@
                                     <button onclick="selectPackSize('XXL')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="XXL">XXL</button>
                                 </div>
                             </div>
-                            <div id="pack-season-selection" class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4 hidden">
-                                <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação:</label>
-                                <div class="grid grid-cols-2 gap-2" id="pack-season-buttons">
-                                    <button onclick="selectPackSeason('Primavera')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg><span class="font-medium">Primavera</span></button>
-                                    <button onclick="selectPackSeason('Verão')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><span class="font-medium">Verão</span></button>
-                                    <button onclick="selectPackSeason('Outono')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg><span class="font-medium">Outono</span></button>
-                                    <button onclick="selectPackSeason('Inverno')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm"><svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg><span class="font-medium">Inverno</span></button>
-                                </div>
-                            </div>
-                            <button onclick="addPackToCart()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">Adicionar Pack ao Carrinho</button>
-                            <button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-2 sm:py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-xs sm:text-sm">Preferes escolher detalhes individualmente? Compra separadamente</button>
+                            <button onclick="addPackToCart()" class="cta-primary w-full text-nuca-beige py-3 sm:py-4 rounded-full font-bold flex items-center justify-center gap-2 text-sm sm:text-base">
+                                Adicionar Pack ao Carrinho
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            </button>
+                            <button onclick="buyPackItemsIndividually()" class="w-full border-2 border-nuca-green text-nuca-green py-2 sm:py-3 rounded-full font-bold hover:bg-nuca-green/5 transition-colors text-xs sm:text-sm">
+                                Preferes escolher detalhes individualmente? Compra separadamente
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1187,18 +1153,38 @@
     <script>
         // ===== DADOS DOS PRODUTOS =====
         const productImages = {
-            tshirt: { bege: { front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80', back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&q=80' }, branca: { front: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, preta: { front: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } },
-            hoodie: { bege: { front: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80', back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80' }, branca: { front: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, preta: { front: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } },
-            bone: { preto: { front: 'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' }, branco: { front: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' } },
+            tshirt: {
+                bege: { front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80', back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&q=80' },
+                branca: { front: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' },
+                preta: { front: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' }
+            },
+            hoodie: {
+                bege: { front: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80', back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80' },
+                preta: { front: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80', back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80' },
+                verde: { front: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80', back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80' }
+            },
+            bone: {
+                preto: { front: 'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' },
+                branco: { front: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' }
+            },
             tote: { bege: { front: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80', back: 'https://images.unsplash.com/photo-1597484662317-c9253e609f55?w=600&q=80' } },
             chaveiro: { bege: { front: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80', back: 'https://images.unsplash.com/photo-1605218427306-022ba6c08417?w=600&q=80' } },
-            meias: { preto: { front: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80', back: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80' }, branco: { front: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80', back: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80' } },
-            estacoes: { primavera: { front: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, verao: { front: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80', back: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80' }, outono: { front: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80', back: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80' }, inverno: { front: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } }
+            meias: {
+                preto: { front: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80', back: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80' },
+                branco: { front: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80', back: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80' }
+            },
+            estacoes: {
+                primavera: { front: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' },
+                verao: { front: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80', back: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80' },
+                outono: { front: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80', back: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80' },
+                inverno: { front: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' }
+            }
         };
 
+        // Produtos da Loja NUCA
         const allProducts = [
             { id: 'tshirt-nuca', name: 'Tshirt-NUCA', category: 'camisetas', basePrice: 24.99, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, description: 'A camiseta essencial NUCA. Corte clássico, 100% algodão orgânico.' },
-            { id: 'hoodie-nuca', name: 'Hoodie-NUCA', category: 'hoodies', basePrice: 59.99, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, description: 'O hoodie essencial NUCA. Oversize em algodão de peso médio.' },
+            { id: 'hoodie-nuca', name: 'Hoodie-NUCA', category: 'hoodies', basePrice: 59.99, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Preta',hex:'#2C3328',key:'preta'},{name:'Verde',hex:'#556B4F',key:'verde'}], images: productImages.hoodie, description: 'O hoodie essencial NUCA. Oversize em algodão de peso médio.' },
             { id: 'bone-nuca', name: 'Boné-NUCA', category: 'acessorios', basePrice: 24.99, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, description: 'Boné clássico com logo NUCA bordado.' },
             { id: 'tote-nuca', name: 'Tote Bag-NUCA', category: 'acessorios', basePrice: 19.99, sizes: ['Único'], colors: [], images: productImages.tote, description: 'Tote bag espaçosa em algodão orgânico.' },
             { id: 'chaveiro-nuca', name: 'Chaveiro-NUCA', category: 'acessorios', basePrice: 9.99, sizes: ['Único'], colors: [], images: productImages.chaveiro, description: 'Chaveiro NUCA em couro sintético premium.' },
@@ -1211,6 +1197,7 @@
             { id: 'meias-estacao', name: 'Meias-NUCA Estação', category: 'seasons', basePrice: 9.99, hasSeasons: true, sizes: ['S','M','L'], seasonImages: productImages.estacoes, description: 'Meias NUCA da Coleção Estações do Ano.' }
         ];
 
+        // ===== DADOS DOS PACKS (SEM BADGE DE OFERTA NOS CARDS) =====
         const packs = {
             nuca: [
                 { id: 'p1', name: 'Pack NUCA Duo', description: 'Tshirt + Hoodie com 15% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca'], discount: 15, price: 72.23, originalPrice: 84.98, type: 'nuca', freeGift: null },
@@ -1219,27 +1206,29 @@
                 { id: 'p4', name: 'Pack NUCA Total', description: 'Toda a coleção NUCA com 30% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'chaveiro-nuca', 'meias-nuca'], discount: 30, price: 96.47, originalPrice: 137.94, type: 'nuca', freeGift: null }
             ],
             seasons: [
-                { id: 'ps1', name: 'Pack Essencial', description: 'T-shirt Estações + Meias Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', freeGift: 'Chaveiro Estações', freeGiftId: 'chaveiro-estacao' },
-                { id: 'ps2', name: 'Pack Daily Wear', description: 'T-shirt Estações + Boné Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', freeGift: 'Chaveiro Estações', freeGiftId: 'chaveiro-estacao' },
-                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie Estações + Meias Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', freeGift: 'Tote Bag Estações', freeGiftId: 'tote-estacao' },
-                { id: 'ps4', name: 'Pack Full Estações', description: 'T-shirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', freeGift: 'Tote Bag + Chaveiro Estações', freeGiftId: ['tote-estacao', 'chaveiro-estacao'] }
+                { id: 'ps1', name: 'Pack Essencial', description: 'T-shirt Estações + Meias Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', seasonChoice: true },
+                { id: 'ps2', name: 'Pack Daily Wear', description: 'T-shirt Estações + Boné Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', seasonChoice: true },
+                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie Estações + Meias Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', seasonChoice: true },
+                { id: 'ps4', name: 'Pack Full Estações', description: 'T-shirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', seasonChoice: true }
             ]
         };
 
+        // ===== ÍCONES DAS ESTAÇÕES =====
         const seasonIcons = {
-            'Primavera': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
-            'Verão': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
-            'Outono': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
-            'Inverno': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
+            'Primavera': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
+            'Verão': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+            'Outono': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
+            'Inverno': `<svg class="season-icon w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
         };
 
         const seasonColors = {
-            'Primavera': { name: 'Flor', hex: '#98D8C8' },
+            'Primavera': { name: 'Menta', hex: '#98D8C8' },
             'Verão': { name: 'Sol', hex: '#F7DC6F' },
             'Outono': { name: 'Terra', hex: '#E59866' },
             'Inverno': { name: 'Gelo', hex: '#AED6F1' }
         };
 
+        // ===== ESTADO DA APLICAÇÃO =====
         let cart = [];
         let currentProduct = null;
         let selectedSeason = null;
@@ -1397,25 +1386,25 @@
                 }).join('');
                 const moreCount = packProducts.length - 3;
                 
-                const offerBadge = pack.freeGift ? `
-                    <div class="offer-badge mt-3 inline-flex">
+                // Tag PACK com estrela apenas para packs de estações (sem badge de oferta)
+                const packTag = pack.type === 'seasons' ? `
+                    <div class="pack-tag-star">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
-                        <span class="offer-text">+ ${pack.freeGift}</span>
+                        <span>PACK</span>
                     </div>
-                ` : '';
+                ` : `<span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase">PACK</span>`;
                 
                 return `<div class="pack-card rounded-3xl p-5 sm:p-6 text-nuca-beige cursor-pointer" onclick="openPackModal('${pack.id}')">
                             <div class="pack-card-content">
                                 <div class="pack-card-header">
-                                    <span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase">PACK</span>
+                                    ${packTag}
                                     <h3 class="font-display text-xl sm:text-2xl font-bold mt-2">${pack.name}</h3>
                                     <p class="text-nuca-beige/70 text-xs sm:text-sm mt-1 line-clamp-2">${pack.description}</p>
                                 </div>
                                 <div class="pack-card-body">
                                     <div class="pack-thumbnails">${thumbnails}${moreCount > 0 ? `<div class="pack-thumbnail-more">+${moreCount}</div>` : ''}</div>
-                                    ${offerBadge}
                                 </div>
                                 <div class="pack-card-footer">
                                     <div class="flex items-baseline gap-2">
@@ -1439,21 +1428,6 @@
             document.getElementById('pack-modal-original').textContent = `€${currentPack.originalPrice.toFixed(2)}`;
             document.getElementById('pack-modal-savings').textContent = `-${currentPack.discount}%`;
             
-            // Adicionar badge de oferta no modal com design elegante
-            const offerBadgeContainer = document.getElementById('modal-offer-badge-container');
-            if (currentPack.freeGift) {
-                offerBadgeContainer.innerHTML = `
-                    <div class="modal-offer-badge">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                        </svg>
-                        <span class="offer-text">OFERTA ESPECIAL: + ${currentPack.freeGift}</span>
-                    </div>
-                `;
-            } else {
-                offerBadgeContainer.innerHTML = '';
-            }
-            
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
             document.getElementById('pack-modal-items').innerHTML = packProducts.map(p => {
                 let imgUrl = '';
@@ -1461,20 +1435,42 @@
                 else if (p.seasonImages) imgUrl = p.seasonImages.primavera?.front;
                 return `<div class="flex items-center gap-3 bg-nuca-light/50 p-3 rounded-xl"><img src="${imgUrl}" alt="${p.name}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0"><div><h4 class="font-bold text-nuca-green text-sm">${p.name}</h4><p class="text-xs text-nuca-green/60">€${p.basePrice.toFixed(2)}</p></div></div>`;
             }).join('');
-            const seasonDiv = document.getElementById('pack-season-selection');
-            seasonDiv.style.display = currentPack.type === 'seasons' ? 'block' : 'none';
+            
+            const existingSeasonDiv = document.getElementById('pack-season-selection');
+            if (existingSeasonDiv) existingSeasonDiv.remove();
+            
+            if (currentPack.seasonChoice) {
+                const sizeDiv = document.querySelector('#pack-modal-sizes').parentElement;
+                const newSeasonDiv = document.createElement('div');
+                newSeasonDiv.id = 'pack-season-selection';
+                newSeasonDiv.className = 'bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4';
+                newSeasonDiv.innerHTML = `
+                    <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação:</label>
+                    <div class="grid grid-cols-2 gap-2" id="pack-season-buttons">
+                        ${['Primavera', 'Verão', 'Outono', 'Inverno'].map(s => `
+                            <button onclick="selectPackSeason('${s}')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm">
+                                ${seasonIcons[s]}
+                                <span class="font-medium">${s}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                sizeDiv.parentElement.insertBefore(newSeasonDiv, sizeDiv);
+            }
+            
             updatePackSizeButtons();
             const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content');
             modal.classList.remove('hidden'); document.body.classList.add('overflow-hidden');
             setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
         }
+        
         function closePackModal() { const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content'); content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300); }
         function selectPackSeason(season) { selectedPackSeason = season; document.querySelectorAll('#pack-season-buttons .pack-season-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(season))); }
         function selectPackSize(size) { selectedPackSize = size; updatePackSizeButtons(); }
         function updatePackSizeButtons() { document.querySelectorAll('.pack-size-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.size === selectedPackSize); btn.classList.toggle('bg-nuca-green', btn.dataset.size === selectedPackSize); btn.classList.toggle('text-nuca-beige', btn.dataset.size === selectedPackSize); }); }
         function addPackToCart() {
             if (!currentPack) return;
-            if (currentPack.type === 'seasons' && !selectedPackSeason) { alert('Por favor seleciona uma estação para continuar.'); return; }
+            if (currentPack.seasonChoice && !selectedPackSeason) { alert('Por favor seleciona uma estação para continuar.'); return; }
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
             const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
             const discountedPrice = totalPrice * (1 - currentPack.discount / 100);
@@ -1487,19 +1483,6 @@
                 const item = { id: product.id + '_pack_' + Date.now(), name: product.hasSeasons ? `${product.name} - ${selectedPackSeason}` : product.name, price: adjustedPrice, originalPrice: product.basePrice, size: product.sizes && product.sizes[0] !== 'Único' ? selectedPackSize : 'Único', color: product.hasSeasons && selectedPackSeason ? seasonColors[selectedPackSeason]?.name : null, image: imageUrl, isPackItem: true };
                 cart.push(item);
             });
-            if (currentPack.freeGiftId) {
-                const freeGiftIds = Array.isArray(currentPack.freeGiftId) ? currentPack.freeGiftId : [currentPack.freeGiftId];
-                freeGiftIds.forEach(giftId => {
-                    const giftProduct = allProducts.find(p => p.id === giftId);
-                    if (giftProduct) {
-                        let imageUrl = '';
-                        if (giftProduct.hasSeasons && selectedPackSeason && giftProduct.seasonImages) { const seasonKey = selectedPackSeason.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a'); imageUrl = giftProduct.seasonImages[seasonKey]?.front || ''; }
-                        else if (giftProduct.images) { const firstKey = Object.keys(giftProduct.images)[0]; imageUrl = giftProduct.images[firstKey]?.front || ''; }
-                        const giftItem = { id: giftProduct.id + '_gift_' + Date.now(), name: giftProduct.hasSeasons ? `${giftProduct.name} - ${selectedPackSeason} (Oferta)` : `${giftProduct.name} (Oferta)`, price: 0, originalPrice: giftProduct.basePrice, size: giftProduct.sizes && giftProduct.sizes[0] !== 'Único' ? selectedPackSize : 'Único', color: giftProduct.hasSeasons && selectedPackSeason ? seasonColors[selectedPackSeason]?.name : null, image: imageUrl, isPackItem: true, isFree: true };
-                        cart.push(giftItem);
-                    }
-                });
-            }
             updateCartUI(); closePackModal(); toggleCart();
         }
         function buyPackItemsIndividually() { closePackModal(); if (currentPack) currentPack.items.forEach(id => openProductModal(id)); }
@@ -1520,16 +1503,98 @@
         function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
         function goToCheckout() { if (cart.length === 0) alert('O teu carrinho está vazio!'); else window.location.href = `checkout.html?cart=${encodeURIComponent(JSON.stringify(cart))}`; }
 
+        // ===== CONTEÚDO LEGAL COMPLETO =====
         const legalContent = {
-            privacidade: { title: 'Política de Privacidade', intro: 'A NUCA valoriza a tua privacidade...', sections: [{ title: 'Dados que Recolhemos', content: 'Recolhemos informações como nome, email, morada de envio...' }] },
-            termos: { title: 'Termos de Uso', intro: 'Ao utilizar o nosso site...', sections: [{ title: 'Uso do Site', content: 'O site NUCA destina-se a uso pessoal...' }] },
-            trocas: { title: 'Trocas e Devoluções', intro: 'Queremos que fiques 100% satisfeito...', sections: [{ title: 'Prazo para Devoluções', content: 'Tens 14 dias após a receção...' }] },
-            envio: { title: 'Envio e Entrega', intro: 'Informações sobre prazos...', sections: [{ title: 'Prazo de Processamento', content: 'As encomendas são processadas...' }] },
-            pagamento: { title: 'Métodos de Pagamento', intro: 'Opções de pagamento...', sections: [{ title: 'Pagamento via WhatsApp', content: 'Atualmente, os pagamentos são processados via WhatsApp...' }] }
+            privacidade: {
+                title: 'Política de Privacidade',
+                intro: 'A NUCA valoriza a tua privacidade. Esta política explica como recolhemos, usamos e protegemos os teus dados pessoais.',
+                sections: [
+                    { title: 'Dados que Recolhemos', content: 'Recolhemos informações como nome, email, morada de envio e dados de pagamento quando fazes uma compra. Também recolhemos dados de navegação anónimos para melhorar a tua experiência.' },
+                    { title: 'Como Usamos os Dados', content: 'Usamos os teus dados para processar encomendas, enviar atualizações sobre o teu pedido, e melhorar os nossos serviços. Nunca vendemos os teus dados a terceiros.' },
+                    { title: 'Segurança', content: 'Todos os dados são transmitidos de forma segura através de encriptação SSL. Os dados de pagamento são processados por parceiros certificados.' },
+                    { title: 'Os Teus Direitos', content: 'Tens o direito de aceder, corrigir ou eliminar os teus dados pessoais. Para exercer estes direitos, contacta-nos em nuca.crew.support@gmail.com.' }
+                ]
+            },
+            termos: {
+                title: 'Termos de Uso',
+                intro: 'Ao utilizar o nosso site e serviços, aceitas os seguintes termos e condições.',
+                sections: [
+                    { title: 'Uso do Site', content: 'O site NUCA destina-se a uso pessoal e não comercial. É proibido reproduzir, distribuir ou modificar qualquer conteúdo sem autorização prévia.' },
+                    { title: 'Encomendas e Pagamentos', content: 'Ao realizar uma encomenda, confirmas que as informações fornecidas são verdadeiras e que tens autorização para usar o método de pagamento indicado.' },
+                    { title: 'Envios e Devoluções', content: 'Os envios são realizados em 3-5 dias úteis. Aceitamos devoluções no prazo de 14 dias após a receção, desde que os artigos estejam em perfeito estado.' },
+                    { title: 'Propriedade Intelectual', content: 'Todo o conteúdo do site, incluindo logótipos, imagens e textos, é propriedade da NUCA e está protegido por direitos de autor.' }
+                ]
+            },
+            trocas: {
+                title: 'Trocas e Devoluções',
+                intro: 'Queremos que fiques 100% satisfeito com a tua compra. Se não for o caso, estamos aqui para ajudar.',
+                sections: [
+                    { title: 'Prazo para Devoluções', content: 'Tens 14 dias após a receção da encomenda para solicitar uma devolução. O artigo deve estar em perfeito estado, com etiquetas e sem sinais de uso.' },
+                    { title: 'Como Devolver', content: 'Contacta-nos por email (nuca.crew.support@gmail.com) com o número da encomenda. Enviaremos instruções detalhadas para o envio de devolução.' },
+                    { title: 'Reembolso', content: 'O reembolso é processado no prazo de 5 dias úteis após receção e verificação do artigo devolvido. O valor é creditado pelo mesmo método de pagamento.' },
+                    { title: 'Trocas', content: 'Para trocar por outro tamanho ou cor, segue o processo de devolução e faz uma nova encomenda. Assim garantimos que o artigo que queres está disponível.' }
+                ]
+            },
+            envio: {
+                title: 'Envio e Entrega',
+                intro: 'Informações sobre prazos, custos e métodos de envio das tuas encomendas NUCA.',
+                sections: [
+                    { title: 'Prazo de Processamento', content: 'As encomendas são processadas e enviadas no prazo máximo de 3-5 dias úteis. Receberás uma notificação quando a tua encomenda for enviada.' },
+                    { title: 'Custo de Envio', content: 'Envio gratuito em compras acima de 50€. Para compras inferiores, o custo é de 3.99€.' },
+                    { title: 'Prazo de Entrega', content: 'Após envio, o prazo de entrega é de 2-5 dias úteis para Portugal Continental. Ilhas e destinos internacionais podem variar.' },
+                    { title: 'Acompanhamento', content: 'Receberás um código de rastreio por email assim que a encomenda for enviada. Podes acompanhar o estado em tempo real.' }
+                ]
+            },
+            pagamento: {
+                title: 'Métodos de Pagamento',
+                intro: 'Opções de pagamento disponíveis na NUCA.',
+                sections: [
+                    { title: 'Pagamento via WhatsApp', content: 'Atualmente, os pagamentos são processados via WhatsApp. Após confirmares a encomenda, serás redirecionado para o WhatsApp com os detalhes pré-preenchidos.' },
+                    { title: 'MB WAY e Transferência', content: 'Aceitamos MB WAY e transferência bancária. Os dados para pagamento são enviados durante o processo de checkout.' },
+                    { title: 'Segurança', content: 'Todos os dados são transmitidos de forma segura. Não guardamos dados de cartão de crédito no nosso servidor.' }
+                ]
+            }
         };
-        function openLegalModal(type) { const content = legalContent[type]; if (!content) return; document.getElementById('legal-modal-title').textContent = content.title; document.getElementById('legal-modal-body').innerHTML = `<div class="legal-content"><div class="legal-intro"><p>${content.intro}</p></div>${content.sections.map((section, i) => `<div class="legal-section"><div class="legal-section-header"><div class="legal-section-number">${i + 1}</div><h4>${section.title}</h4></div><p>${section.content}</p></div>`).join('')}</div><div class="legal-footer"><p>Última atualização: <strong>Março 2026</strong></p><p>Contacto: <strong>nuca.crew.support@gmail.com</strong></p></div>`; document.getElementById('legal-modal').classList.add('active'); document.body.classList.add('overflow-hidden'); }
-        function closeLegalModal() { document.getElementById('legal-modal').classList.remove('active'); document.body.classList.remove('overflow-hidden'); }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeProductModal(); closePackModal(); closeLegalModal(); if (document.getElementById('cart-sidebar').classList.contains('open')) toggleCart(); } });
+
+        function openLegalModal(type) {
+            const content = legalContent[type];
+            if (!content) return;
+            document.getElementById('legal-modal-title').textContent = content.title;
+            document.getElementById('legal-modal-body').innerHTML = `
+                <div class="legal-content">
+                    <div class="legal-intro"><p>${content.intro}</p></div>
+                    ${content.sections.map((section, i) => `
+                        <div class="legal-section">
+                            <div class="legal-section-header">
+                                <div class="legal-section-number">${i + 1}</div>
+                                <h4>${section.title}</h4>
+                            </div>
+                            <p>${section.content}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="legal-footer">
+                    <p>Última atualização: <strong>Março 2026</strong></p>
+                    <p>Contacto: <strong>nuca.crew.support@gmail.com</strong></p>
+                </div>
+            `;
+            document.getElementById('legal-modal').classList.add('active');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeLegalModal() {
+            document.getElementById('legal-modal').classList.remove('active');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeProductModal();
+                closePackModal();
+                closeLegalModal();
+                if (document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
+            }
+        });
     </script>
 </body>
 </html>
