@@ -94,8 +94,22 @@
         /* ===== PRODUTOS ===== */
         .product-card:hover .product-image { transform: scale(1.05); }
 
-        /* ===== BOTÕES DE TAMANHO ===== */
+        /* ===== BOTÕES DE TAMANHO - CORREÇÃO ===== */
         .size-btn.active {
+            background-color: #556B4F !important;
+            color: #D8C6A5 !important;
+            border-color: #556B4F !important;
+        }
+        
+        .pack-size-btn.active {
+            background-color: #556B4F !important;
+            color: #D8C6A5 !important;
+            border-color: #556B4F !important;
+        }
+        
+        /* Garantir que o texto do tamanho fica visível quando o botão está ativo */
+        .size-btn.active,
+        .pack-size-btn.active {
             background-color: #556B4F;
             color: #D8C6A5;
         }
@@ -790,8 +804,17 @@
             display: block;
             color: rgba(85, 107, 79, 0.6);
         }
+        
+        /* ===== CORREÇÃO PARA OS BOTÕES DE TAMANHO - GARANTIR TEXTO VISÍVEL ===== */
+        .size-btn, .pack-size-btn {
+            transition: all 0.2s ease;
+        }
+        .size-btn.active, .pack-size-btn.active {
+            background-color: #556B4F;
+            color: #D8C6A5;
+            border-color: #556B4F;
+        }
     </style>
-<base target="_blank">
 </head>
 
 <body class="antialiased">
@@ -1284,14 +1307,14 @@
             { id: 'meias-nuca', name: 'Meias-NUCA', category: 'acessorios', basePrice: 7.99, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, description: 'Meias NUCA em algodão premium. Tamanhos europeus: 35-38, 39-42, 43-46.' }
         ];
 
-        // Produtos da Coleção Estações (APENAS para o carrossel e modais)
+        // Produtos da Coleção Estações (nomes alterados para "Produto-Estações")
         const seasonProducts = [
-            { id: 'tshirt-estacao', name: 'Tshirt-NUCA Estação', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, seasonImages: productImages.estacoes, description: 'Tshirt NUCA da Coleção Estações do Ano. Escolhe a estação e a cor que combina contigo.' },
-            { id: 'hoodie-estacao', name: 'Hoodie-Nuca Estação', category: 'seasons', basePrice: 64.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, seasonImages: productImages.estacoes, description: 'Hoodie NUCA da Coleção Estações do Ano. O mesmo conforto com a cor da tua estação favorita.' },
-            { id: 'bone-estacao', name: 'Boné-NUCA Estação', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, seasonImages: productImages.estacoes, description: 'Boné NUCA da Coleção Estações do Ano. O acessório perfeito com a cor da tua estação.' },
-            { id: 'tote-estacao', name: 'Tote Bag-NUCA Estação', category: 'seasons', basePrice: 24.99, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.tote, seasonImages: productImages.estacoes, description: 'Tote Bag NUCA da Coleção Estações do Ano. Leva a tua estação favorita contigo.' },
-            { id: 'chaveiro-estacao', name: 'Chaveiro-NUCA Estação', category: 'seasons', basePrice: 12.99, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.chaveiro, seasonImages: productImages.estacoes, description: 'Chaveiro NUCA da Coleção Estações do Ano. O pequeno detalhe com a cor da tua estação.' },
-            { id: 'meias-estacao', name: 'Meias-NUCA Estação', category: 'seasons', basePrice: 9.99, hasSeasons: true, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, seasonImages: productImages.estacoes, description: 'Meias NUCA da Coleção Estações do Ano. Conforto e estilo com a cor da tua estação favorita.' }
+            { id: 'tshirt-estacao', name: 'Tshirt-Estações', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, seasonImages: productImages.estacoes, description: 'Tshirt da Coleção Estações do Ano. Escolhe a estação e a cor que combina contigo.' },
+            { id: 'hoodie-estacao', name: 'Hoodie-Estações', category: 'seasons', basePrice: 64.99, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, seasonImages: productImages.estacoes, description: 'Hoodie da Coleção Estações do Ano. O mesmo conforto com a cor da tua estação favorita.' },
+            { id: 'bone-estacao', name: 'Boné-Estações', category: 'seasons', basePrice: 29.99, hasSeasons: true, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, seasonImages: productImages.estacoes, description: 'Boné da Coleção Estações do Ano. O acessório perfeito com a cor da tua estação.' },
+            { id: 'tote-estacao', name: 'Tote Bag-Estações', category: 'seasons', basePrice: 24.99, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.tote, seasonImages: productImages.estacoes, description: 'Tote Bag da Coleção Estações do Ano. Leva a tua estação favorita contigo.' },
+            { id: 'chaveiro-estacao', name: 'Chaveiro-Estações', category: 'seasons', basePrice: 12.99, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.chaveiro, seasonImages: productImages.estacoes, description: 'Chaveiro da Coleção Estações do Ano. O pequeno detalhe com a cor da tua estação.' },
+            { id: 'meias-estacao', name: 'Meias-Estações', category: 'seasons', basePrice: 9.99, hasSeasons: true, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, seasonImages: productImages.estacoes, description: 'Meias da Coleção Estações do Ano. Conforto e estilo com a cor da tua estação favorita.' }
         ];
 
         // Combinar todos os produtos para o modal (mas a loja mostra apenas os principais)
@@ -1306,10 +1329,10 @@
                 { id: 'p4', name: 'Pack NUCA Total', description: 'Toda a coleção NUCA com 30% de desconto.', items: ['tshirt-nuca', 'hoodie-nuca', 'bone-nuca', 'tote-nuca', 'chaveiro-nuca', 'meias-nuca'], discount: 30, price: 96.47, originalPrice: 137.94, type: 'nuca', freeGift: null }
             ],
             seasons: [
-                { id: 'ps1', name: 'Pack Essencial', description: 'T-shirt Estações + Meias Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
-                { id: 'ps2', name: 'Pack Daily Wear', description: 'T-shirt Estações + Boné Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
-                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie Estações + Meias Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag Estações' },
-                { id: 'ps4', name: 'Pack Full Estações', description: 'T-shirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag + Chaveiro Estações' }
+                { id: 'ps1', name: 'Pack Essencial', description: 'Tshirt-Estações + Meias-Estações', items: ['tshirt-estacao', 'meias-estacao'], discount: 10, price: 35.98, originalPrice: 39.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
+                { id: 'ps2', name: 'Pack Daily Wear', description: 'Tshirt-Estações + Boné-Estações', items: ['tshirt-estacao', 'bone-estacao'], discount: 10, price: 53.98, originalPrice: 59.98, type: 'seasons', seasonChoice: true, freeGift: 'Chaveiro Estações' },
+                { id: 'ps3', name: 'Pack Seasonal Core', description: 'Hoodie-Estações + Meias-Estações', items: ['hoodie-estacao', 'meias-estacao'], discount: 10, price: 67.48, originalPrice: 74.98, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag Estações' },
+                { id: 'ps4', name: 'Pack Full Estações', description: 'Tshirt + Hoodie + Boné Estações', items: ['tshirt-estacao', 'hoodie-estacao', 'bone-estacao'], discount: 15, price: 105.48, originalPrice: 124.97, type: 'seasons', seasonChoice: true, freeGift: 'Tote Bag + Chaveiro Estações' }
             ]
         };
 
