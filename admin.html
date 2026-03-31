@@ -661,7 +661,7 @@
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    32r
+                                    <tr>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
@@ -812,7 +812,7 @@
                 <p class="text-nuca-green/70 mb-6">Tens a certeza que queres eliminar esta encomenda? Esta ação não pode ser desfeita.</p>
                 <div class="flex gap-4 justify-end">
                     <button onclick="closeDeleteModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
-                    <button onclick="confirmDelete()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
+                    <button onclick="confirmDeleteOrderAction()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
                 </div>
             </div>
         </div>
@@ -1304,7 +1304,7 @@
             orderToDelete = null;
         }
     
-        async function confirmDelete() {
+        async function confirmDeleteOrderAction() {
             if (!orderToDelete) {
                 showToast('Nenhuma encomenda selecionada', 'error');
                 return;
@@ -1326,16 +1326,14 @@
                 }
                 if (cancelBtn) cancelBtn.disabled = true;
                 
-                const { data, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('orders')
                     .delete()
-                    .eq('id', orderToDelete)
-                    .select();
-                
-                console.log('Resultado da eliminação:', { data, error });
+                    .eq('id', orderToDelete);
                 
                 if (error) throw new Error(error.message);
                 
+                // Remove da lista local e atualiza a interface
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
                 applyFilters();
                 await loadDashboard();
@@ -1423,7 +1421,7 @@
             const tbody = document.getElementById('customers-table-body');
             
             if (customers.length === 0) {
-                tbody.innerHTML = ' hilab<td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
                 return;
             }
             
@@ -1721,11 +1719,10 @@
                 }
                 
                 // Eliminar o cliente
-                const { data, error } = await supabaseClient
+                const { error } = await supabaseClient
                     .from('customers')
                     .delete()
-                    .eq('email', customerToDelete.email)
-                    .select();
+                    .eq('email', customerToDelete.email);
                 
                 if (error) throw new Error(error.message);
                 
