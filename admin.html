@@ -318,6 +318,7 @@
             }
             .toast.success { background: #065F46; }
             .toast.error { background: #991B1B; }
+            .toast.info { background: #1E40AF; }
             @keyframes slideInRight {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
@@ -397,6 +398,11 @@
                 font-size: 12px;
                 font-weight: 600;
                 display: inline-block;
+            }
+            
+            .delete-confirm-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
         </style>
     <base target="_blank">
@@ -637,7 +643,7 @@
                                 Novo Cliente
                             </button>
                             <button onclick="exportCustomers()" class="bg-nuca-green text-nuca-beige px-6 py-3 rounded-full font-bold hover:bg-nuca-dark transition-colors flex items-center gap-2">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 Exportar
                             </button>
                         </div>
@@ -812,7 +818,7 @@
                 <p class="text-nuca-green/70 mb-6">Tens a certeza que queres eliminar esta encomenda? Esta ação não pode ser desfeita.</p>
                 <div class="flex gap-4 justify-end">
                     <button onclick="closeDeleteModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
-                    <button onclick="confirmDeleteOrderAction()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
+                    <button id="confirm-delete-order-btn" onclick="confirmDeleteOrderAction()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
                 </div>
             </div>
         </div>
@@ -848,7 +854,6 @@
         let currentSection = 'dashboard';
         let allOrders = [];
         let allCustomers = [];
-        let customerStats = new Map();
         let currentFilter = 'all';
         let sortField = 'created_at';
         let sortDirection = 'desc';
@@ -858,6 +863,7 @@
         let orderToDelete = null;
         let customerToDelete = null;
         let expandedOrders = new Set();
+        let isDeleting = false;
     
         // ============================================
         // INICIALIZAÇÃO
@@ -1300,42 +1306,63 @@
         }
     
         function closeDeleteModal() {
+            if (isDeleting) return;
             document.getElementById('delete-modal').classList.remove('active');
             orderToDelete = null;
         }
     
         async function confirmDeleteOrderAction() {
-            if (!orderToDelete) {
-                showToast('Nenhuma encomenda selecionada', 'error');
-                return;
-            }
+            if (!orderToDelete || isDeleting) return;
+            
+            const confirmBtn = document.getElementById('confirm-delete-order-btn');
+            const cancelBtn = document.querySelector('#delete-modal .border');
             
             try {
+                isDeleting = true;
+                confirmBtn.disabled = true;
+                cancelBtn.disabled = true;
+                confirmBtn.textContent = 'A eliminar...';
+                
                 if (!supabaseClient) {
-                    showToast('Erro: Supabase não inicializado', 'error');
-                    return;
+                    throw new Error('Supabase não inicializado');
                 }
                 
                 console.log('A eliminar encomenda com ID:', orderToDelete);
                 
-                const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
-                const cancelBtn = document.querySelector('#delete-modal .border');
-                if (deleteBtn) {
-                    deleteBtn.textContent = 'A eliminar...';
-                    deleteBtn.disabled = true;
-                }
-                if (cancelBtn) cancelBtn.disabled = true;
+                // Verificar se a encomenda existe antes de eliminar
+                const { data: existingOrder, error: checkError } = await supabaseClient
+                    .from('orders')
+                    .select('id')
+                    .eq('id', orderToDelete)
+                    .single();
                 
-                const { error } = await supabaseClient
+                if (checkError && checkError.code !== 'PGRST116') {
+                    throw new Error(`Erro ao verificar encomenda: ${checkError.message}`);
+                }
+                
+                if (!existingOrder) {
+                    throw new Error('Encomenda não encontrada');
+                }
+                
+                // Eliminar a encomenda
+                const { error: deleteError } = await supabaseClient
                     .from('orders')
                     .delete()
                     .eq('id', orderToDelete);
                 
-                if (error) throw new Error(error.message);
+                if (deleteError) {
+                    throw new Error(deleteError.message);
+                }
                 
-                // Remove da lista local e atualiza a interface
+                console.log('Encomenda eliminada com sucesso:', orderToDelete);
+                
+                // Atualizar a lista local
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
+                
+                // Atualizar a interface
                 applyFilters();
+                
+                // Recarregar dashboard e clientes
                 await loadDashboard();
                 await loadCustomers();
                 
@@ -1343,16 +1370,13 @@
                 closeDeleteModal();
                 
             } catch (error) {
-                console.error('Erro ao eliminar encomenda:', error);
-                showToast('Erro ao eliminar encomenda: ' + error.message, 'error');
+                console.error('Erro detalhado ao eliminar encomenda:', error);
+                showToast(`Erro ao eliminar encomenda: ${error.message}`, 'error');
             } finally {
-                const deleteBtn = document.querySelector('#delete-modal .bg-red-600');
-                const cancelBtn = document.querySelector('#delete-modal .border');
-                if (deleteBtn) {
-                    deleteBtn.textContent = 'Eliminar';
-                    deleteBtn.disabled = false;
-                }
-                if (cancelBtn) cancelBtn.disabled = false;
+                isDeleting = false;
+                confirmBtn.disabled = false;
+                cancelBtn.disabled = false;
+                confirmBtn.textContent = 'Eliminar';
             }
         }
     
@@ -1421,7 +1445,7 @@
             const tbody = document.getElementById('customers-table-body');
             
             if (customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                tbody.innerHTML = 'enstein<td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td> </tr>';
                 return;
             }
             
