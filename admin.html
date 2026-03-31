@@ -274,27 +274,61 @@
             }
             .sortable:hover { background-color: rgba(85, 107, 79, 0.05); }
             
+            /* TOAST NOTIFICATIONS - Estilo atualizado igual aos itens */
             .toast-container {
                 position: fixed;
-                bottom: 1rem;
+                top: 1rem;
                 right: 1rem;
                 z-index: 2000;
                 display: flex;
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 0.75rem;
+                max-width: 400px;
             }
+            
             .toast {
-                background: #2C3328;
-                color: #E8DCC4;
-                padding: 0.75rem 1rem;
-                border-radius: 0.5rem;
+                background: white;
+                border: 1px solid rgba(85, 107, 79, 0.1);
+                border-radius: 0.75rem;
+                padding: 1rem 1.25rem;
                 font-size: 0.875rem;
                 animation: slideInRight 0.3s ease-out;
-                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                color: #556B4F;
             }
-            .toast.success { background: #065F46; }
-            .toast.error { background: #991B1B; }
-            .toast.info { background: #1E40AF; }
+            
+            .toast.success {
+                border-left: 4px solid #065F46;
+                background: linear-gradient(135deg, rgba(6, 95, 70, 0.05) 0%, white 100%);
+            }
+            
+            .toast.error {
+                border-left: 4px solid #991B1B;
+                background: linear-gradient(135deg, rgba(153, 27, 27, 0.05) 0%, white 100%);
+            }
+            
+            .toast.info {
+                border-left: 4px solid #1E40AF;
+                background: linear-gradient(135deg, rgba(30, 64, 175, 0.05) 0%, white 100%);
+            }
+            
+            .toast-icon {
+                width: 24px;
+                height: 24px;
+                flex-shrink: 0;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .toast.success .toast-icon { background: #D1FAE5; color: #065F46; }
+            .toast.error .toast-icon { background: #FEE2E2; color: #991B1B; }
+            .toast.info .toast-icon { background: #DBEAFE; color: #1E40AF; }
+            
             @keyframes slideInRight {
                 from { transform: translateX(100%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
@@ -791,7 +825,7 @@
             <div class="p-6">
                 <p class="text-nuca-green/70 mb-6">Tens a certeza que queres eliminar esta encomenda? Esta ação não pode ser desfeita.</p>
                 <div class="flex gap-4 justify-end">
-                    <button onclick="closeDeleteModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
+                    <button id="cancel-delete-order-btn" onclick="closeDeleteModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
                     <button id="confirm-delete-order-btn" onclick="confirmDeleteOrderAction()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
                 </div>
             </div>
@@ -1298,8 +1332,6 @@
     
         function closeDeleteModal() {
             // CORREÇÃO: Removida a verificação if (isDeletingOrder) return;
-            // que impedia o modal de fechar quando a operação terminava com sucesso
-            
             const modal = document.getElementById('delete-modal');
             modal.classList.remove('active');
             orderToDelete = null;
@@ -1309,6 +1341,10 @@
                 confirmBtn.disabled = false;
                 confirmBtn.textContent = 'Eliminar';
             }
+            
+            // Reativar botão cancelar também
+            const cancelBtn = document.getElementById('cancel-delete-order-btn');
+            if (cancelBtn) cancelBtn.disabled = false;
         }
     
         async function confirmDeleteOrderAction() {
@@ -1326,7 +1362,7 @@
             }
             
             const confirmBtn = document.getElementById('confirm-delete-order-btn');
-            const cancelBtn = document.querySelector('#delete-modal button[onclick="closeDeleteModal()"]');
+            const cancelBtn = document.getElementById('cancel-delete-order-btn');
             
             try {
                 isDeletingOrder = true;
@@ -1364,7 +1400,7 @@
                 
                 console.log('Encomenda encontrada, a eliminar:', existingOrder);
                 
-                // ELIMINAR A ENCOMENDA (só aqui é que elimina de facto)
+                // ELIMINAR A ENCOMENDA
                 const { error: deleteError } = await supabaseClient
                     .from('orders')
                     .delete()
@@ -1376,7 +1412,7 @@
                 
                 console.log('Encomenda eliminada com sucesso:', orderToDelete);
                 
-                // Atualizar a lista local de encomendas (remover a eliminada)
+                // Atualizar a lista local de encomendas
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
                 
                 // Remover dos expandidos se estava expandida
@@ -1387,7 +1423,7 @@
                 // Re-renderizar a tabela
                 applyFilters();
                 
-                // Recarregar dashboard e clientes para atualizar estatísticas
+                // Recarregar dashboard e clientes
                 await loadDashboard();
                 await loadCustomers();
                 
@@ -1999,7 +2035,19 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+            
+            // Ícones para cada tipo de toast
+            const icons = {
+                success: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>`,
+                error: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+                info: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+            };
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <span>${message}</span>
+            `;
+            
             container.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
