@@ -1503,16 +1503,7 @@
                             </div>
                         </div>
                         <div class="space-y-3 sm:space-y-4 pt-4 sm:pt-6 border-t border-nuca-green/10">
-                            <div class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl">
-                                <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona o tamanho base: *</label>
-                                <div class="flex gap-2 flex-wrap" id="pack-modal-sizes">
-                                    <button onclick="selectPackSize('S')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="S">S</button>
-                                    <button onclick="selectPackSize('M')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 active bg-nuca-green text-nuca-beige text-sm" data-size="M">M</button>
-                                    <button onclick="selectPackSize('L')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="L">L</button>
-                                    <button onclick="selectPackSize('XL')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="XL">XL</button>
-                                    <button onclick="selectPackSize('XXL')" class="pack-size-btn w-11 h-11 sm:w-12 sm:h-12 rounded-full border-2 border-nuca-green font-bold transition-all text-nuca-green hover:bg-nuca-green/10 text-sm" data-size="XXL">XXL</button>
-                                </div>
-                            </div>
+                            
                             <div id="pack-season-selection" class="bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4 hidden">
                                 <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação: *</label>
                                 <div class="grid grid-cols-2 gap-2" id="pack-season-buttons"></div>
@@ -1656,7 +1647,7 @@
         let selectedSize = 'M';
         let currentPack = null;
         let selectedPackSeason = null;
-        let selectedPackSize = 'M';
+        let selectedPackSize = null;
         let selectedPackColors = {};
         let carouselPosition = 0;
         let currentImageIndex = 0;
@@ -2004,14 +1995,18 @@ function renderProducts(filter) {
         function openPackModal(packId) {
             currentPack = [...packs.nuca, ...packs.seasons].find(p => p.id === packId);
             if (!currentPack) return;
-            selectedPackSeason = null; selectedPackSize = 'M'; selectedPackColors = {};
-            
+
+            // Reset selections
+            selectedPackSeason = null;
+            selectedPackColors = {};
+            selectedPackSizes = {}; // Now stores size per product
+
             document.getElementById('pack-modal-title').textContent = currentPack.name;
             document.getElementById('pack-modal-description').textContent = currentPack.description;
             document.getElementById('pack-modal-price').textContent = `€${currentPack.price.toFixed(2)}`;
             document.getElementById('pack-modal-original').textContent = `€${currentPack.originalPrice.toFixed(2)}`;
             document.getElementById('pack-modal-savings').textContent = `-${currentPack.discount}%`;
-            
+
             const offerBadgeContainer = document.getElementById('modal-offer-badge-container');
             if (currentPack.freeGift) {
                 offerBadgeContainer.innerHTML = `
@@ -2025,160 +2020,268 @@ function renderProducts(filter) {
             } else {
                 offerBadgeContainer.innerHTML = '';
             }
-            
+
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
-            document.getElementById('pack-modal-items').innerHTML = packProducts.map(p => {
+
+            // Render products with individual selection interfaces
+            const itemsContainer = document.getElementById('pack-modal-items');
+            itemsContainer.innerHTML = packProducts.map((p, index) => {
                 let imgUrl = '';
                 if (p.images) { const firstKey = Object.keys(p.images)[0]; imgUrl = p.images[firstKey]?.front || ''; }
                 else if (p.seasonImages) imgUrl = p.seasonImages.primavera?.front;
-                return `<div class="flex items-center gap-3 bg-nuca-light/50 p-3 rounded-xl">
-                            <img src="${imgUrl}" alt="${p.name}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0">
-                            <div>
+
+                // Determine product type and required selections
+                const isTshirt = p.id.includes('tshirt');
+                const isHoodie = p.id.includes('hoodie');
+                const isMeias = p.id.includes('meias');
+                const isBone = p.id.includes('bone');
+                const isChaveiro = p.id.includes('chaveiro');
+                const isTote = p.id.includes('tote');
+                const hasSeasons = p.hasSeasons;
+
+                let selectionHTML = '';
+
+                // Size selection (if applicable)
+                if (isTshirt || isHoodie) {
+                    selectionHTML += `
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-nuca-green mb-2">Tamanho *</label>
+                            <div class="flex gap-2 flex-wrap">
+                                ${['S','M','L','XL','XXL'].map(size => `
+                                    <button onclick="selectProductSize('${p.id}', '${size}')" 
+                                        class="pack-prod-size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold text-sm transition-all ${selectedPackSizes[p.id] === size ? 'bg-nuca-green text-nuca-beige' : 'text-nuca-green hover:bg-nuca-green/10'}" 
+                                        data-product="${p.id}" data-size="${size}">${size}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (isMeias) {
+                    selectionHTML += `
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-nuca-green mb-2">Tamanho (EU) *</label>
+                            <div class="flex gap-2 flex-wrap">
+                                ${['35-38','39-42','43-46'].map(size => `
+                                    <button onclick="selectProductSize('${p.id}', '${size}')" 
+                                        class="pack-prod-size-btn px-3 h-10 rounded-full border-2 border-nuca-green font-bold text-sm transition-all ${selectedPackSizes[p.id] === size ? 'bg-nuca-green text-nuca-beige' : 'text-nuca-green hover:bg-nuca-green/10'}" 
+                                        data-product="${p.id}" data-size="${size}">${size}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (isBone) {
+                    selectionHTML += `
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-nuca-green mb-2">Tamanho</label>
+                            <span class="inline-block px-3 py-1 bg-nuca-green/10 text-nuca-green rounded-full text-sm font-bold">Único</span>
+                        </div>
+                    `;
+                }
+
+                // Color selection (if applicable)
+                if (p.colors && p.colors.length > 0) {
+                    selectionHTML += `
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-nuca-green mb-2">Cor *</label>
+                            <div class="flex gap-2 flex-wrap">
+                                ${p.colors.map(color => `
+                                    <button onclick="selectProductColor('${p.id}', '${color.name}')" 
+                                        class="pack-prod-color-btn w-8 h-8 rounded-full border-2 transition-all ${selectedPackColors[p.id] === color.name ? 'border-nuca-dark scale-110' : 'border-transparent hover:scale-105'}" 
+                                        style="background-color: ${color.hex}; box-shadow: 0 0 0 1px #E8DCC4;" 
+                                        title="${color.name}" data-product="${p.id}" data-color="${color.name}"></button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Season selection (if pack has seasons and product supports it)
+                if (currentPack.seasonChoice && hasSeasons) {
+                    selectionHTML += `
+                        <div class="mt-3">
+                            <label class="block text-xs font-bold text-nuca-green mb-2">Estação *</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                ${['Primavera','Verão','Outono','Inverno'].map(season => `
+                                    <button onclick="selectProductSeason('${p.id}', '${season}')" 
+                                        class="pack-prod-season-btn flex items-center gap-2 p-2 rounded-xl border border-nuca-green/20 transition-all text-xs ${selectedPackSeasons && selectedPackSeasons[p.id] === season ? 'bg-nuca-green text-nuca-beige' : 'bg-white text-nuca-green hover:bg-nuca-green/10'}" 
+                                        data-product="${p.id}" data-season="${season}">
+                                        ${seasonIcons[season]}
+                                        <span>${season}</span>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="bg-white rounded-xl p-4 border border-nuca-green/10" data-product-id="${p.id}">
+                        <div class="flex items-start gap-3">
+                            <img src="${imgUrl}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+                            <div class="flex-1">
                                 <h4 class="font-bold text-nuca-green text-sm">${p.name}</h4>
                                 <p class="text-xs text-nuca-green/60">€${p.basePrice.toFixed(2)}</p>
+                                ${isChaveiro || isTote ? '<p class="text-xs text-nuca-green/40 mt-1">Sem opções de personalização</p>' : selectionHTML}
                             </div>
-                        </div>`;
+                        </div>
+                    </div>
+                `;
             }).join('');
-            
-            const colorsSection = document.getElementById('pack-colors-section');
-            const colorOptions = packProducts.filter(p => productColorOptions[p.id] && productColorOptions[p.id].length > 0);
-            
-            if (colorOptions.length > 0) {
-                colorsSection.innerHTML = `
-                    <div class="bg-nuca-light/30 p-4 rounded-xl mb-4">
-                        <h4 class="font-bold text-nuca-green text-sm mb-3">Escolhe as cores:</h4>
-                        ${colorOptions.map(product => `
-                            <div class="pack-item-color-row">
-                                <p class="text-xs font-medium text-nuca-green mb-2">${product.name}:</p>
-                                <div class="flex gap-2 flex-wrap" id="color-selector-${product.id}">
-                                    ${productColorOptions[product.id].map(color => `
-                                        <button onclick="selectPackItemColor('${product.id}', '${color}')" 
-                                            class="pack-color-selector ${selectedPackColors[product.id] === color ? 'active' : ''}" 
-                                            style="background-color: ${colorHexMap[color]}" 
-                                            title="${color}"></button>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `).join('')}
-                        <p class="text-xs text-nuca-green/50 mt-2">* Escolhe a cor para cada item do pack</p>
-                    </div>
-                `;
-            } else {
-                colorsSection.innerHTML = '';
-            }
-            
-            const existingSeasonDiv = document.getElementById('pack-season-selection');
-            if (existingSeasonDiv) existingSeasonDiv.remove();
-            
+
+            // Global season selector for packs (if applicable)
+            const seasonDiv = document.getElementById('pack-season-selection');
+            if (seasonDiv) seasonDiv.remove();
+
             if (currentPack.seasonChoice) {
-                const sizeDiv = document.querySelector('#pack-modal-sizes').parentElement;
-                const newSeasonDiv = document.createElement('div');
-                newSeasonDiv.id = 'pack-season-selection';
-                newSeasonDiv.className = 'bg-nuca-light/50 p-3 sm:p-4 rounded-xl mb-4';
-                newSeasonDiv.innerHTML = `
-                    <label class="block text-xs sm:text-sm font-bold text-nuca-green mb-3">Seleciona a estação: *</label>
-                    <div class="grid grid-cols-2 gap-2" id="pack-season-buttons">
-                        ${['Primavera', 'Verão', 'Outono', 'Inverno'].map(s => `
-                            <button onclick="selectPackSeason('${s}')" class="pack-season-btn flex items-center gap-2 p-2 sm:p-3 rounded-xl border border-nuca-green/20 transition-all text-sm">
-                                ${seasonIcons[s]}
-                                <span class="font-medium">${s}</span>
-                            </button>
-                        `).join('')}
-                    </div>
-                `;
-                sizeDiv.parentElement.insertBefore(newSeasonDiv, sizeDiv);
+                // Add a note about selecting seasons per product
+                const noteDiv = document.createElement('div');
+                noteDiv.id = 'pack-season-note';
+                noteDiv.className = 'bg-nuca-light/50 p-3 rounded-xl mb-4 text-xs text-nuca-green/70';
+                noteDiv.innerHTML = '<strong>Nota:</strong> Seleciona a estação para cada produto acima.';
+                itemsContainer.after(noteDiv);
             }
-            
-            updatePackSizeButtons();
-            const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content');
-            modal.classList.remove('hidden'); document.body.classList.add('overflow-hidden');
-            setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
+
+            const modal = document.getElementById('pack-modal');
+            const modalContent = document.getElementById('pack-modal-content');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
-        
-        function selectPackItemColor(productId, color) {
+
+        // New helper functions for pack product selections
+        let selectedPackSeasons = {}; // Store season per product
+
+        function selectProductSize(productId, size) {
+            selectedPackSizes[productId] = size;
+            // Update UI
+            document.querySelectorAll(`.pack-prod-size-btn[data-product="${productId}"]`).forEach(btn => {
+                const isSelected = btn.dataset.size === size;
+                btn.classList.toggle('bg-nuca-green', isSelected);
+                btn.classList.toggle('text-nuca-beige', isSelected);
+                btn.classList.toggle('text-nuca-green', !isSelected);
+            });
+        }
+
+        function selectProductColor(productId, color) {
             selectedPackColors[productId] = color;
-            const container = document.getElementById(`color-selector-${productId}`);
-            if (container) {
-                const buttons = container.querySelectorAll('.pack-color-selector');
-                buttons.forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.getAttribute('title') === color) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
+            // Update UI
+            document.querySelectorAll(`.pack-prod-color-btn[data-product="${productId}"]`).forEach(btn => {
+                const isSelected = btn.dataset.color === color;
+                btn.classList.toggle('border-nuca-dark', isSelected);
+                btn.classList.toggle('border-transparent', !isSelected);
+                btn.classList.toggle('scale-110', isSelected);
+            });
         }
-        
-        function closePackModal() { const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content'); content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300); }
+
+        function selectProductSeason(productId, season) {
+            selectedPackSeasons[productId] = season;
+            // Update UI
+            document.querySelectorAll(`.pack-prod-season-btn[data-product="${productId}"]`).forEach(btn => {
+                const isSelected = btn.dataset.season === season;
+                btn.classList.toggle('bg-nuca-green', isSelected);
+                btn.classList.toggle('text-nuca-beige', isSelected);
+                btn.classList.toggle('bg-white', !isSelected);
+                btn.classList.toggle('text-nuca-green', !isSelected);
+            });
+        }
+function closePackModal() { const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content'); content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300); }
         function selectPackSeason(season) { selectedPackSeason = season; document.querySelectorAll('#pack-season-buttons .pack-season-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(season))); }
-        function selectPackSize(size) { selectedPackSize = size; updatePackSizeButtons(); }
-        function updatePackSizeButtons() { document.querySelectorAll('.pack-size-btn').forEach(btn => { btn.classList.toggle('active', btn.dataset.size === selectedPackSize); btn.classList.toggle('bg-nuca-green', btn.dataset.size === selectedPackSize); btn.classList.toggle('text-nuca-beige', btn.dataset.size === selectedPackSize); }); }
+        
         
         function addPackToCart() {
             if (!currentPack) return;
-            if (currentPack.seasonChoice && !selectedPackSeason) { 
-                showNotification('warning', 'Seleciona uma estação', 'Por favor escolhe a estação que preferes para este pack.'); 
-                return; 
-            }
-            
+
             const packProducts = currentPack.items.map(id => allProducts.find(p => p.id === id));
-            
-            const missingColors = [];
-            packProducts.forEach(product => {
-                const colorOptions = productColorOptions[product.id];
-                if (colorOptions && colorOptions.length > 0 && !selectedPackColors[product.id]) {
-                    missingColors.push(product.name);
+
+            // Validate each product's selections
+            for (const product of packProducts) {
+                const isTshirt = product.id.includes('tshirt');
+                const isHoodie = product.id.includes('hoodie');
+                const isMeias = product.id.includes('meias');
+                const isBone = product.id.includes('bone');
+                const isChaveiro = product.id.includes('chaveiro');
+                const isTote = product.id.includes('tote');
+                const hasSeasons = product.hasSeasons;
+
+                // Skip validation for chaveiro and tote
+                if (isChaveiro || isTote) continue;
+
+                // Validate size (for products that need it)
+                if ((isTshirt || isHoodie || isMeias) && !selectedPackSizes[product.id]) {
+                    showNotification('warning', 'Tamanho em falta', `Seleciona o tamanho para ${product.name}`);
+                    return;
                 }
-            });
-            
-            if (missingColors.length > 0) {
-                showNotification('warning', 'Seleciona as cores', `Por favor escolhe a cor para: ${missingColors.join(', ')}`);
-                return;
+
+                // Validate color (for products that have colors)
+                if (product.colors && product.colors.length > 0 && !selectedPackColors[product.id]) {
+                    showNotification('warning', 'Cor em falta', `Seleciona a cor para ${product.name}`);
+                    return;
+                }
+
+                // Validate season (for pack seasons products)
+                if (currentPack.seasonChoice && hasSeasons && !selectedPackSeasons[product.id]) {
+                    showNotification('warning', 'Estação em falta', `Seleciona a estação para ${product.name}`);
+                    return;
+                }
             }
-            
+
+            // Calculate discount per item
             const totalPrice = packProducts.reduce((sum, p) => sum + p.basePrice, 0);
             const discountedPrice = totalPrice * (1 - currentPack.discount / 100);
             const discountPerItem = (totalPrice - discountedPrice) / packProducts.length;
-            
+
+            // Add each product to cart with its selections
             packProducts.forEach(product => {
+                const isChaveiro = product.id.includes('chaveiro');
+                const isTote = product.id.includes('tote');
+                const isBone = product.id.includes('bone');
+
                 const adjustedPrice = Math.max(0.01, product.basePrice - discountPerItem);
+
+                // Get selections for this product
+                const size = isBone ? 'Único' : (isChaveiro || isTote ? null : selectedPackSizes[product.id]);
+                const color = selectedPackColors[product.id] || null;
+                const season = selectedPackSeasons[product.id] || null;
+
+                // Build product name with selections
+                let displayName = product.name;
+                if (season) displayName += ` - ${season}`;
+
+                // Get image based on selections
                 let imageUrl = '';
-                let colorName = null;
-                
-                const selectedColor = selectedPackColors[product.id];
-                
-                if (product.hasSeasons && selectedPackSeason && product.seasonImages) {
-                    const seasonKey = selectedPackSeason.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a');
+                if (season && product.seasonImages) {
+                    const seasonKey = season.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ã/g, 'a');
                     imageUrl = product.seasonImages[seasonKey]?.front || '';
-                    colorName = seasonColors[selectedPackSeason]?.name;
-                } else if (selectedColor && product.images) {
-                    const colorKey = colorKeyMap[selectedColor];
+                } else if (color && product.images) {
+                    const colorKey = colorKeyMap[color];
                     if (colorKey && product.images[colorKey]) {
                         imageUrl = product.images[colorKey]?.front || '';
                     }
-                    colorName = selectedColor;
                 } else if (product.images) {
                     const firstKey = Object.keys(product.images)[0];
                     imageUrl = product.images[firstKey]?.front || '';
                 }
-                
+
                 const item = {
-                    id: product.id + '_pack_' + Date.now() + (selectedColor || ''),
-                    name: product.hasSeasons ? `${product.name} - ${selectedPackSeason}` : product.name,
+                    id: product.id + '_pack_' + Date.now() + (color || ''),
+                    name: displayName,
                     price: adjustedPrice,
                     originalPrice: product.basePrice,
-                    size: product.sizes && product.sizes[0] !== 'Único' ? selectedPackSize : 'Único',
-                    color: colorName,
+                    size: size,
+                    color: color,
                     image: imageUrl,
                     isPackItem: true
                 };
                 cart.push(item);
             });
-            
-            updateCartUI(); closePackModal(); toggleCart();
+
+            updateCartUI();
+            closePackModal();
+            toggleCart();
         }
-        
-        function buyPackItemsIndividually() { closePackModal(); if (currentPack) currentPack.items.forEach(id => openProductModal(id)); }
+function buyPackItemsIndividually() { closePackModal(); if (currentPack) currentPack.items.forEach(id => openProductModal(id)); }
 
         function toggleCart() { const sidebar = document.getElementById('cart-sidebar'); const overlay = document.getElementById('cart-overlay'); const isOpen = sidebar.classList.contains('open'); sidebar.classList.toggle('open'); overlay.classList.toggle('active'); document.body.classList.toggle('overflow-hidden', !isOpen); }
         function updateCartUI() {
@@ -2239,6 +2342,7 @@ function renderProducts(filter) {
                     { title: 'Prazo de Processamento', content: 'As encomendas são processadas e enviadas no prazo máximo de 3-5 dias úteis. Receberás uma notificação quando a tua encomenda for enviada.' },
                     { title: 'Custo de Envio', content: 'Envio gratuito em compras acima de 50€. Para compras inferiores, o custo é de 3.99€.' },
                     { title: 'Prazo de Entrega', content: 'Após envio, o prazo de entrega é de 2-5 dias úteis para Portugal Continental. Ilhas e destinos internacionais podem variar.' },
+                    
                 ]
             },
             pagamento: {
