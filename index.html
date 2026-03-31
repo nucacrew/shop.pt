@@ -2327,7 +2327,7 @@ function renderProducts(filter) {
                             <div class="flex gap-2 flex-wrap">
                                 ${['S','M','L','XL','XXL'].map(size => `
                                     <button onclick="selectProductSize('${p.id}', '${size}')" 
-                                        class="pack-prod-size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold text-sm transition-all ${selectedPackSizes[p.id] === size ? 'bg-nuca-green text-nuca-beige' : 'text-nuca-green hover:bg-nuca-green/10'}" 
+                                        class="size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold transition-all text-sm ${selectedPackSizes[p.id] === size ? 'active' : 'text-nuca-green'}" 
                                         data-product="${p.id}" data-size="${size}">${size}</button>
                                 `).join('')}
                             </div>
@@ -2338,7 +2338,7 @@ function renderProducts(filter) {
                         <div class="mt-3">
                             <label class="block text-xs font-bold text-nuca-green mb-2">Tamanho (EU) *</label>
                             <select onchange="selectProductSize('${p.id}', this.value)" 
-                                class="nuca-select w-32 p-2 border-2 border-nuca-green rounded-lg bg-white text-nuca-green text-xs font-bold">
+                                class="nuca-select w-40 p-2.5 border-2 border-nuca-green rounded-lg bg-white text-nuca-green text-sm font-bold">
                                 <option value="" selected disabled>Tamanho</option>
                                 ${['35-38','39-42','43-46'].map(size => `
                                     <option value="${size}" ${selectedPackSizes[p.id] === size ? 'selected' : ''}>${size}</option>
@@ -2364,7 +2364,7 @@ function renderProducts(filter) {
                             <div class="flex gap-2 flex-wrap">
                                 ${p.colors.map(color => `
                                     <button onclick="selectProductColor('${p.id}', '${color.name}')" 
-                                        class="pack-prod-color-btn w-8 h-8 rounded-full border-2 transition-all ${selectedPackColors[p.id] === color.name ? 'border-nuca-dark scale-110' : 'border-transparent hover:scale-105'}" 
+                                        class="color-selector w-9 h-9 rounded-full border-2 ${selectedPackColors[p.id] === color.name ? 'active' : ''}" 
                                         style="background-color: ${color.hex}; box-shadow: 0 0 0 1px #E8DCC4;" 
                                         title="${color.name}" data-product="${p.id}" data-color="${color.name}"></button>
                                 `).join('')}
@@ -2381,7 +2381,7 @@ function renderProducts(filter) {
                             <div class="grid grid-cols-2 gap-2">
                                 ${['Primavera','Verão','Outono','Inverno'].map(season => `
                                     <button onclick="selectProductSeason('${p.id}', '${season}')" 
-                                        class="pack-prod-season-btn flex items-center gap-2 p-2 rounded-xl border border-nuca-green/20 transition-all text-xs ${selectedPackSeasons && selectedPackSeasons[p.id] === season ? 'bg-nuca-green text-nuca-beige' : 'bg-white text-nuca-green hover:bg-nuca-green/10'}" 
+                                        class="season-selector flex items-center gap-2 p-3 rounded-xl border border-nuca-green/20 transition-all text-xs ${selectedPackSeasons && selectedPackSeasons[p.id] === season ? 'active' : ''}" 
                                         data-product="${p.id}" data-season="${season}">
                                         ${seasonIcons[season]}
                                         <span>${season}</span>
@@ -2393,7 +2393,7 @@ function renderProducts(filter) {
                 }
 
                 return `
-                    <div class="bg-white rounded-xl p-4 border border-nuca-green/10" data-product-id="${p.id}">
+                    <div class="rounded-xl p-4 border border-nuca-green/10 bg-white" data-product-id="${p.id}">
                         <div class="flex items-start gap-3">
                             <img src="${imgUrl}" alt="${p.name}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
                             <div class="flex-1">
@@ -2439,10 +2439,9 @@ function renderProducts(filter) {
         function selectProductSize(productId, size) {
             selectedPackSizes[productId] = size;
             // Update UI
-            document.querySelectorAll(`.pack-prod-size-btn[data-product="${productId}"]`).forEach(btn => {
+            document.querySelectorAll(`.size-btn[data-product="${productId}"]`).forEach(btn => {
                 const isSelected = btn.dataset.size === size;
-                btn.classList.toggle('bg-nuca-green', isSelected);
-                btn.classList.toggle('text-nuca-beige', isSelected);
+                btn.classList.toggle('active', isSelected);
                 btn.classList.toggle('text-nuca-green', !isSelected);
             });
         }
@@ -2450,23 +2449,18 @@ function renderProducts(filter) {
         function selectProductColor(productId, color) {
             selectedPackColors[productId] = color;
             // Update UI
-            document.querySelectorAll(`.pack-prod-color-btn[data-product="${productId}"]`).forEach(btn => {
+            document.querySelectorAll(`.color-selector[data-product="${productId}"]`).forEach(btn => {
                 const isSelected = btn.dataset.color === color;
-                btn.classList.toggle('border-nuca-dark', isSelected);
-                btn.classList.toggle('border-transparent', !isSelected);
-                btn.classList.toggle('scale-110', isSelected);
+                btn.classList.toggle('active', isSelected);
             });
         }
 
         function selectProductSeason(productId, season) {
             selectedPackSeasons[productId] = season;
             // Update UI
-            document.querySelectorAll(`.pack-prod-season-btn[data-product="${productId}"]`).forEach(btn => {
+            document.querySelectorAll(`.season-selector[data-product="${productId}"]`).forEach(btn => {
                 const isSelected = btn.dataset.season === season;
-                btn.classList.toggle('bg-nuca-green', isSelected);
-                btn.classList.toggle('text-nuca-beige', isSelected);
-                btn.classList.toggle('bg-white', !isSelected);
-                btn.classList.toggle('text-nuca-green', !isSelected);
+                btn.classList.toggle('active', isSelected);
             });
         }
 function closePackModal() { 
