@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NUCA - Moda Minimalista</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'nuca-beige': '#D8C6A5',
+                        'nuca-green': '#556B4F',
+                        'nuca-dark': '#2C3328',
+                        'nuca-light': '#E8DCC4',
+                        'spring': '#98D8C8',
+                        'summer': '#F7DC6F',
+                        'autumn': '#E59866',
+                        'winter': '#AED6F1',
+                    },
+                    fontFamily: {
+                        'display': ['Syne', 'sans-serif'],
+                        'body': ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #D8C6A5;
+            color: #556B4F;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nuca-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+        }
+
+        /* ===== NOTIFICATION SYSTEM ===== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .nuca-notification {
+            background: #F5F1EA;
+            border-left: 4px solid #556B4F;
+            border-radius: 12px;
+            padding: 16px 20px;
+            min-width: 320px;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(44, 51, 40, 0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: all;
+        }
+
+        .nuca-notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .nuca-notification.hiding {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+
+        .notification-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.warning {
+            background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%);
+            color: #2C3328;
+        }
+
+        .notification-icon.error {
+            background: linear-gradient(135deg, #E57373 0%, #D32F2F 100%);
+            color: white;
+        }
+
+        .notification-icon.success {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            color: #D8C6A5;
+        }
+
+        .notification-icon.info {
+            background: linear-gradient(135deg, #AED6F1 0%, #7FB3D5 100%);
+            color: #2C3328;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #2C3328;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.85rem;
+            color: #556B4F;
+            line-height: 1.5;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: #556B4F;
+            opacity: 0.6;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #556B4F;
+            border-radius: 0 0 0 12px;
+            transition: width linear;
+        }
+
+        /* Pulse animation for attention */
+        @keyframes pulse-border {
+            0%, 100% { border-left-width: 4px; }
+            50% { border-left-width: 6px; }
+        }
+
+        .nuca-notification.urgent {
+            animation: pulse-border 1.5s ease-in-out infinite;
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 480px) {
+            .notification-container {
+                top: auto;
+                bottom: 20px;
+                left: 16px;
+                right: 16px;
+                align-items: stretch;
+            }
+
+            .nuca-notification {
+                min-width: auto;
+                max-width: none;
+                width: 100%;
+            }
+        }
+
+        /* Demo styles */
+        .demo-section {
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-button {
+            background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
+            color: #D8C6A5;
+            padding: 14px 28px;
+            border-radius: 100px;
+            border: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(85, 107, 79, 0.3);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Demo Content -->
+    <div class="demo-section">
+        <h1 class="nuca-logo text-4xl text-nuca-green mb-8 text-center">NUCA Notifications</h1>
+        <p class="text-nuca-green/70 text-center mb-8">Sistema de notificações estilizado para o site NUCA. Clique nos botões para testar:</p>
+
+        <div class="flex flex-wrap justify-center">
+            <button class="demo-button" onclick="showNotification('warning', 'Seleciona uma cor', 'Por favor escolhe uma cor para continuar com a tua encomenda.')">
+                ⚠️ Aviso Cor
+            </button>
+            <button class="demo-button" onclick="showNotification('warning', 'Seleciona um tamanho', 'Escolhe o tamanho que preferes antes de adicionar ao carrinho.')">
+                📏 Aviso Tamanho
+            </button>
+            <button class="demo-button" onclick="showNotification('warning', 'Seleciona uma estação', 'Escolhe a tua estação favorita para este pack.')">
+                🌸 Aviso Estação
+            </button>
+            <button class="demo-button" onclick="showNotification('error', 'Erro no carrinho', 'Algo correu mal. Tenta novamente.')">
+                ❌ Erro
+            </button>
+            <button class="demo-button" onclick="showNotification('success', 'Adicionado!', 'O produto foi adicionado ao teu carrinho com sucesso.')">
+                ✅ Sucesso
+            </button>
+        </div>
+
+        <div class="mt-12 p-6 bg-nuca-light/30 rounded-2xl">
+            <h3 class="font-display font-bold text-nuca-green mb-4">Como usar no teu código:</h3>
+            <pre class="bg-nuca-dark text-nuca-beige p-4 rounded-xl text-sm overflow-x-auto">
+// Substituir os alert() por:
+showNotification('warning', 'Título', 'Mensagem');
+
+// Tipos disponíveis:
+// 'warning' - para campos obrigatórios (cor, tamanho, estação)
+// 'error' - para erros
+// 'success' - para confirmações
+// 'info' - para informações gerais
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        // ===== SISTEMA DE NOTIFICAÇÕES NUCA =====
+        function showNotification(type, title, message, duration = 4000) {
+            const container = document.getElementById('notification-container');
+
+            // Criar elemento de notificação
+            const notification = document.createElement('div');
+            notification.className = 'nuca-notification';
+
+            // Ícones SVG para cada tipo
+            const icons = {
+                warning: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`,
+                error: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+                success: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+                info: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`
+            };
+
+            // Construir HTML da notificação
+            notification.innerHTML = `
+                <div class="notification-icon ${type}">
+                    ${icons[type]}
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close" onclick="closeNotification(this.parentElement)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <div class="notification-progress"></div>
+            `;
+
+            // Adicionar ao container
+            container.appendChild(notification);
+
+            // Animar entrada
+            requestAnimationFrame(() => {
+                notification.classList.add('show');
+                if (type === 'warning') {
+                    notification.classList.add('urgent');
+                }
+            });
+
+            // Configurar barra de progresso
+            const progress = notification.querySelector('.notification-progress');
+            progress.style.width = '100%';
+            progress.style.transition = `width ${duration}ms linear`;
+
+            requestAnimationFrame(() => {
+                progress.style.width = '0%';
+            });
+
+            // Auto-remover após duração
+            const timeout = setTimeout(() => {
+                closeNotification(notification);
+            }, duration);
+
+            // Pausar no hover
+            notification.addEventListener('mouseenter', () => {
+                clearTimeout(timeout);
+                progress.style.transition = 'none';
+                progress.style.width = '100%';
+            });
+
+            notification.addEventListener('mouseleave', () => {
+                progress.style.transition = `width ${duration * 0.5}ms linear`;
+                progress.style.width = '0%';
+                setTimeout(() => {
+                    closeNotification(notification);
+                }, duration * 0.5);
+            });
+        }
+
+        function closeNotification(notification) {
+            notification.classList.add('hiding');
+            notification.classList.remove('show');
+
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 400);
+        }
+    </script>
+</body>
+</html>
