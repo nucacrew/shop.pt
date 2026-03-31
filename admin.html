@@ -315,10 +315,8 @@
             .modal-content {
                 background: white;
                 border-radius: 1rem;
-                max-width: 600px;
+                max-width: 500px;
                 width: 100%;
-                max-height: 90vh;
-                overflow-y: auto;
                 animation: scaleIn 0.2s ease-out;
             }
             @keyframes scaleIn {
@@ -643,7 +641,7 @@
                         <div class="overflow-x-auto">
                             <table class="w-full">
                                 <thead class="bg-nuca-green/5 border-b border-nuca-green/10">
-                                    <tr>
+                                    32
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Cliente</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Contacto</th>
                                         <th class="text-left px-6 py-4 text-xs font-bold text-nuca-green uppercase">Compras</th>
@@ -782,8 +780,8 @@
         </div>
     </div>
     
-    <!-- Delete Order Confirmation Modal -->
-    <div id="delete-modal" class="modal-overlay">
+    <!-- Delete Order Confirmation Modal (APENAS UM MODAL) -->
+    <div id="delete-order-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="p-6 border-b border-nuca-green/10">
                 <h3 class="font-display text-xl font-bold text-nuca-green">Confirmar Eliminação</h3>
@@ -791,8 +789,8 @@
             <div class="p-6">
                 <p class="text-nuca-green/70 mb-6">Tens a certeza que queres eliminar esta encomenda? Esta ação não pode ser desfeita.</p>
                 <div class="flex gap-4 justify-end">
-                    <button onclick="closeDeleteModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
-                    <button id="confirm-delete-order-btn" onclick="confirmDeleteOrderAction()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
+                    <button onclick="closeDeleteOrderModal()" class="px-6 py-2 border border-nuca-green/30 rounded-full text-nuca-green hover:bg-nuca-green/5 transition-colors">Cancelar</button>
+                    <button id="confirm-delete-order-action" onclick="executeDeleteOrder()" class="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors">Eliminar</button>
                 </div>
             </div>
         </div>
@@ -1276,66 +1274,42 @@
         }
     
         // ============================================
-        // FUNÇÕES DE ELIMINAÇÃO DE ENCOMENDAS - CORRIGIDAS
+        // FUNÇÕES DE ELIMINAÇÃO DE ENCOMENDAS - APENAS UM MODAL
         // ============================================
         function confirmDeleteOrder(orderId) {
-            // Guarda o ID da encomenda a eliminar
             orderToDelete = orderId;
-            
-            // Abre o modal de confirmação
-            const modal = document.getElementById('delete-modal');
+            const modal = document.getElementById('delete-order-modal');
             modal.classList.add('active');
-            
-            // Reset do botão de confirmação
-            const confirmBtn = document.getElementById('confirm-delete-order-btn');
-            if (confirmBtn) {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Eliminar';
-            }
-            
-            console.log('Modal de confirmação aberto para encomenda:', orderId);
         }
     
-        function closeDeleteModal() {
+        function closeDeleteOrderModal() {
             if (isDeletingOrder) return;
-            
-            const modal = document.getElementById('delete-modal');
+            const modal = document.getElementById('delete-order-modal');
             modal.classList.remove('active');
             orderToDelete = null;
-            
-            const confirmBtn = document.getElementById('confirm-delete-order-btn');
-            if (confirmBtn) {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Eliminar';
-            }
         }
     
-        async function confirmDeleteOrderAction() {
-            // Verificar se há uma encomenda para eliminar
+        async function executeDeleteOrder() {
             if (!orderToDelete) {
                 showToast('Nenhuma encomenda selecionada', 'error');
-                closeDeleteModal();
+                closeDeleteOrderModal();
                 return;
             }
             
-            // Evitar múltiplas eliminações
             if (isDeletingOrder) {
                 showToast('Aguarda, já está a eliminar...', 'info');
                 return;
             }
             
-            const confirmBtn = document.getElementById('confirm-delete-order-btn');
-            const cancelBtn = document.querySelector('#delete-modal .border');
+            const confirmBtn = document.getElementById('confirm-delete-order-action');
             
             try {
                 isDeletingOrder = true;
                 
-                // Desativar botões durante a operação
                 if (confirmBtn) {
                     confirmBtn.disabled = true;
                     confirmBtn.textContent = 'A eliminar...';
                 }
-                if (cancelBtn) cancelBtn.disabled = true;
                 
                 if (!supabaseClient) {
                     throw new Error('Supabase não inicializado');
@@ -1343,27 +1317,6 @@
                 
                 console.log('A eliminar encomenda com ID:', orderToDelete);
                 
-                // Verificar se a encomenda existe antes de eliminar
-                const { data: existingOrder, error: checkError } = await supabaseClient
-                    .from('orders')
-                    .select('id, order_number')
-                    .eq('id', orderToDelete)
-                    .single();
-                
-                if (checkError) {
-                    if (checkError.code === 'PGRST116') {
-                        throw new Error('Encomenda não encontrada');
-                    }
-                    throw new Error(`Erro ao verificar: ${checkError.message}`);
-                }
-                
-                if (!existingOrder) {
-                    throw new Error('Encomenda não encontrada');
-                }
-                
-                console.log('Encomenda encontrada, a eliminar:', existingOrder);
-                
-                // ELIMINAR A ENCOMENDA (só aqui é que elimina de facto)
                 const { error: deleteError } = await supabaseClient
                     .from('orders')
                     .delete()
@@ -1375,25 +1328,17 @@
                 
                 console.log('Encomenda eliminada com sucesso:', orderToDelete);
                 
-                // Atualizar a lista local de encomendas (remover a eliminada)
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
                 
-                // Remover dos expandidos se estava expandida
                 if (expandedOrders.has(orderToDelete)) {
                     expandedOrders.delete(orderToDelete);
                 }
                 
-                // Re-renderizar a tabela
                 applyFilters();
-                
-                // Recarregar dashboard e clientes para atualizar estatísticas
                 await loadDashboard();
                 await loadCustomers();
                 
-                // Fechar o modal
-                closeDeleteModal();
-                
-                // Mostrar mensagem de sucesso
+                closeDeleteOrderModal();
                 showToast('Encomenda eliminada com sucesso!', 'success');
                 
             } catch (error) {
@@ -1401,13 +1346,10 @@
                 showToast(`Erro: ${error.message}`, 'error');
             } finally {
                 isDeletingOrder = false;
-                
-                // Reativar botões
                 if (confirmBtn) {
                     confirmBtn.disabled = false;
                     confirmBtn.textContent = 'Eliminar';
                 }
-                if (cancelBtn) cancelBtn.disabled = false;
             }
         }
     
@@ -1476,7 +1418,7 @@
             const tbody = document.getElementById('customers-table-body');
             
             if (customers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td> </tr>';
                 return;
             }
             
@@ -1492,13 +1434,13 @@
                                 <p class="text-xs text-nuca-green/60">${escapeHtml(customer.email || '-')}</p>
                             </div>
                         </div>
-                     </td>
+                      </td>
                     <td class="px-6 py-4">
                         <div>
                             <p class="font-medium">${escapeHtml(customer.phone || '-')}</p>
                             <p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || '-')}</p>
                         </div>
-                     </td>
+                      </td>
                     <td class="px-6 py-4 font-medium text-center">${customer.total_orders || 0}</td>
                     <td class="px-6 py-4 font-bold text-nuca-green">€${(customer.total_purchases || 0).toFixed(2)}</td>
                     <td class="px-6 py-4">
@@ -1519,8 +1461,8 @@
                                 </svg>
                             </button>
                         </div>
-                     </td>
-                 </tr>
+                      </td>
+                  </tr>
             `).join('');
         }
     
