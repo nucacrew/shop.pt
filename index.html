@@ -934,7 +934,7 @@
         max-width: 100%;
         height: auto;
     }
-        /* ===== NOTIFICATION SYSTEM ===== */
+            /* ===== NOTIFICATION SYSTEM - NUCA STYLE ===== */
     .notification-container {
         position: fixed;
         top: 20px;
@@ -947,13 +947,13 @@
     }
 
     .nuca-notification {
-        background: #F5F1EA;
-        border-left: 4px solid #556B4F;
+        background: #D8C6A5;
+        border: 1px solid rgba(85, 107, 79, 0.3);
         border-radius: 12px;
         padding: 16px 20px;
         min-width: 320px;
         max-width: 400px;
-        box-shadow: 0 10px 40px rgba(44, 51, 40, 0.15);
+        box-shadow: 0 8px 32px rgba(44, 51, 40, 0.12);
         display: flex;
         align-items: flex-start;
         gap: 14px;
@@ -976,33 +976,43 @@
     }
 
     .notification-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(85, 107, 79, 0.2);
     }
 
+    /* Warning - Tom terroso/outono suave */
     .notification-icon.warning {
-        background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%);
-        color: #2C3328;
+        color: #B8834F;
+        background: rgba(184, 131, 79, 0.15);
+        border-color: rgba(184, 131, 79, 0.3);
     }
 
+    /* Error - Vermelho terroso/marrom suave */
     .notification-icon.error {
-        background: linear-gradient(135deg, #E57373 0%, #D32F2F 100%);
-        color: white;
+        color: #A65D48;
+        background: rgba(166, 93, 72, 0.15);
+        border-color: rgba(166, 93, 72, 0.3);
     }
 
+    /* Success - Verde NUCA escurecido */
     .notification-icon.success {
-        background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%);
-        color: #D8C6A5;
+        color: #4A5D45;
+        background: rgba(74, 93, 69, 0.15);
+        border-color: rgba(74, 93, 69, 0.3);
     }
 
+    /* Info - Bege acinzentado */
     .notification-icon.info {
-        background: linear-gradient(135deg, #AED6F1 0%, #7FB3D5 100%);
-        color: #2C3328;
+        color: #7A6F5B;
+        background: rgba(122, 111, 91, 0.15);
+        border-color: rgba(122, 111, 91, 0.3);
     }
 
     .notification-content {
@@ -1012,9 +1022,10 @@
     .notification-title {
         font-family: 'Syne', sans-serif;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: #2C3328;
         margin-bottom: 4px;
+        letter-spacing: -0.01em;
     }
 
     .notification-message {
@@ -1029,7 +1040,7 @@
         cursor: pointer;
         padding: 4px;
         color: #556B4F;
-        opacity: 0.6;
+        opacity: 0.4;
         transition: all 0.2s;
         flex-shrink: 0;
     }
@@ -1037,25 +1048,27 @@
     .notification-close:hover {
         opacity: 1;
         transform: rotate(90deg);
+        color: #2C3328;
     }
 
     .notification-progress {
         position: absolute;
         bottom: 0;
         left: 0;
-        height: 3px;
+        height: 2px;
         background: #556B4F;
         border-radius: 0 0 0 12px;
         transition: width linear;
+        opacity: 0.3;
     }
 
     @keyframes pulse-border {
-        0%, 100% { border-left-width: 4px; }
-        50% { border-left-width: 6px; }
+        0%, 100% { box-shadow: 0 0 0 0 rgba(85, 107, 79, 0.2); }
+        50% { box-shadow: 0 0 0 4px rgba(85, 107, 79, 0.1); }
     }
 
     .nuca-notification.urgent {
-        animation: pulse-border 1.5s ease-in-out infinite;
+        animation: pulse-border 2s ease-in-out infinite;
     }
 
     @media (max-width: 480px) {
@@ -1072,8 +1085,7 @@
             max-width: none;
             width: 100%;
         }
-    }
-    /* ===== DROPDOWN ESTILIZADO ===== */
+    }/* ===== DROPDOWN ESTILIZADO ===== */
     .nuca-select {
         appearance: none;
         -webkit-appearance: none;
@@ -1587,10 +1599,7 @@
                                 </div>
                             </div>
 
-                            <!-- Validation Note -->
-                            <div class="bg-nuca-light/50 p-3 rounded-xl mb-6 text-xs text-nuca-green/70">
-                                <strong>Nota:</strong> Valida se todas as opções foram selecionadas para cada produto antes de adicionar ao carrinho.
-                            </div>
+                            
 
                             <!-- Add to Cart Button -->
                             <div class="pt-4 border-t border-nuca-green/10">
@@ -1614,56 +1623,7 @@
     </div>
 
 <!-- ===== FOOTER ===== -->
-    <footer id="contact" class="bg-nuca-dark text-nuca-beige py-12 sm:py-16 px-4 sm:px-6 lg:px-12">
-        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
-            <div class="col-span-2 md:col-span-1 space-y-3 sm:space-y-4">
-                <span class="nuca-logo text-3xl sm:text-4xl block">NUCA</span>
-                <p class="text-nuca-beige/60 text-sm">Moda minimalista</p>
-                <div class="flex flex-wrap gap-3 pt-2">
-                    <span class="trust-badge text-nuca-beige/60"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Checkout seguro</span>
-                    <span class="trust-badge text-nuca-beige/60"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Trocas em 14 dias</span>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-bold mb-3 sm:mb-4 text-nuca-light text-sm sm:text-base">Loja</h4>
-                <ul class="space-y-2 text-nuca-beige/60 text-xs sm:text-sm">
-                    <li><button onclick="filterFromFooter('camisetas', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Camisetas</button></li>
-                    <li><button onclick="filterFromFooter('hoodies', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Hoodies</button></li>
-                    <li><button onclick="filterFromFooter('acessorios', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Acessórios</button></li>
-                    <li><button onclick="scrollToSection('seasons-collection', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Coleção Estações</button></li>
-                    <li><button onclick="scrollToSection('packs', event)" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Packs</button></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-3 sm:mb-4 text-nuca-light text-sm sm:text-base">Ajuda</h4>
-                <ul class="space-y-2 text-nuca-beige/60 text-xs sm:text-sm">
-                    <li><button onclick="openLegalModal('trocas')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Trocas e Devoluções</button></li>
-                    <li><button onclick="openLegalModal('envio')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Envio e Entrega</button></li>
-                    <li><button onclick="openLegalModal('pagamento')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Métodos de Pagamento</button></li>
-                    <li><a href="mailto:nuca.crew.support@gmail.com" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-bold mb-3 sm:mb-4 text-nuca-light text-sm sm:text-base">Siga-nos</h4>
-                <div class="flex gap-3">
-                    <a href="https://instagram.com/nuca.pt" target="_blank" rel="noopener noreferrer" aria-label="Instagram NUCA" class="w-10 h-10 rounded-full bg-nuca-beige/10 flex items-center justify-center hover:bg-nuca-beige/20 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    </a>
-                </div>
-                <div class="mt-5 sm:mt-6 space-y-1">
-                    <p class="text-xs sm:text-sm text-nuca-beige/60">Contacto:</p>
-                    <a href="mailto:nuca.crew@gmail.com" class="text-nuca-beige hover:underline block text-xs sm:text-sm">nuca.crew@gmail.com</a>
-                </div>
-            </div>
-        </div>
-        <div class="max-w-7xl mx-auto mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-nuca-beige/10 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs sm:text-sm text-nuca-beige/40 footer-legal">
-            <p>&copy; <span id="year"></span> NUCA. Todos os direitos reservados.</p>
-            <div class="flex gap-4 sm:gap-6">
-                <button onclick="openLegalModal('privacidade')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-xs sm:text-sm">Política de Privacidade</button>
-                <button onclick="openLegalModal('termos')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-xs sm:text-sm">Termos de Uso</button>
-            </div>
-        </div>
-    </footer>
+    
 
     <!-- ===== MODAL DE PRODUTO ===== -->
     <div id="product-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
@@ -1736,10 +1696,7 @@
                                 </div>
                             </div>
 
-                            <!-- Validation Note -->
-                            <div class="bg-nuca-light/50 p-3 rounded-xl mt-6 mb-6 text-xs text-nuca-green/70">
-                                <strong>Nota:</strong> Valida se todas as opções foram selecionadas antes de adicionar ao carrinho.
-                            </div>
+                            
 
                             <!-- Add to Cart Button -->
                             <div class="pt-4 border-t border-nuca-green/10">
@@ -2512,7 +2469,21 @@ function renderProducts(filter) {
                 btn.classList.toggle('text-nuca-green', !isSelected);
             });
         }
-function closePackModal() { const modal = document.getElementById('pack-modal'); const content = document.getElementById('pack-modal-content'); content.classList.remove('scale-100', 'opacity-100'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }, 300); }
+function closePackModal() { 
+            const modal = document.getElementById('pack-modal'); 
+            const content = document.getElementById('pack-modal-content'); 
+
+            // Remove validation note when closing modal
+            const existingNote = document.getElementById('pack-validation-note');
+            if (existingNote) existingNote.remove();
+
+            content.classList.remove('scale-100', 'opacity-100'); 
+            content.classList.add('scale-95', 'opacity-0'); 
+            setTimeout(() => { 
+                modal.classList.add('hidden'); 
+                document.body.classList.remove('overflow-hidden'); 
+            }, 300); 
+        }
         function selectPackSeason(season) { selectedPackSeason = season; document.querySelectorAll('#pack-season-buttons .pack-season-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.includes(season))); }
         
         
