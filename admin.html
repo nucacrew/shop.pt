@@ -237,30 +237,6 @@
                 padding: 1rem 1.5rem;
             }
             
-            .order-details .space-y-2 {
-                max-height: 500px;
-                overflow-y: auto;
-                padding-right: 0.5rem;
-            }
-            
-            .order-details .space-y-2::-webkit-scrollbar {
-                width: 6px;
-            }
-            
-            .order-details .space-y-2::-webkit-scrollbar-track {
-                background: rgba(85, 107, 79, 0.1);
-                border-radius: 3px;
-            }
-            
-            .order-details .space-y-2::-webkit-scrollbar-thumb {
-                background: #556B4F;
-                border-radius: 3px;
-            }
-            
-            .order-details .space-y-2::-webkit-scrollbar-thumb:hover {
-                background: #2C3328;
-            }
-    
             .expand-btn {
                 width: 32px;
                 height: 32px;
@@ -802,9 +778,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div id="customer-detail-content" class="p-6">
-                <!-- Populated by JS -->
-            </div>
+            <div id="customer-detail-content" class="p-6"></div>
         </div>
     </div>
     
@@ -863,7 +837,8 @@
         let orderToDelete = null;
         let customerToDelete = null;
         let expandedOrders = new Set();
-        let isDeleting = false;
+        let isDeletingOrder = false;
+        let isDeletingCustomer = false;
     
         // ============================================
         // INICIALIZAÇÃO
@@ -1300,28 +1275,67 @@
             }
         }
     
+        // ============================================
+        // FUNÇÕES DE ELIMINAÇÃO DE ENCOMENDAS - CORRIGIDAS
+        // ============================================
         function confirmDeleteOrder(orderId) {
+            // Guarda o ID da encomenda a eliminar
             orderToDelete = orderId;
-            document.getElementById('delete-modal').classList.add('active');
+            
+            // Abre o modal de confirmação
+            const modal = document.getElementById('delete-modal');
+            modal.classList.add('active');
+            
+            // Reset do botão de confirmação
+            const confirmBtn = document.getElementById('confirm-delete-order-btn');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Eliminar';
+            }
+            
+            console.log('Modal de confirmação aberto para encomenda:', orderId);
         }
     
         function closeDeleteModal() {
-            if (isDeleting) return;
-            document.getElementById('delete-modal').classList.remove('active');
+            if (isDeletingOrder) return;
+            
+            const modal = document.getElementById('delete-modal');
+            modal.classList.remove('active');
             orderToDelete = null;
+            
+            const confirmBtn = document.getElementById('confirm-delete-order-btn');
+            if (confirmBtn) {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Eliminar';
+            }
         }
     
         async function confirmDeleteOrderAction() {
-            if (!orderToDelete || isDeleting) return;
+            // Verificar se há uma encomenda para eliminar
+            if (!orderToDelete) {
+                showToast('Nenhuma encomenda selecionada', 'error');
+                closeDeleteModal();
+                return;
+            }
+            
+            // Evitar múltiplas eliminações
+            if (isDeletingOrder) {
+                showToast('Aguarda, já está a eliminar...', 'info');
+                return;
+            }
             
             const confirmBtn = document.getElementById('confirm-delete-order-btn');
             const cancelBtn = document.querySelector('#delete-modal .border');
             
             try {
-                isDeleting = true;
-                confirmBtn.disabled = true;
-                cancelBtn.disabled = true;
-                confirmBtn.textContent = 'A eliminar...';
+                isDeletingOrder = true;
+                
+                // Desativar botões durante a operação
+                if (confirmBtn) {
+                    confirmBtn.disabled = true;
+                    confirmBtn.textContent = 'A eliminar...';
+                }
+                if (cancelBtn) cancelBtn.disabled = true;
                 
                 if (!supabaseClient) {
                     throw new Error('Supabase não inicializado');
@@ -1332,19 +1346,24 @@
                 // Verificar se a encomenda existe antes de eliminar
                 const { data: existingOrder, error: checkError } = await supabaseClient
                     .from('orders')
-                    .select('id')
+                    .select('id, order_number')
                     .eq('id', orderToDelete)
                     .single();
                 
-                if (checkError && checkError.code !== 'PGRST116') {
-                    throw new Error(`Erro ao verificar encomenda: ${checkError.message}`);
+                if (checkError) {
+                    if (checkError.code === 'PGRST116') {
+                        throw new Error('Encomenda não encontrada');
+                    }
+                    throw new Error(`Erro ao verificar: ${checkError.message}`);
                 }
                 
                 if (!existingOrder) {
                     throw new Error('Encomenda não encontrada');
                 }
                 
-                // Eliminar a encomenda
+                console.log('Encomenda encontrada, a eliminar:', existingOrder);
+                
+                // ELIMINAR A ENCOMENDA (só aqui é que elimina de facto)
                 const { error: deleteError } = await supabaseClient
                     .from('orders')
                     .delete()
@@ -1356,27 +1375,39 @@
                 
                 console.log('Encomenda eliminada com sucesso:', orderToDelete);
                 
-                // Atualizar a lista local
+                // Atualizar a lista local de encomendas (remover a eliminada)
                 allOrders = allOrders.filter(o => o.id !== orderToDelete);
                 
-                // Atualizar a interface
+                // Remover dos expandidos se estava expandida
+                if (expandedOrders.has(orderToDelete)) {
+                    expandedOrders.delete(orderToDelete);
+                }
+                
+                // Re-renderizar a tabela
                 applyFilters();
                 
-                // Recarregar dashboard e clientes
+                // Recarregar dashboard e clientes para atualizar estatísticas
                 await loadDashboard();
                 await loadCustomers();
                 
-                showToast('Encomenda eliminada com sucesso!', 'success');
+                // Fechar o modal
                 closeDeleteModal();
                 
+                // Mostrar mensagem de sucesso
+                showToast('Encomenda eliminada com sucesso!', 'success');
+                
             } catch (error) {
-                console.error('Erro detalhado ao eliminar encomenda:', error);
-                showToast(`Erro ao eliminar encomenda: ${error.message}`, 'error');
+                console.error('Erro ao eliminar encomenda:', error);
+                showToast(`Erro: ${error.message}`, 'error');
             } finally {
-                isDeleting = false;
-                confirmBtn.disabled = false;
-                cancelBtn.disabled = false;
-                confirmBtn.textContent = 'Eliminar';
+                isDeletingOrder = false;
+                
+                // Reativar botões
+                if (confirmBtn) {
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Eliminar';
+                }
+                if (cancelBtn) cancelBtn.disabled = false;
             }
         }
     
@@ -1445,7 +1476,7 @@
             const tbody = document.getElementById('customers-table-body');
             
             if (customers.length === 0) {
-                tbody.innerHTML = 'enstein<td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td> </tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-nuca-green/40">Nenhum cliente encontrado</td></tr>';
                 return;
             }
             
@@ -1461,13 +1492,13 @@
                                 <p class="text-xs text-nuca-green/60">${escapeHtml(customer.email || '-')}</p>
                             </div>
                         </div>
-                    </td>
+                     </td>
                     <td class="px-6 py-4">
                         <div>
                             <p class="font-medium">${escapeHtml(customer.phone || '-')}</p>
                             <p class="text-xs text-nuca-green/60">${escapeHtml(customer.city || '-')}</p>
                         </div>
-                    </td>
+                     </td>
                     <td class="px-6 py-4 font-medium text-center">${customer.total_orders || 0}</td>
                     <td class="px-6 py-4 font-bold text-nuca-green">€${(customer.total_purchases || 0).toFixed(2)}</td>
                     <td class="px-6 py-4">
@@ -1488,8 +1519,8 @@
                                 </svg>
                             </button>
                         </div>
-                    </td>
-                </tr>
+                     </td>
+                 </tr>
             `).join('');
         }
     
@@ -1542,7 +1573,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="customer-detail-card">
                             <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 Informações Pessoais
                             </h4>
                             <div class="space-y-2 text-sm">
@@ -1555,7 +1586,7 @@
                         </div>
                         <div class="customer-detail-card">
                             <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 7H7M17 12H7M17 17H7"/></svg>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 7H7M17 12H7M17 17H7"/></svg>
                                 Morada
                             </h4>
                             <div class="space-y-2 text-sm">
@@ -1567,7 +1598,7 @@
                     </div>
                     <div class="customer-detail-card mb-6">
                         <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M9 12h6M7 18h10"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M9 12h6M7 18h10"/></svg>
                             Estatísticas de Compras
                         </h4>
                         <div class="grid grid-cols-3 gap-4 text-center">
@@ -1588,7 +1619,7 @@
                     </div>
                     <div class="customer-detail-card">
                         <h4 class="font-bold text-nuca-green mb-3 flex items-center gap-2">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                             Histórico de Encomendas
                         </h4>
                         ${customerOrders && customerOrders.length > 0 ? `
@@ -1600,7 +1631,7 @@
                                                 <p class="font-bold text-nuca-green">${order.order_number || order.id?.slice(0, 8)}</p>
                                                 <p class="text-xs text-nuca-green/60">${formatDate(order.created_at)}</p>
                                             </div>
-                                            <span class="status-badge ${getStatusClass(order.status)}" style="padding: 2px 10px;">${order.status === 'pending' ? 'Pendente' : order.status === 'processing' ? 'A Processar' : order.status === 'shipped' ? 'Enviada' : order.status === 'delivered' ? 'Entregue' : 'Cancelada'}</span>
+                                            <span class="status-badge ${getStatusClass(order.status)}">${order.status === 'pending' ? 'Pendente' : order.status === 'processing' ? 'A Processar' : order.status === 'shipped' ? 'Enviada' : order.status === 'delivered' ? 'Entregue' : 'Cancelada'}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <p class="text-sm">${parseItems(order.items).length} itens</p>
@@ -1722,13 +1753,15 @@
     
         async function confirmDeleteCustomerAction() {
             if (!customerToDelete) return;
+            if (isDeletingCustomer) return;
             
             try {
+                isDeletingCustomer = true;
+                
                 if (!supabaseClient) throw new Error('Supabase não inicializado');
                 
                 showToast('A eliminar cliente...', 'info');
                 
-                // Atualizar encomendas para remover o email do cliente
                 const { error: updateError } = await supabaseClient
                     .from('orders')
                     .update({ 
@@ -1742,7 +1775,6 @@
                     console.warn('Erro ao atualizar encomendas do cliente:', updateError);
                 }
                 
-                // Eliminar o cliente
                 const { error } = await supabaseClient
                     .from('customers')
                     .delete()
@@ -1750,22 +1782,21 @@
                 
                 if (error) throw new Error(error.message);
                 
-                // Atualizar lista de clientes
                 allCustomers = allCustomers.filter(c => c.email !== customerToDelete.email);
                 renderCustomersTable(allCustomers);
                 
                 showToast(`Cliente "${customerToDelete.name}" eliminado com sucesso!`, 'success');
                 
-                // Limpar e fechar modal
                 closeDeleteCustomerModal();
                 
-                // Recarregar dados
                 await loadDashboard();
                 await loadOrders();
                 
             } catch (error) {
                 console.error('Erro ao eliminar cliente:', error);
                 showToast('Erro ao eliminar cliente: ' + error.message, 'error');
+            } finally {
+                isDeletingCustomer = false;
             }
         }
     
