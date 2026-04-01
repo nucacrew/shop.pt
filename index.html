@@ -671,13 +671,43 @@
 
     <script>
         const productImages = {
-            tshirt: { bege: { front: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&q=80', back: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&q=80' }, branca: { front: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, preta: { front: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } },
-            hoodie: { bege: { front: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=80', back: 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?w=600&q=80' }, branca: { front: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, preta: { front: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } },
-            bone: { preto: { front: 'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' }, branco: { front: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&q=80', back: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?w=600&q=80' } },
-            tote: { bege: { front: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&q=80', back: 'https://images.unsplash.com/photo-1597484662317-c9253e609f55?w=600&q=80' } },
-            chaveiro: { bege: { front: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80', back: 'https://images.unsplash.com/photo-1605218427306-022ba6c08417?w=600&q=80' } },
-            meias: { preto: { front: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80', back: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80' }, branco: { front: 'https://images.unsplash.com/photo-1571731956672-f2b94d7dd0cb?w=600&q=80', back: 'https://images.unsplash.com/photo-1582966772680-860e372bb558?w=600&q=80' } },
-            estacoes: { primavera: { front: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80', back: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80' }, verao: { front: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600&q=80', back: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80' }, outono: { front: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80', back: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80' }, inverno: { front: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80', back: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600&q=80' } }
+            tshirt: { 
+                bege: { front: '...', back: '...' },
+                branca: { front: '...', back: '...' },
+                preta: { front: '...', back: '...' }
+            },
+            hoodie: { ... },
+            bone: { ... },
+            tote: { 
+                bege: { front: 'https://teusite.com/tote-bege.jpg' } 
+            },
+            chaveiro: { ... },
+            meias: { ... },
+            estacoes: {  // <-- ESTE CONTINUA PARA TSHIRT, HOODIE, BONÉ
+                primavera: { front: '...', back: '...' },
+                verao: { front: '...', back: '...' },
+                outono: { front: '...', back: '...' },
+                inverno: { front: '...', back: '...' }
+            },
+            // NOVO OBJETO APENAS PARA A TOTE BAG ESTAÇÕES
+            toteEstacoes: {  // <-- NOVO!
+                primavera: { 
+                    front: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Primavera_jbaeyw.jpg',
+                    back: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Primavera_jbaeyw.jpg'
+                },
+                verao: { 
+                    front: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Ver%C3%A3o_rxycif.jpg',
+                    back: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Ver%C3%A3o_rxycif.jpg'
+                },
+                outono: { 
+                    front: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Outono_zxl7d2.jpg',
+                    back: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Outono_zxl7d2.jpg'
+                },
+                inverno: { 
+                    front: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Inverno_gjk6qd.jpg',
+                    back: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Inverno_gjk6qd.jpg'
+                }
+            }
         };
         const mainProducts = [
             { id: 'tshirt-nuca', name: 'Tshirt-NUCA', category: 'camisetas', basePrice: 22.90, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, description: 'A camiseta essencial NUCA. Corte clássico, 100% algodão orgânico.' },
@@ -691,7 +721,18 @@
             { id: 'tshirt-estacao', name: 'Tshirt-Estações', category: 'seasons', basePrice: 24.90, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, seasonImages: productImages.estacoes, description: 'Tshirt da Coleção Estações do Ano.' },
             { id: 'hoodie-estacao', name: 'Hoodie-Estações', category: 'seasons', basePrice: 42.90, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, seasonImages: productImages.estacoes, description: 'Hoodie da Coleção Estações do Ano.' },
             { id: 'bone-estacao', name: 'Boné-Estações', category: 'seasons', basePrice: 18.90, hasSeasons: true, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, seasonImages: productImages.estacoes, description: 'Boné da Coleção Estações do Ano.' },
-            { id: 'tote-estacao', name: 'Tote Bag-Estações', category: 'seasons', basePrice: 14.90, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.tote, seasonImages: productImages.estacoes, description: 'Tote Bag da Coleção Estações do Ano.' },
+            { 
+                id: 'tote-estacao', 
+                name: 'Tote Bag-Estações', 
+                category: 'seasons', 
+                basePrice: 14.90, 
+                hasSeasons: true, 
+                sizes: ['Único'], 
+                colors: [], 
+                images: productImages.toteEstacoes,  // <-- USA O NOVO OBJETO
+                seasonImages: productImages.toteEstacoes,  // <-- USA O NOVO OBJETO
+                description: 'Tote Bag da Coleção Estações do Ano.' 
+            }
             { id: 'chaveiro-estacao', name: 'Chaveiro-Estações', category: 'seasons', basePrice: 7.90, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.chaveiro, seasonImages: productImages.estacoes, description: 'Chaveiro da Coleção Estações do Ano.' },
             { id: 'meias-estacao', name: 'Meias-Estações', category: 'seasons', basePrice: 9.90, hasSeasons: true, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, seasonImages: productImages.estacoes, description: 'Meias da Coleção Estações do Ano.' }
         ];
