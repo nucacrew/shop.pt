@@ -670,27 +670,39 @@
     </div>
 
     <script>
+        
         const productImages = {
             tshirt: { 
                 bege: { front: '...', back: '...' },
                 branca: { front: '...', back: '...' },
                 preta: { front: '...', back: '...' }
             },
-            hoodie: { ... },
-            bone: { ... },
-            tote: { 
-                bege: { front: 'https://teusite.com/tote-bege.jpg' } 
+            hoodie: { 
+                bege: { front: '...', back: '...' },
+                branca: { front: '...', back: '...' },
+                preta: { front: '...', back: '...' }
             },
-            chaveiro: { ... },
-            meias: { ... },
-            estacoes: {  // <-- ESTE CONTINUA PARA TSHIRT, HOODIE, BONÉ
+            bone: { 
+                preto: { front: '...', back: '...' },
+                branco: { front: '...', back: '...' }
+            },
+            tote: { 
+                bege: { front: '...' } 
+            },
+            chaveiro: { 
+                bege: { front: '...', back: '...' } 
+            },
+            meias: { 
+                preto: { front: '...', back: '...' },
+                branco: { front: '...', back: '...' }
+            },
+            estacoes: { 
                 primavera: { front: '...', back: '...' },
                 verao: { front: '...', back: '...' },
                 outono: { front: '...', back: '...' },
                 inverno: { front: '...', back: '...' }
             },
-            // NOVO OBJETO APENAS PARA A TOTE BAG ESTAÇÕES
-            toteEstacoes: {  // <-- NOVO!
+            toteEstacoes: {  // <-- NOVO OBJETO
                 primavera: { 
                     front: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Primavera_jbaeyw.jpg',
                     back: 'https://res.cloudinary.com/dk0zvcvfo/image/upload/v1775054245/Tote_bag_-_Primavera_jbaeyw.jpg'
@@ -721,18 +733,7 @@
             { id: 'tshirt-estacao', name: 'Tshirt-Estações', category: 'seasons', basePrice: 24.90, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.tshirt, seasonImages: productImages.estacoes, description: 'Tshirt da Coleção Estações do Ano.' },
             { id: 'hoodie-estacao', name: 'Hoodie-Estações', category: 'seasons', basePrice: 42.90, hasSeasons: true, sizes: ['S','M','L','XL','XXL'], colors: [{name:'Bege',hex:'#D8C6A5',key:'bege'},{name:'Branca',hex:'#FFFFFF',key:'branca'},{name:'Preta',hex:'#2C3328',key:'preta'}], images: productImages.hoodie, seasonImages: productImages.estacoes, description: 'Hoodie da Coleção Estações do Ano.' },
             { id: 'bone-estacao', name: 'Boné-Estações', category: 'seasons', basePrice: 18.90, hasSeasons: true, sizes: ['Único'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.bone, seasonImages: productImages.estacoes, description: 'Boné da Coleção Estações do Ano.' },
-            { 
-                id: 'tote-estacao', 
-                name: 'Tote Bag-Estações', 
-                category: 'seasons', 
-                basePrice: 14.90, 
-                hasSeasons: true, 
-                sizes: ['Único'], 
-                colors: [], 
-                images: productImages.toteEstacoes,  // <-- USA O NOVO OBJETO
-                seasonImages: productImages.toteEstacoes,  // <-- USA O NOVO OBJETO
-                description: 'Tote Bag da Coleção Estações do Ano.' 
-            }
+            { id: 'tote-estacao', name: 'Tote Bag-Estações', category: 'seasons', basePrice: 14.90, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.toteEstacoes, seasonImages: productImages.toteEstacoes, description: 'Tote Bag da Coleção Estações do Ano.' },  // <-- ALTERADO
             { id: 'chaveiro-estacao', name: 'Chaveiro-Estações', category: 'seasons', basePrice: 7.90, hasSeasons: true, sizes: ['Único'], colors: [], images: productImages.chaveiro, seasonImages: productImages.estacoes, description: 'Chaveiro da Coleção Estações do Ano.' },
             { id: 'meias-estacao', name: 'Meias-Estações', category: 'seasons', basePrice: 9.90, hasSeasons: true, sizes: ['35-38', '39-42', '43-46'], colors: [{name:'Preto',hex:'#2C3328',key:'preto'},{name:'Branco',hex:'#FFFFFF',key:'branco'}], images: productImages.meias, seasonImages: productImages.estacoes, description: 'Meias da Coleção Estações do Ano.' }
         ];
