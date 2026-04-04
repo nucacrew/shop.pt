@@ -432,6 +432,161 @@
         .unified-offer-badge svg { width: 16px; height: 16px; stroke: #2C3328; fill: none; }
         .collection-badge-absolute { position: absolute; top: 1rem; left: 1rem; z-index: 20; }
         .collection-badge { background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%); }
+
+        /* ===== ESTILOS UNIFICADOS PARA DROPDOWNS/SELECTS ===== */
+        select,
+        .nuca-select,
+        .pack-meias-select {
+            /* Reset do browser */
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            
+            /* Cores e fundo alinhados com a identidade NUCA */
+            background-color: #FFFFFF;
+            color: #556B4F;
+            border: 1.5px solid rgba(85, 107, 79, 0.35);
+            border-radius: 0.625rem;
+            
+            /* Tipografia Space Grotesk (fonte do site) */
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.875rem;
+            font-weight: 700;
+            
+            /* Espaçamento interno */
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            
+            /* Cursor e transições suaves */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            /* Largura mínima para consistência */
+            min-width: 140px;
+            width: auto;
+            
+            /* Seta customizada usando SVG inline - cor #556B4F (nuca-green) */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        
+        /* Estados hover e focus */
+        select:hover,
+        .nuca-select:hover,
+        .pack-meias-select:hover {
+            border-color: #556B4F;
+            background-color: rgba(85, 107, 79, 0.06);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(85, 107, 79, 0.1);
+        }
+        
+        select:focus,
+        .nuca-select:focus,
+        .pack-meias-select:focus {
+            outline: none;
+            border-color: #556B4F;
+            box-shadow: 0 0 0 3px rgba(85, 107, 79, 0.1);
+            background-color: #FFFFFF;
+        }
+        
+        /* Placeholder/option disabled */
+        select option:disabled,
+        .nuca-select option:disabled,
+        .pack-meias-select option:disabled {
+            color: rgba(85, 107, 79, 0.4);
+            font-style: italic;
+        }
+        
+        /* Opções do dropdown (quando possível estilizar) */
+        select option,
+        .nuca-select option,
+        .pack-meias-select option {
+            background-color: #FFFFFF;
+            color: #556B4F;
+            padding: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* Opção selecionada */
+        select option:checked,
+        .nuca-select option:checked,
+        .pack-meias-select option:checked {
+            background-color: rgba(85, 107, 79, 0.1);
+            color: #2C3328;
+            font-weight: 700;
+        }
+        
+        /* Hover nas opções (quando suportado) */
+        select option:hover,
+        .nuca-select option:hover,
+        .pack-meias-select option:hover {
+            background-color: rgba(85, 107, 79, 0.08);
+        }
+        
+        /* ===== VARIAÇÕES ESPECÍFICAS ===== */
+        
+        /* Select específico para meias no modal de produto (mais largo) */
+        #meias-size-select.nuca-select {
+            width: 160px;
+            padding-right: 2.75rem;
+        }
+        
+        /* Select dentro dos cards de pack (mais compacto) */
+        .pack-meias-select {
+            font-size: 0.82rem;
+            padding: 0.5rem 2.25rem 0.5rem 0.875rem;
+            min-width: 120px;
+        }
+        
+        /* Select em estado de erro (quando não selecionado) */
+        select:required:invalid,
+        .nuca-select:required:invalid,
+        .pack-meias-select:required:invalid {
+            border-color: rgba(85, 107, 79, 0.2);
+            color: rgba(85, 107, 79, 0.5);
+        }
+        
+        /* ===== ANIMAÇÃO SUAVE AO ABRIR ===== */
+        select {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+        }
+        
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 767px) {
+            select,
+            .nuca-select,
+            .pack-meias-select {
+                font-size: 0.8rem;
+                padding: 0.625rem 2.25rem 0.625rem 0.875rem;
+                background-size: 14px;
+                background-position: right 10px center;
+            }
+            
+            #meias-size-select.nuca-select {
+                width: 140px;
+            }
+        }
+        
+        /* ===== ESTILOS ESPECÍFICOS PARA O PACK MODAL ===== */
+        /* Container dos selects no pack para garantir alinhamento */
+        .pack-selection-row select {
+            margin: 0;
+        }
+        
+        /* Quando o select está dentro de um grupo de seleção do pack */
+        .pack-item-selections select {
+            margin-top: 0.25rem;
+        }
+        
+        /* ===== ESTADO ATIVO/SELECIONADO ===== */
+        select.has-value,
+        .nuca-select.has-value,
+        .pack-meias-select.has-value {
+            border-color: #556B4F;
+            background-color: rgba(85, 107, 79, 0.05);
+            color: #2C3328;
+        }
     </style>
     <base target="_blank">
 </head>
