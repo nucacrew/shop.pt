@@ -475,153 +475,162 @@
                 .hide-mobile { display: none; }
             }
     
-            /* ===== RECEIPT STYLES ===== */
-            .receipt-document {
-                background: #F7F3EC;
+            /* ===== RECIBO SIMPLES ===== */
+            .receipt-simple {
+                background: white;
                 font-family: 'Space Grotesk', sans-serif;
                 color: #2C3328;
-                border-radius: 1rem;
-                overflow: hidden;
-                border: 1px solid rgba(85,107,79,0.14);
-                box-shadow: 0 2px 24px rgba(44,51,40,0.08);
+                padding: 2rem;
             }
-            .receipt-header {
-                background: #2C3328;
-                color: #D8C6A5;
-                padding: 2.25rem 2.25rem 2rem;
-                position: relative;
-                overflow: hidden;
+            
+            .receipt-simple .logo-area {
+                text-align: center;
+                margin-bottom: 1.75rem;
+                padding-bottom: 1rem;
+                border-bottom: 2px solid #556B4F;
             }
-            .receipt-header-pattern {
-                position: absolute;
-                inset: 0;
-                pointer-events: none;
-                opacity: 0.07;
-                background-image: repeating-linear-gradient(
-                    45deg,
-                    #D8C6A5 0px, #D8C6A5 1px,
-                    transparent 1px, transparent 12px
-                );
+            
+            .receipt-simple .logo-title {
+                font-family: 'Syne', sans-serif;
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: #556B4F;
+                letter-spacing: -0.02em;
+                margin: 0;
             }
-            .receipt-body { padding: 1.75rem 2.25rem 1.5rem; }
-            .receipt-divider {
-                border: none;
-                border-top: 1px dashed rgba(85,107,79,0.22);
-                margin: 1.25rem 0;
-            }
-            .receipt-row {
+            
+            .receipt-simple .receipt-info {
                 display: flex;
                 justify-content: space-between;
-                align-items: flex-start;
-                padding: 0.4rem 0;
-                font-size: 0.835rem;
+                margin-bottom: 1.5rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px dashed #e0e0e0;
             }
-            .receipt-row-label { color: rgba(44,51,40,0.48); }
-            .receipt-row-value { font-weight: 600; color: #2C3328; text-align: right; }
-            .receipt-item-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                padding: 0.8rem 0;
-                border-bottom: 1px solid rgba(85,107,79,0.09);
+            
+            .receipt-simple .info-block {
+                flex: 1;
+            }
+            
+            .receipt-simple .info-label {
+                font-size: 0.65rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #999;
+                font-weight: 600;
+                margin-bottom: 0.25rem;
+            }
+            
+            .receipt-simple .info-value {
+                font-size: 0.85rem;
+                font-weight: 500;
+                color: #2C3328;
+            }
+            
+            .receipt-simple .items-table {
+                width: 100%;
+                margin: 1rem 0;
+                border-collapse: collapse;
+            }
+            
+            .receipt-simple .items-table th {
+                text-align: left;
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: #999;
+                font-weight: 600;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .receipt-simple .items-table td {
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #f0f0f0;
                 font-size: 0.85rem;
             }
-            .receipt-item-row:last-child { border-bottom: none; }
-            .receipt-total-block {
-                background: #2C3328;
-                border-radius: 1rem;
-                padding: 1.25rem 1.5rem;
-                margin-top: 1.25rem;
+            
+            .receipt-simple .items-table tr:last-child td {
+                border-bottom: none;
+            }
+            
+            .receipt-simple .product-name {
+                font-weight: 600;
+                color: #2C3328;
+            }
+            
+            .receipt-simple .product-details {
+                font-size: 0.7rem;
+                color: #999;
+                margin-top: 0.2rem;
+            }
+            
+            .receipt-simple .totals {
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 2px solid #556B4F;
+                text-align: right;
+            }
+            
+            .receipt-simple .total-row {
                 display: flex;
-                justify-content: space-between;
+                justify-content: flex-end;
                 align-items: center;
-                position: relative;
-                overflow: hidden;
+                gap: 1.5rem;
+                margin-bottom: 0.5rem;
             }
-            .receipt-total-block::before {
-                content: '';
-                position: absolute;
-                inset: 0;
-                opacity: 0.06;
-                background-image: repeating-linear-gradient(
-                    -45deg,
-                    #D8C6A5 0px, #D8C6A5 1px,
-                    transparent 1px, transparent 10px
-                );
+            
+            .receipt-simple .total-label {
+                font-size: 0.8rem;
+                font-weight: 600;
+                color: #666;
             }
-            .receipt-paid-stamp {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.4rem;
-                padding: 0.35rem 0.875rem;
-                background: rgba(16,185,129,0.13);
-                border: 1.5px solid rgba(16,185,129,0.38);
-                border-radius: 100px;
-                color: #065F46;
-                font-size: 0.68rem;
+            
+            .receipt-simple .total-value {
+                font-size: 1rem;
                 font-weight: 700;
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
+                color: #2C3328;
+                min-width: 90px;
+                text-align: right;
             }
-            .receipt-paid-stamp::before {
-                content: '';
-                width: 6px; height: 6px;
-                border-radius: 50%;
-                background: #10B981;
-                flex-shrink: 0;
+            
+            .receipt-simple .grand-total {
+                margin-top: 0.75rem;
+                padding-top: 0.75rem;
+                border-top: 2px solid #556B4F;
             }
-            .receipt-footer {
-                background: #2C3328;
-                padding: 1.25rem 2.25rem;
-                text-align: center;
-                position: relative;
-                overflow: hidden;
+            
+            .receipt-simple .grand-total .total-label {
+                font-size: 1rem;
+                font-weight: 800;
+                color: #556B4F;
             }
-            .receipt-footer::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0;
-                height: 4px;
-                background: repeating-linear-gradient(
-                    90deg,
-                    #D8C6A5 0px, #D8C6A5 8px,
-                    transparent 8px, transparent 12px
-                );
-                opacity: 0.3;
+            
+            .receipt-simple .grand-total .total-value {
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: #556B4F;
             }
-            .receipt-barcode {
-                display: flex;
-                align-items: flex-end;
-                justify-content: center;
-                gap: 2px;
-                height: 32px;
-                margin: 0.875rem auto 0.375rem;
-            }
-            .receipt-barcode span {
+            
+            .receipt-simple .payment-status {
                 display: inline-block;
-                background: rgba(216,198,165,0.5);
-                border-radius: 1px;
-            }
-            .receipt-section-label {
-                font-size: 0.62rem;
-                text-transform: uppercase;
-                letter-spacing: 0.12em;
+                padding: 0.25rem 0.75rem;
+                background: #D1FAE5;
+                color: #065F46;
+                border-radius: 100px;
+                font-size: 0.7rem;
                 font-weight: 700;
-                color: rgba(44,51,40,0.38);
-                margin-bottom: 0.625rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-top: 0.5rem;
             }
-            .receipt-tear {
-                height: 14px;
-                background: #F7F3EC;
-                position: relative;
-                overflow: hidden;
-            }
-            .receipt-tear::before {
-                content: '';
-                position: absolute;
-                top: 0; left: -4px; right: -4px;
-                height: 28px;
-                background: radial-gradient(circle at 50% 0, #2C3328 10px, transparent 11px) 0 0 / 18px 28px;
+            
+            .receipt-simple .footer {
+                margin-top: 1.5rem;
+                padding-top: 1rem;
+                text-align: center;
+                border-top: 1px solid #e0e0e0;
+                font-size: 0.7rem;
+                color: #999;
             }
     
             @media print {
@@ -629,11 +638,17 @@
                 #receipt-print-area, #receipt-print-area * { visibility: visible; }
                 #receipt-print-area {
                     position: absolute;
-                    left: 0; top: 0;
+                    left: 0;
+                    top: 0;
                     width: 100%;
                 }
-                .receipt-document { border: none; border-radius: 0; box-shadow: none; }
-                @page { margin: 0; size: A5; }
+                .receipt-simple {
+                    padding: 1rem;
+                }
+                @page {
+                    margin: 0.5cm;
+                    size: auto;
+                }
             }
         </style>
     </head>
@@ -662,7 +677,7 @@
                 <form id="login-form" style="display:flex;flex-direction:column;gap:1rem;">
                     <div>
                         <label class="form-label">Email</label>
-                        <input type="email" id="login-email" required class="nuca-input" placeholder="admin@nuca.pt">
+                        <input type="email" id="login-email" required class="nuca-input" placeholder="nuca.crew@gmail.com">
                     </div>
                     <div>
                         <label class="form-label">Password</label>
@@ -700,7 +715,7 @@
     
                 <div style="margin-top:0.5rem;padding:0.75rem;background:rgba(85,107,79,0.06);border-radius:0.875rem;">
                     <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);font-weight:700;margin-bottom:0.25rem;">Sessão activa</p>
-                    <p class="font-display" style="font-size:0.875rem;font-weight:700;color:var(--dark);" id="sidebar-user-email">admin@nuca.pt</p>
+                    <p class="font-display" style="font-size:0.875rem;font-weight:700;color:var(--dark);" id="sidebar-user-email">nuca.crew@gmail.com</p>
                 </div>
     
                 <nav class="sidebar-nav">
@@ -1064,7 +1079,7 @@
             <div class="modal-header">
                 <div>
                     <h3 class="font-display" style="font-size:1.125rem;font-weight:800;color:var(--dark);">Recibo de Pagamento</h3>
-                    <p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.25rem;">Pago — pronto para imprimir ou guardar</p>
+                    <p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.25rem;">Comprovativo de pagamento</p>
                 </div>
                 <button onclick="closeReceiptModal()" class="action-btn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -1072,9 +1087,7 @@
             </div>
             <div class="modal-body" style="padding:1.25rem 1.75rem;">
                 <div id="receipt-print-area">
-                    <div class="receipt-document" id="receipt-content">
-                        <!-- Filled by JS -->
-                    </div>
+                    <div class="receipt-simple" id="receipt-content"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1458,7 +1471,7 @@
     }
     
     // ═══════════════════════════════════════════════════
-    // RECEIPT GENERATOR
+    // RECEIPT GENERATOR - SIMPLE VERSION
     // ═══════════════════════════════════════════════════
     function generateReceipt(orderId) {
         const order = allOrders.find(o => o.id === orderId);
@@ -1469,145 +1482,96 @@
         const num = order.order_number || order.id?.slice(0,8).toUpperCase() || '—';
         const total = parseFloat(order.total) || 0;
         const now = new Date();
-        const receiptDate = now.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+        const receiptDate = now.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
         const receiptTime = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
         const receiptId = 'REC-' + Date.now().toString(36).toUpperCase().slice(-8);
     
-        // Barcode visual (decorative)
-        const barWidths = [2,3,1,4,2,1,3,2,4,1,2,3,1,2,4,3,1,2,3,1,4,2,1,3,2,1,4,3,2,1];
-        const barcodeHTML = barWidths.map((w, i) =>
-            `<span style="width:${w}px;height:${i % 4 === 0 ? 36 : i % 3 === 0 ? 28 : 22}px;"></span>`
-        ).join('');
-    
-        // Subtotal, shipping, total breakdown
+        // Calculate subtotal and shipping
         const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
-        const shipping = total - itemsTotal > 0 ? (total - itemsTotal) : 0;
-        const hasShipping = shipping > 0.01;
-    
-        // Build items rows
-        const itemsRows = items.length
-            ? items.map(item => `
-                <div class="receipt-item-row">
-                    <div>
-                        <p style="font-weight:600;color:#2C3328;font-size:0.875rem;">${esc(item.name || 'Artigo')}</p>
-                        <p style="font-size:0.75rem;color:rgba(44,51,40,0.45);margin-top:2px;">
-                            ${item.size ? item.size : ''}${item.color ? ' · ' + item.color : ''}${item.quantity && item.quantity > 1 ? ' · ×' + item.quantity : ''}
-                        </p>
-                    </div>
-                    <div style="text-align:right;flex-shrink:0;margin-left:1rem;">
-                        <p style="font-weight:700;color:#556B4F;font-size:0.875rem;">€${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1)).toFixed(2)}</p>
-                        ${item.quantity && item.quantity > 1 ? `<p style="font-size:0.7rem;color:rgba(44,51,40,0.4);">€${(parseFloat(item.price)||0).toFixed(2)} × ${item.quantity}</p>` : ''}
-                    </div>
-                </div>`).join('')
-            : `<div class="receipt-item-row" style="color:rgba(44,51,40,0.4);font-size:0.85rem;">Sem itens registados</div>`;
+        const shipping = total - itemsTotal > 0.01 ? (total - itemsTotal) : 0;
+        const vat = total * 0.23 / 1.23;
     
         const html = `
-            <div class="receipt-header">
-                <div class="receipt-header-pattern"></div>
-                <div style="position:relative;z-index:1;">
-                    <!-- Top row: logo + stamp -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.75rem;">
-                        <div>
-                            <div style="display:flex;align-items:baseline;gap:0.75rem;">
-                                <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3rem;color:#D8C6A5;line-height:1;letter-spacing:-0.04em;margin:0;">NUCA</h1>
-                                <span style="font-size:0.6rem;color:rgba(216,198,165,0.38);text-transform:uppercase;letter-spacing:0.14em;font-weight:700;padding-bottom:0.25rem;">Studio</span>
-                            </div>
-                            <p style="font-size:0.62rem;color:rgba(216,198,165,0.35);text-transform:uppercase;letter-spacing:0.14em;margin-top:0.375rem;font-weight:600;">Lisboa, Portugal</p>
-                        </div>
-                        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.625rem;">
-                            <div class="receipt-paid-stamp">Pago</div>
-                            <div>
-                                <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.35);font-weight:700;">Recibo</p>
-                                <p style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;color:#D8C6A5;letter-spacing:0.05em;" data-receipt-num="${esc(receiptId)}">${esc(receiptId)}</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="logo-area">
+                <h1 class="logo-title">NUCA</h1>
+                <p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p>
+            </div>
     
-                    <!-- Divider line -->
-                    <div style="border-top:1px solid rgba(216,198,165,0.1);margin-bottom:1.25rem;"></div>
-    
-                    <!-- Client + date grid -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
-                        <div>
-                            <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.35);font-weight:700;margin-bottom:0.5rem;">Facturado a</p>
-                            <p style="font-size:0.95rem;font-weight:700;color:#D8C6A5;margin-bottom:0.2rem;">${esc(order.customer_name || '—')}</p>
-                            <p style="font-size:0.775rem;color:rgba(216,198,165,0.55);">${esc(order.customer_email || '—')}</p>
-                            ${order.customer_phone ? `<p style="font-size:0.775rem;color:rgba(216,198,165,0.45);margin-top:0.125rem;">${esc(order.customer_phone)}</p>` : ''}
-                        </div>
-                        <div style="text-align:right;">
-                            <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.35);font-weight:700;margin-bottom:0.5rem;">Data</p>
-                            <p style="font-size:0.95rem;font-weight:700;color:#D8C6A5;margin-bottom:0.2rem;">${receiptDate}</p>
-                            <p style="font-size:0.775rem;color:rgba(216,198,165,0.55);">${receiptTime}</p>
-                            <p style="font-size:0.68rem;color:rgba(216,198,165,0.3);margin-top:0.375rem;font-family:'Space Grotesk',sans-serif;">Enc. Nº ${esc(num)}</p>
-                        </div>
-                    </div>
+            <div class="receipt-info">
+                <div class="info-block">
+                    <div class="info-label">Nº ENCOMENDA</div>
+                    <div class="info-value">${esc(num)}</div>
+                </div>
+                <div class="info-block" style="text-align:right;">
+                    <div class="info-label">DATA</div>
+                    <div class="info-value">${receiptDate} ${receiptTime}</div>
                 </div>
             </div>
     
-            <!-- Tear edge -->
-            <div class="receipt-tear"></div>
-    
-            <div class="receipt-body">
-    
-                <!-- Items section -->
-                <p class="receipt-section-label">Artigos</p>
-                <div style="margin-bottom:0.25rem;">
-                    ${itemsRows}
+            <div class="receipt-info">
+                <div class="info-block">
+                    <div class="info-label">CLIENTE</div>
+                    <div class="info-value">${esc(order.customer_name || '—')}</div>
+                    <div style="font-size:0.7rem;color:#666;margin-top:0.2rem;">${esc(order.customer_email || '—')}</div>
+                    ${order.customer_phone ? `<div style="font-size:0.7rem;color:#666;">${esc(order.customer_phone)}</div>` : ''}
                 </div>
-    
-                <hr class="receipt-divider">
-    
-                <!-- Meta rows -->
-                <div style="padding:0 0.125rem;">
-                    ${hasShipping ? `
-                    <div class="receipt-row">
-                        <span class="receipt-row-label">Subtotal dos artigos</span>
-                        <span class="receipt-row-value">€${itemsTotal.toFixed(2)}</span>
-                    </div>
-                    <div class="receipt-row">
-                        <span class="receipt-row-label">Envio</span>
-                        <span class="receipt-row-value">€${shipping.toFixed(2)}</span>
-                    </div>` : ''}
-                    <div class="receipt-row">
-                        <span class="receipt-row-label">IVA (23%)</span>
-                        <span class="receipt-row-value" style="color:rgba(44,51,40,0.5);font-weight:500;">Incluído — €${(total * 0.23 / 1.23).toFixed(2)}</span>
-                    </div>
-                    <div class="receipt-row">
-                        <span class="receipt-row-label">Método de pagamento</span>
-                        <span class="receipt-row-value">${esc(order.payment_method || 'Online')}</span>
-                    </div>
-                    ${addr.city || addr.address ? `
-                    <div class="receipt-row">
-                        <span class="receipt-row-label">Morada de entrega</span>
-                        <span class="receipt-row-value" style="max-width:55%;text-align:right;">${addr.address ? esc(addr.address) + ', ' : ''}${esc(addr.city||'')}${addr.postal ? ' ' + esc(addr.postal) : ''}</span>
-                    </div>` : ''}
+                ${addr.address || addr.city ? `
+                <div class="info-block" style="text-align:right;">
+                    <div class="info-label">MORADA DE ENTREGA</div>
+                    <div class="info-value">${addr.address ? esc(addr.address) : ''}${addr.city ? '<br>' + esc(addr.city) : ''}${addr.postal ? '<br>' + esc(addr.postal) : ''}</div>
                 </div>
-    
-                <!-- Total block -->
-                <div class="receipt-total-block">
-                    <div style="position:relative;z-index:1;">
-                        <p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.14em;color:rgba(216,198,165,0.45);font-weight:700;margin-bottom:0.3rem;">Total Pago</p>
-                        <p style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#D8C6A5;line-height:1;letter-spacing:-0.02em;">€${total.toFixed(2)}</p>
-                    </div>
-                    <div style="position:relative;z-index:1;text-align:right;">
-                        <div class="receipt-paid-stamp" style="margin-bottom:0.5rem;">Liquidado</div>
-                        <p style="font-size:0.7rem;color:rgba(216,198,165,0.4);font-family:'Space Grotesk',sans-serif;">${receiptDate}</p>
-                    </div>
-                </div>
-    
+                ` : ''}
             </div>
     
-            <!-- Footer -->
-            <div class="receipt-footer">
-                <div class="receipt-barcode">${barcodeHTML}</div>
-                <p style="font-size:0.6rem;color:rgba(216,198,165,0.3);letter-spacing:0.08em;margin-top:0.375rem;font-family:'Space Grotesk',sans-serif;">${esc(receiptId)} · ${esc(num)}</p>
-                <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(216,198,165,0.08);">
-                    <p style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:rgba(216,198,165,0.5);letter-spacing:-0.02em;margin-bottom:0.375rem;">NUCA</p>
-                    <p style="font-size:0.72rem;color:rgba(216,198,165,0.3);line-height:1.6;">
-                        nuca.crew.support@gmail.com
-                    </p>
-                    <p style="font-size:0.62rem;color:rgba(216,198,165,0.18);margin-top:0.5rem;">Este documento serve como comprovativo de pagamento.</p>
+            <table class="items-table">
+                <thead>
+                    <tr><th>Produto</th><th style="text-align:right;">Preço</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Total</th></tr>
+                </thead>
+                <tbody>
+                    ${items.length ? items.map(item => `
+                        <tr>
+                            <td>
+                                <div class="product-name">${esc(item.name || 'Artigo')}</div>
+                                ${item.size || item.color ? `<div class="product-details">${item.size || ''} ${item.color ? '/ ' + item.color : ''}</div>` : ''}
+                            </td>
+                            <td style="text-align:right;">€${(parseFloat(item.price) || 0).toFixed(2)}</td>
+                            <td style="text-align:center;">${parseInt(item.quantity) || 1}</td>
+                            <td style="text-align:right;">€${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1)).toFixed(2)}</td>
+                        </tr>
+                    `).join('') : '<tr><td colspan="4" style="text-align:center;">Sem itens registados</td></tr>'}
+                </tbody>
+            </table>
+    
+            <div class="totals">
+                ${shipping > 0 ? `
+                <div class="total-row">
+                    <span class="total-label">Subtotal</span>
+                    <span class="total-value">€${itemsTotal.toFixed(2)}</span>
                 </div>
+                <div class="total-row">
+                    <span class="total-label">Envio</span>
+                    <span class="total-value">€${shipping.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div class="total-row">
+                    <span class="total-label">IVA (23%)</span>
+                    <span class="total-value">€${vat.toFixed(2)}</span>
+                </div>
+                <div class="grand-total">
+                    <div class="total-row">
+                        <span class="total-label">TOTAL PAGO</span>
+                        <span class="total-value">€${total.toFixed(2)}</span>
+                    </div>
+                </div>
+                <div style="margin-top:0.75rem;text-align:center;">
+                    <span class="payment-status">✓ PAGO</span>
+                </div>
+            </div>
+    
+            <div class="footer">
+                <p>Obrigado pela sua compra!</p>
+                <p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p>
+                <p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${esc(receiptId)}</p>
             </div>
         `;
     
@@ -1633,16 +1597,16 @@
         spin.classList.remove('hidden');
     
         const element = document.getElementById('receipt-content');
-        const orderNum = element.dataset?.receiptNum || 'recibo';
+        const receiptNum = element.dataset?.receiptNum || 'recibo';
     
         const opt = {
-            margin: 0,
-            filename: `NUCA-recibo-${orderNum}.pdf`,
+            margin: [0.3, 0.3, 0.3, 0.3],
+            filename: `NUCA-recibo-${receiptNum}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: '#FAFAF7',
+                backgroundColor: '#FFFFFF',
                 logging: false
             },
             jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
@@ -1696,7 +1660,7 @@
     function renderCustomersTable(customers) {
         const tbody = document.getElementById('customers-tbody');
         if (!customers.length) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum cliente encontrado</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum cliente encontrado</td</tr>';
             return;
         }
         tbody.innerHTML = customers.map(c => `
@@ -1709,11 +1673,11 @@
                             <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.email||'—')}</p>
                         </div>
                     </div>
-                </td>
+                 </div>
                 <td>
                     <p style="font-size:0.875rem;">${esc(c.phone||'—')}</p>
                     <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.city||'—')}</p>
-                </td>
+                 </div>
                 <td style="text-align:center;font-weight:600;">${c.total_orders||0}</td>
                 <td style="font-weight:700;color:var(--green);">€${(c.total_purchases||0).toFixed(2)}</td>
                 <td>
@@ -1725,11 +1689,11 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                         </button>
                         <button onclick="confirmDeleteCustomer('${esc(c.email)}','${esc(c.name||c.email)}')" class="action-btn danger" title="Eliminar">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                         </button>
                     </div>
-                </td>
-            </tr>
+                 </div>
+             </tr>
         `).join('');
     }
     
