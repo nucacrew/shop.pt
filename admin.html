@@ -47,17 +47,14 @@
             min-height: 100vh;
         }
 
-        /* ===== GRAIN ===== */
         .grain-overlay {
             position: fixed; inset: 0; pointer-events: none; z-index: 100; opacity: 0.03;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }
 
-        /* ===== TYPOGRAPHY ===== */
         .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
         .font-display { font-family: 'Syne', sans-serif; }
 
-        /* ===== LAYOUT ===== */
         .app-container { display: flex; min-height: 100vh; }
 
         .sidebar {
@@ -113,7 +110,6 @@
 
         .main-content { flex: 1; min-width: 0; }
 
-        /* Mobile sidebar */
         @media (max-width: 768px) {
             .sidebar {
                 position: fixed; left: 0; top: 0;
@@ -137,7 +133,6 @@
         }
         .sidebar-overlay.visible { display: block; }
 
-        /* ===== TOP NAV ===== */
         .top-nav {
             position: sticky; top: 0; z-index: 40;
             background: rgba(216, 198, 165, 0.85);
@@ -145,7 +140,6 @@
             border-bottom: 1px solid rgba(85, 107, 79, 0.1);
         }
 
-        /* ===== CARDS ===== */
         .card {
             background: rgba(255, 255, 255, 0.55);
             backdrop-filter: blur(10px);
@@ -168,7 +162,6 @@
         }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(85,107,79,0.12); }
 
-        /* ===== INPUTS ===== */
         .nuca-input {
             width: 100%;
             padding: 0.75rem 1rem;
@@ -188,7 +181,6 @@
         }
         .nuca-input::placeholder { color: rgba(85, 107, 79, 0.4); }
 
-        /* ===== BUTTONS ===== */
         .btn-primary {
             display: inline-flex; align-items: center; gap: 0.5rem;
             padding: 0.75rem 1.5rem;
@@ -215,7 +207,6 @@
         }
         .btn-ghost:hover { background: rgba(85,107,79,0.15); }
 
-        /* ===== FILTER TABS ===== */
         .filter-pill {
             padding: 0.5rem 1.125rem;
             border-radius: 100px;
@@ -230,7 +221,6 @@
         .filter-pill:hover { background: rgba(85,107,79,0.08); }
         .filter-pill.active { background: var(--green); color: var(--beige); }
 
-        /* ===== TABLE ===== */
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table thead tr { background: rgba(85,107,79,0.04); }
         .data-table th {
@@ -255,7 +245,6 @@
         .data-table tbody tr:hover { background: rgba(85,107,79,0.03); }
         .data-table tbody tr:last-child td { border-bottom: none; }
 
-        /* ===== STATUS BADGES — unified map ===== */
         .status-badge {
             display: inline-flex; align-items: center; gap: 0.375rem;
             padding: 0.3rem 0.875rem;
@@ -272,23 +261,17 @@
             border-radius: 50%;
             flex-shrink: 0;
         }
-        /* pending / pending_payment */
         .status-pending { background: #FEF3C7; color: #92400E; }
         .status-pending::before { background: #F59E0B; }
-        /* processing */
         .status-processing { background: #DBEAFE; color: #1E40AF; }
         .status-processing::before { background: #3B82F6; }
-        /* shipped */
         .status-shipped { background: #E0E7FF; color: #3730A3; }
         .status-shipped::before { background: #6366F1; }
-        /* delivered */
         .status-delivered { background: #D1FAE5; color: #065F46; }
         .status-delivered::before { background: #10B981; }
-        /* cancelled */
         .status-cancelled { background: #FEE2E2; color: #991B1B; }
         .status-cancelled::before { background: #EF4444; }
 
-        /* ===== STATUS SELECT ===== */
         .status-select {
             appearance: none; -webkit-appearance: none;
             padding: 0.3rem 2rem 0.3rem 0.875rem;
@@ -311,7 +294,6 @@
         .status-select.status-delivered { background-color: #D1FAE5; color: #065F46; }
         .status-select.status-cancelled { background-color: #FEE2E2; color: #991B1B; }
 
-        /* ===== ORDER EXPAND ===== */
         .expand-btn {
             width: 30px; height: 30px;
             border-radius: 50%;
@@ -340,7 +322,6 @@
             border-top: 1px solid rgba(85,107,79,0.06);
         }
 
-        /* ===== ACTION BUTTONS ===== */
         .action-btn {
             width: 32px; height: 32px;
             border-radius: 0.5rem;
@@ -352,8 +333,8 @@
         }
         .action-btn:hover { background: rgba(85,107,79,0.1); }
         .action-btn.danger:hover { background: #FEE2E2; color: #991B1B; }
+        .action-btn.receipt:hover { background: rgba(85,107,79,0.12); color: var(--dark); }
 
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed; top: 1.25rem; right: 1.25rem;
             z-index: 9999;
@@ -389,7 +370,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* ===== MODALS ===== */
         .modal-overlay {
             position: fixed; inset: 0; z-index: 500;
             display: none; align-items: center; justify-content: center;
@@ -413,6 +393,7 @@
         }
         .modal-box.small { max-width: 480px; }
         .modal-box.large { max-width: 720px; }
+        .modal-box.receipt-size { max-width: 580px; }
         @keyframes scaleIn {
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -429,7 +410,6 @@
             display: flex; justify-content: flex-end; gap: 0.75rem;
         }
 
-        /* ===== SECTIONS ===== */
         .section-content { display: none; }
         .section-content.active { display: block; animation: fadeUp 0.3s ease; }
         @keyframes fadeUp {
@@ -437,11 +417,9 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== CHART ===== */
         .chart-wrap { position: relative; height: 280px; width: 100%; }
         .chart-wrap-lg { position: relative; height: 360px; width: 100%; }
 
-        /* ===== LOADING ===== */
         .spinner {
             width: 22px; height: 22px; border-radius: 50%;
             border: 2.5px solid rgba(85,107,79,0.2);
@@ -450,7 +428,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ===== PERIOD BUTTONS ===== */
         .period-btn {
             padding: 0.5rem 1rem;
             border-radius: 0.625rem;
@@ -465,18 +442,14 @@
         .period-btn.active { background: var(--green); color: var(--beige); }
         .period-btn:not(.active):hover { background: rgba(85,107,79,0.08); }
 
-        /* ===== FORM ===== */
         .form-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dark); margin-bottom: 0.5rem; }
 
-        /* ===== LOGIN ===== */
         #login-screen { position: fixed; inset: 0; z-index: 9000; background: var(--beige); display: flex; align-items: center; justify-content: center; }
 
-        /* ===== MARQUEE (decorative) ===== */
         .marquee-wrap { overflow: hidden; white-space: nowrap; }
         .marquee-inner { display: inline-block; animation: marquee 30s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* ===== CUSTOMER AVATAR ===== */
         .avatar {
             width: 38px; height: 38px; border-radius: 50%;
             background: linear-gradient(135deg, var(--green), var(--dark));
@@ -485,12 +458,10 @@
             flex-shrink: 0;
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(85,107,79,0.2); border-radius: 2px; }
 
-        /* ===== ANALYTICS PERIOD BTN ROW ===== */
         .period-row {
             display: inline-flex;
             background: rgba(255,255,255,0.7);
@@ -499,9 +470,126 @@
             gap: 0.25rem;
         }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 640px) {
             .hide-mobile { display: none; }
+        }
+
+        /* ===== RECEIPT STYLES ===== */
+        .receipt-document {
+            background: #FAFAF7;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #2C3328;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(85,107,79,0.12);
+        }
+        .receipt-header {
+            background: #2C3328;
+            color: #D8C6A5;
+            padding: 2rem 2.25rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .receipt-header::before {
+            content: 'NUCA';
+            position: absolute;
+            right: -1rem;
+            top: -1.5rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 7rem;
+            color: rgba(255,255,255,0.04);
+            line-height: 1;
+            pointer-events: none;
+            letter-spacing: -0.04em;
+        }
+        .receipt-body { padding: 1.75rem 2.25rem; }
+        .receipt-divider {
+            border: none;
+            border-top: 1px dashed rgba(85,107,79,0.25);
+            margin: 1.25rem 0;
+        }
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.5rem 0;
+            font-size: 0.85rem;
+        }
+        .receipt-row-label { color: rgba(44,51,40,0.5); }
+        .receipt-row-value { font-weight: 600; color: #2C3328; text-align: right; }
+        .receipt-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(85,107,79,0.08);
+            font-size: 0.85rem;
+        }
+        .receipt-item-row:last-child { border-bottom: none; }
+        .receipt-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            background: #2C3328;
+            border-radius: 0.875rem;
+            margin-top: 1rem;
+        }
+        .receipt-paid-stamp {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(16,185,129,0.12);
+            border: 1.5px solid rgba(16,185,129,0.4);
+            border-radius: 100px;
+            color: #065F46;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .receipt-paid-stamp::before {
+            content: '';
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #10B981;
+        }
+        .receipt-footer {
+            background: rgba(85,107,79,0.05);
+            padding: 1.25rem 2.25rem;
+            text-align: center;
+            border-top: 1px solid rgba(85,107,79,0.08);
+        }
+        .receipt-barcode {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 2px;
+            height: 36px;
+            margin: 0.75rem auto 0.25rem;
+        }
+        .receipt-barcode span {
+            display: inline-block;
+            background: #2C3328;
+            border-radius: 1px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-print-area, #receipt-print-area * { visibility: visible; }
+            #receipt-print-area {
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+            }
+            .receipt-document {
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            @page { margin: 1.5cm; size: A4; }
         }
     </style>
 </head>
@@ -513,7 +601,6 @@
 <!-- ═══════════ LOGIN ═══════════ -->
 <div id="login-screen">
     <div style="width:100%;max-width:420px;padding:1rem;">
-        <!-- Marquee strip -->
         <div class="bg-nuca-green text-nuca-beige py-2 rounded-full mb-8 overflow-hidden text-center">
             <div class="marquee-wrap">
                 <div class="marquee-inner font-display text-sm font-bold tracking-widest">
@@ -634,7 +721,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Thin marquee strip like index.html -->
             <div style="background:var(--green);overflow:hidden;padding:0.375rem 0;">
                 <div class="marquee-wrap">
                     <div class="marquee-inner font-display" style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:var(--beige);text-transform:uppercase;">
@@ -678,7 +764,6 @@
 
             <!-- ═══ ORDERS ═══ -->
             <div id="section-orders" class="section-content">
-                <!-- Filters row -->
                 <div class="card-white" style="padding:1rem 1.25rem;margin-bottom:1rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between;">
                     <div style="display:flex;flex-wrap:wrap;gap:0.375rem;background:rgba(85,107,79,0.05);padding:0.25rem;border-radius:0.75rem;">
                         <button onclick="filterOrders('all')" class="filter-pill active" data-filter="all">Todas</button>
@@ -928,6 +1013,36 @@
     </div>
 </div>
 
+<!-- ═══════════ MODAL: RECEIPT ═══════════ -->
+<div id="receipt-modal" class="modal-overlay">
+    <div class="modal-backdrop" onclick="closeReceiptModal()"></div>
+    <div class="modal-box receipt-size">
+        <div class="modal-header">
+            <div>
+                <h3 class="font-display" style="font-size:1.125rem;font-weight:800;color:var(--dark);">Recibo de Pagamento</h3>
+                <p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.25rem;">Pago — pronto para imprimir ou guardar</p>
+            </div>
+            <button onclick="closeReceiptModal()" class="action-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" style="padding:1.25rem 1.75rem;">
+            <div id="receipt-print-area">
+                <div class="receipt-document" id="receipt-content">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeReceiptModal()" class="btn-ghost">Fechar</button>
+            <button onclick="printReceipt()" class="btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Imprimir / Guardar PDF
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════
 // SUPABASE CONFIG
@@ -954,7 +1069,7 @@ let analyticsChartInstance = null;
 let currentAnalyticsPeriod = 'daily';
 
 // ═══════════════════════════════════════════════════
-// STATUS HELPERS — single source of truth (BUG FIX)
+// STATUS HELPERS
 // ═══════════════════════════════════════════════════
 const STATUS_LABELS = {
     pending:         'Pendente',
@@ -974,30 +1089,17 @@ const STATUS_CLASS = {
     cancelled:       'status-cancelled'
 };
 
-function getStatusLabel(status) {
-    return STATUS_LABELS[status] || status || '—';
-}
-function getStatusClass(status) {
-    return STATUS_CLASS[status] || 'status-pending';
-}
+function getStatusLabel(status) { return STATUS_LABELS[status] || status || '—'; }
+function getStatusClass(status) { return STATUS_CLASS[status] || 'status-pending'; }
 
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-    try {
-        sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    } catch(e) { console.error('Supabase error:', e); }
-
+    try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error('Supabase error:', e); }
     if (localStorage.getItem('nuca_admin_session')) showAdminInterface();
-
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-    });
-
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('login-form').addEventListener('submit', handleLogin);
-
-    // mobile sidebar close btn visibility
     const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
     if (window.innerWidth <= 768 && sidebarCloseBtn) sidebarCloseBtn.style.display = 'flex';
 });
@@ -1037,12 +1139,8 @@ function logout() {
 // NAVIGATION
 // ═══════════════════════════════════════════════════
 const SECTION_TITLES = {
-    dashboard: 'Dashboard',
-    orders: 'Encomendas',
-    products: 'Produtos',
-    customers: 'Clientes',
-    analytics: 'Análises',
-    settings: 'Configurações'
+    dashboard: 'Dashboard', orders: 'Encomendas', products: 'Produtos',
+    customers: 'Clientes', analytics: 'Análises', settings: 'Configurações'
 };
 
 function showSection(section) {
@@ -1168,7 +1266,6 @@ function renderOrdersTable(orders) {
         const items = safeParseJSON(order.items);
         const addr = safeParseObj(order.shipping_address);
         const statusClass = getStatusClass(order.status);
-        const statusLabel = getStatusLabel(order.status);
 
         const detailsHTML = `
             <div class="order-details-inner">
@@ -1201,7 +1298,7 @@ function renderOrdersTable(orders) {
             </div>`;
 
         return `
-            <tr style="cursor:default;" data-order-id="${order.id}">
+            <tr data-order-id="${order.id}">
                 <td style="font-weight:600;font-size:0.8rem;">${esc(num)}</td>
                 <td>
                     <p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(order.customer_name||'—')}</p>
@@ -1222,6 +1319,15 @@ function renderOrdersTable(orders) {
                     <div style="display:flex;align-items:center;justify-content:center;gap:0.375rem;">
                         <button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExp?'expanded':''}" title="Ver detalhes" id="expand-btn-${order.id}">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <button onclick="generateReceipt('${order.id}')" class="action-btn receipt" title="Gerar recibo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
                         </button>
                         <button onclick="confirmDeleteOrder('${order.id}')" class="action-btn danger" title="Eliminar">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1260,7 +1366,6 @@ async function updateOrderStatus(orderId, newStatus) {
         if (error) throw error;
         const order = allOrders.find(o => o.id === orderId);
         if (order) order.status = newStatus;
-        // Update select class
         const sel = document.querySelector(`select[data-order-id="${orderId}"]`);
         if (sel) sel.className = `status-select ${getStatusClass(newStatus)}`;
         showToast(`Estado: ${getStatusLabel(newStatus)}`, 'success');
@@ -1304,6 +1409,157 @@ async function confirmDeleteOrderAction() {
 }
 
 // ═══════════════════════════════════════════════════
+// RECEIPT GENERATOR
+// ═══════════════════════════════════════════════════
+function generateReceipt(orderId) {
+    const order = allOrders.find(o => o.id === orderId);
+    if (!order) { showToast('Encomenda não encontrada', 'error'); return; }
+
+    const items = safeParseJSON(order.items);
+    const addr = safeParseObj(order.shipping_address);
+    const num = order.order_number || order.id?.slice(0,8).toUpperCase() || '—';
+    const total = parseFloat(order.total) || 0;
+    const now = new Date();
+    const receiptDate = now.toLocaleDateString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric' });
+    const receiptTime = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    const receiptId = 'REC-' + Date.now().toString(36).toUpperCase().slice(-8);
+
+    // Barcode visual (decorative)
+    const barWidths = [2,3,1,4,2,1,3,2,4,1,2,3,1,2,4,3,1,2,3,1,4,2,1,3,2,1,4,3,2,1];
+    const barcodeHTML = barWidths.map((w, i) =>
+        `<span style="width:${w}px;height:${i % 4 === 0 ? 36 : i % 3 === 0 ? 28 : 22}px;"></span>`
+    ).join('');
+
+    // Subtotal, shipping, total breakdown
+    const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
+    const shipping = total - itemsTotal > 0 ? (total - itemsTotal) : 0;
+    const hasShipping = shipping > 0.01;
+
+    // Build items rows
+    const itemsRows = items.length
+        ? items.map(item => `
+            <div class="receipt-item-row">
+                <div>
+                    <p style="font-weight:600;color:#2C3328;font-size:0.875rem;">${esc(item.name || 'Artigo')}</p>
+                    <p style="font-size:0.75rem;color:rgba(44,51,40,0.45);margin-top:2px;">
+                        ${item.size ? item.size : ''}${item.color ? ' · ' + item.color : ''}${item.quantity && item.quantity > 1 ? ' · ×' + item.quantity : ''}
+                    </p>
+                </div>
+                <div style="text-align:right;flex-shrink:0;margin-left:1rem;">
+                    <p style="font-weight:700;color:#556B4F;font-size:0.875rem;">€${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1)).toFixed(2)}</p>
+                    ${item.quantity && item.quantity > 1 ? `<p style="font-size:0.7rem;color:rgba(44,51,40,0.4);">€${(parseFloat(item.price)||0).toFixed(2)} × ${item.quantity}</p>` : ''}
+                </div>
+            </div>`).join('')
+        : `<div class="receipt-item-row" style="color:rgba(44,51,40,0.4);font-size:0.85rem;">Sem itens registados</div>`;
+
+    const html = `
+        <div class="receipt-header">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+                <div>
+                    <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.75rem;color:#D8C6A5;line-height:1;letter-spacing:-0.03em;">NUCA</h1>
+                    <p style="font-size:0.65rem;color:rgba(216,198,165,0.5);text-transform:uppercase;letter-spacing:0.12em;margin-top:0.25rem;font-weight:600;">Studio · Lisboa, Portugal</p>
+                </div>
+                <div style="text-align:right;">
+                    <div class="receipt-paid-stamp" style="margin-bottom:0.75rem;justify-content:flex-end;">
+                        <span>Pago</span>
+                    </div>
+                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.5);text-transform:uppercase;letter-spacing:0.08em;">Recibo</p>
+                    <p style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#D8C6A5;letter-spacing:0.04em;">${esc(receiptId)}</p>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding-top:1rem;border-top:1px solid rgba(216,198,165,0.12);">
+                <div>
+                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.375rem;font-weight:700;">Facturado a</p>
+                    <p style="font-size:0.9rem;font-weight:600;color:#D8C6A5;">${esc(order.customer_name || '—')}</p>
+                    <p style="font-size:0.8rem;color:rgba(216,198,165,0.6);margin-top:0.125rem;">${esc(order.customer_email || '—')}</p>
+                    ${order.customer_phone ? `<p style="font-size:0.8rem;color:rgba(216,198,165,0.6);">${esc(order.customer_phone)}</p>` : ''}
+                </div>
+                <div style="text-align:right;">
+                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.375rem;font-weight:700;">Data do pagamento</p>
+                    <p style="font-size:0.9rem;font-weight:600;color:#D8C6A5;">${receiptDate}</p>
+                    <p style="font-size:0.8rem;color:rgba(216,198,165,0.6);margin-top:0.125rem;">${receiptTime}</p>
+                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.35);margin-top:0.25rem;">Encomenda Nº ${esc(num)}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="receipt-body">
+
+            <!-- Order meta -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;">
+                <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(44,51,40,0.4);">Artigos</p>
+                ${addr.city || addr.address ? `
+                <div style="display:flex;align-items:center;gap:0.375rem;font-size:0.75rem;color:rgba(44,51,40,0.45);">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    ${addr.city ? esc(addr.city) : ''}${addr.postal ? ' ' + esc(addr.postal) : ''}
+                </div>` : ''}
+            </div>
+
+            <!-- Items -->
+            <div style="margin-bottom:0.5rem;">
+                ${itemsRows}
+            </div>
+
+            <hr class="receipt-divider">
+
+            <!-- Totals -->
+            <div style="padding:0 0.25rem;">
+                ${hasShipping ? `
+                <div class="receipt-row">
+                    <span class="receipt-row-label">Subtotal</span>
+                    <span class="receipt-row-value">€${itemsTotal.toFixed(2)}</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-row-label">Envio</span>
+                    <span class="receipt-row-value">€${shipping.toFixed(2)}</span>
+                </div>` : ''}
+                <div class="receipt-row">
+                    <span class="receipt-row-label">IVA (23%)</span>
+                    <span class="receipt-row-value">Incluído</span>
+                </div>
+                <div class="receipt-row">
+                    <span class="receipt-row-label">Método de pagamento</span>
+                    <span class="receipt-row-value">${esc(order.payment_method || 'Online')}</span>
+                </div>
+            </div>
+
+            <!-- Total block -->
+            <div class="receipt-total-row">
+                <div>
+                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.5);font-weight:700;margin-bottom:0.25rem;">Total Pago</p>
+                    <p style="font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:#D8C6A5;line-height:1;">€${total.toFixed(2)}</p>
+                </div>
+                <div style="text-align:right;">
+                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.25rem;">IVA incluído</p>
+                    <p style="font-size:0.75rem;color:rgba(216,198,165,0.5);">€${(total * 0.23 / 1.23).toFixed(2)} IVA 23%</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="receipt-footer">
+            <div class="receipt-barcode">${barcodeHTML}</div>
+            <p style="font-size:0.65rem;color:rgba(44,51,40,0.35);letter-spacing:0.06em;margin-top:0.5rem;font-weight:500;">${esc(receiptId)} · ${esc(num)}</p>
+            <p style="font-size:0.7rem;color:rgba(44,51,40,0.4);margin-top:0.75rem;line-height:1.5;">
+                NUCA Studio · nuca.pt · geral@nuca.pt<br>
+                <span style="font-size:0.65rem;color:rgba(44,51,40,0.3);">Este documento serve como comprovativo de pagamento.</span>
+            </p>
+        </div>
+    `;
+
+    document.getElementById('receipt-content').innerHTML = html;
+    document.getElementById('receipt-modal').classList.add('active');
+}
+
+function closeReceiptModal() {
+    document.getElementById('receipt-modal').classList.remove('active');
+}
+
+function printReceipt() {
+    window.print();
+}
+
+// ═══════════════════════════════════════════════════
 // CUSTOMERS
 // ═══════════════════════════════════════════════════
 async function loadCustomers() {
@@ -1316,7 +1572,6 @@ async function loadCustomers() {
         if (ce) throw ce;
         if (oe) throw oe;
 
-        // Build stats map
         const totalsMap = {}, countMap = {}, lastMap = {};
         (orders||[]).forEach(o => {
             const em = o.customer_email; if (!em) return;
@@ -1437,7 +1692,6 @@ async function viewCustomerDetails(email) {
                                 <p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${fmtShort(o.created_at)}</p>
                             </div>
                             <div style="display:flex;align-items:center;gap:0.75rem;">
-                                <!-- BUG FIX: using unified STATUS_LABELS -->
                                 <span class="status-badge ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span>
                                 <span style="font-size:0.875rem;font-weight:700;color:var(--green);">€${(parseFloat(o.total)||0).toFixed(2)}</span>
                             </div>
@@ -1506,7 +1760,6 @@ async function confirmDeleteCustomerAction() {
     isDeletingCustomer = true;
     try {
         if (!sb) throw new Error('Supabase não inicializado');
-        // Disassociate orders
         await sb.from('orders').update({ customer_email: null, customer_name: 'Cliente removido', customer_phone: null }).eq('customer_email', customerToDelete.email);
         const { error } = await sb.from('customers').delete().eq('email', customerToDelete.email);
         if (error) throw error;
@@ -1617,7 +1870,15 @@ function showToast(msg, type = 'info') {
     document.getElementById('toast-container').appendChild(t);
     setTimeout(() => { t.style.transition = 'opacity 0.3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 3000);
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDeleteOrderModal(); closeDeleteCustomerModal(); closeCustomerDetailModal(); closeAddCustomerModal(); } });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        closeDeleteOrderModal();
+        closeDeleteCustomerModal();
+        closeCustomerDetailModal();
+        closeAddCustomerModal();
+        closeReceiptModal();
+    }
+});
 </script>
 </body>
 </html>
