@@ -140,6 +140,22 @@
                 backdrop-filter: blur(16px);
                 border-bottom: 1px solid rgba(85, 107, 79, 0.1);
             }
+
+            /* ===== MARQUEE INFINITO ===== */
+            .marquee-wrap {
+                overflow: hidden;
+                white-space: nowrap;
+                width: 100%;
+            }
+            .marquee-inner {
+                display: inline-block;
+                animation: marquee-scroll 25s linear infinite;
+                white-space: nowrap;
+            }
+            @keyframes marquee-scroll {
+                0%   { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
     
             .card {
                 background: rgba(255, 255, 255, 0.55);
@@ -208,6 +224,18 @@
             }
             .btn-ghost:hover { background: rgba(85,107,79,0.15); }
     
+            .btn-danger {
+                display: inline-flex; align-items: center; gap: 0.5rem;
+                padding: 0.75rem 1.5rem;
+                background: linear-gradient(135deg, #DC2626, #991B1B);
+                color: white;
+                border: none; border-radius: 100px;
+                font-family: 'Space Grotesk', sans-serif;
+                font-weight: 700; font-size: 0.875rem;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
             .filter-pill {
                 padding: 0.5rem 1.125rem;
                 border-radius: 100px;
@@ -272,6 +300,14 @@
             .status-delivered::before { background: #10B981; }
             .status-cancelled { background: #FEE2E2; color: #991B1B; }
             .status-cancelled::before { background: #EF4444; }
+
+            /* Product badges */
+            .product-badge-active { background: #D1FAE5; color: #065F46; }
+            .product-badge-active::before { background: #10B981; }
+            .product-badge-inactive { background: #F3F4F6; color: #6B7280; }
+            .product-badge-inactive::before { background: #9CA3AF; }
+            .product-badge-soldout { background: #FEE2E2; color: #991B1B; }
+            .product-badge-soldout::before { background: #EF4444; }
     
             .status-select {
                 appearance: none; -webkit-appearance: none;
@@ -447,10 +483,6 @@
     
             #login-screen { position: fixed; inset: 0; z-index: 9000; background: var(--beige); display: flex; align-items: center; justify-content: center; }
     
-            .marquee-wrap { overflow: hidden; white-space: nowrap; }
-            .marquee-inner { display: inline-block; animation: marquee 30s linear infinite; }
-            @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    
             .avatar {
                 width: 38px; height: 38px; border-radius: 50%;
                 background: linear-gradient(135deg, var(--green), var(--dark));
@@ -475,6 +507,116 @@
                 .hide-mobile { display: none; }
             }
     
+            /* ===== PRODUCT IMAGE PREVIEW ===== */
+            .product-img-thumb {
+                width: 48px; height: 48px;
+                border-radius: 0.625rem;
+                object-fit: cover;
+                background: rgba(85,107,79,0.08);
+                border: 1px solid rgba(85,107,79,0.1);
+                flex-shrink: 0;
+            }
+            .product-img-placeholder {
+                width: 48px; height: 48px;
+                border-radius: 0.625rem;
+                background: rgba(85,107,79,0.08);
+                border: 1px solid rgba(85,107,79,0.1);
+                display: flex; align-items: center; justify-content: center;
+                flex-shrink: 0;
+            }
+
+            /* ===== IMAGE UPLOAD AREA ===== */
+            .img-upload-area {
+                border: 2px dashed rgba(85,107,79,0.25);
+                border-radius: 1rem;
+                padding: 2rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                background: rgba(85,107,79,0.02);
+            }
+            .img-upload-area:hover {
+                border-color: var(--green);
+                background: rgba(85,107,79,0.05);
+            }
+            .img-upload-area.dragover {
+                border-color: var(--green);
+                background: rgba(85,107,79,0.08);
+            }
+
+            /* ===== SIZE/COLOR TAGS ===== */
+            .tag-wrap { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.5rem; }
+            .tag {
+                display: inline-flex; align-items: center; gap: 0.375rem;
+                padding: 0.3rem 0.625rem;
+                background: rgba(85,107,79,0.1);
+                border-radius: 100px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--dark);
+            }
+            .tag-remove {
+                width: 14px; height: 14px; border-radius: 50%;
+                background: rgba(85,107,79,0.2);
+                border: none; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                color: var(--dark);
+                font-size: 0.6rem;
+                line-height: 1;
+                transition: all 0.15s;
+            }
+            .tag-remove:hover { background: #FEE2E2; color: #991B1B; }
+
+            /* Color swatch */
+            .color-swatch {
+                width: 18px; height: 18px;
+                border-radius: 50%;
+                border: 2px solid rgba(255,255,255,0.8);
+                box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+                flex-shrink: 0;
+            }
+
+            /* Product card grid */
+            .product-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+                gap: 1rem;
+            }
+            .product-card {
+                background: rgba(255,255,255,0.9);
+                border: 1px solid rgba(85,107,79,0.1);
+                border-radius: 1.25rem;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            .product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(85,107,79,0.12); }
+            .product-card-img {
+                width: 100%;
+                height: 180px;
+                object-fit: cover;
+                background: rgba(85,107,79,0.06);
+            }
+            .product-card-img-placeholder {
+                width: 100%;
+                height: 180px;
+                background: linear-gradient(135deg, rgba(85,107,79,0.06), rgba(85,107,79,0.12));
+                display: flex; align-items: center; justify-content: center;
+            }
+            .product-card-body { padding: 1.125rem; }
+
+            /* View toggle */
+            .view-toggle-btn {
+                width: 34px; height: 34px;
+                border-radius: 0.625rem;
+                border: none; cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: all 0.2s;
+                color: var(--green);
+                background: transparent;
+            }
+            .view-toggle-btn.active { background: var(--green); color: var(--beige); }
+            .view-toggle-btn:not(.active):hover { background: rgba(85,107,79,0.1); }
+
             /* ===== RECIBO SIMPLES ===== */
             .receipt-simple {
                 background: white;
@@ -507,10 +649,7 @@
                 border-bottom: 1px dashed #e0e0e0;
             }
             
-            .receipt-simple .info-block {
-                flex: 1;
-            }
-            
+            .receipt-simple .info-block { flex: 1; }
             .receipt-simple .info-label {
                 font-size: 0.65rem;
                 text-transform: uppercase;
@@ -519,7 +658,6 @@
                 font-weight: 600;
                 margin-bottom: 0.25rem;
             }
-            
             .receipt-simple .info-value {
                 font-size: 0.85rem;
                 font-weight: 500;
@@ -531,7 +669,6 @@
                 margin: 1rem 0;
                 border-collapse: collapse;
             }
-            
             .receipt-simple .items-table th {
                 text-align: left;
                 font-size: 0.7rem;
@@ -542,27 +679,14 @@
                 padding: 0.5rem 0;
                 border-bottom: 1px solid #e0e0e0;
             }
-            
             .receipt-simple .items-table td {
                 padding: 0.75rem 0;
                 border-bottom: 1px solid #f0f0f0;
                 font-size: 0.85rem;
             }
-            
-            .receipt-simple .items-table tr:last-child td {
-                border-bottom: none;
-            }
-            
-            .receipt-simple .product-name {
-                font-weight: 600;
-                color: #2C3328;
-            }
-            
-            .receipt-simple .product-details {
-                font-size: 0.7rem;
-                color: #999;
-                margin-top: 0.2rem;
-            }
+            .receipt-simple .items-table tr:last-child td { border-bottom: none; }
+            .receipt-simple .product-name { font-weight: 600; color: #2C3328; }
+            .receipt-simple .product-details { font-size: 0.7rem; color: #999; margin-top: 0.2rem; }
             
             .receipt-simple .totals {
                 margin-top: 1rem;
@@ -570,7 +694,6 @@
                 border-top: 2px solid #556B4F;
                 text-align: right;
             }
-            
             .receipt-simple .total-row {
                 display: flex;
                 justify-content: flex-end;
@@ -578,39 +701,11 @@
                 gap: 1.5rem;
                 margin-bottom: 0.5rem;
             }
-            
-            .receipt-simple .total-label {
-                font-size: 0.8rem;
-                font-weight: 600;
-                color: #666;
-            }
-            
-            .receipt-simple .total-value {
-                font-size: 1rem;
-                font-weight: 700;
-                color: #2C3328;
-                min-width: 90px;
-                text-align: right;
-            }
-            
-            .receipt-simple .grand-total {
-                margin-top: 0.75rem;
-                padding-top: 0.75rem;
-                border-top: 2px solid #556B4F;
-            }
-            
-            .receipt-simple .grand-total .total-label {
-                font-size: 1rem;
-                font-weight: 800;
-                color: #556B4F;
-            }
-            
-            .receipt-simple .grand-total .total-value {
-                font-size: 1.25rem;
-                font-weight: 800;
-                color: #556B4F;
-            }
-            
+            .receipt-simple .total-label { font-size: 0.8rem; font-weight: 600; color: #666; }
+            .receipt-simple .total-value { font-size: 1rem; font-weight: 700; color: #2C3328; min-width: 90px; text-align: right; }
+            .receipt-simple .grand-total { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 2px solid #556B4F; }
+            .receipt-simple .grand-total .total-label { font-size: 1rem; font-weight: 800; color: #556B4F; }
+            .receipt-simple .grand-total .total-value { font-size: 1.25rem; font-weight: 800; color: #556B4F; }
             .receipt-simple .payment-status {
                 display: inline-block;
                 padding: 0.25rem 0.75rem;
@@ -623,7 +718,6 @@
                 letter-spacing: 0.05em;
                 margin-top: 0.5rem;
             }
-            
             .receipt-simple .footer {
                 margin-top: 1.5rem;
                 padding-top: 1rem;
@@ -636,19 +730,9 @@
             @media print {
                 body * { visibility: hidden; }
                 #receipt-print-area, #receipt-print-area * { visibility: visible; }
-                #receipt-print-area {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                }
-                .receipt-simple {
-                    padding: 1rem;
-                }
-                @page {
-                    margin: 0.5cm;
-                    size: auto;
-                }
+                #receipt-print-area { position: absolute; left: 0; top: 0; width: 100%; }
+                .receipt-simple { padding: 1rem; }
+                @page { margin: 0.5cm; size: auto; }
             }
         </style>
     </head>
@@ -663,8 +747,7 @@
             <div class="bg-nuca-green text-nuca-beige py-2 rounded-full mb-8 overflow-hidden text-center">
                 <div class="marquee-wrap">
                     <div class="marquee-inner font-display text-sm font-bold tracking-widest">
-                        NUCA ADMIN • PAINEL DE GESTÃO • NUCA ADMIN • PAINEL DE GESTÃO •&nbsp;
-                        NUCA ADMIN • PAINEL DE GESTÃO • NUCA ADMIN • PAINEL DE GESTÃO •&nbsp;
+                        NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;PAINEL DE GESTÃO&nbsp;•&nbsp;
                     </div>
                 </div>
             </div>
@@ -780,11 +863,11 @@
                         </div>
                     </div>
                 </div>
+                <!-- MARQUEE CORRIGIDO: texto longo suficiente para loop suave -->
                 <div style="background:var(--green);overflow:hidden;padding:0.375rem 0;">
                     <div class="marquee-wrap">
                         <div class="marquee-inner font-display" style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:var(--beige);text-transform:uppercase;">
-                            NUCA ADMIN • GESTÃO DE ENCOMENDAS • CLIENTES • ANÁLISES • PRODUTOS •&nbsp;
-                            NUCA ADMIN • GESTÃO DE ENCOMENDAS • CLIENTES • ANÁLISES • PRODUTOS •&nbsp;
+                            NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;NUCA ADMIN&nbsp;•&nbsp;GESTÃO DE ENCOMENDAS&nbsp;•&nbsp;CLIENTES&nbsp;•&nbsp;ANÁLISES&nbsp;•&nbsp;PRODUTOS&nbsp;•&nbsp;
                         </div>
                     </div>
                 </div>
@@ -868,12 +951,75 @@
     
                 <!-- ═══ PRODUCTS ═══ -->
                 <div id="section-products" class="section-content">
-                    <div class="card-white" style="padding:4rem;text-align:center;">
-                        <div style="width:64px;height:64px;background:rgba(85,107,79,0.08);border-radius:1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    <!-- Header -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+                        <div>
+                            <h3 class="font-display" style="font-size:1.5rem;font-weight:800;color:var(--dark);">Produtos</h3>
+                            <p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.2rem;"><span id="products-count">0</span> produtos no catálogo</p>
                         </div>
-                        <h3 class="font-display" style="font-size:1.5rem;color:var(--dark);margin-bottom:0.5rem;">Gestão de Produtos</h3>
-                        <p style="color:rgba(85,107,79,0.5);font-size:0.875rem;">Em desenvolvimento</p>
+                        <div style="display:flex;gap:0.75rem;align-items:center;">
+                            <!-- View toggles -->
+                            <div style="display:flex;gap:0.25rem;background:rgba(255,255,255,0.7);border-radius:0.625rem;padding:0.25rem;">
+                                <button onclick="setProductView('grid')" class="view-toggle-btn active" id="view-grid-btn" title="Grelha">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                                </button>
+                                <button onclick="setProductView('table')" class="view-toggle-btn" id="view-table-btn" title="Tabela">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                </button>
+                            </div>
+                            <button onclick="openAddProductModal()" class="btn-primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+                                Novo Produto
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filters + Search -->
+                    <div class="card-white" style="padding:1rem 1.25rem;margin-bottom:1rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between;">
+                        <div style="display:flex;flex-wrap:wrap;gap:0.375rem;background:rgba(85,107,79,0.05);padding:0.25rem;border-radius:0.75rem;">
+                            <button onclick="filterProducts('all')" class="filter-pill active" data-pfilter="all">Todos</button>
+                            <button onclick="filterProducts('active')" class="filter-pill" data-pfilter="active">Activos</button>
+                            <button onclick="filterProducts('inactive')" class="filter-pill" data-pfilter="inactive">Inactivos</button>
+                            <button onclick="filterProducts('soldout')" class="filter-pill" data-pfilter="soldout">Esgotados</button>
+                        </div>
+                        <div style="position:relative;flex:1;min-width:220px;max-width:340px;">
+                            <input type="text" id="search-products" placeholder="Pesquisar produtos..." class="nuca-input" style="padding-left:2.5rem;" onkeyup="applyProductFilters()">
+                            <svg style="position:absolute;left:0.875rem;top:50%;transform:translateY(-50%);color:rgba(85,107,79,0.4);" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                        </div>
+                    </div>
+
+                    <!-- Products content -->
+                    <div id="products-grid-view">
+                        <div class="product-grid" id="products-grid">
+                            <div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(85,107,79,0.4);">
+                                <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+                                    <div class="spinner"></div>
+                                    <span style="font-size:0.875rem;">A carregar produtos...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="products-table-view" style="display:none;">
+                        <div class="card-white" style="overflow:hidden;">
+                            <div style="overflow-x:auto;">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Referência</th>
+                                            <th>Preço</th>
+                                            <th>Stock</th>
+                                            <th>Estado</th>
+                                            <th style="text-align:center;">Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="products-tbody">
+                                        <tr><td colspan="6" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);">A carregar...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
     
@@ -958,6 +1104,147 @@
         </main>
     </div>
     
+    <!-- ═══════════ MODAL: ADD/EDIT PRODUCT ═══════════ -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-backdrop" onclick="closeProductModal()"></div>
+        <div class="modal-box large">
+            <div class="modal-header">
+                <div>
+                    <h3 class="font-display" style="font-size:1.25rem;font-weight:800;color:var(--dark);" id="product-modal-title">Novo Produto</h3>
+                    <p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.25rem;">Preencha as informações do produto</p>
+                </div>
+                <button onclick="closeProductModal()" class="action-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+                    
+                    <!-- Left column -->
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">Nome do Produto *</label>
+                        <input type="text" id="product-name" required class="nuca-input" placeholder="Ex: T-shirt NUCA Essential">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Referência / SKU</label>
+                        <input type="text" id="product-sku" class="nuca-input" placeholder="Ex: NUCA-TS-001">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Categoria</label>
+                        <select id="product-category" class="nuca-input">
+                            <option value="">Selecionar...</option>
+                            <option value="tshirts">T-shirts</option>
+                            <option value="hoodies">Hoodies</option>
+                            <option value="sweaters">Sweaters</option>
+                            <option value="pants">Calças</option>
+                            <option value="accessories">Acessórios</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">Preço (€) *</label>
+                        <input type="number" id="product-price" required class="nuca-input" placeholder="0.00" step="0.01" min="0">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Preço Promocional (€)</label>
+                        <input type="number" id="product-sale-price" class="nuca-input" placeholder="0.00" step="0.01" min="0">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Stock Total</label>
+                        <input type="number" id="product-stock" class="nuca-input" placeholder="0" min="0">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Estado</label>
+                        <select id="product-status" class="nuca-input">
+                            <option value="active">Activo</option>
+                            <option value="inactive">Inactivo</option>
+                            <option value="soldout">Esgotado</option>
+                        </select>
+                    </div>
+
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="product-description" rows="3" class="nuca-input" placeholder="Descrição do produto..."></textarea>
+                    </div>
+
+                    <!-- Sizes -->
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">Tamanhos disponíveis</label>
+                        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+                            <input type="text" id="size-input" class="nuca-input" placeholder="Ex: S, M, L, XL..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('size');}">
+                            <button type="button" onclick="addTag('size')" class="btn-ghost" style="flex-shrink:0;white-space:nowrap;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+                                Adicionar
+                            </button>
+                        </div>
+                        <div class="tag-wrap" id="sizes-tags"></div>
+                        <input type="hidden" id="product-sizes" value="[]">
+                    </div>
+
+                    <!-- Colors -->
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">Cores disponíveis</label>
+                        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;align-items:center;">
+                            <input type="text" id="color-name-input" class="nuca-input" placeholder="Ex: Preto, Branco, Verde..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();addColorTag();}">
+                            <input type="color" id="color-picker" value="#556B4F" style="width:44px;height:44px;border-radius:0.625rem;border:2px solid rgba(85,107,79,0.15);cursor:pointer;padding:2px;background:white;">
+                            <button type="button" onclick="addColorTag()" class="btn-ghost" style="flex-shrink:0;white-space:nowrap;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+                                Adicionar
+                            </button>
+                        </div>
+                        <div class="tag-wrap" id="colors-tags"></div>
+                        <input type="hidden" id="product-colors" value="[]">
+                    </div>
+
+                    <!-- Image URL -->
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">URL da Imagem</label>
+                        <input type="url" id="product-image" class="nuca-input" placeholder="https://exemplo.com/imagem.jpg" oninput="previewProductImage(this.value)">
+                        <div id="product-image-preview" style="margin-top:0.75rem;display:none;">
+                            <img id="product-img-preview-el" src="" alt="Preview" style="max-height:160px;border-radius:0.875rem;border:1px solid rgba(85,107,79,0.1);object-fit:cover;">
+                        </div>
+                    </div>
+
+                    <div style="grid-column:1/-1;">
+                        <label class="form-label">Notas internas</label>
+                        <textarea id="product-notes" rows="2" class="nuca-input" placeholder="Notas visíveis apenas para admins..."></textarea>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="closeProductModal()" class="btn-ghost">Cancelar</button>
+                <button type="button" onclick="submitProduct()" class="btn-primary" id="product-submit-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                    <span id="product-submit-text">Guardar Produto</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════ MODAL: DELETE PRODUCT ═══════════ -->
+    <div id="delete-product-modal" class="modal-overlay">
+        <div class="modal-backdrop" onclick="closeDeleteProductModal()"></div>
+        <div class="modal-box small">
+            <div class="modal-header">
+                <h3 class="font-display" style="font-size:1.125rem;font-weight:800;color:var(--dark);">Confirmar Eliminação</h3>
+            </div>
+            <div class="modal-body">
+                <p id="delete-product-message" style="color:rgba(85,107,79,0.7);font-size:0.875rem;line-height:1.6;">Tens a certeza que queres eliminar este produto?</p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDeleteProductModal()" class="btn-ghost">Cancelar</button>
+                <button onclick="confirmDeleteProductAction()" class="btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ═══════════ MODAL: ADD CUSTOMER ═══════════ -->
     <div id="add-customer-modal" class="modal-overlay">
         <div class="modal-backdrop" onclick="closeAddCustomerModal()"></div>
@@ -1050,7 +1337,7 @@
             </div>
             <div class="modal-footer">
                 <button id="cancel-delete-order-btn" onclick="closeDeleteOrderModal()" class="btn-ghost">Cancelar</button>
-                <button id="confirm-delete-order-btn" onclick="confirmDeleteOrderAction()" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#DC2626,#991B1B);color:white;border:none;border-radius:100px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:all 0.2s;">Eliminar</button>
+                <button id="confirm-delete-order-btn" onclick="confirmDeleteOrderAction()" class="btn-danger">Eliminar</button>
             </div>
         </div>
     </div>
@@ -1067,7 +1354,7 @@
             </div>
             <div class="modal-footer">
                 <button onclick="closeDeleteCustomerModal()" class="btn-ghost">Cancelar</button>
-                <button onclick="confirmDeleteCustomerAction()" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.75rem 1.5rem;background:linear-gradient(135deg,#DC2626,#991B1B);color:white;border:none;border-radius:100px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:all 0.2s;">Eliminar</button>
+                <button onclick="confirmDeleteCustomerAction()" class="btn-danger">Eliminar</button>
             </div>
         </div>
     </div>
@@ -1114,12 +1401,20 @@
     // ═══════════════════════════════════════════════════
     let allOrders = [];
     let allCustomers = [];
+    let allProducts = [];
+    let filteredProducts = [];
     let currentFilter = 'all';
+    let currentProductFilter = 'all';
+    let productView = 'grid';
     let sortField = 'created_at';
     let sortDirection = 'desc';
     let expandedOrders = new Set();
     let orderToDelete = null;
     let customerToDelete = null;
+    let productToDelete = null;
+    let editingProductId = null;
+    let productSizes = [];
+    let productColors = [];
     let isDeletingOrder = false;
     let isDeletingCustomer = false;
     let salesChartInstance = null;
@@ -1130,25 +1425,20 @@
     // STATUS HELPERS
     // ═══════════════════════════════════════════════════
     const STATUS_LABELS = {
-        pending:         'Pendente',
-        pending_payment: 'Pendente',
-        processing:      'A Processar',
-        shipped:         'Enviada',
-        delivered:       'Entregue',
-        cancelled:       'Cancelada'
+        pending:'Pendente', pending_payment:'Pendente', processing:'A Processar',
+        shipped:'Enviada', delivered:'Entregue', cancelled:'Cancelada'
     };
-    
     const STATUS_CLASS = {
-        pending:         'status-pending',
-        pending_payment: 'status-pending',
-        processing:      'status-processing',
-        shipped:         'status-shipped',
-        delivered:       'status-delivered',
-        cancelled:       'status-cancelled'
+        pending:'status-pending', pending_payment:'status-pending', processing:'status-processing',
+        shipped:'status-shipped', delivered:'status-delivered', cancelled:'status-cancelled'
     };
+    const PRODUCT_STATUS_LABELS = { active:'Activo', inactive:'Inactivo', soldout:'Esgotado' };
+    const PRODUCT_STATUS_CLASS = { active:'product-badge-active', inactive:'product-badge-inactive', soldout:'product-badge-soldout' };
     
-    function getStatusLabel(status) { return STATUS_LABELS[status] || status || '—'; }
-    function getStatusClass(status) { return STATUS_CLASS[status] || 'status-pending'; }
+    function getStatusLabel(s) { return STATUS_LABELS[s] || s || '—'; }
+    function getStatusClass(s) { return STATUS_CLASS[s] || 'status-pending'; }
+    function getPStatusLabel(s) { return PRODUCT_STATUS_LABELS[s] || s || '—'; }
+    function getPStatusClass(s) { return PRODUCT_STATUS_CLASS[s] || 'product-badge-inactive'; }
     
     // ═══════════════════════════════════════════════════
     // INIT
@@ -1156,7 +1446,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error('Supabase error:', e); }
         if (localStorage.getItem('nuca_admin_session')) showAdminInterface();
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-PT', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
         document.getElementById('login-form').addEventListener('submit', handleLogin);
         const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
         if (window.innerWidth <= 768 && sidebarCloseBtn) sidebarCloseBtn.style.display = 'flex';
@@ -1179,28 +1469,20 @@
         document.getElementById('login-text').classList.remove('hidden');
         document.getElementById('login-spinner').classList.add('hidden');
     }
-    
     function showAdminInterface() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-interface').classList.remove('hidden');
-        loadDashboard();
-        loadOrders();
-        loadCustomers();
+        loadDashboard(); loadOrders(); loadCustomers();
     }
-    
-    function logout() {
-        localStorage.removeItem('nuca_admin_session');
-        location.reload();
-    }
+    function logout() { localStorage.removeItem('nuca_admin_session'); location.reload(); }
     
     // ═══════════════════════════════════════════════════
     // NAVIGATION
     // ═══════════════════════════════════════════════════
     const SECTION_TITLES = {
-        dashboard: 'Dashboard', orders: 'Encomendas', products: 'Produtos',
-        customers: 'Clientes', analytics: 'Análises', settings: 'Configurações'
+        dashboard:'Dashboard', orders:'Encomendas', products:'Produtos',
+        customers:'Clientes', analytics:'Análises', settings:'Configurações'
     };
-    
     function showSection(section) {
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
         document.querySelector(`.sidebar-link[data-section="${section}"]`)?.classList.add('active');
@@ -1212,8 +1494,8 @@
         if (section === 'orders') loadOrders();
         if (section === 'customers') loadCustomers();
         if (section === 'analytics') loadAnalytics();
+        if (section === 'products') loadProducts();
     }
-    
     function toggleMobileSidebar() {
         document.getElementById('sidebar').classList.add('mobile-visible');
         document.getElementById('sidebar-overlay').classList.add('visible');
@@ -1246,7 +1528,6 @@
             renderSalesChart(orders || []);
         } catch(e) { console.error(e); showToast('Erro ao carregar dashboard', 'error'); }
     }
-    
     function renderSalesChart(orders) {
         const ctx = document.getElementById('salesChart')?.getContext('2d');
         if (!ctx) return;
@@ -1254,14 +1535,14 @@
         const labels = [], data = [];
         for (let i = 6; i >= 0; i--) {
             const d = new Date(); d.setDate(d.getDate() - i);
-            labels.push(d.toLocaleDateString('pt-PT', { weekday: 'short' }));
+            labels.push(d.toLocaleDateString('pt-PT', { weekday:'short' }));
             const ds = d.toISOString().split('T')[0];
             data.push(orders.filter(o => o.created_at?.split('T')[0] === ds).reduce((s, o) => s + (parseFloat(o.total) || 0), 0));
         }
         salesChartInstance = new Chart(ctx, {
-            type: 'bar',
-            data: { labels, datasets: [{ label: 'Vendas (€)', data, backgroundColor: '#556B4F', borderRadius: 8, borderSkipped: false }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '€' + v, font: { family: 'Space Grotesk' } }, grid: { color: 'rgba(85,107,79,0.07)' } }, x: { ticks: { font: { family: 'Space Grotesk' } }, grid: { display: false } } } }
+            type:'bar',
+            data:{ labels, datasets:[{ label:'Vendas (€)', data, backgroundColor:'#556B4F', borderRadius:8, borderSkipped:false }] },
+            options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>'€'+v, font:{ family:'Space Grotesk' } }, grid:{ color:'rgba(85,107,79,0.07)' } }, x:{ ticks:{ font:{ family:'Space Grotesk' } }, grid:{ display:false } } } }
         });
     }
     
@@ -1271,13 +1552,12 @@
     async function loadOrders() {
         try {
             if (!sb) return;
-            const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending: false });
+            const { data, error } = await sb.from('orders').select('*').order('created_at', { ascending:false });
             if (error) throw error;
             allOrders = data || [];
             applyFilters();
         } catch(e) { console.error(e); showToast('Erro ao carregar encomendas', 'error'); }
     }
-    
     function applyFilters() {
         let filtered = [...allOrders];
         if (currentFilter !== 'all') filtered = filtered.filter(o => o.status === currentFilter || (currentFilter === 'pending' && o.status === 'pending_payment'));
@@ -1290,19 +1570,16 @@
         });
         renderOrdersTable(filtered);
     }
-    
     function filterOrders(status) {
         currentFilter = status;
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.filter === status));
+        document.querySelectorAll('.filter-pill').forEach(p => { if (p.dataset.filter) p.classList.toggle('active', p.dataset.filter === status); });
         applyFilters();
     }
-    
     function sortOrders(field) {
         if (sortField === field) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
         else { sortField = field; sortDirection = 'desc'; }
         applyFilters();
     }
-    
     function safeParseJSON(val) {
         if (!val) return [];
         try { return typeof val === 'string' ? JSON.parse(val) : (Array.isArray(val) ? val : []); } catch { return []; }
@@ -1311,7 +1588,6 @@
         if (!val) return {};
         try { return typeof val === 'string' ? JSON.parse(val) : (typeof val === 'object' ? val : {}); } catch { return {}; }
     }
-    
     function renderOrdersTable(orders) {
         const tbody = document.getElementById('orders-tbody');
         if (!orders.length) {
@@ -1324,7 +1600,6 @@
             const items = safeParseJSON(order.items);
             const addr = safeParseObj(order.shipping_address);
             const statusClass = getStatusClass(order.status);
-    
             const detailsHTML = `
                 <div class="order-details-inner">
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
@@ -1332,14 +1607,8 @@
                             <h4 style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Itens do Pedido</h4>
                             ${items.length ? items.map(item => `
                                 <div style="display:flex;justify-content:space-between;align-items:center;padding:0.625rem 0.875rem;background:white;border-radius:0.75rem;margin-bottom:0.5rem;border:1px solid rgba(85,107,79,0.07);">
-                                    <div>
-                                        <p style="font-size:0.8rem;font-weight:600;color:var(--dark);">${esc(item.name)}</p>
-                                        <p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${item.size||'—'} ${item.color ? '/ '+item.color : ''}</p>
-                                    </div>
-                                    <div style="text-align:right;">
-                                        <p style="font-size:0.8rem;font-weight:700;color:var(--green);">€${(item.price||0).toFixed(2)}</p>
-                                        <p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">×${item.quantity||1}</p>
-                                    </div>
+                                    <div><p style="font-size:0.8rem;font-weight:600;color:var(--dark);">${esc(item.name)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${item.size||'—'} ${item.color?'/ '+item.color:''}</p></div>
+                                    <div style="text-align:right;"><p style="font-size:0.8rem;font-weight:700;color:var(--green);">€${(item.price||0).toFixed(2)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">×${item.quantity||1}</p></div>
                                 </div>
                             `).join('') : '<p style="font-size:0.8rem;color:rgba(85,107,79,0.4);">Sem itens</p>'}
                         </div>
@@ -1354,14 +1623,10 @@
                         </div>
                     </div>
                 </div>`;
-    
             return `
                 <tr data-order-id="${order.id}">
                     <td style="font-weight:600;font-size:0.8rem;">${esc(num)}</td>
-                    <td>
-                        <p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(order.customer_name||'—')}</p>
-                        <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(order.customer_email||'—')}</p>
-                    </td>
+                    <td><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(order.customer_name||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(order.customer_email||'—')}</p></td>
                     <td style="font-weight:700;color:var(--green);">€${(parseFloat(order.total)||0).toFixed(2)}</td>
                     <td>
                         <select class="status-select ${statusClass}" onchange="updateOrderStatus('${order.id}', this.value)" data-order-id="${order.id}">
@@ -1375,17 +1640,11 @@
                     <td style="font-size:0.8rem;white-space:nowrap;">${formatDate(order.created_at)}</td>
                     <td>
                         <div style="display:flex;align-items:center;justify-content:center;gap:0.375rem;">
-                            <button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExp?'expanded':''}" title="Ver detalhes" id="expand-btn-${order.id}">
+                            <button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExp?'expanded':''}" id="expand-btn-${order.id}">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                             </button>
                             <button onclick="generateReceipt('${order.id}')" class="action-btn receipt" title="Gerar recibo">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                    <polyline points="14 2 14 8 20 8"/>
-                                    <line x1="16" y1="13" x2="8" y2="13"/>
-                                    <line x1="16" y1="17" x2="8" y2="17"/>
-                                    <polyline points="10 9 9 9 8 9"/>
-                                </svg>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                             </button>
                             <button onclick="confirmDeleteOrder('${order.id}')" class="action-btn danger" title="Eliminar">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1395,32 +1654,21 @@
                 </tr>
                 <tr id="details-row-${order.id}">
                     <td colspan="6" style="padding:0;">
-                        <div class="order-details-panel ${isExp?'open':''}" id="details-panel-${order.id}">
-                            ${detailsHTML}
-                        </div>
+                        <div class="order-details-panel ${isExp?'open':''}" id="details-panel-${order.id}">${detailsHTML}</div>
                     </td>
                 </tr>`;
         }).join('');
     }
-    
     function toggleOrderDetails(orderId) {
         const panel = document.getElementById(`details-panel-${orderId}`);
         const btn = document.getElementById(`expand-btn-${orderId}`);
-        if (expandedOrders.has(orderId)) {
-            expandedOrders.delete(orderId);
-            panel?.classList.remove('open');
-            btn?.classList.remove('expanded');
-        } else {
-            expandedOrders.add(orderId);
-            panel?.classList.add('open');
-            btn?.classList.add('expanded');
-        }
+        if (expandedOrders.has(orderId)) { expandedOrders.delete(orderId); panel?.classList.remove('open'); btn?.classList.remove('expanded'); }
+        else { expandedOrders.add(orderId); panel?.classList.add('open'); btn?.classList.add('expanded'); }
     }
-    
     async function updateOrderStatus(orderId, newStatus) {
         try {
             if (!sb) throw new Error('Supabase não inicializado');
-            const { error } = await sb.from('orders').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', orderId);
+            const { error } = await sb.from('orders').update({ status:newStatus, updated_at:new Date().toISOString() }).eq('id', orderId);
             if (error) throw error;
             const order = allOrders.find(o => o.id === orderId);
             if (order) order.status = newStatus;
@@ -1430,17 +1678,13 @@
             loadDashboard();
         } catch(e) { console.error(e); showToast('Erro ao actualizar estado', 'error'); }
     }
-    
     function confirmDeleteOrder(orderId) {
         orderToDelete = orderId;
         document.getElementById('delete-order-modal').classList.add('active');
         const btn = document.getElementById('confirm-delete-order-btn');
         if (btn) { btn.disabled = false; btn.textContent = 'Eliminar'; }
     }
-    function closeDeleteOrderModal() {
-        document.getElementById('delete-order-modal').classList.remove('active');
-        orderToDelete = null;
-    }
+    function closeDeleteOrderModal() { document.getElementById('delete-order-modal').classList.remove('active'); orderToDelete = null; }
     async function confirmDeleteOrderAction() {
         if (!orderToDelete || isDeletingOrder) return;
         isDeletingOrder = true;
@@ -1459,51 +1703,371 @@
             showToast('Encomenda eliminada!', 'success');
             loadDashboard();
         } catch(e) {
-            console.error(e);
-            showToast('Erro: ' + e.message, 'error');
+            console.error(e); showToast('Erro: ' + e.message, 'error');
             if (btn) { btn.disabled = false; btn.textContent = 'Eliminar'; }
             if (cancelBtn) cancelBtn.disabled = false;
         } finally { isDeletingOrder = false; }
     }
+
+    // ═══════════════════════════════════════════════════
+    // PRODUCTS
+    // ═══════════════════════════════════════════════════
+    async function loadProducts() {
+        try {
+            if (!sb) return;
+            const { data, error } = await sb.from('products').select('*').order('created_at', { ascending:false });
+            if (error) throw error;
+            allProducts = data || [];
+            applyProductFilters();
+        } catch(e) {
+            console.error(e);
+            // If products table doesn't exist, show empty state
+            allProducts = [];
+            applyProductFilters();
+        }
+    }
+
+    function applyProductFilters() {
+        let filtered = [...allProducts];
+        if (currentProductFilter !== 'all') filtered = filtered.filter(p => p.status === currentProductFilter);
+        const q = (document.getElementById('search-products')?.value || '').toLowerCase();
+        if (q) filtered = filtered.filter(p => (p.name||'').toLowerCase().includes(q) || (p.sku||'').toLowerCase().includes(q) || (p.category||'').toLowerCase().includes(q));
+        filteredProducts = filtered;
+        document.getElementById('products-count').textContent = filtered.length;
+        if (productView === 'grid') renderProductsGrid(filtered);
+        else renderProductsTable(filtered);
+    }
+
+    function filterProducts(status) {
+        currentProductFilter = status;
+        document.querySelectorAll('[data-pfilter]').forEach(p => p.classList.toggle('active', p.dataset.pfilter === status));
+        applyProductFilters();
+    }
+
+    function setProductView(view) {
+        productView = view;
+        document.getElementById('view-grid-btn').classList.toggle('active', view === 'grid');
+        document.getElementById('view-table-btn').classList.toggle('active', view === 'table');
+        document.getElementById('products-grid-view').style.display = view === 'grid' ? 'block' : 'none';
+        document.getElementById('products-table-view').style.display = view === 'table' ? 'block' : 'none';
+        applyProductFilters();
+    }
+
+    function renderProductsGrid(products) {
+        const grid = document.getElementById('products-grid');
+        if (!products.length) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;">
+                    <div style="width:72px;height:72px;background:rgba(85,107,79,0.08);border-radius:1.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </div>
+                    <h3 class="font-display" style="font-size:1.25rem;color:var(--dark);margin-bottom:0.5rem;">Sem produtos</h3>
+                    <p style="font-size:0.875rem;color:rgba(85,107,79,0.45);margin-bottom:1.5rem;">Adiciona o primeiro produto ao catálogo NUCA.</p>
+                    <button onclick="openAddProductModal()" class="btn-primary" style="margin:0 auto;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>
+                        Novo Produto
+                    </button>
+                </div>`;
+            return;
+        }
+        grid.innerHTML = products.map(p => {
+            const sizes = safeParseJSON(p.sizes);
+            const colors = safeParseJSON(p.colors);
+            const badgeClass = getPStatusClass(p.status);
+            const price = parseFloat(p.price) || 0;
+            const salePrice = parseFloat(p.sale_price) || 0;
+            return `
+                <div class="product-card">
+                    ${p.image_url
+                        ? `<img src="${esc(p.image_url)}" alt="${esc(p.name)}" class="product-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                           <div class="product-card-img-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+                        : `<div class="product-card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+                    }
+                    <div class="product-card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.625rem;">
+                            <div style="flex:1;min-width:0;">
+                                <h4 style="font-weight:700;font-size:0.925rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.name || '—')}</h4>
+                                ${p.sku ? `<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);margin-top:0.1rem;">${esc(p.sku)}</p>` : ''}
+                            </div>
+                            <span class="status-badge ${badgeClass}" style="flex-shrink:0;">${getPStatusLabel(p.status)}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">
+                            ${salePrice > 0 && salePrice < price
+                                ? `<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${salePrice.toFixed(2)}</span>
+                                   <span style="font-size:0.8rem;color:rgba(85,107,79,0.4);text-decoration:line-through;">€${price.toFixed(2)}</span>`
+                                : `<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${price.toFixed(2)}</span>`
+                            }
+                            ${p.stock !== null && p.stock !== undefined ? `<span style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-left:auto;">Stock: <strong style="color:${p.stock > 0 ? 'var(--dark)' : '#EF4444'};">${p.stock}</strong></span>` : ''}
+                        </div>
+                        ${sizes.length ? `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.625rem;">
+                            ${sizes.map(s => `<span style="padding:0.15rem 0.5rem;background:rgba(85,107,79,0.08);border-radius:100px;font-size:0.65rem;font-weight:700;color:var(--dark);">${esc(s)}</span>`).join('')}
+                        </div>` : ''}
+                        ${colors.length ? `<div style="display:flex;gap:0.3rem;margin-bottom:0.875rem;align-items:center;">
+                            ${colors.map(c => `<div style="width:16px;height:16px;border-radius:50%;background:${esc(c.hex||c)};border:2px solid white;box-shadow:0 0 0 1px rgba(0,0,0,0.1);" title="${esc(c.name||c)}"></div>`).join('')}
+                        </div>` : ''}
+                        <div style="display:flex;gap:0.5rem;border-top:1px solid rgba(85,107,79,0.08);padding-top:0.875rem;">
+                            <button onclick="openEditProductModal('${p.id}')" class="btn-ghost" style="flex:1;justify-content:center;padding:0.5rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                Editar
+                            </button>
+                            <button onclick="confirmDeleteProduct('${p.id}','${esc(p.name||'produto')}')" class="action-btn danger" title="Eliminar" style="width:36px;height:36px;border-radius:0.625rem;flex-shrink:0;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function renderProductsTable(products) {
+        const tbody = document.getElementById('products-tbody');
+        if (!products.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum produto encontrado</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = products.map(p => {
+            const price = parseFloat(p.price) || 0;
+            const salePrice = parseFloat(p.sale_price) || 0;
+            return `<tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        ${p.image_url
+                            ? `<img src="${esc(p.image_url)}" class="product-img-thumb" alt="${esc(p.name)}" onerror="this.style.display='none';">`
+                            : `<div class="product-img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`
+                        }
+                        <div>
+                            <p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(p.name||'—')}</p>
+                            ${p.category ? `<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);">${esc(p.category)}</p>` : ''}
+                        </div>
+                    </div>
+                </td>
+                <td style="font-size:0.8rem;color:rgba(85,107,79,0.6);">${esc(p.sku||'—')}</td>
+                <td style="font-weight:700;color:var(--green);">
+                    ${salePrice > 0 && salePrice < price
+                        ? `€${salePrice.toFixed(2)} <span style="font-size:0.75rem;color:rgba(85,107,79,0.4);text-decoration:line-through;font-weight:400;">€${price.toFixed(2)}</span>`
+                        : `€${price.toFixed(2)}`}
+                </td>
+                <td style="font-size:0.875rem;">${p.stock !== null && p.stock !== undefined ? `<span style="color:${p.stock > 0 ? 'var(--dark)' : '#EF4444'};font-weight:600;">${p.stock}</span>` : '—'}</td>
+                <td><span class="status-badge ${getPStatusClass(p.status)}">${getPStatusLabel(p.status)}</span></td>
+                <td>
+                    <div style="display:flex;justify-content:center;gap:0.375rem;">
+                        <button onclick="openEditProductModal('${p.id}')" class="action-btn" title="Editar">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button onclick="confirmDeleteProduct('${p.id}','${esc(p.name||'produto')}')" class="action-btn danger" title="Eliminar">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    // --- Product Modal ---
+    function resetProductForm() {
+        document.getElementById('product-name').value = '';
+        document.getElementById('product-sku').value = '';
+        document.getElementById('product-category').value = '';
+        document.getElementById('product-price').value = '';
+        document.getElementById('product-sale-price').value = '';
+        document.getElementById('product-stock').value = '';
+        document.getElementById('product-status').value = 'active';
+        document.getElementById('product-description').value = '';
+        document.getElementById('product-image').value = '';
+        document.getElementById('product-notes').value = '';
+        document.getElementById('product-image-preview').style.display = 'none';
+        productSizes = [];
+        productColors = [];
+        renderSizeTags();
+        renderColorTags();
+    }
+
+    function openAddProductModal() {
+        editingProductId = null;
+        resetProductForm();
+        document.getElementById('product-modal-title').textContent = 'Novo Produto';
+        document.getElementById('product-submit-text').textContent = 'Guardar Produto';
+        document.getElementById('product-modal').classList.add('active');
+    }
+
+    function openEditProductModal(productId) {
+        const p = allProducts.find(x => x.id === productId);
+        if (!p) return;
+        editingProductId = productId;
+        resetProductForm();
+        document.getElementById('product-name').value = p.name || '';
+        document.getElementById('product-sku').value = p.sku || '';
+        document.getElementById('product-category').value = p.category || '';
+        document.getElementById('product-price').value = p.price || '';
+        document.getElementById('product-sale-price').value = p.sale_price || '';
+        document.getElementById('product-stock').value = p.stock !== null ? p.stock : '';
+        document.getElementById('product-status').value = p.status || 'active';
+        document.getElementById('product-description').value = p.description || '';
+        document.getElementById('product-image').value = p.image_url || '';
+        document.getElementById('product-notes').value = p.notes || '';
+        if (p.image_url) previewProductImage(p.image_url);
+        productSizes = safeParseJSON(p.sizes);
+        productColors = safeParseJSON(p.colors);
+        renderSizeTags();
+        renderColorTags();
+        document.getElementById('product-modal-title').textContent = 'Editar Produto';
+        document.getElementById('product-submit-text').textContent = 'Guardar Alterações';
+        document.getElementById('product-modal').classList.add('active');
+    }
+
+    function closeProductModal() {
+        document.getElementById('product-modal').classList.remove('active');
+        editingProductId = null;
+    }
+
+    async function submitProduct() {
+        const name = document.getElementById('product-name').value.trim();
+        const price = parseFloat(document.getElementById('product-price').value);
+        if (!name) { showToast('Nome do produto é obrigatório', 'error'); return; }
+        if (isNaN(price) || price < 0) { showToast('Preço inválido', 'error'); return; }
+        const btn = document.getElementById('product-submit-btn');
+        btn.disabled = true;
+        const payload = {
+            name,
+            sku: document.getElementById('product-sku').value.trim() || null,
+            category: document.getElementById('product-category').value || null,
+            price,
+            sale_price: parseFloat(document.getElementById('product-sale-price').value) || null,
+            stock: document.getElementById('product-stock').value !== '' ? parseInt(document.getElementById('product-stock').value) : null,
+            status: document.getElementById('product-status').value,
+            description: document.getElementById('product-description').value.trim() || null,
+            image_url: document.getElementById('product-image').value.trim() || null,
+            notes: document.getElementById('product-notes').value.trim() || null,
+            sizes: JSON.stringify(productSizes),
+            colors: JSON.stringify(productColors),
+            updated_at: new Date().toISOString()
+        };
+        try {
+            if (!sb) throw new Error('Supabase não inicializado');
+            if (editingProductId) {
+                const { error } = await sb.from('products').update(payload).eq('id', editingProductId);
+                if (error) throw error;
+                const idx = allProducts.findIndex(p => p.id === editingProductId);
+                if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...payload, id: editingProductId };
+                showToast('Produto actualizado!', 'success');
+            } else {
+                payload.created_at = new Date().toISOString();
+                const { data, error } = await sb.from('products').insert([payload]).select().single();
+                if (error) throw error;
+                allProducts.unshift(data);
+                showToast('Produto adicionado!', 'success');
+            }
+            closeProductModal();
+            applyProductFilters();
+        } catch(e) {
+            console.error(e);
+            showToast('Erro: ' + e.message, 'error');
+        } finally { btn.disabled = false; }
+    }
+
+    function confirmDeleteProduct(id, name) {
+        productToDelete = id;
+        document.getElementById('delete-product-message').textContent = `Tens a certeza que queres eliminar "${name}"? Esta ação não pode ser desfeita.`;
+        document.getElementById('delete-product-modal').classList.add('active');
+    }
+    function closeDeleteProductModal() {
+        document.getElementById('delete-product-modal').classList.remove('active');
+        productToDelete = null;
+    }
+    async function confirmDeleteProductAction() {
+        if (!productToDelete) return;
+        try {
+            if (!sb) throw new Error('Supabase não inicializado');
+            const { error } = await sb.from('products').delete().eq('id', productToDelete);
+            if (error) throw error;
+            allProducts = allProducts.filter(p => p.id !== productToDelete);
+            applyProductFilters();
+            closeDeleteProductModal();
+            showToast('Produto eliminado!', 'success');
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    // --- Tags (sizes & colors) ---
+    function addTag(type) {
+        const input = document.getElementById('size-input');
+        const val = input.value.trim();
+        if (!val) return;
+        const parts = val.split(',').map(s => s.trim()).filter(Boolean);
+        parts.forEach(s => { if (!productSizes.includes(s)) productSizes.push(s); });
+        input.value = '';
+        renderSizeTags();
+    }
+    function removeSize(s) {
+        productSizes = productSizes.filter(x => x !== s);
+        renderSizeTags();
+    }
+    function renderSizeTags() {
+        const wrap = document.getElementById('sizes-tags');
+        wrap.innerHTML = productSizes.map(s => `
+            <span class="tag">${esc(s)}<button class="tag-remove" onclick="removeSize('${esc(s)}')" type="button">×</button></span>
+        `).join('');
+        document.getElementById('product-sizes').value = JSON.stringify(productSizes);
+    }
+    function addColorTag() {
+        const nameInput = document.getElementById('color-name-input');
+        const hex = document.getElementById('color-picker').value;
+        const name = nameInput.value.trim() || hex;
+        if (!name) return;
+        if (!productColors.find(c => c.name === name)) productColors.push({ name, hex });
+        nameInput.value = '';
+        renderColorTags();
+    }
+    function removeColor(name) {
+        productColors = productColors.filter(c => c.name !== name);
+        renderColorTags();
+    }
+    function renderColorTags() {
+        const wrap = document.getElementById('colors-tags');
+        wrap.innerHTML = productColors.map(c => `
+            <span class="tag">
+                <span class="color-swatch" style="background:${esc(c.hex||c)};"></span>
+                ${esc(c.name||c)}
+                <button class="tag-remove" onclick="removeColor('${esc(c.name||c)}')" type="button">×</button>
+            </span>
+        `).join('');
+        document.getElementById('product-colors').value = JSON.stringify(productColors);
+    }
+
+    function previewProductImage(url) {
+        const preview = document.getElementById('product-image-preview');
+        const img = document.getElementById('product-img-preview-el');
+        if (url) {
+            img.src = url;
+            preview.style.display = 'block';
+            img.onerror = () => { preview.style.display = 'none'; };
+        } else {
+            preview.style.display = 'none';
+        }
+    }
     
     // ═══════════════════════════════════════════════════
-    // RECEIPT GENERATOR - SIMPLE VERSION
+    // RECEIPT
     // ═══════════════════════════════════════════════════
     function generateReceipt(orderId) {
         const order = allOrders.find(o => o.id === orderId);
         if (!order) { showToast('Encomenda não encontrada', 'error'); return; }
-    
         const items = safeParseJSON(order.items);
         const addr = safeParseObj(order.shipping_address);
         const num = order.order_number || order.id?.slice(0,8).toUpperCase() || '—';
         const total = parseFloat(order.total) || 0;
         const now = new Date();
-        const receiptDate = now.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-        const receiptTime = now.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const receiptDate = now.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' });
+        const receiptTime = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
         const receiptId = 'REC-' + Date.now().toString(36).toUpperCase().slice(-8);
-    
-        // Calculate subtotal and shipping
         const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
         const shipping = total - itemsTotal > 0.01 ? (total - itemsTotal) : 0;
         const vat = total * 0.23 / 1.23;
-    
         const html = `
-            <div class="logo-area">
-                <h1 class="logo-title">NUCA</h1>
-                <p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p>
-            </div>
-    
+            <div class="logo-area"><h1 class="logo-title">NUCA</h1><p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p></div>
             <div class="receipt-info">
-                <div class="info-block">
-                    <div class="info-label">Nº ENCOMENDA</div>
-                    <div class="info-value">${esc(num)}</div>
-                </div>
-                <div class="info-block" style="text-align:right;">
-                    <div class="info-label">DATA</div>
-                    <div class="info-value">${receiptDate} ${receiptTime}</div>
-                </div>
+                <div class="info-block"><div class="info-label">Nº ENCOMENDA</div><div class="info-value">${esc(num)}</div></div>
+                <div class="info-block" style="text-align:right;"><div class="info-label">DATA</div><div class="info-value">${receiptDate} ${receiptTime}</div></div>
             </div>
-    
             <div class="receipt-info">
                 <div class="info-block">
                     <div class="info-label">CLIENTE</div>
@@ -1511,25 +2075,14 @@
                     <div style="font-size:0.7rem;color:#666;margin-top:0.2rem;">${esc(order.customer_email || '—')}</div>
                     ${order.customer_phone ? `<div style="font-size:0.7rem;color:#666;">${esc(order.customer_phone)}</div>` : ''}
                 </div>
-                ${addr.address || addr.city ? `
-                <div class="info-block" style="text-align:right;">
-                    <div class="info-label">MORADA DE ENTREGA</div>
-                    <div class="info-value">${addr.address ? esc(addr.address) : ''}${addr.city ? '<br>' + esc(addr.city) : ''}${addr.postal ? '<br>' + esc(addr.postal) : ''}</div>
-                </div>
-                ` : ''}
+                ${addr.address || addr.city ? `<div class="info-block" style="text-align:right;"><div class="info-label">MORADA DE ENTREGA</div><div class="info-value">${addr.address ? esc(addr.address) : ''}${addr.city ? '<br>' + esc(addr.city) : ''}${addr.postal ? '<br>' + esc(addr.postal) : ''}</div></div>` : ''}
             </div>
-    
             <table class="items-table">
-                <thead>
-                    <tr><th>Produto</th><th style="text-align:right;">Preço</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Total</th></tr>
-                </thead>
+                <thead><tr><th>Produto</th><th style="text-align:right;">Preço</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Total</th></tr></thead>
                 <tbody>
                     ${items.length ? items.map(item => `
                         <tr>
-                            <td>
-                                <div class="product-name">${esc(item.name || 'Artigo')}</div>
-                                ${item.size || item.color ? `<div class="product-details">${item.size || ''} ${item.color ? '/ ' + item.color : ''}</div>` : ''}
-                            </td>
+                            <td><div class="product-name">${esc(item.name || 'Artigo')}</div>${item.size || item.color ? `<div class="product-details">${item.size || ''} ${item.color ? '/ ' + item.color : ''}</div>` : ''}</td>
                             <td style="text-align:right;">€${(parseFloat(item.price) || 0).toFixed(2)}</td>
                             <td style="text-align:center;">${parseInt(item.quantity) || 1}</td>
                             <td style="text-align:right;">€${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1)).toFixed(2)}</td>
@@ -1537,84 +2090,29 @@
                     `).join('') : '<tr><td colspan="4" style="text-align:center;">Sem itens registados</td></tr>'}
                 </tbody>
             </table>
-    
             <div class="totals">
-                ${shipping > 0 ? `
-                <div class="total-row">
-                    <span class="total-label">Subtotal</span>
-                    <span class="total-value">€${itemsTotal.toFixed(2)}</span>
-                </div>
-                <div class="total-row">
-                    <span class="total-label">Envio</span>
-                    <span class="total-value">€${shipping.toFixed(2)}</span>
-                </div>
-                ` : ''}
-                <div class="total-row">
-                    <span class="total-label">IVA (23%)</span>
-                    <span class="total-value">€${vat.toFixed(2)}</span>
-                </div>
-                <div class="grand-total">
-                    <div class="total-row">
-                        <span class="total-label">TOTAL PAGO</span>
-                        <span class="total-value">€${total.toFixed(2)}</span>
-                    </div>
-                </div>
-                <div style="margin-top:0.75rem;text-align:center;">
-                    <span class="payment-status">✓ PAGO</span>
-                </div>
+                ${shipping > 0 ? `<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value">€${shipping.toFixed(2)}</span></div>` : ''}
+                <div class="total-row"><span class="total-label">IVA (23%)</span><span class="total-value">€${vat.toFixed(2)}</span></div>
+                <div class="grand-total"><div class="total-row"><span class="total-label">TOTAL PAGO</span><span class="total-value">€${total.toFixed(2)}</span></div></div>
+                <div style="margin-top:0.75rem;text-align:center;"><span class="payment-status">✓ PAGO</span></div>
             </div>
-    
-            <div class="footer">
-                <p>Obrigado pela sua compra!</p>
-                <p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p>
-                <p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${esc(receiptId)}</p>
-            </div>
-        `;
-    
+            <div class="footer"><p>Obrigado pela sua compra!</p><p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p><p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${esc(receiptId)}</p></div>`;
         document.getElementById('receipt-content').innerHTML = html;
         document.getElementById('receipt-content').dataset.receiptNum = receiptId;
         document.getElementById('receipt-modal').classList.add('active');
     }
-    
-    function closeReceiptModal() {
-        document.getElementById('receipt-modal').classList.remove('active');
-    }
-    
+    function closeReceiptModal() { document.getElementById('receipt-modal').classList.remove('active'); }
     async function downloadReceiptPDF() {
         const btn = document.getElementById('download-pdf-btn');
         const txt = document.getElementById('download-pdf-text');
         const spin = document.getElementById('download-pdf-spinner');
-        btn.disabled = true;
-        txt.classList.add('hidden');
-        spin.classList.remove('hidden');
-    
+        btn.disabled = true; txt.classList.add('hidden'); spin.classList.remove('hidden');
         const element = document.getElementById('receipt-content');
         const receiptNum = element.dataset?.receiptNum || 'recibo';
-    
-        const opt = {
-            margin: [0.3, 0.3, 0.3, 0.3],
-            filename: `NUCA-recibo-${receiptNum}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#FFFFFF',
-                logging: false
-            },
-            jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
-        };
-    
-        try {
-            await html2pdf().set(opt).from(element).save();
-            showToast('PDF descarregado!', 'success');
-        } catch(e) {
-            console.error(e);
-            showToast('Erro ao gerar PDF', 'error');
-        } finally {
-            btn.disabled = false;
-            txt.classList.remove('hidden');
-            spin.classList.add('hidden');
-        }
+        const opt = { margin:[0.3,0.3,0.3,0.3], filename:`NUCA-recibo-${receiptNum}.pdf`, image:{ type:'jpeg', quality:0.98 }, html2canvas:{ scale:2, useCORS:true, backgroundColor:'#FFFFFF', logging:false }, jsPDF:{ unit:'mm', format:'a5', orientation:'portrait' } };
+        try { await html2pdf().set(opt).from(element).save(); showToast('PDF descarregado!', 'success'); }
+        catch(e) { console.error(e); showToast('Erro ao gerar PDF', 'error'); }
+        finally { btn.disabled = false; txt.classList.remove('hidden'); spin.classList.add('hidden'); }
     }
     
     // ═══════════════════════════════════════════════════
@@ -1629,7 +2127,6 @@
             ]);
             if (ce) throw ce;
             if (oe) throw oe;
-    
             const totalsMap = {}, countMap = {}, lastMap = {};
             (orders||[]).forEach(o => {
                 const em = o.customer_email; if (!em) return;
@@ -1638,7 +2135,6 @@
                 const d = new Date(o.created_at);
                 if (!lastMap[em] || d > lastMap[em]) lastMap[em] = d;
             });
-    
             allCustomers = (customers||[]).map(c => ({
                 ...c,
                 total_purchases: totalsMap[c.email] || 0,
@@ -1648,7 +2144,6 @@
             renderCustomersTable(allCustomers);
         } catch(e) { console.error(e); showToast('Erro ao carregar clientes', 'error'); }
     }
-    
     function renderCustomersTable(customers) {
         const tbody = document.getElementById('customers-tbody');
         if (!customers.length) {
@@ -1665,11 +2160,11 @@
                             <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.email||'—')}</p>
                         </div>
                     </div>
-                 </div>
+                </td>
                 <td>
                     <p style="font-size:0.875rem;">${esc(c.phone||'—')}</p>
                     <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.city||'—')}</p>
-                 </div>
+                </td>
                 <td style="text-align:center;font-weight:600;">${c.total_orders||0}</td>
                 <td style="font-weight:700;color:var(--green);">€${(c.total_purchases||0).toFixed(2)}</td>
                 <td>
@@ -1684,16 +2179,13 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
                         </button>
                     </div>
-                 </div>
-             </tr>
-        `).join('');
+                </td>
+            </tr>`).join('');
     }
-    
     function searchCustomers() {
         const q = (document.getElementById('search-customers')?.value||'').toLowerCase();
         renderCustomersTable(q ? allCustomers.filter(c => (c.name||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.phone||'').includes(q)) : allCustomers);
     }
-    
     async function viewCustomerDetails(email) {
         try {
             if (!sb) return;
@@ -1704,10 +2196,8 @@
             if (ce) throw ce;
             const orderList = orders || [];
             const totalSpent = orderList.filter(o => o.status !== 'cancelled').reduce((s, o) => s + (parseFloat(o.total)||0), 0);
-    
             document.getElementById('customer-detail-name').textContent = cust.name || 'Cliente';
             document.getElementById('customer-detail-email').textContent = cust.email || '—';
-    
             document.getElementById('customer-detail-content').innerHTML = `
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
                     <div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;">
@@ -1720,63 +2210,39 @@
                     </div>
                     <div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;">
                         <h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.875rem;">Morada</h4>
-                        <div style="font-size:0.875rem;line-height:2;">
-                            <p>${esc(cust.address||'—')}</p>
-                            <p>${esc(cust.city||'—')} ${esc(cust.postal_code||'')}</p>
-                        </div>
+                        <div style="font-size:0.875rem;line-height:2;"><p>${esc(cust.address||'—')}</p><p>${esc(cust.city||'—')} ${esc(cust.postal_code||'')}</p></div>
                     </div>
                 </div>
                 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;">
-                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;">
-                        <p class="font-display" style="font-size:1.75rem;font-weight:800;">${orderList.length}</p>
-                        <p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Encomendas</p>
-                    </div>
-                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;">
-                        <p class="font-display" style="font-size:1.75rem;font-weight:800;">€${totalSpent.toFixed(0)}</p>
-                        <p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Total Gasto</p>
-                    </div>
-                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;">
-                        <p class="font-display" style="font-size:1.75rem;font-weight:800;">€${orderList.length ? (totalSpent/orderList.length).toFixed(0) : 0}</p>
-                        <p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Ticket Médio</p>
-                    </div>
+                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">${orderList.length}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Encomendas</p></div>
+                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${totalSpent.toFixed(0)}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Total Gasto</p></div>
+                    <div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${orderList.length ? (totalSpent/orderList.length).toFixed(0) : 0}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Ticket Médio</p></div>
                 </div>
                 <div>
                     <h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Histórico de Encomendas</h4>
                     ${orderList.length ? `<div style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto;">
                         ${orderList.map(o => `
                             <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(85,107,79,0.04);border-radius:0.75rem;padding:0.875rem 1rem;">
-                                <div>
-                                    <p style="font-size:0.8rem;font-weight:700;color:var(--dark);">${esc(o.order_number||o.id?.slice(0,8)||'—')}</p>
-                                    <p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${fmtShort(o.created_at)}</p>
-                                </div>
-                                <div style="display:flex;align-items:center;gap:0.75rem;">
-                                    <span class="status-badge ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span>
-                                    <span style="font-size:0.875rem;font-weight:700;color:var(--green);">€${(parseFloat(o.total)||0).toFixed(2)}</span>
-                                </div>
-                            </div>
-                        `).join('')}
+                                <div><p style="font-size:0.8rem;font-weight:700;color:var(--dark);">${esc(o.order_number||o.id?.slice(0,8)||'—')}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${fmtShort(o.created_at)}</p></div>
+                                <div style="display:flex;align-items:center;gap:0.75rem;"><span class="status-badge ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span><span style="font-size:0.875rem;font-weight:700;color:var(--green);">€${(parseFloat(o.total)||0).toFixed(2)}</span></div>
+                            </div>`).join('')}
                     </div>` : '<p style="font-size:0.875rem;color:rgba(85,107,79,0.4);text-align:center;padding:1.5rem;">Nenhuma encomenda</p>'}
                 </div>`;
-    
             document.getElementById('customer-detail-modal').classList.add('active');
         } catch(e) { console.error(e); showToast('Erro ao carregar cliente', 'error'); }
     }
-    
     function closeCustomerDetailModal() { document.getElementById('customer-detail-modal').classList.remove('active'); }
-    
     function viewCustomerOrders(email) {
         if (!email) return;
         document.getElementById('search-orders').value = email;
         showSection('orders');
         applyFilters();
     }
-    
     function openAddCustomerModal() { document.getElementById('add-customer-modal').classList.add('active'); }
     function closeAddCustomerModal() {
         document.getElementById('add-customer-modal').classList.remove('active');
         document.getElementById('add-customer-form').reset();
     }
-    
     async function submitAddCustomer() {
         const name = document.getElementById('customer-name').value.trim();
         const email = document.getElementById('customer-email').value.trim();
@@ -1803,16 +2269,12 @@
             loadCustomers();
         } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
     }
-    
     function confirmDeleteCustomer(email, name) {
         customerToDelete = { email, name };
         document.getElementById('delete-customer-message').textContent = `Tens a certeza que queres eliminar o cliente "${name}"? Esta ação não pode ser desfeita.`;
         document.getElementById('delete-customer-modal').classList.add('active');
     }
-    function closeDeleteCustomerModal() {
-        document.getElementById('delete-customer-modal').classList.remove('active');
-        customerToDelete = null;
-    }
+    function closeDeleteCustomerModal() { document.getElementById('delete-customer-modal').classList.remove('active'); customerToDelete = null; }
     async function confirmDeleteCustomerAction() {
         if (!customerToDelete || isDeletingCustomer) return;
         isDeletingCustomer = true;
@@ -1828,12 +2290,11 @@
             loadDashboard(); loadOrders();
         } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); } finally { isDeletingCustomer = false; }
     }
-    
     function exportCustomers() {
         if (!allCustomers.length) { showToast('Sem clientes para exportar', 'error'); return; }
         const rows = [['Nome','Email','Telefone','Cidade','Total (€)','Encomendas'], ...allCustomers.map(c => [`"${(c.name||'').replace(/"/g,'""')}"`, `"${c.email||''}"`, `"${c.phone||''}"`, `"${c.city||''}"`, (c.total_purchases||0).toFixed(2).replace('.',','), c.total_orders||0])];
         const csv = rows.map(r => r.join(';')).join('\n');
-        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' })), download: `clientes_${new Date().toISOString().split('T')[0]}.csv` });
+        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' })), download: `clientes_${new Date().toISOString().split('T')[0]}.csv` });
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
         showToast(`${allCustomers.length} clientes exportados!`, 'success');
     }
@@ -1842,14 +2303,12 @@
     // ANALYTICS
     // ═══════════════════════════════════════════════════
     async function loadAnalytics() { updateAnalyticsData(currentAnalyticsPeriod); }
-    
     function setAnalyticsPeriod(period) {
         currentAnalyticsPeriod = period;
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`period-${period}`).classList.add('active');
         updateAnalyticsData(period);
     }
-    
     async function updateAnalyticsData(period) {
         try {
             if (!sb) return;
@@ -1865,7 +2324,6 @@
             buildAnalyticsChart(period, all);
         } catch(e) { console.error(e); }
     }
-    
     function buildAnalyticsChart(period, orders) {
         const ctx = document.getElementById('analyticsChart')?.getContext('2d');
         if (!ctx) return;
@@ -1895,9 +2353,9 @@
             }
         }
         analyticsChartInstance = new Chart(ctx, {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'Vendas (€)', data, borderColor: '#556B4F', backgroundColor: 'rgba(85,107,79,0.08)', tension: 0.4, fill: true, pointBackgroundColor: '#556B4F', pointRadius: 3 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '€'+v, font: { family: 'Space Grotesk' } }, grid: { color: 'rgba(85,107,79,0.07)' } }, x: { ticks: { font: { family: 'Space Grotesk' }, maxRotation: 45 }, grid: { display: false } } } }
+            type:'line',
+            data:{ labels, datasets:[{ label:'Vendas (€)', data, borderColor:'#556B4F', backgroundColor:'rgba(85,107,79,0.08)', tension:0.4, fill:true, pointBackgroundColor:'#556B4F', pointRadius:3 }] },
+            options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>'€'+v, font:{ family:'Space Grotesk' } }, grid:{ color:'rgba(85,107,79,0.07)' } }, x:{ ticks:{ font:{ family:'Space Grotesk' }, maxRotation:45 }, grid:{ display:false } } } }
         });
     }
     
@@ -1918,9 +2376,9 @@
     }
     function showToast(msg, type = 'info') {
         const icons = {
-            success: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`,
-            error: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-            info: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+            success:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`,
+            error:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+            info:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
         };
         const t = document.createElement('div');
         t.className = `toast ${type}`;
@@ -1935,6 +2393,8 @@
             closeCustomerDetailModal();
             closeAddCustomerModal();
             closeReceiptModal();
+            closeProductModal();
+            closeDeleteProductModal();
         }
     });
     </script>
