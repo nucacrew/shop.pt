@@ -342,9 +342,9 @@
         /* Ajuste do título para quebrar linha quando necessário */
         .legal-topic-title {
             font-family: 'Syne', sans-serif;
-            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem); 
             font-weight: 800;
-            line-height: 1.2;  /* aumentado de 1.05 para 1.2 */
+            line-height: 1.2;
             color: #F5F1EA;
             margin-bottom: 1rem;
             word-break: break-word;
@@ -1096,7 +1096,7 @@ const legalContent = {
         sections: [
             { title: 'Prazo de Processamento', body: 'As encomendas são processadas e preparadas em 1-2 dias úteis após a confirmação do pagamento.' },
             { title: 'Custo de Envio', body: 'Envio gratuito em compras acima de €50. Para encomendas de menor valor, o custo de envio é de €3.99 para Portugal continental.' },
-            { title: 'Prazo de Entrega', body: 'Após o envio, a entrega demora entre 2-5 dias úteis. Recebes um email com o código de rastreio assim que a encomenda for enviada.' },
+            { title: 'Prazo de Entrega', body: 'Após o envio, a entrega demora entre 2-5 dias úteis.' },
         ]
     },
     pagamento: {
@@ -1106,7 +1106,7 @@ const legalContent = {
         intro: 'Oferecemos métodos de pagamento simples e seguros, adaptados ao mercado português.',
         pills: [
             { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, text: '100% seguro' },
-            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>`, text: 'Suporte via WhatsApp' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>`, text: 'Suporte via Email' },
         ],
         sections: [
             { title: 'MB WAY', body: 'O método mais rápido. Após a encomenda, recebes o número de telemóvel para envio do pagamento via MB WAY. Processamento imediato.' },
