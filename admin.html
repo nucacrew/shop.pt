@@ -394,7 +394,7 @@
         }
         .modal-box.small { max-width: 480px; }
         .modal-box.large { max-width: 720px; }
-        .modal-box.receipt-size { max-width: 580px; }
+        .modal-box.receipt-size { max-width: 680px; }
         @keyframes scaleIn {
             from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
@@ -475,7 +475,7 @@
             .hide-mobile { display: none; }
         }
 
-        /* ===== RECEIPT STYLES ===== */
+        /* ===== RECEIPT STYLES - UNIFICADOS PARA PRINT E PDF ===== */
         .receipt-document {
             background: #F7F3EC;
             font-family: 'Space Grotesk', sans-serif;
@@ -484,14 +484,17 @@
             overflow: hidden;
             border: 1px solid rgba(85,107,79,0.14);
             box-shadow: 0 2px 24px rgba(44,51,40,0.08);
+            max-width: 100%;
         }
+        
         .receipt-header {
             background: #2C3328;
             color: #D8C6A5;
-            padding: 2.25rem 2.25rem 2rem;
+            padding: 2rem 2.25rem 1.75rem;
             position: relative;
             overflow: hidden;
         }
+        
         .receipt-header-pattern {
             position: absolute;
             inset: 0;
@@ -503,52 +506,102 @@
                 transparent 1px, transparent 12px
             );
         }
-        .receipt-body { padding: 1.75rem 2.25rem 1.5rem; }
+        
+        .receipt-body { 
+            padding: 1.5rem 2.25rem; 
+        }
+        
+        .receipt-items-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .receipt-items-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .receipt-items-table th {
+            text-align: left;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(44,51,40,0.45);
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid rgba(85,107,79,0.12);
+        }
+        
+        .receipt-items-table th:last-child {
+            text-align: right;
+        }
+        
+        .receipt-items-table td {
+            padding: 0.875rem 0.75rem;
+            border-bottom: 1px solid rgba(85,107,79,0.06);
+            font-size: 0.875rem;
+            vertical-align: top;
+        }
+        
+        .receipt-items-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+            color: #556B4F;
+        }
+        
+        .receipt-item-name {
+            font-weight: 600;
+            color: #2C3328;
+            margin-bottom: 0.25rem;
+        }
+        
+        .receipt-item-details {
+            font-size: 0.75rem;
+            color: rgba(44,51,40,0.5);
+        }
+        
         .receipt-divider {
             border: none;
             border-top: 1px dashed rgba(85,107,79,0.22);
             margin: 1.25rem 0;
         }
+        
+        .receipt-summary {
+            background: rgba(85,107,79,0.04);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+        
         .receipt-row {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            padding: 0.4rem 0;
-            font-size: 0.835rem;
-        }
-        .receipt-row-label { color: rgba(44,51,40,0.48); }
-        .receipt-row-value { font-weight: 600; color: #2C3328; text-align: right; }
-        .receipt-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(85,107,79,0.09);
-            font-size: 0.85rem;
-        }
-        .receipt-item-row:last-child { border-bottom: none; }
-        .receipt-total-block {
-            background: #2C3328;
-            border-radius: 1rem;
-            padding: 1.25rem 1.5rem;
-            margin-top: 1.25rem;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            position: relative;
-            overflow: hidden;
+            padding: 0.35rem 0;
+            font-size: 0.875rem;
         }
-        .receipt-total-block::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: 0.06;
-            background-image: repeating-linear-gradient(
-                -45deg,
-                #D8C6A5 0px, #D8C6A5 1px,
-                transparent 1px, transparent 10px
-            );
+        
+        .receipt-row.total {
+            padding-top: 0.75rem;
+            margin-top: 0.75rem;
+            border-top: 2px solid rgba(85,107,79,0.12);
         }
+        
+        .receipt-row-label { 
+            color: rgba(44,51,40,0.55); 
+        }
+        
+        .receipt-row-value { 
+            font-weight: 600; 
+            color: #2C3328; 
+        }
+        
+        .receipt-row.total .receipt-row-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #556B4F;
+            font-family: 'Syne', sans-serif;
+        }
+        
         .receipt-paid-stamp {
             display: inline-flex;
             align-items: center;
@@ -563,6 +616,7 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
+        
         .receipt-paid-stamp::before {
             content: '';
             width: 6px; height: 6px;
@@ -570,6 +624,7 @@
             background: #10B981;
             flex-shrink: 0;
         }
+        
         .receipt-footer {
             background: #2C3328;
             padding: 1.25rem 2.25rem;
@@ -577,6 +632,7 @@
             position: relative;
             overflow: hidden;
         }
+        
         .receipt-footer::before {
             content: '';
             position: absolute;
@@ -589,6 +645,7 @@
             );
             opacity: 0.3;
         }
+        
         .receipt-barcode {
             display: flex;
             align-items: flex-end;
@@ -597,25 +654,51 @@
             height: 32px;
             margin: 0.875rem auto 0.375rem;
         }
+        
         .receipt-barcode span {
             display: inline-block;
             background: rgba(216,198,165,0.5);
             border-radius: 1px;
         }
+        
         .receipt-section-label {
             font-size: 0.62rem;
             text-transform: uppercase;
             letter-spacing: 0.12em;
             font-weight: 700;
             color: rgba(44,51,40,0.38);
-            margin-bottom: 0.625rem;
+            margin-bottom: 0.75rem;
         }
+        
+        .receipt-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .receipt-info-block {
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .receipt-info-block strong {
+            display: block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(44,51,40,0.45);
+            margin-bottom: 0.375rem;
+            font-weight: 700;
+        }
+        
         .receipt-tear {
             height: 14px;
             background: #F7F3EC;
             position: relative;
             overflow: hidden;
         }
+        
         .receipt-tear::before {
             content: '';
             position: absolute;
@@ -624,18 +707,83 @@
             background: radial-gradient(circle at 50% 0, #2C3328 10px, transparent 11px) 0 0 / 18px 28px;
         }
 
+        /* ===== PRINT STYLES - IDÊNTICOS AO PDF ===== */
         @media print {
-            body * { visibility: hidden; }
-            #receipt-print-area, #receipt-print-area * { visibility: visible; }
-            #receipt-print-area {
-                position: absolute;
-                left: 0; top: 0;
-                width: 100%;
+            body * { visibility: hidden !important; }
+            #receipt-modal,
+            #receipt-modal * { visibility: visible !important; }
+            #receipt-modal {
+                position: fixed !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                z-index: 99999 !important;
+                background: white !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                overflow: auto !important;
             }
-            .receipt-document { border: none; border-radius: 0; box-shadow: none; }
-            @page { margin: 0; size: A5; }
+            #receipt-modal .modal-backdrop,
+            #receipt-modal .modal-header,
+            #receipt-modal .modal-footer,
+            #receipt-modal .action-btn,
+            .sidebar,
+            .top-nav,
+            .main-content,
+            #admin-interface,
+            .grain-overlay,
+            .toast-container {
+                display: none !important;
+            }
+            #receipt-modal .modal-box {
+                max-width: 210mm !important;
+                width: 210mm !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-height: none !important;
+                margin: 0 !important;
+            }
+            #receipt-modal .modal-body {
+                padding: 0 !important;
+            }
+            .receipt-document {
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+            }
+            .receipt-header {
+                background: #2C3328 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .receipt-footer {
+                background: #2C3328 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                page-break-inside: avoid !important;
+            }
+            .receipt-items-table {
+                page-break-inside: auto !important;
+            }
+            .receipt-items-table tr {
+                page-break-inside: avoid !important;
+            }
+            .receipt-summary {
+                page-break-inside: avoid !important;
+            }
+        }
+
+        @page {
+            margin: 0;
+            size: auto;
         }
     </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -932,7 +1080,7 @@
             <div id="section-settings" class="section-content">
                 <div class="card-white" style="padding:4rem;text-align:center;">
                     <div style="width:64px;height:64px;background:rgba(85,107,79,0.08);border-radius:1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15 1.65 1.65 0 0 0 3.17 14H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15A1.65 1.65 0 0 0 3.17 14H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                     </div>
                     <h3 class="font-display" style="font-size:1.5rem;color:var(--dark);margin-bottom:0.5rem;">Configurações</h3>
                     <p style="color:rgba(85,107,79,0.5);font-size:0.875rem;">Em desenvolvimento</p>
@@ -1458,7 +1606,7 @@ async function confirmDeleteOrderAction() {
 }
 
 // ═══════════════════════════════════════════════════
-// RECEIPT GENERATOR
+// RECEIPT GENERATOR - VERSÃO MELHORADA
 // ═══════════════════════════════════════════════════
 function generateReceipt(orderId) {
     const order = allOrders.find(o => o.id === orderId);
@@ -1479,37 +1627,42 @@ function generateReceipt(orderId) {
         `<span style="width:${w}px;height:${i % 4 === 0 ? 36 : i % 3 === 0 ? 28 : 22}px;"></span>`
     ).join('');
 
-    // Subtotal, shipping, total breakdown
+    // Calculate subtotal and shipping
     const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
     const shipping = total - itemsTotal > 0 ? (total - itemsTotal) : 0;
     const hasShipping = shipping > 0.01;
 
-    // Build items rows
+    // Build items table rows
     const itemsRows = items.length
-        ? items.map(item => `
-            <div class="receipt-item-row">
-                <div>
-                    <p style="font-weight:600;color:#2C3328;font-size:0.875rem;">${esc(item.name || 'Artigo')}</p>
-                    <p style="font-size:0.75rem;color:rgba(44,51,40,0.45);margin-top:2px;">
-                        ${item.size ? item.size : ''}${item.color ? ' · ' + item.color : ''}${item.quantity && item.quantity > 1 ? ' · ×' + item.quantity : ''}
-                    </p>
-                </div>
-                <div style="text-align:right;flex-shrink:0;margin-left:1rem;">
-                    <p style="font-weight:700;color:#556B4F;font-size:0.875rem;">€${((parseFloat(item.price)||0) * (parseInt(item.quantity)||1)).toFixed(2)}</p>
-                    ${item.quantity && item.quantity > 1 ? `<p style="font-size:0.7rem;color:rgba(44,51,40,0.4);">€${(parseFloat(item.price)||0).toFixed(2)} × ${item.quantity}</p>` : ''}
-                </div>
-            </div>`).join('')
-        : `<div class="receipt-item-row" style="color:rgba(44,51,40,0.4);font-size:0.85rem;">Sem itens registados</div>`;
+        ? items.map(item => {
+            const itemTotal = (parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1);
+            return `
+                <tr>
+                    <td>
+                        <div class="receipt-item-name">${esc(item.name || 'Artigo')}</div>
+                        <div class="receipt-item-details">
+                            ${item.size ? `Tamanho: ${item.size}` : ''}
+                            ${item.color ? `${item.size ? ' · ' : ''}Cor: ${item.color}` : ''}
+                            ${item.quantity && item.quantity > 1 ? `${(item.size || item.color) ? ' · ' : ''}Qtd: ${item.quantity}` : ''}
+                        </div>
+                    </td>
+                    <td>€${(parseFloat(item.price) || 0).toFixed(2)}</td>
+                    <td>${item.quantity || 1}</td>
+                    <td>€${itemTotal.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join('')
+        : `<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:rgba(44,51,40,0.4);">Sem itens registados</td></tr>`;
 
     const html = `
         <div class="receipt-header">
             <div class="receipt-header-pattern"></div>
             <div style="position:relative;z-index:1;">
                 <!-- Top row: logo + stamp -->
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.75rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
                     <div>
                         <div style="display:flex;align-items:baseline;gap:0.75rem;">
-                            <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3rem;color:#D8C6A5;line-height:1;letter-spacing:-0.04em;margin:0;">NUCA</h1>
+                            <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.75rem;color:#D8C6A5;line-height:1;letter-spacing:-0.04em;margin:0;">NUCA</h1>
                             <span style="font-size:0.6rem;color:rgba(216,198,165,0.38);text-transform:uppercase;letter-spacing:0.14em;font-weight:700;padding-bottom:0.25rem;">Studio</span>
                         </div>
                         <p style="font-size:0.62rem;color:rgba(216,198,165,0.35);text-transform:uppercase;letter-spacing:0.14em;margin-top:0.375rem;font-weight:600;">Lisboa, Portugal</p>
@@ -1549,19 +1702,31 @@ function generateReceipt(orderId) {
 
         <div class="receipt-body">
 
-            <!-- Items section -->
-            <p class="receipt-section-label">Artigos</p>
-            <div style="margin-bottom:0.25rem;">
-                ${itemsRows}
+            <!-- Items section - TABELA RESPONSIVA -->
+            <div class="receipt-items-section">
+                <p class="receipt-section-label">Artigos</p>
+                <table class="receipt-items-table">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th style="width:80px;">Preço</th>
+                            <th style="width:60px;">Qtd</th>
+                            <th style="width:90px;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsRows}
+                    </tbody>
+                </table>
             </div>
 
             <hr class="receipt-divider">
 
-            <!-- Meta rows -->
-            <div style="padding:0 0.125rem;">
+            <!-- Summary -->
+            <div class="receipt-summary">
                 ${hasShipping ? `
                 <div class="receipt-row">
-                    <span class="receipt-row-label">Subtotal dos artigos</span>
+                    <span class="receipt-row-label">Subtotal</span>
                     <span class="receipt-row-value">€${itemsTotal.toFixed(2)}</span>
                 </div>
                 <div class="receipt-row">
@@ -1569,29 +1734,17 @@ function generateReceipt(orderId) {
                     <span class="receipt-row-value">€${shipping.toFixed(2)}</span>
                 </div>` : ''}
                 <div class="receipt-row">
-                    <span class="receipt-row-label">IVA (23%)</span>
-                    <span class="receipt-row-value" style="color:rgba(44,51,40,0.5);font-weight:500;">Incluído — €${(total * 0.23 / 1.23).toFixed(2)}</span>
-                </div>
-                <div class="receipt-row">
                     <span class="receipt-row-label">Método de pagamento</span>
                     <span class="receipt-row-value">${esc(order.payment_method || 'Online')}</span>
                 </div>
                 ${addr.city || addr.address ? `
                 <div class="receipt-row">
                     <span class="receipt-row-label">Morada de entrega</span>
-                    <span class="receipt-row-value" style="max-width:55%;text-align:right;">${addr.address ? esc(addr.address) + ', ' : ''}${esc(addr.city||'')}${addr.postal ? ' ' + esc(addr.postal) : ''}</span>
+                    <span class="receipt-row-value" style="text-align:right;max-width:60%;">${addr.address ? esc(addr.address) + ', ' : ''}${esc(addr.city||'')}${addr.postal ? ' ' + esc(addr.postal) : ''}</span>
                 </div>` : ''}
-            </div>
-
-            <!-- Total block -->
-            <div class="receipt-total-block">
-                <div style="position:relative;z-index:1;">
-                    <p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.14em;color:rgba(216,198,165,0.45);font-weight:700;margin-bottom:0.3rem;">Total Pago</p>
-                    <p style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#D8C6A5;line-height:1;letter-spacing:-0.02em;">€${total.toFixed(2)}</p>
-                </div>
-                <div style="position:relative;z-index:1;text-align:right;">
-                    <div class="receipt-paid-stamp" style="margin-bottom:0.5rem;">Liquidado</div>
-                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.4);font-family:'Space Grotesk',sans-serif;">${receiptDate}</p>
+                <div class="receipt-row total">
+                    <span class="receipt-row-label" style="font-size:1rem;font-weight:600;">Total</span>
+                    <span class="receipt-row-value">€${total.toFixed(2)}</span>
                 </div>
             </div>
 
@@ -1642,10 +1795,11 @@ async function downloadReceiptPDF() {
         html2canvas: {
             scale: 2,
             useCORS: true,
-            backgroundColor: '#FAFAF7',
-            logging: false
+            backgroundColor: '#F7F3EC',
+            logging: false,
+            windowWidth: 680
         },
-        jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
