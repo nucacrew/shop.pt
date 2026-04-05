@@ -1092,10 +1092,6 @@
             </div>
             <div class="modal-footer">
                 <button onclick="closeReceiptModal()" class="btn-ghost">Fechar</button>
-                <button onclick="printReceipt()" class="btn-ghost" style="color:var(--dark);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                    Imprimir
-                </button>
                 <button onclick="downloadReceiptPDF()" class="btn-primary" id="download-pdf-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     <span id="download-pdf-text">Descarregar PDF</span>
@@ -1584,10 +1580,6 @@
         document.getElementById('receipt-modal').classList.remove('active');
     }
     
-    function printReceipt() {
-        window.print();
-    }
-    
     async function downloadReceiptPDF() {
         const btn = document.getElementById('download-pdf-btn');
         const txt = document.getElementById('download-pdf-text');
@@ -1660,7 +1652,7 @@
     function renderCustomersTable(customers) {
         const tbody = document.getElementById('customers-tbody');
         if (!customers.length) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum cliente encontrado</td</tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum cliente encontrado</td></tr>';
             return;
         }
         tbody.innerHTML = customers.map(c => `
