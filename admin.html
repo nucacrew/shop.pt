@@ -1713,15 +1713,26 @@
     // PRODUCTS
     // ═══════════════════════════════════════════════════
     async function loadProducts() {
+        const grid = document.getElementById('products-grid');
+        if (grid) grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(85,107,79,0.4);">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+                    <div class="spinner"></div>
+                    <span style="font-size:0.875rem;">A carregar produtos...</span>
+                </div>
+            </div>`;
         try {
-            if (!sb) return;
-            const { data, error } = await sb.from('products').select('*').order('created_at', { ascending:false });
+            if (!sb) throw new Error('Supabase não inicializado');
+            const { data, error } = await sb
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
             if (error) throw error;
             allProducts = data || [];
             applyProductFilters();
         } catch(e) {
             console.error(e);
-            // If products table doesn't exist, show empty state
+            showToast('Erro ao carregar produtos: ' + e.message, 'error');
             allProducts = [];
             applyProductFilters();
         }
@@ -1925,46 +1936,72 @@
         const price = parseFloat(document.getElementById('product-price').value);
         if (!name) { showToast('Nome do produto é obrigatório', 'error'); return; }
         if (isNaN(price) || price < 0) { showToast('Preço inválido', 'error'); return; }
+    
         const btn = document.getElementById('product-submit-btn');
+        const btnText = document.getElementById('product-submit-text');
         btn.disabled = true;
+        btnText.textContent = 'A guardar...';
+    
+        const salePriceRaw = parseFloat(document.getElementById('product-sale-price').value);
+        const stockRaw = document.getElementById('product-stock').value;
+    
         const payload = {
             name,
-            sku: document.getElementById('product-sku').value.trim() || null,
-            category: document.getElementById('product-category').value || null,
+            sku:         document.getElementById('product-sku').value.trim() || null,
+            category:    document.getElementById('product-category').value || null,
             price,
-            sale_price: parseFloat(document.getElementById('product-sale-price').value) || null,
-            stock: document.getElementById('product-stock').value !== '' ? parseInt(document.getElementById('product-stock').value) : null,
-            status: document.getElementById('product-status').value,
+            sale_price:  (!isNaN(salePriceRaw) && salePriceRaw > 0) ? salePriceRaw : null,
+            stock:       stockRaw !== '' ? parseInt(stockRaw) : null,
+            status:      document.getElementById('product-status').value,
             description: document.getElementById('product-description').value.trim() || null,
-            image_url: document.getElementById('product-image').value.trim() || null,
-            notes: document.getElementById('product-notes').value.trim() || null,
-            sizes: JSON.stringify(productSizes),
-            colors: JSON.stringify(productColors),
-            updated_at: new Date().toISOString()
+            image_url:   document.getElementById('product-image').value.trim() || null,
+            notes:       document.getElementById('product-notes').value.trim() || null,
+            sizes:       productSizes,   // array direto — JSONB não aceita string
+            colors:      productColors,  // array direto — JSONB não aceita string
         };
+    
         try {
             if (!sb) throw new Error('Supabase não inicializado');
+    
             if (editingProductId) {
-                const { error } = await sb.from('products').update(payload).eq('id', editingProductId);
+                const { error } = await sb
+                    .from('products')
+                    .update(payload)
+                    .eq('id', editingProductId);
                 if (error) throw error;
+    
                 const idx = allProducts.findIndex(p => p.id === editingProductId);
                 if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...payload, id: editingProductId };
-                showToast('Produto actualizado!', 'success');
+                showToast('Produto actualizado com sucesso!', 'success');
             } else {
-                payload.created_at = new Date().toISOString();
-                const { data, error } = await sb.from('products').insert([payload]).select().single();
+                const { data, error } = await sb
+                    .from('products')
+                    .insert([payload])
+                    .select()
+                    .single();
                 if (error) throw error;
+    
                 allProducts.unshift(data);
-                showToast('Produto adicionado!', 'success');
+                showToast('Produto adicionado com sucesso!', 'success');
             }
+    
             closeProductModal();
             applyProductFilters();
         } catch(e) {
             console.error(e);
-            showToast('Erro: ' + e.message, 'error');
-        } finally { btn.disabled = false; }
+            // Erro de constraint (ex: SKU duplicado)
+            if (e.code === '23505') {
+                showToast('Referência (SKU) já existe. Usa uma diferente.', 'error');
+            } else if (e.code === '23514') {
+                showToast('Dados inválidos: verifica o preço e o stock.', 'error');
+            } else {
+                showToast('Erro ao guardar: ' + e.message, 'error');
+            }
+        } finally {
+            btn.disabled = false;
+            btnText.textContent = editingProductId ? 'Guardar Alterações' : 'Guardar Produto';
+        }
     }
-
     function confirmDeleteProduct(id, name) {
         productToDelete = id;
         document.getElementById('delete-product-message').textContent = `Tens a certeza que queres eliminar "${name}"? Esta ação não pode ser desfeita.`;
@@ -1976,15 +2013,25 @@
     }
     async function confirmDeleteProductAction() {
         if (!productToDelete) return;
+        const btn = document.querySelector('#delete-product-modal .btn-danger');
+        if (btn) { btn.disabled = true; btn.textContent = 'A eliminar...'; }
         try {
             if (!sb) throw new Error('Supabase não inicializado');
-            const { error } = await sb.from('products').delete().eq('id', productToDelete);
+            const { error } = await sb
+                .from('products')
+                .delete()
+                .eq('id', productToDelete);
             if (error) throw error;
+    
             allProducts = allProducts.filter(p => p.id !== productToDelete);
             applyProductFilters();
             closeDeleteProductModal();
             showToast('Produto eliminado!', 'success');
-        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+        } catch(e) {
+            console.error(e);
+            showToast('Erro ao eliminar: ' + e.message, 'error');
+            if (btn) { btn.disabled = false; btn.textContent = 'Eliminar'; }
+        }
     }
 
     // --- Tags (sizes & colors) ---
