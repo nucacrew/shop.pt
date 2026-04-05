@@ -1118,20 +1118,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
-                    
-                    <!-- Left column -->
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:1rem;">
+            
+                    <!-- Nome: linha inteira -->
                     <div style="grid-column:1/-1;">
                         <label class="form-label">Nome do Produto *</label>
                         <input type="text" id="product-name" required class="nuca-input" placeholder="Ex: T-shirt NUCA Essential">
                     </div>
-
-                    <div>
+            
+                    <!-- SKU + Categoria: metade cada -->
+                    <div style="grid-column:span 2;">
                         <label class="form-label">Referência / SKU</label>
                         <input type="text" id="product-sku" class="nuca-input" placeholder="Ex: NUCA-TS-001">
                     </div>
-
-                    <div>
+            
+                    <div style="grid-column:span 2;">
                         <label class="form-label">Categoria</label>
                         <select id="product-category" class="nuca-input">
                             <option value="">Selecionar...</option>
@@ -1143,22 +1144,23 @@
                             <option value="outros">Outros</option>
                         </select>
                     </div>
-
+            
+                    <!-- Preço + Promo + Stock + Estado: 4 colunas compactas -->
                     <div>
                         <label class="form-label">Preço (€) *</label>
                         <input type="number" id="product-price" required class="nuca-input" placeholder="0.00" step="0.01" min="0">
                     </div>
-
+            
                     <div>
-                        <label class="form-label">Preço Promocional (€)</label>
+                        <label class="form-label">Promo (€)</label>
                         <input type="number" id="product-sale-price" class="nuca-input" placeholder="0.00" step="0.01" min="0">
                     </div>
-
+            
                     <div>
-                        <label class="form-label">Stock Total</label>
+                        <label class="form-label">Stock</label>
                         <input type="number" id="product-stock" class="nuca-input" placeholder="0" min="0">
                     </div>
-
+            
                     <div>
                         <label class="form-label">Estado</label>
                         <select id="product-status" class="nuca-input">
@@ -1167,13 +1169,14 @@
                             <option value="soldout">Esgotado</option>
                         </select>
                     </div>
-
+            
+                    <!-- Descrição: linha inteira -->
                     <div style="grid-column:1/-1;">
                         <label class="form-label">Descrição</label>
                         <textarea id="product-description" rows="3" class="nuca-input" placeholder="Descrição do produto..."></textarea>
                     </div>
-
-                    <!-- Sizes -->
+            
+                    <!-- Tamanhos -->
                     <div style="grid-column:1/-1;">
                         <label class="form-label">Tamanhos disponíveis</label>
                         <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
@@ -1186,8 +1189,8 @@
                         <div class="tag-wrap" id="sizes-tags"></div>
                         <input type="hidden" id="product-sizes" value="[]">
                     </div>
-
-                    <!-- Colors -->
+            
+                    <!-- Cores -->
                     <div style="grid-column:1/-1;">
                         <label class="form-label">Cores disponíveis</label>
                         <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;align-items:center;">
@@ -1201,21 +1204,21 @@
                         <div class="tag-wrap" id="colors-tags"></div>
                         <input type="hidden" id="product-colors" value="[]">
                     </div>
-
-                    <!-- Image URL -->
-                    <div style="grid-column:1/-1;">
+            
+                    <!-- Imagem + Notas: lado a lado -->
+                    <div style="grid-column:span 2;">
                         <label class="form-label">URL da Imagem</label>
                         <input type="url" id="product-image" class="nuca-input" placeholder="https://exemplo.com/imagem.jpg" oninput="previewProductImage(this.value)">
                         <div id="product-image-preview" style="margin-top:0.75rem;display:none;">
-                            <img id="product-img-preview-el" src="" alt="Preview" style="max-height:160px;border-radius:0.875rem;border:1px solid rgba(85,107,79,0.1);object-fit:cover;">
+                            <img id="product-img-preview-el" src="" alt="Preview" style="max-height:120px;border-radius:0.875rem;border:1px solid rgba(85,107,79,0.1);object-fit:cover;">
                         </div>
                     </div>
-
-                    <div style="grid-column:1/-1;">
+            
+                    <div style="grid-column:span 2;">
                         <label class="form-label">Notas internas</label>
-                        <textarea id="product-notes" rows="2" class="nuca-input" placeholder="Notas visíveis apenas para admins..."></textarea>
+                        <textarea id="product-notes" rows="3" class="nuca-input" placeholder="Notas visíveis apenas para admins..." style="height:100%;min-height:90px;"></textarea>
                     </div>
-
+            
                 </div>
             </div>
             <div class="modal-footer">
