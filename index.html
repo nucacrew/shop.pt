@@ -13,24 +13,11 @@
             theme: {
                 extend: {
                     colors: {
-                        'nuca-beige': '#D8C6A5',
-                        'nuca-green': '#556B4F',
-                        'nuca-dark': '#2C3328',
-                        'nuca-light': '#E8DCC4',
-                        'spring': '#98D8C8',
-                        'summer': '#F7DC6F',
-                        'autumn': '#E59866',
-                        'winter': '#AED6F1',
+                        'nuca-beige': '#D8C6A5','nuca-green': '#556B4F','nuca-dark': '#2C3328','nuca-light': '#E8DCC4',
+                        'spring': '#98D8C8','summer': '#F7DC6F','autumn': '#E59866','winter': '#AED6F1',
                     },
-                    fontFamily: {
-                        'display': ['Syne', 'sans-serif'],
-                        'body': ['Space Grotesk', 'sans-serif'],
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'fade-in': 'fadeIn 1s ease-out forwards',
-                        'slide-up': 'slideUp 0.8s ease-out forwards',
-                    },
+                    fontFamily: { 'display': ['Syne', 'sans-serif'], 'body': ['Space Grotesk', 'sans-serif'] },
+                    animation: { 'float': 'float 6s ease-in-out infinite', 'fade-in': 'fadeIn 1s ease-out forwards', 'slide-up': 'slideUp 0.8s ease-out forwards' },
                     keyframes: {
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } },
                         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
@@ -46,10 +33,9 @@
         .nuca-logo { font-family: 'Syne', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
         .hero-text { font-size: clamp(2.5rem, 12vw, 10rem); line-height: 0.9; width: 100%; max-width: 100%; overflow-wrap: break-word; word-wrap: break-word; hyphens: auto; }
         .grain-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
-        .nav-hidden { transform: translateY(-100%); }
-        .nav-visible { transform: translateY(0); }
+        .nav-hidden { transform: translateY(-100%); } .nav-visible { transform: translateY(0); }
         .product-card:hover .product-image { transform: scale(1.05); }
-        .size-btn.active, .pack-size-btn.active { background-color: #556B4F !important; color: #D8C6A5 !important; border-color: #556B4F !important; }
+        .size-btn.active { background-color: #556B4F !important; color: #D8C6A5 !important; border-color: #556B4F !important; }
         .cart-sidebar { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .cart-sidebar.open { transform: translateX(0); }
         .overlay { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -62,67 +48,40 @@
         @keyframes slide { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
         .pack-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(85, 107, 79, 0.3); }
         .color-selector { transition: all 0.2s ease; box-shadow: 0 0 0 1px #E8DCC4; }
-        .color-selector:hover { transform: scale(1.15); box-shadow: 0 0 0 2px #000000; }
-        .color-selector.active { transform: scale(1.15); box-shadow: 0 0 0 2px #000000; border: 2px solid #000000; }
-        .season-selector { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; background: rgba(255, 255, 255, 0.6); cursor: pointer; }
-        .season-selector:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(85, 107, 79, 0.1); background: rgba(255, 255, 255, 0.9); }
-        .season-selector.active { background: #556B4F; color: #D8C6A5; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(85, 107, 79, 0.2); }
+        .color-selector:hover { transform: scale(1.15); box-shadow: 0 0 0 2px #000; }
+        .color-selector.active { transform: scale(1.15); box-shadow: 0 0 0 2px #000; border: 2px solid #000; }
+        .season-selector { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.6); cursor: pointer; }
+        .season-selector:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(85,107,79,0.1); background: rgba(255,255,255,0.9); }
+        .season-selector.active { background: #556B4F; color: #D8C6A5; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(85,107,79,0.2); }
         .season-selector.active .season-icon { stroke: #D8C6A5; }
         .carousel-container { overflow: hidden; position: relative; }
         .carousel-track { display: flex; transition: transform 0.5s ease-in-out; }
         .carousel-slide { min-width: 100%; padding: 0 0.5rem; }
         @media (min-width: 768px) { .carousel-slide { min-width: 50%; } }
         @media (min-width: 1024px) { .carousel-slide { min-width: 33.333%; } }
-        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(85, 107, 79, 0.9); color: #D8C6A5; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; border: none; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(85,107,79,0.9); color: #D8C6A5; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s; z-index: 10; border: none; }
         .carousel-btn:hover { background: #556B4F; transform: translateY(-50%) scale(1.1); }
-        .carousel-btn.prev { left: 0; }
-        .carousel-btn.next { right: 0; }
+        .carousel-btn.prev { left: 0; } .carousel-btn.next { right: 0; }
         .carousel-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .collection-badge { background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%); }
-        .pack-tab { transition: all 0.3s ease; position: relative; overflow: hidden; }
-        .pack-tab.active { background-color: #556B4F; color: #D8C6A5; }
-        .pack-tab:not(.active):hover { background-color: rgba(85, 107, 79, 0.1); }
-        .packs-section { display: none; animation: fadeIn 0.5s ease-out; }
-        .packs-section.active { display: block; }
+        .pack-tab { transition: all 0.3s ease; } .pack-tab.active { background-color: #556B4F; color: #D8C6A5; }
+        .pack-tab:not(.active):hover { background-color: rgba(85,107,79,0.1); }
+        .packs-section { display: none; animation: fadeIn 0.5s ease-out; } .packs-section.active { display: block; }
         .packs-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
         @media (min-width: 640px) { .packs-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (min-width: 1024px) { .packs-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (min-width: 1280px) { .packs-grid { grid-template-columns: repeat(4, 1fr); } }
         .pack-card-content { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
-        .pack-card-header { margin-bottom: 1rem; }
-        .pack-card-body { flex: 1; display: flex; flex-direction: column; }
-        .pack-card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(216, 198, 165, 0.2); }
+        .pack-card-header { margin-bottom: 1rem; } .pack-card-body { flex: 1; display: flex; flex-direction: column; }
+        .pack-card-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(216,198,165,0.2); }
         .pack-thumbnails { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .pack-thumbnail { width: 48px; height: 48px; border-radius: 8px; border: 2px solid rgba(216, 198, 165, 0.3); overflow: hidden; flex-shrink: 0; }
+        .pack-thumbnail { width: 48px; height: 48px; border-radius: 8px; border: 2px solid rgba(216,198,165,0.3); overflow: hidden; flex-shrink: 0; }
         .pack-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        .pack-thumbnail-more { width: 48px; height: 48px; border-radius: 8px; border: 2px dashed rgba(216, 198, 165, 0.5); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #D8C6A5; flex-shrink: 0; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .legal-modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: visibility 0.3s ease, opacity 0.3s ease; padding: 1rem; }
-        .legal-modal.active { visibility: visible; opacity: 1; }
-        .legal-modal-overlay { position: absolute; inset: 0; background: rgba(44, 51, 40, 0.6); backdrop-filter: blur(8px); }
-        .legal-modal-content { position: relative; background: #F5F1EA; width: 100%; max-width: 800px; max-height: 90vh; border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: scale(0.95); transition: transform 0.3s ease; }
-        .legal-modal.active .legal-modal-content { transform: scale(1); }
-        .legal-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(85, 107, 79, 0.15); background: #FFFFFF; }
-        .legal-modal-header h3 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; color: #2C3328; }
-        .legal-modal-close { background: none; border: none; cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: all 0.2s; color: #556B4F; flex-shrink: 0; }
-        .legal-modal-close:hover { background: rgba(85, 107, 79, 0.1); transform: rotate(90deg); }
-        .legal-modal-body { padding: 0; overflow-y: auto; max-height: calc(90vh - 80px); color: #2C3328; line-height: 1.7; }
-        .legal-content { padding: 1.5rem; }
-        .legal-intro { background: rgba(85, 107, 79, 0.05); border-radius: 1rem; padding: 1rem 1.25rem; margin-bottom: 1.25rem; border-left: 3px solid #556B4F; }
-        .legal-intro p { font-size: 0.95rem; color: #556B4F; margin: 0; }
-        .legal-section { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(85, 107, 79, 0.1); }
-        .legal-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .legal-section-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
-        .legal-section-number { width: 28px; height: 28px; background: #556B4F; color: #F5F1EA; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.875rem; flex-shrink: 0; }
-        .legal-section h4 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 600; color: #2C3328; margin: 0; }
-        .legal-section p { margin-bottom: 0.75rem; color: #556B4F; padding-left: 2.5rem; font-size: 0.9rem; }
-        .legal-footer { background: rgba(85, 107, 79, 0.03); padding: 1rem 1.5rem; border-top: 1px solid rgba(85, 107, 79, 0.1); display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: space-between; align-items: center; }
-        .legal-footer p { margin: 0; font-size: 0.8rem; color: #556B4F; }
-        .legal-footer strong { color: #2C3328; font-weight: 600; }
+        .pack-thumbnail-more { width: 48px; height: 48px; border-radius: 8px; border: 2px dashed rgba(216,198,165,0.5); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; color: #D8C6A5; flex-shrink: 0; }
         .trust-badge { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: #556B4F; }
         .trust-badge svg { width: 16px; height: 16px; flex-shrink: 0; }
         .cta-primary { background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%); transition: all 0.3s ease; }
-        .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(85, 107, 79, 0.4); }
+        .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(85,107,79,0.4); }
         .cta-secondary { border: 2px solid #556B4F; transition: all 0.3s ease; }
         .cta-secondary:hover { background: #556B4F; color: #D8C6A5; transform: translateY(-2px); }
         .gallery-single-image { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; transition: opacity 0.35s ease; }
@@ -132,18 +91,14 @@
         .gallery-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; }
         .gallery-dot.active { background: white; width: 24px; border-radius: 4px; }
         .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); color: #556B4F; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; z-index: 10; border: none; }
-        .gallery-arrow.prev { left: 0.5rem; }
-        .gallery-arrow.next { right: 0.5rem; }
+        .gallery-arrow.prev { left: 0.5rem; } .gallery-arrow.next { right: 0.5rem; }
         .variant-thumbnail { width: 60px; height: 60px; border-radius: 8px; overflow: hidden; cursor: default; pointer-events: none; border: 2px solid transparent; transition: all 0.2s; }
         .variant-thumbnail.active { border-color: #556B4F; box-shadow: 0 0 0 2px #556B4F; }
         .variant-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        .nuca-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; transition: all 0.2s ease; }
-        .nuca-select:focus { outline: none; border-color: #556B4F; box-shadow: 0 0 0 3px rgba(85, 107, 79, 0.1); }
-        .pack-color-selector { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; border: 2px solid transparent; box-shadow: 0 0 0 1px #E8DCC4; }
-        .pack-color-selector:hover { transform: scale(1.1); box-shadow: 0 0 0 2px #000000; }
-        .pack-color-selector.active { transform: scale(1.1); box-shadow: 0 0 0 2px #000000; border: 2px solid #000000; }
+        .nuca-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; transition: all 0.2s ease; }
+        .nuca-select:focus { outline: none; border-color: #556B4F; box-shadow: 0 0 0 3px rgba(85,107,79,0.1); }
         .size-btn, .pack-size-btn { transition: all 0.2s ease; }
-        .pack-tag-star { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(216, 198, 165, 0.2); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .pack-tag-star { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(216,198,165,0.2); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
         .pack-tag-star svg { width: 12px; height: 12px; stroke: #D8C6A5; stroke-width: 2; fill: none; }
         html, body { overflow-x: hidden; width: 100%; max-width: 100%; }
         img { max-width: 100%; height: auto; }
@@ -154,81 +109,61 @@
 
         /* ===== NOTIFICATIONS ===== */
         .notification-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .nuca-notification { background: #FFFFFF; border-radius: 16px; min-width: 330px; max-width: 400px; box-shadow: 0 8px 32px rgba(44, 51, 40, 0.12), 0 2px 8px rgba(44, 51, 40, 0.06); display: flex; align-items: stretch; transform: translateX(calc(100% + 48px)); opacity: 0; transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; pointer-events: all; position: relative; overflow: hidden; border: 1px solid rgba(85, 107, 79, 0.1); }
+        .nuca-notification { background: #fff; border-radius: 16px; min-width: 330px; max-width: 400px; box-shadow: 0 8px 32px rgba(44,51,40,0.12), 0 2px 8px rgba(44,51,40,0.06); display: flex; align-items: stretch; transform: translateX(calc(100% + 48px)); opacity: 0; transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease; pointer-events: all; position: relative; overflow: hidden; border: 1px solid rgba(85,107,79,0.1); }
         .nuca-notification.show { transform: translateX(0); opacity: 1; }
-        .nuca-notification.hiding { transform: translateX(calc(100% + 48px)); opacity: 0; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease; }
+        .nuca-notification.hiding { transform: translateX(calc(100% + 48px)); opacity: 0; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease; }
         .notification-accent { width: 4px; flex-shrink: 0; border-radius: 16px 0 0 16px; }
-
-        /* WARNING → verde (igual ao success mas com tom distinto) */
         .nuca-notification.warning .notification-accent { background: linear-gradient(180deg, #6B8C63, #556B4F); }
-        .nuca-notification.warning .notification-icon { color: #556B4F; background: rgba(85, 107, 79, 0.10); }
+        .nuca-notification.warning .notification-icon { color: #556B4F; background: rgba(85,107,79,0.10); }
         .nuca-notification.warning .notification-progress { background: #556B4F; }
-
         .nuca-notification.error .notification-accent { background: linear-gradient(180deg, #EF4444, #DC2626); }
-        .nuca-notification.error .notification-icon { color: #DC2626; background: rgba(220, 38, 38, 0.10); }
+        .nuca-notification.error .notification-icon { color: #DC2626; background: rgba(220,38,38,0.10); }
         .nuca-notification.error .notification-progress { background: #DC2626; }
         .nuca-notification.success .notification-accent { background: linear-gradient(180deg, #6B8C63, #556B4F); }
-        .nuca-notification.success .notification-icon { color: #556B4F; background: rgba(85, 107, 79, 0.10); }
+        .nuca-notification.success .notification-icon { color: #556B4F; background: rgba(85,107,79,0.10); }
         .nuca-notification.success .notification-progress { background: #556B4F; }
         .nuca-notification.info .notification-accent { background: linear-gradient(180deg, #556B4F, #2C3328); }
-        .nuca-notification.info .notification-icon { color: #2C3328; background: rgba(44, 51, 40, 0.08); }
+        .nuca-notification.info .notification-icon { color: #2C3328; background: rgba(44,51,40,0.08); }
         .nuca-notification.info .notification-progress { background: #2C3328; }
         .notification-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin: 14px 0 14px 14px; }
         .notification-body { flex: 1; padding: 14px 6px 14px 12px; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
         .notification-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.875rem; color: #2C3328; margin-bottom: 3px; line-height: 1.3; }
         .notification-message { font-size: 0.8rem; color: #556B4F; line-height: 1.5; }
-        .notification-close { background: none; border: none; cursor: pointer; padding: 14px 12px; color: rgba(85, 107, 79, 0.35); transition: color 0.2s, transform 0.2s; flex-shrink: 0; align-self: flex-start; display: flex; align-items: center; }
+        .notification-close { background: none; border: none; cursor: pointer; padding: 14px 12px; color: rgba(85,107,79,0.35); transition: color 0.2s, transform 0.2s; flex-shrink: 0; align-self: flex-start; display: flex; align-items: center; }
         .notification-close:hover { color: #2C3328; transform: rotate(90deg); }
         .notification-progress { position: absolute; bottom: 0; left: 4px; right: 0; height: 2px; transition: width linear; opacity: 0.18; border-radius: 0 0 16px 0; }
         @media (max-width: 480px) { .notification-container { top: auto; bottom: 20px; left: 12px; right: 12px; } .nuca-notification { min-width: auto; max-width: none; width: 100%; } }
 
-        /* ===== MODAIS UNIFICADOS ===== */
+        /* ===== MODAL SYSTEM (produtos & packs) ===== */
         .nuca-modal-overlay { position: fixed; inset: 0; z-index: 50; display: none; }
         .nuca-modal-overlay.active { display: block; }
-        .nuca-modal-backdrop { position: absolute; inset: 0; background: rgba(44, 51, 40, 0.7); backdrop-filter: blur(10px); }
-        .nuca-modal-box {
-            position: absolute; inset: 0; margin: 0; background: #F5F1EA; overflow: hidden;
-            display: flex; flex-direction: column;
-            transform: scale(0.97); opacity: 0;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
-        }
-        @media (min-width: 640px) { .nuca-modal-box { inset: 1rem; border-radius: 2rem; box-shadow: 0 32px 80px rgba(44, 51, 40, 0.25); } }
+        .nuca-modal-backdrop { position: absolute; inset: 0; background: rgba(44,51,40,0.7); backdrop-filter: blur(10px); }
+        .nuca-modal-box { position: absolute; inset: 0; margin: 0; background: #F5F1EA; overflow: hidden; display: flex; flex-direction: column; transform: scale(0.97); opacity: 0; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease; }
+        @media (min-width: 640px) { .nuca-modal-box { inset: 1rem; border-radius: 2rem; box-shadow: 0 32px 80px rgba(44,51,40,0.25); } }
         @media (min-width: 1024px) { .nuca-modal-box { inset: 2.5rem; } }
         .nuca-modal-box.open { transform: scale(1); opacity: 1; }
-        .nuca-modal-close {
-            position: absolute; top: 1rem; right: 1rem; z-index: 60;
-            width: 2.5rem; height: 2.5rem; border-radius: 50%;
-            background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25);
-            color: #F5F1EA; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(4px);
-        }
+        .nuca-modal-close { position: absolute; top: 1rem; right: 1rem; z-index: 60; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25); color: #F5F1EA; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(4px); }
         .nuca-modal-close:hover { background: rgba(255,255,255,0.28); transform: rotate(90deg); }
-
-        /* ===== MODAL SPLIT ===== */
         .nuca-modal-split { display: flex; flex-direction: row; flex: 1; overflow: hidden; min-height: 0; }
         .nuca-modal-left { background: linear-gradient(145deg, #556B4F 0%, #2C3328 100%); color: #F5F1EA; position: relative; overflow: hidden; flex-shrink: 0; width: 45%; }
         @media (min-width: 1024px) { .nuca-modal-left { width: 48%; } }
         .nuca-modal-left::before { content: ''; position: absolute; inset: 0; background-image: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 41px); pointer-events: none; }
         .nuca-modal-left::after { content: ''; position: absolute; top: -5rem; right: -5rem; width: 16rem; height: 16rem; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none; }
         .nuca-modal-left-inner { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
-        .nuca-modal-right { flex: 1; background: #FFFFFF; overflow-y: auto; display: flex; flex-direction: column; }
+        .nuca-modal-right { flex: 1; background: #fff; overflow-y: auto; display: flex; flex-direction: column; }
         .nuca-modal-right::-webkit-scrollbar { width: 4px; }
-        .nuca-modal-right::-webkit-scrollbar-thumb { background: rgba(85, 107, 79, 0.2); border-radius: 2px; }
+        .nuca-modal-right::-webkit-scrollbar-thumb { background: rgba(85,107,79,0.2); border-radius: 2px; }
         .nuca-modal-right-inner { padding: 2rem 1.5rem; max-width: 540px; width: 100%; margin: 0 auto; flex: 1; }
         @media (min-width: 640px) { .nuca-modal-right-inner { padding: 2.5rem 2rem; } }
         @media (min-width: 1024px) { .nuca-modal-right-inner { padding: 3rem 2.5rem; } }
-
-        /* ===== MODAL SPLIT — MOBILE ===== */
         @media (max-width: 767px) {
             .nuca-modal-box { inset: 0 !important; border-radius: 0 !important; display: flex; flex-direction: column; overflow: hidden; }
             .nuca-modal-split { flex-direction: column !important; flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
             .nuca-modal-left { width: 100% !important; height: 240px; min-height: 240px; max-height: 240px; flex-shrink: 0; }
             .nuca-modal-right { flex: none; overflow-y: visible; overflow-x: visible; }
             .nuca-modal-right-inner { padding: 1.5rem 1rem 2rem; }
-            .nuca-modal-close { position: fixed; top: 0.75rem; right: 0.75rem; background: rgba(44, 51, 40, 0.7); border-color: rgba(255,255,255,0.3); }
+            .nuca-modal-close { position: fixed; top: 0.75rem; right: 0.75rem; background: rgba(44,51,40,0.7); border-color: rgba(255,255,255,0.3); }
         }
-
-        /* ===== VISUAL DE PRODUTO ===== */
         .product-modal-visual { flex: 1; position: relative; overflow: hidden; }
 
         /* ===== PACK MODAL LEFT ===== */
@@ -236,20 +171,20 @@
         .pack-modal-hero::before { content: ''; position: absolute; bottom: -4rem; right: -4rem; width: 18rem; height: 18rem; border-radius: 50%; background: rgba(255,255,255,0.04); pointer-events: none; }
         @media (min-width: 768px) { .pack-modal-hero { padding: 3rem 2.5rem; } }
         @media (max-width: 767px) { .pack-modal-hero { padding: 1.25rem 1rem; justify-content: flex-start; } }
-        .pack-modal-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 1rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 100px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245, 241, 234, 0.9); margin-bottom: 1.25rem; backdrop-filter: blur(4px); }
+        .pack-modal-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 1rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 100px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(245,241,234,0.9); margin-bottom: 1.25rem; backdrop-filter: blur(4px); }
         .pack-modal-badge svg { width: 11px; height: 11px; stroke: rgba(245,241,234,0.7); fill: none; }
         @media (max-width: 767px) { .pack-modal-badge { margin-bottom: 0.5rem; } }
-        .pack-modal-title { font-family: 'Syne', sans-serif; font-size: clamp(1.4rem, 4vw, 2.5rem); font-weight: 800; line-height: 1.05; color: #F5F1EA; margin-bottom: 0.75rem; text-shadow: 0 2px 20px rgba(0,0,0,0.15); }
+        .pack-modal-title { font-family: 'Syne', sans-serif; font-size: clamp(1.4rem, 4vw, 2.5rem); font-weight: 800; line-height: 1.05; color: #F5F1EA; margin-bottom: 0.75rem; }
         @media (max-width: 767px) { .pack-modal-title { font-size: 1.4rem; margin-bottom: 0.4rem; } }
-        .pack-modal-desc { font-size: 0.9rem; color: rgba(245, 241, 234, 0.65); line-height: 1.65; max-width: 300px; margin: 0 auto 1.75rem; }
+        .pack-modal-desc { font-size: 0.9rem; color: rgba(245,241,234,0.65); line-height: 1.65; max-width: 300px; margin: 0 auto 1.75rem; }
         @media (max-width: 767px) { .pack-modal-desc { display: none; } }
         .pack-price-block { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
         .pack-price-row { display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
-        .pack-price-main { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #F5F1EA; line-height: 1; text-shadow: 0 2px 20px rgba(0,0,0,0.12); }
-        .pack-price-original { font-size: 1.1rem; text-decoration: line-through; color: rgba(245, 241, 234, 0.35); }
-        .pack-price-badge { display: inline-flex; align-items: center; padding: 0.3rem 0.875rem; background: #D8C6A5; color: #2C3328; border-radius: 100px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em; }
+        .pack-price-main { font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: #F5F1EA; line-height: 1; }
+        .pack-price-original { font-size: 1.1rem; text-decoration: line-through; color: rgba(245,241,234,0.35); }
+        .pack-price-badge { display: inline-flex; align-items: center; padding: 0.3rem 0.875rem; background: #D8C6A5; color: #2C3328; border-radius: 100px; font-size: 0.75rem; font-weight: 800; }
         .pack-savings-label { font-size: 0.75rem; color: rgba(245,241,234,0.5); letter-spacing: 0.04em; text-transform: uppercase; font-weight: 600; }
-        .pack-free-gift-tag { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.1rem; background: rgba(216, 198, 165, 0.15); border: 1px solid rgba(216, 198, 165, 0.25); border-radius: 100px; font-size: 0.78rem; font-weight: 600; color: #D8C6A5; backdrop-filter: blur(4px); }
+        .pack-free-gift-tag { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.1rem; background: rgba(216,198,165,0.15); border: 1px solid rgba(216,198,165,0.25); border-radius: 100px; font-size: 0.78rem; font-weight: 600; color: #D8C6A5; backdrop-filter: blur(4px); }
         .pack-free-gift-tag svg { width: 13px; height: 13px; stroke: #D8C6A5; fill: none; }
         .pack-thumb-row { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.75rem; flex-wrap: wrap; }
         @media (max-width: 767px) { .pack-thumb-row { display: none; } }
@@ -257,181 +192,291 @@
         .pack-thumb-item:hover { transform: scale(1.08); border-color: rgba(255,255,255,0.4); }
         .pack-thumb-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* ===== MODAL INTERIOR (painel direito) ===== */
-        .modal-category-tag { display: inline-block; padding: 0.25rem 0.875rem; background: rgba(85, 107, 79, 0.1); color: #556B4F; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
+        /* ===== MODAL RIGHT PANEL ===== */
+        .modal-category-tag { display: inline-block; padding: 0.25rem 0.875rem; background: rgba(85,107,79,0.1); color: #556B4F; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.75rem; }
         .modal-product-name { font-family: 'Syne', sans-serif; font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 800; color: #2C3328; line-height: 1.1; margin-bottom: 0.5rem; }
         .modal-product-price { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: #556B4F; margin-bottom: 1.25rem; }
-        .modal-description-box { background: rgba(85, 107, 79, 0.06); border-left: 3px solid rgba(85, 107, 79, 0.3); border-radius: 0 0.75rem 0.75rem 0; padding: 0.875rem 1rem; margin-bottom: 1.25rem; }
+        .modal-description-box { background: rgba(85,107,79,0.06); border-left: 3px solid rgba(85,107,79,0.3); border-radius: 0 0.75rem 0.75rem 0; padding: 0.875rem 1rem; margin-bottom: 1.25rem; }
         .modal-description-box p { font-size: 0.875rem; color: #556B4F; line-height: 1.65; margin: 0; }
-        .modal-shipping-tag { display: flex; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; background: rgba(85, 107, 79, 0.06); border-radius: 0.75rem; margin-bottom: 1.5rem; }
+        .modal-shipping-tag { display: flex; align-items: center; gap: 0.625rem; padding: 0.75rem 1rem; background: rgba(85,107,79,0.06); border-radius: 0.75rem; margin-bottom: 1.5rem; }
         .modal-shipping-tag p { margin: 0; font-size: 0.78rem; color: #556B4F; line-height: 1.4; }
         .modal-shipping-tag strong { display: block; font-weight: 700; font-size: 0.82rem; color: #2C3328; }
         .nuca-selection-group { margin-bottom: 1rem; }
         .nuca-selection-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #2C3328; margin-bottom: 0.625rem; }
-
-        /* ===== PACK SECTION HEADER (painel direito) ===== */
         .pack-section-header { margin-bottom: 1.25rem; }
         .pack-section-header h3 { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; color: #2C3328; margin-bottom: 0.25rem; }
-        .pack-section-header p { font-size: 0.82rem; color: rgba(85, 107, 79, 0.6); }
+        .pack-section-header p { font-size: 0.82rem; color: rgba(85,107,79,0.6); }
 
-        /* ===== PACK ITEM CARDS — redesenhados para combinar com o modal de produto ===== */
-        .pack-item-card {
-            background: #FAFAF8;
-            border: 1.5px solid rgba(85, 107, 79, 0.12);
-            border-radius: 1.25rem;
-            overflow: hidden;
-            margin-bottom: 0.875rem;
-            transition: border-color 0.25s, box-shadow 0.25s;
-        }
+        /* ===== PACK ITEM CARDS ===== */
+        .pack-item-card { background: #FAFAF8; border: 1.5px solid rgba(85,107,79,0.12); border-radius: 1.25rem; overflow: hidden; margin-bottom: 0.875rem; transition: border-color 0.25s, box-shadow 0.25s; }
         .pack-item-card:last-child { margin-bottom: 0; }
-        .pack-item-card:hover { border-color: rgba(85, 107, 79, 0.28); box-shadow: 0 4px 16px rgba(85,107,79,0.06); }
-
-        /* Cabeçalho do card: número + imagem + info */
-        .pack-item-header {
-            display: flex;
-            align-items: center;
-            gap: 0.875rem;
-            padding: 0.875rem 1rem;
-        }
-        .pack-item-number {
-            width: 24px; height: 24px; min-width: 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #556B4F, #2C3328);
-            color: #F5F1EA;
-            font-family: 'Syne', sans-serif;
-            font-size: 0.7rem;
-            font-weight: 800;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .pack-item-thumb {
-            width: 52px; height: 52px;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            flex-shrink: 0;
-            border: 1.5px solid rgba(85, 107, 79, 0.1);
-        }
+        .pack-item-card:hover { border-color: rgba(85,107,79,0.28); box-shadow: 0 4px 16px rgba(85,107,79,0.06); }
+        .pack-item-header { display: flex; align-items: center; gap: 0.875rem; padding: 0.875rem 1rem; }
+        .pack-item-number { width: 24px; height: 24px; min-width: 24px; border-radius: 50%; background: linear-gradient(135deg, #556B4F, #2C3328); color: #F5F1EA; font-family: 'Syne', sans-serif; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .pack-item-thumb { width: 52px; height: 52px; border-radius: 0.75rem; overflow: hidden; flex-shrink: 0; border: 1.5px solid rgba(85,107,79,0.1); }
         .pack-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
         .pack-item-info { flex: 1; min-width: 0; }
         .pack-item-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.875rem; color: #2C3328; margin-bottom: 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pack-item-price { font-size: 0.75rem; color: rgba(85, 107, 79, 0.55); font-weight: 500; }
-        .pack-item-no-options {
-            display: inline-flex; align-items: center; gap: 0.35rem;
-            font-size: 0.72rem; color: rgba(85, 107, 79, 0.45);
-            font-style: italic; margin-top: 0.25rem;
-        }
-
-        /* Área de seleções dentro do card */
-        .pack-item-selections {
-            padding: 0.875rem 1rem 1rem;
-            border-top: 1px dashed rgba(85, 107, 79, 0.12);
-            background: rgba(85, 107, 79, 0.025);
-            display: flex;
-            flex-direction: column;
-            gap: 0.875rem;
-        }
-
-        /* Grupo de seleção dentro do pack */
+        .pack-item-price { font-size: 0.75rem; color: rgba(85,107,79,0.55); font-weight: 500; }
+        .pack-item-no-options { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; color: rgba(85,107,79,0.45); font-style: italic; margin-top: 0.25rem; }
+        .pack-item-selections { padding: 0.875rem 1rem 1rem; border-top: 1px dashed rgba(85,107,79,0.12); background: rgba(85,107,79,0.025); display: flex; flex-direction: column; gap: 0.875rem; }
         .pack-selection-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .pack-selection-label {
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.07em;
-            color: rgba(44, 51, 40, 0.65);
-        }
+        .pack-selection-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: rgba(44,51,40,0.65); }
         .pack-selection-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
-
-        /* Botões de tamanho — idênticos ao modal individual */
-        .pack-size-btn-styled {
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            border: 1.5px solid rgba(85, 107, 79, 0.35);
-            background: #FFFFFF;
-            color: #556B4F;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .pack-size-btn-styled { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid rgba(85,107,79,0.35); background: #fff; color: #556B4F; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; }
         .pack-size-btn-styled:hover { border-color: #556B4F; background: rgba(85,107,79,0.06); }
         .pack-size-btn-styled.active { background: #556B4F !important; color: #D8C6A5 !important; border-color: #556B4F !important; }
-
-        /* Select de meias dentro do pack */
-        .pack-meias-select {
-            appearance: none; -webkit-appearance: none;
-            background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center / 14px;
-            border: 1.5px solid rgba(85, 107, 79, 0.35);
-            border-radius: 0.625rem;
-            padding: 0.5rem 2.25rem 0.5rem 0.875rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #556B4F;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .pack-meias-select { appearance: none; -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 10px center / 14px; border: 1.5px solid rgba(85,107,79,0.35); border-radius: 0.625rem; padding: 0.5rem 2.25rem 0.5rem 0.875rem; font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700; color: #556B4F; cursor: pointer; transition: all 0.2s; }
         .pack-meias-select:focus { outline: none; border-color: #556B4F; box-shadow: 0 0 0 3px rgba(85,107,79,0.1); }
-
-        /* Color selectors dentro do pack */
-        .pack-color-dot {
-            width: 32px; height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
-            box-shadow: 0 0 0 1.5px rgba(85,107,79,0.2);
-            position: relative;
-        }
+        .pack-color-dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; transition: all 0.2s ease; border: 2px solid transparent; box-shadow: 0 0 0 1.5px rgba(85,107,79,0.2); }
         .pack-color-dot:hover { transform: scale(1.12); box-shadow: 0 0 0 2px #2C3328; }
         .pack-color-dot.active { transform: scale(1.12); box-shadow: 0 0 0 2.5px #2C3328; border-color: #2C3328; }
-
-        /* Season selectors dentro do pack — versão compacta */
-        .pack-season-btn {
-            display: flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 0.875rem;
-            border: 1.5px solid rgba(85, 107, 79, 0.2);
-            border-radius: 0.75rem;
-            background: #FFFFFF;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #556B4F;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .pack-season-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border: 1.5px solid rgba(85,107,79,0.2); border-radius: 0.75rem; background: #fff; font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; font-weight: 600; color: #556B4F; cursor: pointer; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); }
         .pack-season-btn:hover { background: rgba(85,107,79,0.06); border-color: rgba(85,107,79,0.4); transform: translateY(-1px); }
         .pack-season-btn.active { background: #556B4F; color: #D8C6A5; border-color: #556B4F; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(85,107,79,0.2); }
         .pack-season-btn.active svg { stroke: #D8C6A5; }
         .pack-season-btn svg { width: 14px; height: 14px; stroke: #556B4F; fill: none; flex-shrink: 0; }
-
-        /* Unique size badge */
-        .pack-unique-badge {
-            display: inline-flex; align-items: center;
-            padding: 0.35rem 0.875rem;
-            background: rgba(85,107,79,0.08);
-            color: #556B4F;
-            border-radius: 100px;
-            font-size: 0.78rem;
-            font-weight: 700;
-        }
-
-        .modal-cta-area { padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid rgba(85, 107, 79, 0.1); }
+        .pack-unique-badge { display: inline-flex; align-items: center; padding: 0.35rem 0.875rem; background: rgba(85,107,79,0.08); color: #556B4F; border-radius: 100px; font-size: 0.78rem; font-weight: 700; }
+        .modal-cta-area { padding-top: 1.5rem; margin-top: 1.5rem; border-top: 1px solid rgba(85,107,79,0.1); }
         .modal-cta-primary { width: 100%; padding: 1rem 1.5rem; background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%); color: #F5F1EA; border: none; border-radius: 100px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; transition: all 0.3s ease; margin-bottom: 0.75rem; }
-        .modal-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(85, 107, 79, 0.35); }
-        .modal-cta-secondary { width: 100%; padding: 0.75rem 1.5rem; background: transparent; color: #556B4F; border: 1.5px solid rgba(85, 107, 79, 0.3); border-radius: 100px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease; margin-bottom: 1rem; }
-        .modal-cta-secondary:hover { background: rgba(85, 107, 79, 0.06); border-color: rgba(85, 107, 79, 0.5); }
+        .modal-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(85,107,79,0.35); }
+        .modal-cta-secondary { width: 100%; padding: 0.75rem 1.5rem; background: transparent; color: #556B4F; border: 1.5px solid rgba(85,107,79,0.3); border-radius: 100px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s ease; margin-bottom: 1rem; }
+        .modal-cta-secondary:hover { background: rgba(85,107,79,0.06); border-color: rgba(85,107,79,0.5); }
         .modal-trust-row { display: flex; justify-content: center; gap: 1.25rem; }
-        .modal-trust-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.72rem; color: rgba(85, 107, 79, 0.6); }
+        .modal-trust-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.72rem; color: rgba(85,107,79,0.6); }
         .modal-trust-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-        .modal-validation-note { padding: 0.75rem 1rem; background: rgba(85, 107, 79, 0.06); border-radius: 0.625rem; font-size: 0.78rem; color: rgba(85, 107, 79, 0.7); margin-top: 1rem; }
+        .modal-validation-note { padding: 0.75rem 1rem; background: rgba(85,107,79,0.06); border-radius: 0.625rem; font-size: 0.78rem; color: rgba(85,107,79,0.7); margin-top: 1rem; }
         .modal-validation-note strong { color: #2C3328; }
-        .unified-offer-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%); color: #2C3328; border-radius: 100px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.02em; box-shadow: 0 4px 16px rgba(212, 162, 89, 0.3); margin-bottom: 1rem; }
+        .unified-offer-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #E8B86B 0%, #D4A259 100%); color: #2C3328; border-radius: 100px; font-size: 0.8rem; font-weight: 800; box-shadow: 0 4px 16px rgba(212,162,89,0.3); margin-bottom: 1rem; }
         .unified-offer-badge svg { width: 16px; height: 16px; stroke: #2C3328; fill: none; }
         .collection-badge-absolute { position: absolute; top: 1rem; left: 1rem; z-index: 20; }
-        .collection-badge { background: linear-gradient(135deg, #556B4F 0%, #2C3328 100%); }
+
+        /* ===== LEGAL MODAL — split panel igual ao produto/pack ===== */
+        .legal-modal-overlay { position: fixed; inset: 0; z-index: 60; display: none; }
+        .legal-modal-overlay.active { display: block; }
+        .legal-modal-backdrop { position: absolute; inset: 0; background: rgba(44,51,40,0.72); backdrop-filter: blur(12px); }
+
+        /* Caixa do modal — no desktop centered, no mobile full screen */
+        .legal-modal-box {
+            position: absolute;
+            background: #F5F1EA;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            transform: scale(0.96);
+            opacity: 0;
+            transition: transform 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+        }
+        /* Mobile: ecrã completo */
+        @media (max-width: 639px) {
+            .legal-modal-box {
+                inset: 0;
+                flex-direction: column;
+                border-radius: 0;
+            }
+            .legal-modal-box.open { transform: scale(1); opacity: 1; }
+        }
+        /* Desktop: centrado */
+        @media (min-width: 640px) {
+            .legal-modal-box {
+                top: 50%; left: 50%;
+                transform: translate(-50%, -47%) scale(0.96);
+                width: min(900px, calc(100vw - 3rem));
+                height: min(88vh, 580px);
+                border-radius: 2rem;
+                box-shadow: 0 40px 100px rgba(44,51,40,0.35);
+            }
+            .legal-modal-box.open {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Botão fechar */
+        .legal-modal-close-btn {
+            position: absolute; top: 1rem; right: 1rem; z-index: 20;
+            width: 2.25rem; height: 2.25rem; border-radius: 50%;
+            background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.25);
+            color: #F5F1EA; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(4px);
+        }
+        .legal-modal-close-btn:hover { background: rgba(255,255,255,0.28); transform: rotate(90deg); }
+        @media (max-width: 639px) {
+            .legal-modal-close-btn {
+                position: fixed; top: 0.75rem; right: 0.75rem;
+                background: rgba(44,51,40,0.75);
+                border-color: rgba(255,255,255,0.3);
+            }
+        }
+
+        /* Painel esquerdo — verde, informação do tópico */
+        .legal-left-panel {
+            background: linear-gradient(150deg, #556B4F 0%, #2C3328 100%);
+            color: #F5F1EA;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            width: 38%;
+            display: flex;
+            flex-direction: column;
+            padding: 2.75rem 2rem;
+        }
+        @media (min-width: 1024px) { .legal-left-panel { width: 40%; padding: 3rem 2.5rem; } }
+        .legal-left-panel::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px);
+            pointer-events: none;
+        }
+        .legal-left-panel::after {
+            content: '';
+            position: absolute; bottom: -6rem; right: -6rem;
+            width: 18rem; height: 18rem; border-radius: 50%;
+            background: rgba(255,255,255,0.04); pointer-events: none;
+        }
+        /* Círculo decorativo superior esquerdo */
+        .legal-left-panel .deco-circle {
+            position: absolute; top: -4rem; left: -4rem;
+            width: 14rem; height: 14rem; border-radius: 50%;
+            background: rgba(255,255,255,0.03); pointer-events: none;
+        }
+        .legal-left-inner { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
+        .legal-left-top { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+        .legal-topic-badge {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            padding: 0.35rem 1rem;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 100px; font-size: 0.67rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: rgba(245,241,234,0.8); margin-bottom: 1.5rem;
+            width: fit-content; backdrop-filter: blur(4px);
+        }
+        .legal-topic-badge svg { width: 12px; height: 12px; stroke: rgba(245,241,234,0.6); fill: none; }
+        .legal-topic-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800;
+            line-height: 1.05; color: #F5F1EA; margin-bottom: 1rem;
+        }
+        .legal-topic-intro {
+            font-size: 0.83rem; color: rgba(245,241,234,0.58);
+            line-height: 1.68; max-width: 260px;
+        }
+        .legal-left-pills {
+            display: flex; flex-direction: column; gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .legal-pill {
+            display: flex; align-items: center; gap: 0.625rem;
+            padding: 0.5rem 0.875rem;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.75rem; font-size: 0.75rem;
+            color: rgba(245,241,234,0.65); font-weight: 500;
+        }
+        .legal-pill svg { width: 13px; height: 13px; stroke: rgba(245,241,234,0.45); fill: none; flex-shrink: 0; }
+
+        /* Painel direito — conteúdo em cards */
+        .legal-right-panel {
+            flex: 1; background: #fff;
+            overflow-y: auto; display: flex; flex-direction: column;
+        }
+        .legal-right-panel::-webkit-scrollbar { width: 4px; }
+        .legal-right-panel::-webkit-scrollbar-thumb { background: rgba(85,107,79,0.18); border-radius: 2px; }
+        .legal-right-inner { padding: 2.25rem 2rem; flex: 1; display: flex; flex-direction: column; }
+        @media (min-width: 1024px) { .legal-right-inner { padding: 2.5rem 2.5rem; } }
+
+        /* Cards de secção */
+        .legal-section-card {
+            border: 1.5px solid rgba(85,107,79,0.1);
+            border-radius: 1.25rem; overflow: hidden;
+            margin-bottom: 0.75rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .legal-section-card:last-child { margin-bottom: 0; }
+        .legal-section-card:hover { border-color: rgba(85,107,79,0.22); box-shadow: 0 4px 16px rgba(85,107,79,0.05); }
+        .legal-section-card-header {
+            display: flex; align-items: center; gap: 0.875rem;
+            padding: 0.75rem 1rem; background: #FAFAF8;
+        }
+        .legal-section-num {
+            width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+            background: linear-gradient(135deg, #556B4F, #2C3328);
+            color: #F5F1EA; font-family: 'Syne', sans-serif;
+            font-size: 0.7rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .legal-section-card-title {
+            font-family: 'Syne', sans-serif; font-weight: 700;
+            font-size: 0.875rem; color: #2C3328;
+        }
+        .legal-section-card-body {
+            padding: 0.75rem 1rem 0.875rem;
+            border-top: 1px dashed rgba(85,107,79,0.1);
+            background: rgba(85,107,79,0.018);
+            font-size: 0.83rem; color: #556B4F; line-height: 1.7;
+        }
+
+        /* Rodapé do painel direito */
+        .legal-right-footer {
+            margin-top: 1.5rem; padding-top: 1.25rem;
+            border-top: 1px solid rgba(85,107,79,0.1);
+            display: flex; flex-wrap: wrap; gap: 0.75rem;
+            align-items: center; justify-content: space-between;
+        }
+        .legal-right-footer-meta { font-size: 0.74rem; color: rgba(85,107,79,0.5); }
+        .legal-right-footer-meta strong { color: #2C3328; font-weight: 600; }
+        .legal-contact-cta {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.55rem 1.1rem;
+            background: linear-gradient(135deg, #556B4F, #2C3328);
+            color: #F5F1EA; border-radius: 100px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.76rem; font-weight: 700;
+            text-decoration: none; cursor: pointer;
+            transition: all 0.25s ease; border: none;
+        }
+        .legal-contact-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(85,107,79,0.3); }
+        .legal-contact-cta svg { width: 13px; height: 13px; stroke: #F5F1EA; fill: none; }
+
+        /* Mobile overrides para legal modal */
+        @media (max-width: 639px) {
+            .legal-left-panel {
+                width: 100%; padding: 1.5rem 1.25rem 1.25rem;
+                min-height: 200px; max-height: 210px;
+                justify-content: flex-end;
+            }
+            .legal-left-top { justify-content: flex-end; }
+            .legal-topic-title { font-size: 1.35rem; margin-bottom: 0.5rem; }
+            .legal-topic-intro { display: none; }
+            .legal-left-pills { flex-direction: row; flex-wrap: wrap; margin-top: 0.625rem; gap: 0.35rem; }
+            .legal-pill { font-size: 0.67rem; padding: 0.3rem 0.6rem; }
+            .legal-topic-badge { margin-bottom: 0.75rem; }
+            .legal-right-inner { padding: 1.25rem 1rem 1.5rem; }
+            .legal-right-panel { flex: 1; overflow-y: auto; }
+        }
+
+        /* ===== BOTÃO SUPORTE NO FOOTER ===== */
+        .footer-support-link {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(216,198,165,0.08);
+            border: 1px solid rgba(216,198,165,0.15);
+            border-radius: 100px;
+            color: rgba(216,198,165,0.65);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem; font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+        .footer-support-link:hover {
+            background: rgba(216,198,165,0.18);
+            border-color: rgba(216,198,165,0.32);
+            color: #D8C6A5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        .footer-support-link svg { width: 13px; height: 13px; stroke: currentColor; fill: none; flex-shrink: 0; }
     </style>
     <base target="_blank">
 </head>
@@ -501,15 +546,47 @@
         </div>
     </div>
 
-    <!-- MODAL LEGAL -->
-    <div id="legal-modal" class="legal-modal">
-        <div class="legal-modal-overlay" onclick="closeLegalModal()"></div>
-        <div class="legal-modal-content">
-            <div class="legal-modal-header">
-                <h3 id="legal-modal-title">Política de Privacidade</h3>
-                <button class="legal-modal-close" onclick="closeLegalModal()"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <!-- ===== MODAL LEGAL (novo design split-panel) ===== -->
+    <div id="legal-modal-overlay" class="legal-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title">
+        <div class="legal-modal-backdrop" onclick="closeLegalModal()"></div>
+        <div class="legal-modal-box" id="legal-modal-box">
+            <button onclick="closeLegalModal()" class="legal-modal-close-btn" aria-label="Fechar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+
+            <!-- Painel esquerdo -->
+            <div class="legal-left-panel">
+                <div class="deco-circle"></div>
+                <div class="legal-left-inner">
+                    <div class="legal-left-top">
+                        <span class="legal-topic-badge" id="legal-topic-badge">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Informação Legal
+                        </span>
+                        <h2 id="legal-modal-title" class="legal-topic-title">Título</h2>
+                        <p id="legal-topic-intro" class="legal-topic-intro">Descrição breve do tópico.</p>
+                    </div>
+                    <div class="legal-left-pills" id="legal-left-pills">
+                        <!-- pills injetadas via JS -->
+                    </div>
+                </div>
             </div>
-            <div class="legal-modal-body" id="legal-modal-body"></div>
+
+            <!-- Painel direito -->
+            <div class="legal-right-panel">
+                <div class="legal-right-inner">
+                    <div id="legal-sections-container">
+                        <!-- secções injetadas via JS -->
+                    </div>
+                    <div class="legal-right-footer">
+                        <span class="legal-right-footer-meta">Última atualização: <strong>Março 2026</strong></span>
+                        <a href="mailto:nuca.crew.support@gmail.com" class="legal-contact-cta">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            nuca.crew.support@gmail.com
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -694,11 +771,16 @@
             </div>
             <div>
                 <h4 class="font-bold mb-3 sm:mb-4 text-nuca-light text-sm sm:text-base">Ajuda</h4>
-                <ul class="space-y-2 text-nuca-beige/60 text-xs sm:text-sm">
+                <ul class="space-y-2.5 text-nuca-beige/60 text-xs sm:text-sm">
                     <li><button onclick="openLegalModal('trocas')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Trocas e Devoluções</button></li>
                     <li><button onclick="openLegalModal('envio')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Envio e Entrega</button></li>
                     <li><button onclick="openLegalModal('pagamento')" class="hover:text-nuca-beige transition-colors bg-transparent border-none cursor-pointer text-left">Métodos de Pagamento</button></li>
-                    <li><a href="mailto:nuca.crew.support@gmail.com" class="hover:text-nuca-beige transition-colors">Contactar Suporte</a></li>
+                    <li class="pt-1">
+                        <a href="mailto:nuca.crew.support@gmail.com" class="footer-support-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            Contactar Suporte
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div>
@@ -926,7 +1008,6 @@ const seasonIcons = {
     'Outono':    `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
     'Inverno':   `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
 };
-// Ícones compactos para pack (sem classe season-icon)
 const packSeasonIcons = {
     'Primavera': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
     'Verão':     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
@@ -935,6 +1016,89 @@ const packSeasonIcons = {
 };
 const seasonColors = { 'Primavera':{name:'Menta',hex:'#98D8C8'}, 'Verão':{name:'Sol',hex:'#F7DC6F'}, 'Outono':{name:'Terra',hex:'#E59866'}, 'Inverno':{name:'Gelo',hex:'#AED6F1'} };
 const categoryLabels = { 'camisetas':'Camisetas','hoodies':'Hoodies','acessorios':'Acessórios','seasons':'Coleção Estações' };
+
+// ===== LEGAL CONTENT =====
+const legalContent = {
+    privacidade: {
+        title: 'Política de Privacidade',
+        badge: 'Privacidade & Dados',
+        badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+        intro: 'A NUCA valoriza a tua privacidade. Recolhemos apenas o necessário para processar as tuas encomendas e nunca partilhamos os teus dados com terceiros.',
+        pills: [
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, text: 'SSL encriptado' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`, text: 'RGPD compliant' },
+        ],
+        sections: [
+            { title: 'Dados que Recolhemos', body: 'Nome, email, morada de entrega e dados de pagamento quando efectuas uma compra. Apenas o mínimo necessário.' },
+            { title: 'Como Usamos os Dados', body: 'Exclusivamente para processar encomendas, comunicar o estado de envio e melhorar a tua experiência. Nunca vendemos dados a terceiros.' },
+            { title: 'Segurança', body: 'Todos os dados são transmitidos com encriptação SSL de 256 bits. Os dados de pagamento são processados por gateways certificados PCI-DSS.' },
+            { title: 'Os Teus Direitos', body: 'Tens o direito de aceder, corrigir ou eliminar os teus dados pessoais a qualquer momento. Basta enviar um email para nuca.crew.support@gmail.com.' },
+        ]
+    },
+    termos: {
+        title: 'Termos de Uso',
+        badge: 'Termos & Condições',
+        badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+        intro: 'Ao utilizares o nosso site e serviços, aceitas os termos descritos aqui. São simples, directos e pensados para proteger ambos os lados.',
+        pills: [
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`, text: 'Uso pessoal' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, text: 'Direitos reservados' },
+        ],
+        sections: [
+            { title: 'Uso do Site', body: 'O site NUCA destina-se exclusivamente a uso pessoal e não comercial. É proibida a reprodução de conteúdos sem autorização prévia.' },
+            { title: 'Encomendas e Pagamentos', body: 'Ao realizares uma encomenda, confirmas que as informações fornecidas são correctas e completas. O pagamento é confirmado antes do envio.' },
+            { title: 'Envios e Devoluções', body: 'Os envios são realizados em 3-5 dias úteis. Aceitamos devoluções no prazo de 14 dias após a recepção, em conformidade com a legislação portuguesa.' },
+            { title: 'Propriedade Intelectual', body: 'Todo o conteúdo do site — imagens, textos, logótipos e designs — é propriedade da NUCA e está protegido por direitos de autor.' },
+        ]
+    },
+    trocas: {
+        title: 'Trocas e Devoluções',
+        badge: 'Política de Trocas',
+        badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+        intro: 'Queremos que fiques 100% satisfeito. Se algo não estiver certo, tratamos da situação sem complicações.',
+        pills: [
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`, text: '14 dias para devolver' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`, text: 'Reembolso em 5 dias' },
+        ],
+        sections: [
+            { title: 'Prazo para Devoluções', body: 'Tens 14 dias a contar da data de recepção da encomenda para solicitar uma devolução ou troca. Basta contactar-nos por email.' },
+            { title: 'Como Devolver', body: 'Envia um email para nuca.crew.support@gmail.com com o número da encomenda e o motivo da devolução. Respondemos em menos de 24 horas.' },
+            { title: 'Reembolso', body: 'Após recebermos e verificarmos o artigo, o reembolso é processado no prazo máximo de 5 dias úteis pelo mesmo método de pagamento utilizado.' },
+            { title: 'Trocas', body: 'Para trocas de tamanho ou cor, segue o processo de devolução e realiza uma nova encomenda. Os custos de reenvio ficam a nosso cargo em caso de erro nosso.' },
+        ]
+    },
+    envio: {
+        title: 'Envio e Entrega',
+        badge: 'Envios NUCA',
+        badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>`,
+        intro: 'Enviamos para todo o Portugal continental e ilhas. Processamos todas as encomendas com cuidado e agilidade.',
+        pills: [
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>`, text: '3-5 dias úteis' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`, text: 'Grátis acima de 50€' },
+        ],
+        sections: [
+            { title: 'Prazo de Processamento', body: 'As encomendas são processadas e preparadas em 1-2 dias úteis após a confirmação do pagamento.' },
+            { title: 'Custo de Envio', body: 'Envio gratuito em compras acima de €50. Para encomendas de menor valor, o custo de envio é de €3.99 para Portugal continental.' },
+            { title: 'Prazo de Entrega', body: 'Após o envio, a entrega demora entre 2-5 dias úteis. Recebes um email com o código de rastreio assim que a encomenda for enviada.' },
+        ]
+    },
+    pagamento: {
+        title: 'Métodos de Pagamento',
+        badge: 'Pagamentos',
+        badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,
+        intro: 'Oferecemos métodos de pagamento simples e seguros, adaptados ao mercado português.',
+        pills: [
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, text: '100% seguro' },
+            { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16l.92.92z"/></svg>`, text: 'Suporte via WhatsApp' },
+        ],
+        sections: [
+            { title: 'MB WAY', body: 'O método mais rápido. Após a encomenda, recebes o número de telemóvel para envio do pagamento via MB WAY. Processamento imediato.' },
+            { title: 'Transferência Bancária', body: 'Disponibilizamos o IBAN após confirmação da encomenda. A encomenda é processada após validação da transferência (1-2 dias úteis).' },
+            { title: 'WhatsApp', body: 'Podes também finalizar a tua compra diretamente via WhatsApp. Entra em contacto connosco e orientamos o processo de pagamento.' },
+            { title: 'Segurança', body: 'Não guardamos dados bancários. Todos os pagamentos são confirmados manualmente antes do processamento da encomenda.' },
+        ]
+    }
+};
 
 // ===== STATE =====
 let cart = [];
@@ -1290,7 +1454,7 @@ function renderPackGrid(gridId, packList) {
     }).join('');
 }
 
-// ===== PACK MODAL — renderiza itens com novo estilo coeso =====
+// ===== PACK MODAL =====
 function buildPackItemCard(p, index, currentPack) {
     const isChaveiro = p.id.includes('chaveiro');
     const isTote     = p.id.includes('tote');
@@ -1298,11 +1462,8 @@ function buildPackItemCard(p, index, currentPack) {
     const isTshirt   = p.id.includes('tshirt');
     const isHoodie   = p.id.includes('hoodie');
     const isMeias    = p.id.includes('meias');
-
     let img = '';
     if (p.images) { const k = Object.keys(p.images)[0]; img = p.images[k]?.front || ''; }
-
-    // Header sempre igual
     const header = `
         <div class="pack-item-header">
             <div class="pack-item-number">${index + 1}</div>
@@ -1313,87 +1474,25 @@ function buildPackItemCard(p, index, currentPack) {
                 ${(isChaveiro || isTote) ? `<span class="pack-item-no-options">Sem opções de personalização</span>` : ''}
             </div>
         </div>`;
-
     if (isChaveiro || isTote) {
         return `<div class="pack-item-card" data-product-id="${p.id}">${header}</div>`;
     }
-
     let selectionsHTML = '';
-
-    // Tamanho
     if (isBone) {
         selectedPackSizes[p.id] = 'Único';
-        selectionsHTML += `
-            <div class="pack-selection-group">
-                <span class="pack-selection-label">Tamanho</span>
-                <div class="pack-selection-row">
-                    <span class="pack-unique-badge">Único</span>
-                </div>
-            </div>`;
+        selectionsHTML += `<div class="pack-selection-group"><span class="pack-selection-label">Tamanho</span><div class="pack-selection-row"><span class="pack-unique-badge">Único</span></div></div>`;
     } else if (isTshirt || isHoodie) {
-        selectionsHTML += `
-            <div class="pack-selection-group">
-                <span class="pack-selection-label">Tamanho *</span>
-                <div class="pack-selection-row">
-                    ${['S','M','L','XL','XXL'].map(s =>
-                        `<button onclick="selectProductSize('${p.id}','${s}')"
-                            class="pack-size-btn-styled"
-                            data-product="${p.id}" data-size="${s}">${s}</button>`
-                    ).join('')}
-                </div>
-            </div>`;
+        selectionsHTML += `<div class="pack-selection-group"><span class="pack-selection-label">Tamanho *</span><div class="pack-selection-row">${['S','M','L','XL','XXL'].map(s => `<button onclick="selectProductSize('${p.id}','${s}')" class="pack-size-btn-styled" data-product="${p.id}" data-size="${s}">${s}</button>`).join('')}</div></div>`;
     } else if (isMeias) {
-        selectionsHTML += `
-            <div class="pack-selection-group">
-                <span class="pack-selection-label">Tamanho (EU) *</span>
-                <div class="pack-selection-row">
-                    <select onchange="selectProductSize('${p.id}',this.value)" class="pack-meias-select">
-                        <option value="" selected disabled>Escolher tamanho</option>
-                        ${['35-38','39-42','43-46'].map(s => `<option value="${s}">${s}</option>`).join('')}
-                    </select>
-                </div>
-            </div>`;
+        selectionsHTML += `<div class="pack-selection-group"><span class="pack-selection-label">Tamanho (EU) *</span><div class="pack-selection-row"><select onchange="selectProductSize('${p.id}',this.value)" class="pack-meias-select"><option value="" selected disabled>Escolher tamanho</option>${['35-38','39-42','43-46'].map(s => `<option value="${s}">${s}</option>`).join('')}</select></div></div>`;
     }
-
-    // Cor
     if (p.colors && p.colors.length > 0) {
-        selectionsHTML += `
-            <div class="pack-selection-group">
-                <span class="pack-selection-label">Cor *</span>
-                <div class="pack-selection-row">
-                    ${p.colors.map(c =>
-                        `<button onclick="selectProductColor('${p.id}','${c.name}')"
-                            class="pack-color-dot"
-                            style="background-color:${c.hex}"
-                            title="${c.name}"
-                            data-product="${p.id}" data-color="${c.name}"></button>`
-                    ).join('')}
-                </div>
-            </div>`;
+        selectionsHTML += `<div class="pack-selection-group"><span class="pack-selection-label">Cor *</span><div class="pack-selection-row">${p.colors.map(c => `<button onclick="selectProductColor('${p.id}','${c.name}')" class="pack-color-dot" style="background-color:${c.hex}" title="${c.name}" data-product="${p.id}" data-color="${c.name}"></button>`).join('')}</div></div>`;
     }
-
-    // Estação (packs de estações)
     if (currentPack.seasonChoice && p.hasSeasons) {
-        selectionsHTML += `
-            <div class="pack-selection-group">
-                <span class="pack-selection-label">Estação *</span>
-                <div class="pack-selection-row" style="flex-wrap:wrap;">
-                    ${['Primavera','Verão','Outono','Inverno'].map(s =>
-                        `<button onclick="selectProductSeason('${p.id}','${s}')"
-                            class="pack-season-btn"
-                            data-product="${p.id}" data-season="${s}">
-                            ${packSeasonIcons[s]}
-                            <span>${s}</span>
-                        </button>`
-                    ).join('')}
-                </div>
-            </div>`;
+        selectionsHTML += `<div class="pack-selection-group"><span class="pack-selection-label">Estação *</span><div class="pack-selection-row" style="flex-wrap:wrap;">${['Primavera','Verão','Outono','Inverno'].map(s => `<button onclick="selectProductSeason('${p.id}','${s}')" class="pack-season-btn" data-product="${p.id}" data-season="${s}">${packSeasonIcons[s]}<span>${s}</span></button>`).join('')}</div></div>`;
     }
-
-    return `<div class="pack-item-card" data-product-id="${p.id}">
-        ${header}
-        <div class="pack-item-selections">${selectionsHTML}</div>
-    </div>`;
+    return `<div class="pack-item-card" data-product-id="${p.id}">${header}<div class="pack-item-selections">${selectionsHTML}</div></div>`;
 }
 
 function openPackModal(packId) {
@@ -1419,18 +1518,14 @@ function openPackModal(packId) {
     freeDiv.innerHTML = currentPack.freeGift
         ? `<div class="pack-free-gift-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Oferta: ${currentPack.freeGift}</div>`
         : '';
-
-    // Renderizar items com novo estilo
     const itemsContainer = document.getElementById('pack-modal-items');
     itemsContainer.innerHTML = packProducts.map((p, i) => buildPackItemCard(p, i, currentPack)).join('');
-
     const old = document.getElementById('pack-validation-note');
     if (old) old.remove();
     const note = document.createElement('div');
     note.id = 'pack-validation-note'; note.className = 'modal-validation-note';
     note.innerHTML = '<strong>Nota:</strong> Valida se todas as opções foram selecionadas para cada produto.';
     itemsContainer.after(note);
-
     const modal   = document.getElementById('pack-modal');
     const content = document.getElementById('pack-modal-content');
     modal.classList.add('active');
@@ -1543,27 +1638,50 @@ function goToCheckout() {
     window.location.href = `checkout.html?cart=${encodeURIComponent(JSON.stringify(cart))}`;
 }
 
-// ===== LEGAIS =====
-const legalContent = {
-    privacidade: { title:'Política de Privacidade', intro:'A NUCA valoriza a tua privacidade. Esta política explica como recolhemos, usamos e protegemos os teus dados pessoais.', sections:[{title:'Dados que Recolhemos',content:'Recolhemos informações como nome, email, morada de envio e dados de pagamento quando fazes uma compra.'},{title:'Como Usamos os Dados',content:'Usamos os teus dados para processar encomendas e melhorar os nossos serviços. Nunca vendemos os teus dados a terceiros.'},{title:'Segurança',content:'Todos os dados são transmitidos de forma segura através de encriptação SSL.'},{title:'Os Teus Direitos',content:'Tens o direito de aceder, corrigir ou eliminar os teus dados pessoais. Contacta-nos em nuca.crew.support@gmail.com.'}] },
-    termos:      { title:'Termos de Uso',            intro:'Ao utilizar o nosso site e serviços, aceitas os seguintes termos e condições.', sections:[{title:'Uso do Site',content:'O site NUCA destina-se a uso pessoal e não comercial.'},{title:'Encomendas e Pagamentos',content:'Ao realizar uma encomenda, confirmas que as informações fornecidas são verdadeiras.'},{title:'Envios e Devoluções',content:'Os envios são realizados em 3-5 dias úteis. Aceitamos devoluções no prazo de 14 dias após a receção.'},{title:'Propriedade Intelectual',content:'Todo o conteúdo do site é propriedade da NUCA e está protegido por direitos de autor.'}] },
-    trocas:      { title:'Trocas e Devoluções',      intro:'Queremos que fiques 100% satisfeito com a tua compra.', sections:[{title:'Prazo para Devoluções',content:'Tens 14 dias após a receção da encomenda para solicitar uma devolução.'},{title:'Como Devolver',content:'Contacta-nos por email com o número da encomenda.'},{title:'Reembolso',content:'O reembolso é processado no prazo de 5 dias úteis.'},{title:'Trocas',content:'Para trocar, segue o processo de devolução e faz uma nova encomenda.'}] },
-    envio:       { title:'Envio e Entrega',           intro:'Informações sobre prazos, custos e métodos de envio.', sections:[{title:'Prazo de Processamento',content:'As encomendas são processadas em 3-5 dias úteis.'},{title:'Custo de Envio',content:'Envio gratuito em compras acima de 50€. Para compras inferiores, o custo é de 3.99€.'},{title:'Prazo de Entrega',content:'Entrega em 2-5 dias úteis após envio.'}] },
-    pagamento:   { title:'Métodos de Pagamento',      intro:'Opções de pagamento disponíveis na NUCA.', sections:[{title:'Pagamento via WhatsApp',content:'Os pagamentos são processados via WhatsApp após confirmação da encomenda.'},{title:'MB WAY e Transferência',content:'Aceitamos MB WAY e transferência bancária.'},{title:'Segurança',content:'Todos os dados são transmitidos de forma segura.'}] }
-};
+// ===== LEGAL MODAL (novo design) =====
 function openLegalModal(type) {
-    const c = legalContent[type]; if (!c) return;
+    const c = legalContent[type];
+    if (!c) return;
+
+    // Painel esquerdo
+    const badge = document.getElementById('legal-topic-badge');
+    badge.innerHTML = c.badgeIcon + c.badge;
+
     document.getElementById('legal-modal-title').textContent = c.title;
-    document.getElementById('legal-modal-body').innerHTML = `
-        <div class="legal-content">
-            <div class="legal-intro"><p>${c.intro}</p></div>
-            ${c.sections.map((s,i) => `<div class="legal-section"><div class="legal-section-header"><div class="legal-section-number">${i+1}</div><h4>${s.title}</h4></div><p>${s.content}</p></div>`).join('')}
-        </div>
-        <div class="legal-footer"><p>Última atualização: <strong>Março 2026</strong></p><p>Contacto: <strong>nuca.crew.support@gmail.com</strong></p></div>`;
-    document.getElementById('legal-modal').classList.add('active');
+    document.getElementById('legal-topic-intro').textContent = c.intro;
+
+    // Pills
+    const pillsEl = document.getElementById('legal-left-pills');
+    pillsEl.innerHTML = (c.pills || []).map(pill =>
+        `<div class="legal-pill">${pill.icon}<span>${pill.text}</span></div>`
+    ).join('');
+
+    // Secções (cards)
+    const sectionsEl = document.getElementById('legal-sections-container');
+    sectionsEl.innerHTML = c.sections.map((s, i) =>
+        `<div class="legal-section-card">
+            <div class="legal-section-card-header">
+                <div class="legal-section-num">${i + 1}</div>
+                <span class="legal-section-card-title">${s.title}</span>
+            </div>
+            <div class="legal-section-card-body">${s.body}</div>
+        </div>`
+    ).join('');
+
+    const overlay = document.getElementById('legal-modal-overlay');
+    const box     = document.getElementById('legal-modal-box');
+    overlay.classList.add('active');
     document.body.classList.add('overflow-hidden');
+    setTimeout(() => box.classList.add('open'), 10);
 }
-function closeLegalModal() { document.getElementById('legal-modal').classList.remove('active'); document.body.classList.remove('overflow-hidden'); }
+function closeLegalModal() {
+    const box = document.getElementById('legal-modal-box');
+    box.classList.remove('open');
+    setTimeout(() => {
+        document.getElementById('legal-modal-overlay').classList.remove('active');
+        document.body.classList.remove('overflow-hidden');
+    }, 380);
+}
 
 // ===== KEYBOARD =====
 document.addEventListener('keydown', e => {
