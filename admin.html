@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -476,104 +477,151 @@
 
         /* ===== RECEIPT STYLES ===== */
         .receipt-document {
-            background: #FAFAF7;
+            background: #F7F3EC;
             font-family: 'Space Grotesk', sans-serif;
             color: #2C3328;
             border-radius: 1rem;
             overflow: hidden;
-            border: 1px solid rgba(85,107,79,0.12);
+            border: 1px solid rgba(85,107,79,0.14);
+            box-shadow: 0 2px 24px rgba(44,51,40,0.08);
         }
         .receipt-header {
             background: #2C3328;
             color: #D8C6A5;
-            padding: 2rem 2.25rem 1.5rem;
+            padding: 2.25rem 2.25rem 2rem;
             position: relative;
             overflow: hidden;
         }
-        .receipt-header::before {
-            content: 'NUCA';
+        .receipt-header-pattern {
             position: absolute;
-            right: -1rem;
-            top: -1.5rem;
-            font-family: 'Syne', sans-serif;
-            font-weight: 800;
-            font-size: 7rem;
-            color: rgba(255,255,255,0.04);
-            line-height: 1;
+            inset: 0;
             pointer-events: none;
-            letter-spacing: -0.04em;
+            opacity: 0.07;
+            background-image: repeating-linear-gradient(
+                45deg,
+                #D8C6A5 0px, #D8C6A5 1px,
+                transparent 1px, transparent 12px
+            );
         }
-        .receipt-body { padding: 1.75rem 2.25rem; }
+        .receipt-body { padding: 1.75rem 2.25rem 1.5rem; }
         .receipt-divider {
             border: none;
-            border-top: 1px dashed rgba(85,107,79,0.25);
+            border-top: 1px dashed rgba(85,107,79,0.22);
             margin: 1.25rem 0;
         }
         .receipt-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 0.5rem 0;
-            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            font-size: 0.835rem;
         }
-        .receipt-row-label { color: rgba(44,51,40,0.5); }
+        .receipt-row-label { color: rgba(44,51,40,0.48); }
         .receipt-row-value { font-weight: 600; color: #2C3328; text-align: right; }
         .receipt-item-row {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(85,107,79,0.08);
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(85,107,79,0.09);
             font-size: 0.85rem;
         }
         .receipt-item-row:last-child { border-bottom: none; }
-        .receipt-total-row {
+        .receipt-total-block {
+            background: #2C3328;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            margin-top: 1.25rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 1.25rem;
-            background: #2C3328;
-            border-radius: 0.875rem;
-            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .receipt-total-block::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.06;
+            background-image: repeating-linear-gradient(
+                -45deg,
+                #D8C6A5 0px, #D8C6A5 1px,
+                transparent 1px, transparent 10px
+            );
         }
         .receipt-paid-stamp {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.4rem 1rem;
-            background: rgba(16,185,129,0.12);
-            border: 1.5px solid rgba(16,185,129,0.4);
+            gap: 0.4rem;
+            padding: 0.35rem 0.875rem;
+            background: rgba(16,185,129,0.13);
+            border: 1.5px solid rgba(16,185,129,0.38);
             border-radius: 100px;
             color: #065F46;
-            font-size: 0.75rem;
+            font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.08em;
+            letter-spacing: 0.1em;
         }
         .receipt-paid-stamp::before {
             content: '';
-            width: 7px; height: 7px;
+            width: 6px; height: 6px;
             border-radius: 50%;
             background: #10B981;
+            flex-shrink: 0;
         }
         .receipt-footer {
-            background: rgba(85,107,79,0.05);
+            background: #2C3328;
             padding: 1.25rem 2.25rem;
             text-align: center;
-            border-top: 1px solid rgba(85,107,79,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .receipt-footer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                #D8C6A5 0px, #D8C6A5 8px,
+                transparent 8px, transparent 12px
+            );
+            opacity: 0.3;
         }
         .receipt-barcode {
             display: flex;
             align-items: flex-end;
             justify-content: center;
             gap: 2px;
-            height: 36px;
-            margin: 0.75rem auto 0.25rem;
+            height: 32px;
+            margin: 0.875rem auto 0.375rem;
         }
         .receipt-barcode span {
             display: inline-block;
-            background: #2C3328;
+            background: rgba(216,198,165,0.5);
             border-radius: 1px;
+        }
+        .receipt-section-label {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-weight: 700;
+            color: rgba(44,51,40,0.38);
+            margin-bottom: 0.625rem;
+        }
+        .receipt-tear {
+            height: 14px;
+            background: #F7F3EC;
+            position: relative;
+            overflow: hidden;
+        }
+        .receipt-tear::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -4px; right: -4px;
+            height: 28px;
+            background: radial-gradient(circle at 50% 0, #2C3328 10px, transparent 11px) 0 0 / 18px 28px;
         }
 
         @media print {
@@ -584,12 +632,8 @@
                 left: 0; top: 0;
                 width: 100%;
             }
-            .receipt-document {
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
-            }
-            @page { margin: 1.5cm; size: A4; }
+            .receipt-document { border: none; border-radius: 0; box-shadow: none; }
+            @page { margin: 0; size: A5; }
         }
     </style>
 </head>
@@ -1035,9 +1079,14 @@
         </div>
         <div class="modal-footer">
             <button onclick="closeReceiptModal()" class="btn-ghost">Fechar</button>
-            <button onclick="printReceipt()" class="btn-primary">
+            <button onclick="printReceipt()" class="btn-ghost" style="color:var(--dark);">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                Imprimir / Guardar PDF
+                Imprimir
+            </button>
+            <button onclick="downloadReceiptPDF()" class="btn-primary" id="download-pdf-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span id="download-pdf-text">Descarregar PDF</span>
+                <div id="download-pdf-spinner" class="spinner hidden" style="width:14px;height:14px;border-width:2px;border-color:rgba(216,198,165,0.3);border-top-color:var(--beige);"></div>
             </button>
         </div>
     </div>
@@ -1454,59 +1503,65 @@ function generateReceipt(orderId) {
 
     const html = `
         <div class="receipt-header">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
-                <div>
-                    <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:2.75rem;color:#D8C6A5;line-height:1;letter-spacing:-0.03em;">NUCA</h1>
-                    <p style="font-size:0.65rem;color:rgba(216,198,165,0.5);text-transform:uppercase;letter-spacing:0.12em;margin-top:0.25rem;font-weight:600;">Studio · Lisboa, Portugal</p>
-                </div>
-                <div style="text-align:right;">
-                    <div class="receipt-paid-stamp" style="margin-bottom:0.75rem;justify-content:flex-end;">
-                        <span>Pago</span>
+            <div class="receipt-header-pattern"></div>
+            <div style="position:relative;z-index:1;">
+                <!-- Top row: logo + stamp -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.75rem;">
+                    <div>
+                        <div style="display:flex;align-items:baseline;gap:0.75rem;">
+                            <h1 style="font-family:'Syne',sans-serif;font-weight:800;font-size:3rem;color:#D8C6A5;line-height:1;letter-spacing:-0.04em;margin:0;">NUCA</h1>
+                            <span style="font-size:0.6rem;color:rgba(216,198,165,0.38);text-transform:uppercase;letter-spacing:0.14em;font-weight:700;padding-bottom:0.25rem;">Studio</span>
+                        </div>
+                        <p style="font-size:0.62rem;color:rgba(216,198,165,0.35);text-transform:uppercase;letter-spacing:0.14em;margin-top:0.375rem;font-weight:600;">Lisboa, Portugal</p>
                     </div>
-                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.5);text-transform:uppercase;letter-spacing:0.08em;">Recibo</p>
-                    <p style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#D8C6A5;letter-spacing:0.04em;">${esc(receiptId)}</p>
+                    <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.625rem;">
+                        <div class="receipt-paid-stamp">Pago</div>
+                        <div>
+                            <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.35);font-weight:700;">Recibo</p>
+                            <p style="font-family:'Syne',sans-serif;font-size:0.875rem;font-weight:700;color:#D8C6A5;letter-spacing:0.05em;" data-receipt-num="${esc(receiptId)}">${esc(receiptId)}</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding-top:1rem;border-top:1px solid rgba(216,198,165,0.12);">
-                <div>
-                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.375rem;font-weight:700;">Facturado a</p>
-                    <p style="font-size:0.9rem;font-weight:600;color:#D8C6A5;">${esc(order.customer_name || '—')}</p>
-                    <p style="font-size:0.8rem;color:rgba(216,198,165,0.6);margin-top:0.125rem;">${esc(order.customer_email || '—')}</p>
-                    ${order.customer_phone ? `<p style="font-size:0.8rem;color:rgba(216,198,165,0.6);">${esc(order.customer_phone)}</p>` : ''}
-                </div>
-                <div style="text-align:right;">
-                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.375rem;font-weight:700;">Data do pagamento</p>
-                    <p style="font-size:0.9rem;font-weight:600;color:#D8C6A5;">${receiptDate}</p>
-                    <p style="font-size:0.8rem;color:rgba(216,198,165,0.6);margin-top:0.125rem;">${receiptTime}</p>
-                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.35);margin-top:0.25rem;">Encomenda Nº ${esc(num)}</p>
+
+                <!-- Divider line -->
+                <div style="border-top:1px solid rgba(216,198,165,0.1);margin-bottom:1.25rem;"></div>
+
+                <!-- Client + date grid -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <div>
+                        <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.35);font-weight:700;margin-bottom:0.5rem;">Facturado a</p>
+                        <p style="font-size:0.95rem;font-weight:700;color:#D8C6A5;margin-bottom:0.2rem;">${esc(order.customer_name || '—')}</p>
+                        <p style="font-size:0.775rem;color:rgba(216,198,165,0.55);">${esc(order.customer_email || '—')}</p>
+                        ${order.customer_phone ? `<p style="font-size:0.775rem;color:rgba(216,198,165,0.45);margin-top:0.125rem;">${esc(order.customer_phone)}</p>` : ''}
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="font-size:0.58rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.35);font-weight:700;margin-bottom:0.5rem;">Data</p>
+                        <p style="font-size:0.95rem;font-weight:700;color:#D8C6A5;margin-bottom:0.2rem;">${receiptDate}</p>
+                        <p style="font-size:0.775rem;color:rgba(216,198,165,0.55);">${receiptTime}</p>
+                        <p style="font-size:0.68rem;color:rgba(216,198,165,0.3);margin-top:0.375rem;font-family:'Space Grotesk',sans-serif;">Enc. Nº ${esc(num)}</p>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Tear edge -->
+        <div class="receipt-tear"></div>
+
         <div class="receipt-body">
 
-            <!-- Order meta -->
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.5rem;">
-                <p style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(44,51,40,0.4);">Artigos</p>
-                ${addr.city || addr.address ? `
-                <div style="display:flex;align-items:center;gap:0.375rem;font-size:0.75rem;color:rgba(44,51,40,0.45);">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    ${addr.city ? esc(addr.city) : ''}${addr.postal ? ' ' + esc(addr.postal) : ''}
-                </div>` : ''}
-            </div>
-
-            <!-- Items -->
-            <div style="margin-bottom:0.5rem;">
+            <!-- Items section -->
+            <p class="receipt-section-label">Artigos</p>
+            <div style="margin-bottom:0.25rem;">
                 ${itemsRows}
             </div>
 
             <hr class="receipt-divider">
 
-            <!-- Totals -->
-            <div style="padding:0 0.25rem;">
+            <!-- Meta rows -->
+            <div style="padding:0 0.125rem;">
                 ${hasShipping ? `
                 <div class="receipt-row">
-                    <span class="receipt-row-label">Subtotal</span>
+                    <span class="receipt-row-label">Subtotal dos artigos</span>
                     <span class="receipt-row-value">€${itemsTotal.toFixed(2)}</span>
                 </div>
                 <div class="receipt-row">
@@ -1515,39 +1570,49 @@ function generateReceipt(orderId) {
                 </div>` : ''}
                 <div class="receipt-row">
                     <span class="receipt-row-label">IVA (23%)</span>
-                    <span class="receipt-row-value">Incluído</span>
+                    <span class="receipt-row-value" style="color:rgba(44,51,40,0.5);font-weight:500;">Incluído — €${(total * 0.23 / 1.23).toFixed(2)}</span>
                 </div>
                 <div class="receipt-row">
                     <span class="receipt-row-label">Método de pagamento</span>
                     <span class="receipt-row-value">${esc(order.payment_method || 'Online')}</span>
                 </div>
+                ${addr.city || addr.address ? `
+                <div class="receipt-row">
+                    <span class="receipt-row-label">Morada de entrega</span>
+                    <span class="receipt-row-value" style="max-width:55%;text-align:right;">${addr.address ? esc(addr.address) + ', ' : ''}${esc(addr.city||'')}${addr.postal ? ' ' + esc(addr.postal) : ''}</span>
+                </div>` : ''}
             </div>
 
             <!-- Total block -->
-            <div class="receipt-total-row">
-                <div>
-                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.12em;color:rgba(216,198,165,0.5);font-weight:700;margin-bottom:0.25rem;">Total Pago</p>
-                    <p style="font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:#D8C6A5;line-height:1;">€${total.toFixed(2)}</p>
+            <div class="receipt-total-block">
+                <div style="position:relative;z-index:1;">
+                    <p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.14em;color:rgba(216,198,165,0.45);font-weight:700;margin-bottom:0.3rem;">Total Pago</p>
+                    <p style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#D8C6A5;line-height:1;letter-spacing:-0.02em;">€${total.toFixed(2)}</p>
                 </div>
-                <div style="text-align:right;">
-                    <p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(216,198,165,0.4);margin-bottom:0.25rem;">IVA incluído</p>
-                    <p style="font-size:0.75rem;color:rgba(216,198,165,0.5);">€${(total * 0.23 / 1.23).toFixed(2)} IVA 23%</p>
+                <div style="position:relative;z-index:1;text-align:right;">
+                    <div class="receipt-paid-stamp" style="margin-bottom:0.5rem;">Liquidado</div>
+                    <p style="font-size:0.7rem;color:rgba(216,198,165,0.4);font-family:'Space Grotesk',sans-serif;">${receiptDate}</p>
                 </div>
             </div>
 
         </div>
 
+        <!-- Footer -->
         <div class="receipt-footer">
             <div class="receipt-barcode">${barcodeHTML}</div>
-            <p style="font-size:0.65rem;color:rgba(44,51,40,0.35);letter-spacing:0.06em;margin-top:0.5rem;font-weight:500;">${esc(receiptId)} · ${esc(num)}</p>
-            <p style="font-size:0.7rem;color:rgba(44,51,40,0.4);margin-top:0.75rem;line-height:1.5;">
-                NUCA Studio · nuca.pt · geral@nuca.pt<br>
-                <span style="font-size:0.65rem;color:rgba(44,51,40,0.3);">Este documento serve como comprovativo de pagamento.</span>
-            </p>
+            <p style="font-size:0.6rem;color:rgba(216,198,165,0.3);letter-spacing:0.08em;margin-top:0.375rem;font-family:'Space Grotesk',sans-serif;">${esc(receiptId)} · ${esc(num)}</p>
+            <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(216,198,165,0.08);">
+                <p style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:rgba(216,198,165,0.5);letter-spacing:-0.02em;margin-bottom:0.375rem;">NUCA</p>
+                <p style="font-size:0.72rem;color:rgba(216,198,165,0.3);line-height:1.6;">
+                    nuca.crew.support@gmail.com
+                </p>
+                <p style="font-size:0.62rem;color:rgba(216,198,165,0.18);margin-top:0.5rem;">Este documento serve como comprovativo de pagamento.</p>
+            </div>
         </div>
     `;
 
     document.getElementById('receipt-content').innerHTML = html;
+    document.getElementById('receipt-content').dataset.receiptNum = receiptId;
     document.getElementById('receipt-modal').classList.add('active');
 }
 
@@ -1557,6 +1622,43 @@ function closeReceiptModal() {
 
 function printReceipt() {
     window.print();
+}
+
+async function downloadReceiptPDF() {
+    const btn = document.getElementById('download-pdf-btn');
+    const txt = document.getElementById('download-pdf-text');
+    const spin = document.getElementById('download-pdf-spinner');
+    btn.disabled = true;
+    txt.classList.add('hidden');
+    spin.classList.remove('hidden');
+
+    const element = document.getElementById('receipt-content');
+    const orderNum = element.dataset?.receiptNum || 'recibo';
+
+    const opt = {
+        margin: 0,
+        filename: `NUCA-recibo-${orderNum}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#FAFAF7',
+            logging: false
+        },
+        jsPDF: { unit: 'mm', format: 'a5', orientation: 'portrait' }
+    };
+
+    try {
+        await html2pdf().set(opt).from(element).save();
+        showToast('PDF descarregado!', 'success');
+    } catch(e) {
+        console.error(e);
+        showToast('Erro ao gerar PDF', 'error');
+    } finally {
+        btn.disabled = false;
+        txt.classList.remove('hidden');
+        spin.classList.add('hidden');
+    }
 }
 
 // ═══════════════════════════════════════════════════
