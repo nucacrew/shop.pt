@@ -321,27 +321,44 @@
             flex-direction: column;
             padding: 2.75rem 2rem;
         }
-        @media (min-width: 1024px) { .legal-left-panel { width: 40%; padding: 3rem 2.5rem; } }
-        .legal-left-panel::before {
-            content: '';
-            position: absolute; inset: 0;
-            background-image: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.025) 40px, rgba(255,255,255,0.025) 41px);
-            pointer-events: none;
+        @media (min-width: 1024px) { 
+            .legal-left-panel { 
+                width: 40%; 
+                padding: 3rem 2.5rem; 
+            } 
         }
-        .legal-left-panel::after {
-            content: '';
-            position: absolute; bottom: -6rem; right: -6rem;
-            width: 18rem; height: 18rem; border-radius: 50%;
-            background: rgba(255,255,255,0.04); pointer-events: none;
+        /* Adicionar padding extra à direita para títulos longos */
+        @media (min-width: 640px) {
+            .legal-left-panel {
+                padding-right: 2.5rem;
+            }
         }
-        /* Círculo decorativo superior esquerdo */
-        .legal-left-panel .deco-circle {
-            position: absolute; top: -4rem; left: -4rem;
-            width: 14rem; height: 14rem; border-radius: 50%;
-            background: rgba(255,255,255,0.03); pointer-events: none;
+        @media (min-width: 1024px) {
+            .legal-left-panel {
+                padding-right: 3rem;
+            }
         }
-        .legal-left-inner { position: relative; z-index: 10; height: 100%; display: flex; flex-direction: column; }
-        .legal-left-top { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        
+        /* Ajuste do título para quebrar linha quando necessário */
+        .legal-topic-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(1.5rem, 3vw, 2.1rem);
+            font-weight: 800;
+            line-height: 1.2;  /* aumentado de 1.05 para 1.2 */
+            color: #F5F1EA;
+            margin-bottom: 1rem;
+            word-break: break-word;
+            max-width: 100%;
+        }
+        
+        /* Ajuste da área de conteúdo do painel esquerdo */
+        .legal-left-top {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0; /* permite que o conteúdo encolha */
+        }
 
         .legal-topic-badge {
             display: inline-flex; align-items: center; gap: 0.45rem;
