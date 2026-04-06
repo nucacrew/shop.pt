@@ -1213,7 +1213,7 @@
     function renderSeasonsCarousel() {
         const track = document.getElementById('seasons-track');
         const indicators = document.getElementById('carousel-indicators');
-        track.innerHTML = seasonProducts.slice(0, 4).map(p => {
+        track.innerHTML = seasonProducts.map(p => {
             const img = p.seasonImages ? p.seasonImages.primavera.front : '';
             return `<div class="carousel-slide">
                 <div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${p.id}')">
@@ -1229,7 +1229,7 @@
                 </div>
             </div>`;
         }).join('');
-        indicators.innerHTML = seasonProducts.slice(0, 4).map((_,i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i===0?'bg-nuca-green w-6':'bg-nuca-green/30'}"></button>`).join('');
+        indicators.innerHTML = seasonProducts.map((_,i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i===0?'bg-nuca-green w-6':'bg-nuca-green/30'}"></button>`).join('');
     }
     function moveCarousel(dir) { const track = document.getElementById('seasons-track'); const max = track.children.length - getVisibleSlides(); carouselPosition = Math.max(0, Math.min(max, carouselPosition + dir)); updateCarousel(); }
     function goToSlide(i) { carouselPosition = i; updateCarousel(); }
