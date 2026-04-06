@@ -1229,7 +1229,7 @@
                 </div>
             </div>`;
         }).join('');
-        indicators.innerHTML = seasonProducts.map((_,i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i===0?'bg-nuca-green w-6':'bg-nuca-green/30'}"></button>`).join('');
+        indicators.innerHTML = seasonProducts.slice(0, 4).map((_,i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i===0?'bg-nuca-green w-6':'bg-nuca-green/30'}"></button>`).join('');
     }
     function moveCarousel(dir) { const track = document.getElementById('seasons-track'); const max = track.children.length - getVisibleSlides(); carouselPosition = Math.max(0, Math.min(max, carouselPosition + dir)); updateCarousel(); }
     function goToSlide(i) { carouselPosition = i; updateCarousel(); }
