@@ -2060,7 +2060,20 @@
         const receiptDate = now.toLocaleDateString('pt-PT', { day:'2-digit', month:'2-digit', year:'numeric' });
         const receiptTime = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
         const receiptId = 'REC-' + Date.now().toString(36).toUpperCase().slice(-8);
-        const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
+        
+        // Agrupar itens iguais
+        const groupedItems = [];
+        items.forEach(item => {
+            const key = `${item.name}|${item.size||''}|${item.color||''}`;
+            const existing = groupedItems.find(g => g._key === key);
+            if (existing) {
+                existing.quantity = (parseInt(existing.quantity) || 1) + (parseInt(item.quantity) || 1);
+            } else {
+                groupedItems.push({ ...item, _key: key, quantity: parseInt(item.quantity) || 1 });
+            }
+        });
+        
+        const itemsTotal = groupedItems.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
         const shippingRaw = total - itemsTotal;
         const shipping = shippingRaw > 0.01 ? parseFloat(shippingRaw.toFixed(2)) : 0;
 
@@ -2095,12 +2108,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    ${items.length ? items.map(item => `
+                    ${groupedItems.length ? groupedItems.map(item => `
                         <tr>
                             <td><div class="product-name">${esc(item.name || 'Artigo')}</div>${item.size || item.color ? `<div class="product-details">${item.size || ''} ${item.color ? '/ ' + item.color : ''}</div>` : ''}</td>
                             <td style="text-align:right;">€${(parseFloat(item.price) || 0).toFixed(2)}</td>
-                            <td style="text-align:center;">${parseInt(item.quantity) || 1}</td>
-                            <td style="text-align:right;">€${((parseFloat(item.price) || 0) * (parseInt(item.quantity) || 1)).toFixed(2)}</td>
+                            <td style="text-align:center;">${item.quantity}</td>
+                            <td style="text-align:right;">€${((parseFloat(item.price) || 0) * item.quantity).toFixed(2)}</td>
                         </tr>
                     `).join('') : '<tr><td colspan="4" style="text-align:center;">Sem itens registados</td></tr>'}
                 </tbody>
