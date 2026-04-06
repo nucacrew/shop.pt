@@ -2061,7 +2061,8 @@
         const receiptTime = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
         const receiptId = 'REC-' + Date.now().toString(36).toUpperCase().slice(-8);
         const itemsTotal = items.reduce((s, i) => s + (parseFloat(i.price) || 0) * (parseInt(i.quantity) || 1), 0);
-        const shipping = total - itemsTotal > 0.01 ? (total - itemsTotal) : 0;
+        const shippingRaw = total - itemsTotal;
+        const shipping = shippingRaw > 0.01 ? parseFloat(shippingRaw.toFixed(2)) : 0;
 
         const html = `
             <div class="logo-area"><h1 class="logo-title">NUCA</h1><p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p></div>
@@ -2105,9 +2106,14 @@
                 </tbody>
             </table>
             <div class="totals">
-                ${shipping > 0 ? `<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value">€${shipping.toFixed(2)}</span></div>` : ''}
-                <div class="grand-total"><div class="total-row"><span class="total-label">TOTAL PAGO</span><span class="total-value">€${total.toFixed(2)}</span></div></div>
-                <div style="margin-top:0.75rem;text-align:center;"><span class="payment-status">✓ PAGO</span></div>
+                ${shipping > 0
+                    ? `<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div>
+                       <div class="total-row"><span class="total-label">Envio</span><span class="total-value">€${shipping.toFixed(2)}</span></div>`
+                    : items.length > 1 || itemsTotal !== total
+                        ? `<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div>
+                           <div class="total-row"><span class="total-label">Envio</span><span class="total-value" style="color:#10B981;">Grátis</span></div>`
+                        : ''
+                }
             </div>
             <div class="footer"><p>Obrigado pela sua compra!</p><p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p><p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${esc(receiptId)}</p></div>`;
 
