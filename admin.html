@@ -260,16 +260,23 @@
             }
 
             /* ============================================
-               DARK MODE - VERSÃO CORRIGIDA
+               DARK MODE - VERSÃO MELHORADA (VISIBILIDADE)
                ============================================ */
             
-            /* Redefinição de variáveis no escopo do body */
+            /* Paleta otimizada para melhor contraste */
             body.dark-mode {
-                --beige: #1C1F1A;
-                --light: #252922;
-                --green: #8BAE82;
-                --dark: #E8DCC4;
-                --white: #2C3328;
+                /* Fundo mais escuro para melhor contraste com elementos */
+                --beige: #0D1117;           /* GitHub-style dark bg */
+                --light: #161B22;           /* Surface elevada */
+                --green: #7EE787;           /* Verde mais brilhante para dark mode */
+                --dark: #E6EDF3;            /* Texto primário - quase branco */
+                --white: #21262D;           /* Cards/superfícies */
+                
+                /* Cores adicionais para hierarquia */
+                --text-secondary: #8B949E;  /* Texto secundário - mais visível */
+                --text-muted: #6E7681;      /* Texto terciário/desabilitado */
+                --border: #30363D;          /* Bordas visíveis mas sutis */
+                --hover: #30363D;           /* Hover states */
             }
             
             /* Forçar background do body */
@@ -278,41 +285,65 @@
                 color: var(--dark) !important;
             }
             
-            /* Cards e containers - com !important para garantir override */
-            body.dark-mode .sidebar,
+            /* Cards e containers - hierarquia de elevação */
+            body.dark-mode .sidebar {
+                background: var(--light) !important;
+                border-color: var(--border) !important;
+            }
+            
             body.dark-mode .card,
             body.dark-mode .card-white,
             body.dark-mode .stat-card,
             body.dark-mode .settings-card,
             body.dark-mode .modal-box {
                 background: var(--white) !important;
-                border-color: rgba(139, 174, 130, 0.15) !important;
+                border: 1px solid var(--border) !important;
                 color: var(--dark) !important;
+            }
+            
+            /* Efeito de elevação nos cards */
+            body.dark-mode .card:hover,
+            body.dark-mode .stat-card:hover {
+                border-color: var(--green) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
             }
             
             /* Top navigation */
             body.dark-mode .top-nav {
-                background: rgba(28, 31, 26, 0.92) !important;
-                border-color: rgba(139, 174, 130, 0.1) !important;
+                background: rgba(13, 17, 23, 0.95) !important;
+                border-bottom: 1px solid var(--border) !important;
+                backdrop-filter: blur(10px) !important;
             }
             
-            /* Inputs - CORREÇÃO PRINCIPAL */
+            /* Inputs - melhor visibilidade */
             body.dark-mode .nuca-input,
             body.dark-mode .nuca-select {
-                background: rgba(44, 51, 40, 0.7) !important;
-                color: #E8DCC4 !important;
-                border-color: rgba(139, 174, 130, 0.2) !important;
+                background: var(--beige) !important;
+                color: var(--dark) !important;
+                border: 1px solid var(--border) !important;
+                transition: border-color 0.2s ease !important;
+            }
+            
+            body.dark-mode .nuca-input:focus,
+            body.dark-mode .nuca-select:focus {
+                border-color: var(--green) !important;
+                outline: none !important;
+                box-shadow: 0 0 0 3px rgba(126, 231, 135, 0.15) !important;
             }
             
             body.dark-mode .nuca-input::placeholder {
-                color: rgba(232, 220, 196, 0.4) !important;
+                color: var(--text-muted) !important;
             }
             
-            /* Labels e textos - ADICIONADO */
+            /* Labels e textos */
             body.dark-mode .form-label,
-            body.dark-mode .s-form-label,
-            body.dark-mode .settings-card-subtitle {
+            body.dark-mode .s-form-label {
                 color: var(--green) !important;
+                font-weight: 500 !important;
+            }
+            
+            body.dark-mode .settings-card-subtitle {
+                color: var(--text-secondary) !important;
             }
             
             body.dark-mode h1, 
@@ -325,80 +356,154 @@
                 color: var(--dark) !important;
             }
             
-            /* Tabelas - CORREÇÃO COMPLETA */
+            /* Texto secundário em geral */
+            body.dark-mode p,
+            body.dark-mode span:not(.status-badge):not(.btn) {
+                color: var(--text-secondary) !important;
+            }
+            
+            /* Tabelas - alta legibilidade */
+            body.dark-mode .data-table {
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+            }
+            
             body.dark-mode .data-table th {
-                background: rgba(139, 174, 130, 0.08) !important;
+                background: var(--light) !important;
                 color: var(--green) !important;
-                border-color: rgba(139, 174, 130, 0.1) !important;
+                border-bottom: 2px solid var(--border) !important;
+                font-weight: 600 !important;
+                text-transform: uppercase !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.05em !important;
             }
             
             body.dark-mode .data-table td {
-                color: #C8BCA4 !important;
-                border-color: rgba(139, 174, 130, 0.08) !important;
+                color: var(--text-secondary) !important;
+                border-bottom: 1px solid var(--border) !important;
             }
             
             body.dark-mode .data-table tbody tr:hover {
-                background: rgba(139, 174, 130, 0.05) !important;
+                background: var(--hover) !important;
+            }
+            
+            body.dark-mode .data-table tbody tr:hover td {
+                color: var(--dark) !important;
             }
             
             /* Toggle rows */
             body.dark-mode .toggle-row {
-                background: rgba(44, 51, 40, 0.5) !important;
-                border-color: rgba(139, 174, 130, 0.1) !important;
+                background: var(--white) !important;
+                border: 1px solid var(--border) !important;
+                margin-bottom: 0.5rem !important;
+                border-radius: 8px !important;
             }
             
             body.dark-mode .toggle-row-info h4 {
                 color: var(--dark) !important;
+                font-weight: 500 !important;
             }
             
             body.dark-mode .toggle-row-info p {
-                color: rgba(200, 188, 164, 0.7) !important;
+                color: var(--text-secondary) !important;
             }
             
             /* Select options */
             body.dark-mode select.nuca-input option {
-                background: #2C3328;
-                color: #E8DCC4;
+                background: var(--beige);
+                color: var(--dark);
             }
             
             /* Sidebar links */
             body.dark-mode .sidebar-link {
-                color: rgba(200, 188, 164, 0.8) !important;
+                color: var(--text-secondary) !important;
+                border-radius: 6px !important;
+                margin: 2px 8px !important;
+                transition: all 0.2s ease !important;
             }
             
             body.dark-mode .sidebar-link:hover {
-                background: rgba(139, 174, 130, 0.1) !important;
+                background: var(--hover) !important;
+                color: var(--dark) !important;
             }
             
             body.dark-mode .sidebar-link.active {
-                background: var(--green) !important;
-                color: var(--beige) !important;
+                background: rgba(126, 231, 135, 0.15) !important;
+                color: var(--green) !important;
+                font-weight: 500 !important;
             }
             
             /* Botões */
             body.dark-mode .btn-ghost {
-                background: rgba(139, 174, 130, 0.15) !important;
-                color: var(--green) !important;
+                background: var(--hover) !important;
+                color: var(--text-secondary) !important;
+                border: 1px solid var(--border) !important;
+            }
+            
+            body.dark-mode .btn-ghost:hover {
+                background: var(--border) !important;
+                color: var(--dark) !important;
             }
             
             body.dark-mode .filter-pill {
-                color: rgba(200, 188, 164, 0.8) !important;
+                color: var(--text-secondary) !important;
+                background: transparent !important;
             }
             
             body.dark-mode .filter-pill.active {
                 background: var(--green) !important;
-                color: var(--beige) !important;
+                color: #0D1117 !important; /* Texto escuro no verde */
+                font-weight: 600 !important;
             }
             
-            /* Status badges - manter visíveis */
+            /* Status badges - garantir visibilidade */
             body.dark-mode .status-badge {
-                opacity: 0.95;
+                font-weight: 500 !important;
+                border: 1px solid transparent !important;
             }
             
-            /* Grain overlay - ajustar para dark */
+            body.dark-mode .status-badge.success {
+                background: rgba(126, 231, 135, 0.15) !important;
+                color: var(--green) !important;
+                border-color: rgba(126, 231, 135, 0.3) !important;
+            }
+            
+            body.dark-mode .status-badge.warning {
+                background: rgba(210, 153, 34, 0.15) !important;
+                color: #D29922 !important;
+                border-color: rgba(210, 153, 34, 0.3) !important;
+            }
+            
+            body.dark-mode .status-badge.danger {
+                background: rgba(248, 81, 73, 0.15) !important;
+                color: #F85149 !important;
+                border-color: rgba(248, 81, 73, 0.3) !important;
+            }
+            
+            /* Scrollbar estilizada */
+            body.dark-mode ::-webkit-scrollbar {
+                width: 10px !important;
+                height: 10px !important;
+            }
+            
+            body.dark-mode ::-webkit-scrollbar-track {
+                background: var(--beige) !important;
+            }
+            
+            body.dark-mode ::-webkit-scrollbar-thumb {
+                background: var(--border) !important;
+                border-radius: 5px !important;
+                border: 2px solid var(--beige) !important;
+            }
+            
+            body.dark-mode ::-webkit-scrollbar-thumb:hover {
+                background: var(--text-muted) !important;
+            }
+            
+            /* Grain overlay - mais sutil */
             body.dark-mode .grain-overlay {
-                opacity: 0.04 !important;
-                filter: invert(1) brightness(0.5);
+                opacity: 0.03 !important;
+                filter: invert(1) brightness(0.3) !important;
             }
             
             /* ============================================
