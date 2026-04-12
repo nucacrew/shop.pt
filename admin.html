@@ -259,7 +259,11 @@
                 .s-form-row { grid-template-columns: 1fr; }
             }
 
-            /* === APARÊNCIA === */
+            /* ============================================
+               DARK MODE - VERSÃO CORRIGIDA
+               ============================================ */
+            
+            /* Redefinição de variáveis no escopo do body */
             body.dark-mode {
                 --beige: #1C1F1A;
                 --light: #252922;
@@ -267,48 +271,163 @@
                 --dark: #E8DCC4;
                 --white: #2C3328;
             }
+            
+            /* Forçar background do body */
+            body.dark-mode {
+                background-color: var(--beige) !important;
+                color: var(--dark) !important;
+            }
+            
+            /* Cards e containers - com !important para garantir override */
             body.dark-mode .sidebar,
             body.dark-mode .card,
             body.dark-mode .card-white,
             body.dark-mode .stat-card,
             body.dark-mode .settings-card,
             body.dark-mode .modal-box {
-                background: rgba(44, 51, 40, 0.85) !important;
+                background: var(--white) !important;
                 border-color: rgba(139, 174, 130, 0.15) !important;
+                color: var(--dark) !important;
             }
+            
+            /* Top navigation */
             body.dark-mode .top-nav {
                 background: rgba(28, 31, 26, 0.92) !important;
+                border-color: rgba(139, 174, 130, 0.1) !important;
             }
-            body.dark-mode .nuca-input {
+            
+            /* Inputs - CORREÇÃO PRINCIPAL */
+            body.dark-mode .nuca-input,
+            body.dark-mode .nuca-select {
                 background: rgba(44, 51, 40, 0.7) !important;
                 color: #E8DCC4 !important;
-                border-color: rgba(139,174,130,0.2) !important;
+                border-color: rgba(139, 174, 130, 0.2) !important;
             }
-            body.dark-mode .data-table td,
+            
+            body.dark-mode .nuca-input::placeholder {
+                color: rgba(232, 220, 196, 0.4) !important;
+            }
+            
+            /* Labels e textos - ADICIONADO */
+            body.dark-mode .form-label,
+            body.dark-mode .s-form-label,
+            body.dark-mode .settings-card-subtitle {
+                color: var(--green) !important;
+            }
+            
+            body.dark-mode h1, 
+            body.dark-mode h2, 
+            body.dark-mode h3,
+            body.dark-mode h4,
+            body.dark-mode .font-display,
+            body.dark-mode .settings-card-title,
+            body.dark-mode .nuca-logo {
+                color: var(--dark) !important;
+            }
+            
+            /* Tabelas - CORREÇÃO COMPLETA */
             body.dark-mode .data-table th {
-                color: #C8BCA4;
+                background: rgba(139, 174, 130, 0.08) !important;
+                color: var(--green) !important;
+                border-color: rgba(139, 174, 130, 0.1) !important;
             }
+            
+            body.dark-mode .data-table td {
+                color: #C8BCA4 !important;
+                border-color: rgba(139, 174, 130, 0.08) !important;
+            }
+            
+            body.dark-mode .data-table tbody tr:hover {
+                background: rgba(139, 174, 130, 0.05) !important;
+            }
+            
+            /* Toggle rows */
             body.dark-mode .toggle-row {
                 background: rgba(44, 51, 40, 0.5) !important;
-                border-color: rgba(139,174,130,0.1) !important;
+                border-color: rgba(139, 174, 130, 0.1) !important;
             }
+            
+            body.dark-mode .toggle-row-info h4 {
+                color: var(--dark) !important;
+            }
+            
+            body.dark-mode .toggle-row-info p {
+                color: rgba(200, 188, 164, 0.7) !important;
+            }
+            
+            /* Select options */
             body.dark-mode select.nuca-input option {
                 background: #2C3328;
                 color: #E8DCC4;
             }
             
-            /* Compact tables */
-            body.compact-tables .data-table td,
-            body.compact-tables .data-table th {
-                padding: 0.6rem 1rem !important;
+            /* Sidebar links */
+            body.dark-mode .sidebar-link {
+                color: rgba(200, 188, 164, 0.8) !important;
             }
             
-            /* No animations */
+            body.dark-mode .sidebar-link:hover {
+                background: rgba(139, 174, 130, 0.1) !important;
+            }
+            
+            body.dark-mode .sidebar-link.active {
+                background: var(--green) !important;
+                color: var(--beige) !important;
+            }
+            
+            /* Botões */
+            body.dark-mode .btn-ghost {
+                background: rgba(139, 174, 130, 0.15) !important;
+                color: var(--green) !important;
+            }
+            
+            body.dark-mode .filter-pill {
+                color: rgba(200, 188, 164, 0.8) !important;
+            }
+            
+            body.dark-mode .filter-pill.active {
+                background: var(--green) !important;
+                color: var(--beige) !important;
+            }
+            
+            /* Status badges - manter visíveis */
+            body.dark-mode .status-badge {
+                opacity: 0.95;
+            }
+            
+            /* Grain overlay - ajustar para dark */
+            body.dark-mode .grain-overlay {
+                opacity: 0.04 !important;
+                filter: invert(1) brightness(0.5);
+            }
+            
+            /* ============================================
+               COMPACT TABLES - CORREÇÃO
+               ============================================ */
+            
+            body.compact-tables .data-table td,
+            body.compact-tables .data-table th {
+                padding: 0.5rem 0.75rem !important;
+            }
+            
+            body.compact-tables .data-table tbody tr {
+                height: auto !important;
+                min-height: 36px !important;
+            }
+            
+            /* ============================================
+               NO ANIMATIONS - CORREÇÃO
+               ============================================ */
+            
+            body.no-animations,
             body.no-animations *,
             body.no-animations *::before,
             body.no-animations *::after {
-                animation-duration: 0.001ms !important;
-                transition-duration: 0.001ms !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                transition-property: none !important;
+                scroll-behavior: auto !important;
             }
         </style>
     </head>
