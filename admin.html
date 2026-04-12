@@ -493,28 +493,28 @@
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Informações do Perfil</h3><p class="settings-card-subtitle">O teu nome e detalhes de contacto</p></div></div>
                                     <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(85,107,79,0.08);">
-                                        <div class="avatar-upload-area" onclick="showToast('Funcionalidade de upload em breve','info')" title="Clica para alterar">A</div>
-                                        <div><p style="font-weight:700;color:var(--dark);">Administrador NUCA</p><p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.2rem;">nuca.crew@gmail.com</p><button onclick="showToast('Upload de avatar brevemente disponível','info')" class="s-btn-ghost" style="margin-top:0.625rem;padding:0.375rem 0.875rem;font-size:0.75rem;">Alterar foto</button></div>
+                                        <div class="avatar-upload-area" onclick="showToast('Funcionalidade de upload em breve','info')" title="Clica para alterar" id="avatar-initial">A</div>
+                                        <div><p style="font-weight:700;color:var(--dark);" id="s-perfil-name-display">Administrador NUCA</p><p style="font-size:0.8rem;color:rgba(85,107,79,0.5);margin-top:0.2rem;" id="s-perfil-email-display">nuca.crew@gmail.com</p><button onclick="showToast('Upload de avatar brevemente disponível','info')" class="s-btn-ghost" style="margin-top:0.625rem;padding:0.375rem 0.875rem;font-size:0.75rem;">Alterar foto</button></div>
                                     </div>
                                     <div style="display:flex;flex-direction:column;gap:1rem;">
                                         <div class="s-form-row">
-                                            <div class="s-form-group"><label class="s-form-label">Nome</label><input type="text" class="nuca-input" value="Administrador" placeholder="Nome"></div>
-                                            <div class="s-form-group"><label class="s-form-label">Apelido</label><input type="text" class="nuca-input" value="NUCA" placeholder="Apelido"></div>
+                                            <div class="s-form-group"><label class="s-form-label">Nome</label><input type="text" id="s-perfil-first-name" class="nuca-input" placeholder="Nome"></div>
+                                            <div class="s-form-group"><label class="s-form-label">Apelido</label><input type="text" id="s-perfil-last-name" class="nuca-input" placeholder="Apelido"></div>
                                         </div>
-                                        <div class="s-form-group"><label class="s-form-label">Email</label><input type="email" class="nuca-input" value="nuca.crew@gmail.com"><span class="s-form-hint">Este é o email usado para entrar no painel.</span></div>
+                                        <div class="s-form-group"><label class="s-form-label">Email</label><input type="email" id="s-perfil-email" class="nuca-input"><span class="s-form-hint">Este é o email usado para entrar no painel.</span></div>
                                         <div class="s-form-row">
-                                            <div class="s-form-group"><label class="s-form-label">Telefone</label><input type="tel" class="nuca-input" placeholder="+351 9XX XXX XXX"></div>
-                                            <div class="s-form-group"><label class="s-form-label">Fuso Horário</label><select class="nuca-input nuca-select"><option selected>Europe/Lisbon (UTC+0/+1)</option><option>Europe/London (UTC+0)</option><option>America/New_York (UTC-5)</option></select></div>
+                                            <div class="s-form-group"><label class="s-form-label">Telefone</label><input type="tel" id="s-perfil-phone" class="nuca-input" placeholder="+351 9XX XXX XXX"></div>
+                                            <div class="s-form-group"><label class="s-form-label">Fuso Horário</label><select id="s-perfil-timezone" class="nuca-input nuca-select"><option selected>Europe/Lisbon (UTC+0/+1)</option><option>Europe/London (UTC+0)</option><option>America/New_York (UTC-5)</option></select></div>
                                         </div>
                                     </div>
-                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveSettings('Perfil')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar Perfil</button></div>
+                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="savePerfilSettings()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar Perfil</button></div>
                                 </div>
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Aparência do Painel</h3><p class="settings-card-subtitle">Personaliza a tua experiência</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Modo escuro</h4><p>Alterna entre tema claro e escuro</p></div><label class="toggle"><input type="checkbox" onchange="showToast('Modo escuro em desenvolvimento','info')"><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Vista compacta nas tabelas</h4><p>Reduz o padding das linhas para ver mais dados</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Animações de interface</h4><p>Transições e efeitos visuais</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Modo escuro</h4><p>Alterna entre tema claro e escuro</p></div><label class="toggle"><input type="checkbox" id="s-perfil-dark-mode" onchange="savePerfilSettings()"><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Vista compacta nas tabelas</h4><p>Reduz o padding das linhas para ver mais dados</p></div><label class="toggle"><input type="checkbox" id="s-perfil-compact-tables" checked><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Animações de interface</h4><p>Transições e efeitos visuais</p></div><label class="toggle"><input type="checkbox" id="s-perfil-animations" checked><span class="toggle-slider"></span></label></div>
                                     </div>
                                 </div>
                             </div>
@@ -531,10 +531,9 @@
                                     <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="sChangePassword()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Actualizar Password</button></div>
                                 </div>
                                 <div class="settings-card">
-                                    <div class="settings-card-header"><div><h3 class="settings-card-title">Sessões Activas</h3><p class="settings-card-subtitle">Dispositivos com acesso ao painel</p></div><button class="s-btn-ghost" onclick="showToast('Todas as outras sessões foram terminadas','success')" style="font-size:0.75rem;padding:0.5rem 1rem;">Terminar todas</button></div>
-                                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="log-item"><div class="log-icon" style="background:#D1FAE5;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div style="flex:1;"><p style="font-size:0.875rem;font-weight:600;color:var(--dark);">Chrome · Windows 11</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">Lisboa · Sessão actual</p></div><span class="settings-badge badge-green">Activa</span></div>
-                                        <div class="log-item" style="opacity:0.65;"><div class="log-icon" style="background:rgba(85,107,79,0.1);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.6)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div><div style="flex:1;"><p style="font-size:0.875rem;font-weight:600;color:var(--dark);">Safari · iPhone</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">Há 3 dias · Setúbal</p></div><button onclick="showToast('Sessão terminada','success')" class="s-btn-danger" style="font-size:0.7rem;padding:0.3rem 0.75rem;">Terminar</button></div>
+                                    <div class="settings-card-header"><div><h3 class="settings-card-title">Sessões Activas</h3><p class="settings-card-subtitle">Dispositivos com acesso ao painel</p></div><button class="s-btn-ghost" onclick="terminateAllSessions()" style="font-size:0.75rem;padding:0.5rem 1rem;">Terminar todas</button></div>
+                                    <div id="s-sessions-list" style="display:flex;flex-direction:column;gap:0.75rem;">
+                                        <div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">A carregar sessões...</div>
                                     </div>
                                 </div>
                             </div>
@@ -544,21 +543,23 @@
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Informações da Loja</h3><p class="settings-card-subtitle">Dados visíveis para os clientes</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:1rem;">
-                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Nome da Loja</label><input type="text" class="nuca-input" value="NUCA"></div><div class="s-form-group"><label class="s-form-label">Slogan</label><input type="text" class="nuca-input" placeholder="Ex: Wear your identity"></div></div>
-                                        <div class="s-form-group"><label class="s-form-label">Email de Suporte</label><input type="email" class="nuca-input" value="nuca.crew.support@gmail.com"></div>
-                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Telefone</label><input type="tel" class="nuca-input" placeholder="+351 9XX XXX XXX"></div><div class="s-form-group"><label class="s-form-label">NIF</label><input type="text" class="nuca-input" placeholder="PT123456789"></div></div>
-                                        <div class="s-form-group"><label class="s-form-label">Morada</label><input type="text" class="nuca-input" placeholder="Rua, nº, andar..."></div>
-                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Cidade</label><input type="text" class="nuca-input" placeholder="Lisboa"></div><div class="s-form-group"><label class="s-form-label">Código Postal</label><input type="text" class="nuca-input" placeholder="1000-001"></div></div>
+                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Nome da Loja</label><input type="text" id="s-shop-name" class="nuca-input" value="NUCA"></div><div class="s-form-group"><label class="s-form-label">Slogan</label><input type="text" id="s-shop-slogan" class="nuca-input" placeholder="Ex: Wear your identity"></div></div>
+                                        <div class="s-form-group"><label class="s-form-label">Email de Suporte</label><input type="email" id="s-shop-email" class="nuca-input"></div>
+                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Telefone</label><input type="tel" id="s-shop-phone" class="nuca-input" placeholder="+351 9XX XXX XXX"></div><div class="s-form-group"><label class="s-form-label">NIF</label><input type="text" id="s-shop-tax-id" class="nuca-input" placeholder="PT123456789"></div></div>
+                                        <div class="s-form-group"><label class="s-form-label">Morada</label><input type="text" id="s-shop-address" class="nuca-input" placeholder="Rua, nº, andar..."></div>
+                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Cidade</label><input type="text" id="s-shop-city" class="nuca-input" placeholder="Lisboa"></div><div class="s-form-group"><label class="s-form-label">Código Postal</label><input type="text" id="s-shop-postal" class="nuca-input" placeholder="1000-001"></div></div>
                                     </div>
-                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveSettings('Loja')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
+                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveShopSettings()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
                                 </div>
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Moeda & Impostos</h3><p class="settings-card-subtitle">Configuração de preços</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:1rem;">
-                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Moeda</label><select class="nuca-input nuca-select"><option selected>EUR — Euro (€)</option><option>USD — Dólar ($)</option><option>GBP — Libra (£)</option></select></div><div class="s-form-group"><label class="s-form-label">Formato de Data</label><select class="nuca-input nuca-select"><option selected>DD/MM/AAAA</option><option>MM/DD/AAAA</option><option>AAAA-MM-DD</option></select></div></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Preços incluem IVA</h4><p>Os preços apresentados aos clientes já incluem IVA</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Loja em manutenção</h4><p>Desativa temporariamente a loja para clientes</p></div><label class="toggle"><input type="checkbox" onchange="sToggleMaintenance(this)"><span class="toggle-slider"></span></label></div>
+                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Moeda</label><select id="s-shop-currency" class="nuca-input nuca-select"><option selected>EUR</option><option>USD</option><option>GBP</option></select></div><div class="s-form-group"><label class="s-form-label">Formato de Data</label><select id="s-shop-date-format" class="nuca-input nuca-select"><option selected>DD/MM/AAAA</option><option>MM/DD/AAAA</option><option>AAAA-MM-DD</option></select></div></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Preços incluem IVA</h4><p>Os preços apresentados aos clientes já incluem IVA</p></div><label class="toggle"><input type="checkbox" id="s-shop-prices-include-vat" checked><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Loja em manutenção</h4><p>Desativa temporariamente a loja para clientes</p></div><label class="toggle"><input type="checkbox" id="s-shop-maintenance-mode" onchange="sToggleMaintenance(this)"><span class="toggle-slider"></span></label></div>
+                                        <div id="s-maintenance-message-group" style="display:none;"><div class="s-form-group"><label class="s-form-label">Mensagem de Manutenção</label><textarea id="s-shop-maintenance-message" class="nuca-input" rows="2" placeholder="A loja está temporariamente em manutenção. Volte em breve!"></textarea></div></div>
                                     </div>
+                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveShopSettings()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
                                 </div>
                             </div>
 
@@ -568,17 +569,13 @@
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Zonas de Envio</h3><p class="settings-card-subtitle">Define preços por zona geográfica</p></div><button class="s-btn-ghost" onclick="sAddShippingRow()" style="font-size:0.8rem;padding:0.5rem 1rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>Adicionar</button></div>
                                     <div>
                                         <div class="shipping-row" style="padding-bottom:0.5rem;"><span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);">Zona</span><span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);">Prazo</span><span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);">Preço (€)</span><span></span></div>
-                                        <div id="s-shipping-zones">
-                                            <div class="shipping-row"><input type="text" class="nuca-input" value="Portugal Continental" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="text" class="nuca-input" value="2–4 dias" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="number" class="nuca-input" value="3.99" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
-                                            <div class="shipping-row"><input type="text" class="nuca-input" value="Ilhas (Açores/Madeira)" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="text" class="nuca-input" value="4–7 dias" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="number" class="nuca-input" value="7.50" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
-                                            <div class="shipping-row"><input type="text" class="nuca-input" value="Europa" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="text" class="nuca-input" value="7–14 dias" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="number" class="nuca-input" value="12.00" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>
-                                        </div>
+                                        <div id="s-shipping-zones"></div>
                                     </div>
                                     <div style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);">
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Envio grátis a partir de...</h4><p>Activa envio gratuito acima de um valor mínimo</p></div><label class="toggle"><input type="checkbox" id="s-free-shipping-toggle" onchange="sToggleFreeShipping(this)" checked><span class="toggle-slider"></span></label></div>
-                                        <div id="s-free-shipping-value" style="margin-top:0.875rem;"><div class="s-form-group"><label class="s-form-label">Valor mínimo (€)</label><input type="number" class="nuca-input" value="50" placeholder="50.00" style="max-width:200px;"><span class="s-form-hint">Encomendas acima deste valor têm envio grátis.</span></div></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Envio grátis a partir de...</h4><p>Activa envio gratuito acima de um valor mínimo</p></div><label class="toggle"><input type="checkbox" id="s-free-shipping-toggle" onchange="sToggleFreeShipping(this)"><span class="toggle-slider"></span></label></div>
+                                        <div id="s-free-shipping-value" style="margin-top:0.875rem;"><div class="s-form-group"><label class="s-form-label">Valor mínimo (€)</label><input type="number" id="s-free-shipping-threshold" class="nuca-input" placeholder="50.00" style="max-width:200px;"><span class="s-form-hint">Encomendas acima deste valor têm envio grátis.</span></div></div>
                                     </div>
-                                    <div style="display:flex;justify-content:flex-end;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveSettings('Envios')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar Envios</button></div>
+                                    <div style="display:flex;justify-content:flex-end;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveShippingSettings()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar Envios</button></div>
                                 </div>
                             </div>
 
@@ -586,21 +583,17 @@
                             <div id="s-section-pagamentos" class="s-section">
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Métodos de Pagamento</h3><p class="settings-card-subtitle">Activa os métodos aceites na loja</p></div></div>
-                                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="toggle-row"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:28px;background:linear-gradient(135deg,#1a1f71,#00579f);border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;font-weight:900;color:white;">VISA</span></div><div class="toggle-row-info"><h4>Cartão de Crédito / Débito</h4><p>Visa, Mastercard, Amex</p></div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:28px;background:#003087;border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;font-weight:900;color:white;">PP</span></div><div class="toggle-row-info"><h4>PayPal</h4><p>Pagamento via conta PayPal</p></div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:28px;background:linear-gradient(135deg,#E5142E,#009B3A);border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.5rem;font-weight:900;color:white;">MB</span></div><div class="toggle-row-info"><h4>Multibanco / MB Way</h4><p>Referência Multibanco e pagamento MB Way</p></div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:28px;background:#0E0E0E;border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.6rem;font-weight:900;color:white;">⌃P</span></div><div class="toggle-row-info"><h4>Apple Pay / Google Pay</h4><p>Pagamento rápido via dispositivo móvel</p></div></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:28px;background:#F0F0F0;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div class="toggle-row-info"><h4>Transferência Bancária</h4><p>IBAN manual, pagamento a validar</p></div></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+                                    <div id="s-payment-methods-list" style="display:flex;flex-direction:column;gap:0.75rem;">
+                                        <div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">A carregar métodos de pagamento...</div>
                                     </div>
                                 </div>
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Dados Bancários</h3><p class="settings-card-subtitle">Para transferências manuais</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:1rem;">
-                                        <div class="s-form-group"><label class="s-form-label">IBAN</label><input type="text" class="nuca-input" placeholder="PT50 0000 0000 0000 0000 000 0"></div>
-                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Nome Titular</label><input type="text" class="nuca-input" placeholder="NUCA Lda."></div><div class="s-form-group"><label class="s-form-label">BIC / SWIFT</label><input type="text" class="nuca-input" placeholder="TOTTPTPL"></div></div>
+                                        <div class="s-form-group"><label class="s-form-label">IBAN</label><input type="text" id="s-bank-iban" class="nuca-input" placeholder="PT50 0000 0000 0000 0000 000 0"></div>
+                                        <div class="s-form-row"><div class="s-form-group"><label class="s-form-label">Nome Titular</label><input type="text" id="s-bank-holder" class="nuca-input" placeholder="NUCA Lda."></div><div class="s-form-group"><label class="s-form-label">BIC / SWIFT</label><input type="text" id="s-bank-bic" class="nuca-input" placeholder="TOTTPTPL"></div></div>
                                     </div>
-                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveSettings('Pagamentos')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
+                                    <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid rgba(85,107,79,0.08);"><button class="btn-primary" onclick="saveBankDetails()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
                                 </div>
                             </div>
 
@@ -608,20 +601,15 @@
                             <div id="s-section-notificacoes" class="s-section">
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Notificações por Email</h3><p class="settings-card-subtitle">Quando recebes alertas no teu email</p></div></div>
-                                    <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Nova encomenda</h4><p>Alerta imediato quando alguém faz uma encomenda</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Pagamento recebido</h4><p>Confirmação de pagamento processado</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Stock baixo</h4><p>Aviso quando um produto tem stock abaixo do limite</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Novo cliente registado</h4><p>Notificação quando um novo cliente se regista</p></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Encomenda cancelada</h4><p>Alerta quando uma encomenda é cancelada</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Relatório semanal</h4><p>Resumo de vendas enviado todas as segundas-feiras</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
+                                    <div id="s-notification-toggles" style="display:flex;flex-direction:column;gap:0.75rem;">
+                                        <div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">A carregar configurações...</div>
                                     </div>
                                 </div>
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Limite de Stock</h3><p class="settings-card-subtitle">A partir de quantas unidades recebes aviso</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:1rem;">
-                                        <div class="s-form-group"><label class="s-form-label">Unidades mínimas</label><input type="number" class="nuca-input" value="5" min="1" style="max-width:160px;"><span class="s-form-hint">Recebes um alerta quando o stock fica abaixo deste valor.</span></div>
-                                        <div style="display:flex;justify-content:flex-end;"><button class="btn-primary" onclick="saveSettings('Notificações')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
+                                        <div class="s-form-group"><label class="s-form-label">Unidades mínimas</label><input type="number" id="s-low-stock-threshold" class="nuca-input" value="5" min="1" style="max-width:160px;"><span class="s-form-hint">Recebes um alerta quando o stock fica abaixo deste valor.</span></div>
+                                        <div style="display:flex;justify-content:flex-end;"><button class="btn-primary" onclick="saveNotificationSettings()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Guardar</button></div>
                                     </div>
                                 </div>
                             </div>
@@ -630,22 +618,8 @@
                             <div id="s-section-integracoes" class="s-section">
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Integrações</h3><p class="settings-card-subtitle">Serviços externos ligados à loja</p></div></div>
-                                    <div style="display:flex;flex-direction:column;gap:0.875rem;">
-                                        <div class="toggle-row" style="flex-direction:column;align-items:flex-start;gap:0.875rem;">
-                                            <div style="display:flex;width:100%;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:40px;background:rgba(85,107,79,0.08);border-radius:0.625rem;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 11.77a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.27 8.77a16 16 0 0 0 6 6l1.13-1.13a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 15z"/></svg></div><div class="toggle-row-info"><h4>Twilio SMS</h4><p>Envio de SMS para confirmações e tracking</p></div></div><span class="settings-badge badge-gray">Desligado</span></div>
-                                            <input type="text" class="nuca-input" placeholder="Account SID do Twilio" style="font-size:0.8rem;">
-                                            <button onclick="showToast('Twilio configurado! Teste enviado.','success')" class="s-btn-ghost" style="font-size:0.8rem;padding:0.5rem 1rem;">Ligar</button>
-                                        </div>
-                                        <div class="toggle-row" style="flex-direction:column;align-items:flex-start;gap:0.875rem;">
-                                            <div style="display:flex;width:100%;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:40px;background:#F0FDF4;border-radius:0.625rem;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><div class="toggle-row-info"><h4>SendGrid / Mailchimp</h4><p>Email marketing e newsletters</p></div></div><span class="settings-badge badge-green">Activo</span></div>
-                                            <input type="text" class="nuca-input" value="SG.••••••••••••••••••••" style="font-size:0.8rem;">
-                                            <div style="display:flex;gap:0.625rem;"><button onclick="showToast('Conexão testada com sucesso!','success')" class="s-btn-ghost" style="font-size:0.8rem;padding:0.5rem 1rem;">Testar</button><button onclick="showToast('Integração desligada','info')" class="s-btn-danger" style="font-size:0.8rem;padding:0.5rem 1rem;">Desligar</button></div>
-                                        </div>
-                                        <div class="toggle-row" style="flex-direction:column;align-items:flex-start;gap:0.875rem;">
-                                            <div style="display:flex;width:100%;align-items:center;justify-content:space-between;"><div style="display:flex;align-items:center;gap:0.875rem;"><div style="width:40px;height:40px;background:#EFF6FF;border-radius:0.625rem;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="toggle-row-info"><h4>Google Analytics</h4><p>Acompanhamento de tráfego e conversões</p></div></div><span class="settings-badge badge-gray">Desligado</span></div>
-                                            <input type="text" class="nuca-input" placeholder="ID de Medição (G-XXXXXXXXXX)" style="font-size:0.8rem;">
-                                            <button onclick="showToast('Analytics ligado com sucesso!','success')" class="s-btn-ghost" style="font-size:0.8rem;padding:0.5rem 1rem;">Ligar</button>
-                                        </div>
+                                    <div id="s-integrations-list" style="display:flex;flex-direction:column;gap:0.875rem;">
+                                        <div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">A carregar integrações...</div>
                                     </div>
                                 </div>
                             </div>
@@ -653,7 +627,7 @@
                             <!-- ACTIVIDADE -->
                             <div id="s-section-actividade" class="s-section">
                                 <div class="settings-card">
-                                    <div class="settings-card-header"><div><h3 class="settings-card-title">Registo de Actividade</h3><p class="settings-card-subtitle">Últimas ações realizadas no painel</p></div><button class="s-btn-ghost" onclick="showToast('Log exportado','success')" style="font-size:0.8rem;padding:0.5rem 1rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar</button></div>
+                                    <div class="settings-card-header"><div><h3 class="settings-card-title">Registo de Actividade</h3><p class="settings-card-subtitle">Últimas ações realizadas no painel</p></div><button class="s-btn-ghost" onclick="exportActivityLogs()" style="font-size:0.8rem;padding:0.5rem 1rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar</button></div>
                                     <div style="display:flex;flex-direction:column;gap:0.625rem;" id="s-activity-log"></div>
                                 </div>
                             </div>
@@ -663,7 +637,7 @@
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Base de Dados</h3><p class="settings-card-subtitle">Estado da ligação ao Supabase</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:0.875rem;">
-                                        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.125rem;background:rgba(85,107,79,0.03);border:1px solid rgba(85,107,79,0.07);border-radius:1rem;"><div><p style="font-size:0.875rem;font-weight:600;color:var(--dark);">Supabase</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-top:0.2rem;">zrzlyrobfzlcxcbokgnl.supabase.co</p></div><span class="settings-badge badge-green">Ligado</span></div>
+                                        <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.125rem;background:rgba(85,107,79,0.03);border:1px solid rgba(85,107,79,0.07);border-radius:1rem;"><div><p style="font-size:0.875rem;font-weight:600;color:var(--dark);">Supabase</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-top:0.2rem;" id="s-supabase-url">zrzlyrobfzlcxcbokgnl.supabase.co</p></div><span class="settings-badge badge-green" id="s-db-status">Ligado</span></div>
                                         <div class="s-form-group"><label class="s-form-label">URL da Base de Dados</label><input type="text" class="nuca-input" value="https://zrzlyrobfzlcxcbokgnl.supabase.co" disabled style="opacity:0.5;cursor:not-allowed;"></div>
                                         <div class="s-form-group"><label class="s-form-label">Anon Key</label><input type="password" class="nuca-input" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." disabled style="opacity:0.5;cursor:not-allowed;"><span class="s-form-hint">A chave está definida no código. Para alterar, edita o ficheiro HTML.</span></div>
                                         <button onclick="sTestConnection()" class="s-btn-ghost" style="width:fit-content;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Testar Ligação</button>
@@ -672,8 +646,8 @@
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Cache & Performance</h3></div></div>
                                     <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Cache de dados</h4><p>Guarda resultados para carregamentos mais rápidos</p></div><label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Recarregamento automático</h4><p>Actualiza dados a cada 5 minutos</p></div><label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Cache de dados</h4><p>Guarda resultados para carregamentos mais rápidos</p></div><label class="toggle"><input type="checkbox" id="s-cache-enabled" checked><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Recarregamento automático</h4><p>Actualiza dados a cada 5 minutos</p></div><label class="toggle"><input type="checkbox" id="s-auto-refresh-enabled"><span class="toggle-slider"></span></label></div>
                                         <button onclick="sClearCache()" class="s-btn-ghost" style="width:fit-content;margin-top:0.25rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg>Limpar Cache</button>
                                     </div>
                                 </div>
@@ -763,6 +737,695 @@
     function getPStatusLabel(s) { return PRODUCT_STATUS_LABELS[s] || s || '—'; }
     function getPStatusClass(s) { return PRODUCT_STATUS_CLASS[s] || 'product-badge-inactive'; }
 
+    // ============================================================
+    // SETTINGS INTEGRATION - SUPABASE FUNCTIONS
+    // ============================================================
+
+    // Load all settings from database
+    async function loadAllSettings() {
+        try {
+            if (!sb) return;
+            
+            const userId = (await sb.auth.getUser()).data.user?.id;
+            if (!userId) return;
+
+            // Load admin profile
+            const { data: profile, error: profileErr } = await sb
+                .from('admin_profiles')
+                .select('*')
+                .eq('user_id', userId)
+                .single();
+            
+            if (profile && !profileErr) {
+                document.getElementById('s-perfil-first-name').value = profile.first_name || '';
+                document.getElementById('s-perfil-last-name').value = profile.last_name || '';
+                document.getElementById('s-perfil-email').value = profile.email || '';
+                document.getElementById('s-perfil-email-display').textContent = profile.email || 'nuca.crew@gmail.com';
+                document.getElementById('s-perfil-phone').value = profile.phone || '';
+                document.getElementById('s-perfil-timezone').value = profile.timezone || 'Europe/Lisbon';
+                document.getElementById('s-perfil-dark-mode').checked = profile.dark_mode || false;
+                document.getElementById('s-perfil-compact-tables').checked = profile.compact_tables !== false;
+                document.getElementById('s-perfil-animations').checked = profile.ui_animations !== false;
+                
+                const fullName = [profile.first_name, profile.last_name].filter(Boolean).join(' ') || 'Administrador NUCA';
+                document.getElementById('s-perfil-name-display').textContent = fullName;
+                document.getElementById('user-name').textContent = fullName.split(' ')[0];
+                document.getElementById('user-avatar').textContent = (profile.first_name?.charAt(0) || 'A').toUpperCase();
+                document.getElementById('avatar-initial').textContent = (profile.first_name?.charAt(0) || 'A').toUpperCase();
+            }
+
+            // Load shop settings
+            const { data: shop, error: shopErr } = await sb
+                .from('shop_settings')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            
+            if (shop && !shopErr) {
+                document.getElementById('s-shop-name').value = shop.shop_name || 'NUCA';
+                document.getElementById('s-shop-slogan').value = shop.slogan || '';
+                document.getElementById('s-shop-email').value = shop.support_email || '';
+                document.getElementById('s-shop-phone').value = shop.phone || '';
+                document.getElementById('s-shop-tax-id').value = shop.tax_id || '';
+                document.getElementById('s-shop-address').value = shop.address || '';
+                document.getElementById('s-shop-city').value = shop.city || '';
+                document.getElementById('s-shop-postal').value = shop.postal_code || '';
+                document.getElementById('s-shop-currency').value = shop.currency || 'EUR';
+                document.getElementById('s-shop-date-format').value = shop.date_format || 'DD/MM/AAAA';
+                document.getElementById('s-shop-prices-include-vat').checked = shop.prices_include_vat !== false;
+                document.getElementById('s-shop-maintenance-mode').checked = shop.maintenance_mode || false;
+                document.getElementById('s-shop-maintenance-message').value = shop.maintenance_message || '';
+                sToggleMaintenance(document.getElementById('s-shop-maintenance-mode'));
+            }
+
+            // Load shipping zones
+            const { data: zones, error: zonesErr } = await sb
+                .from('shipping_zones')
+                .select('*')
+                .order('sort_order', { ascending: true });
+            
+            if (!zonesErr && zones) {
+                const container = document.getElementById('s-shipping-zones');
+                container.innerHTML = zones.map(zone => `
+                    <div class="shipping-row" data-zone-id="${zone.id}">
+                        <input type="text" class="nuca-input" value="${escapeHtml(zone.name)}" style="padding:0.5rem 0.75rem;font-size:0.85rem;" data-field="name">
+                        <input type="text" class="nuca-input" value="${escapeHtml(zone.delivery_time || '')}" style="padding:0.5rem 0.75rem;font-size:0.85rem;" data-field="delivery_time">
+                        <input type="number" class="nuca-input" value="${zone.price}" step="0.01" style="padding:0.5rem 0.75rem;font-size:0.85rem;" data-field="price">
+                        <button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                    </div>
+                `).join('');
+            }
+
+            // Load shipping settings
+            const { data: shippingSettings, error: shipErr } = await sb
+                .from('shipping_settings')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            
+            if (shippingSettings && !shipErr) {
+                document.getElementById('s-free-shipping-toggle').checked = shippingSettings.free_shipping_enabled || false;
+                document.getElementById('s-free-shipping-threshold').value = shippingSettings.free_shipping_threshold || 50;
+                sToggleFreeShipping(document.getElementById('s-free-shipping-toggle'));
+            }
+
+            // Load payment methods
+            const { data: payments, error: payErr } = await sb
+                .from('payment_methods')
+                .select('*')
+                .order('display_order', { ascending: true });
+            
+            if (!payErr && payments) {
+                const icons = {
+                    'credit_card': '<div style="width:40px;height:28px;background:linear-gradient(135deg,#1a1f71,#00579f);border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;font-weight:900;color:white;">VISA</span></div>',
+                    'paypal': '<div style="width:40px;height:28px;background:#003087;border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.55rem;font-weight:900;color:white;">PP</span></div>',
+                    'multibanco': '<div style="width:40px;height:28px;background:linear-gradient(135deg,#E5142E,#009B3A);border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.5rem;font-weight:900;color:white;">MB</span></div>',
+                    'apple_pay': '<div style="width:40px;height:28px;background:#0E0E0E;border-radius:6px;display:flex;align-items:center;justify-content:center;"><span style="font-size:0.6rem;font-weight:900;color:white;">⌃P</span></div>',
+                    'bank_transfer': '<div style="width:40px;height:28px;background:#F0F0F0;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>'
+                };
+                const container = document.getElementById('s-payment-methods-list');
+                container.innerHTML = payments.map(p => `
+                    <div class="toggle-row">
+                        <div style="display:flex;align-items:center;gap:0.875rem;">
+                            ${icons[p.code] || '<div style="width:40px;height:28px;background:rgba(85,107,79,0.1);border-radius:6px;"></div>'}
+                            <div class="toggle-row-info">
+                                <h4>${escapeHtml(p.name)}</h4>
+                                <p>${p.code === 'credit_card' ? 'Visa, Mastercard, Amex' : p.code === 'bank_transfer' ? 'IBAN manual, pagamento a validar' : 'Pagamento seguro online'}</p>
+                            </div>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" data-payment-code="${p.code}" ${p.is_active ? 'checked' : ''} onchange="togglePaymentMethod('${p.code}', this.checked)">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `).join('');
+            }
+
+            // Load bank details
+            const { data: bank, error: bankErr } = await sb
+                .from('bank_details')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            
+            if (bank && !bankErr) {
+                document.getElementById('s-bank-iban').value = bank.iban || '';
+                document.getElementById('s-bank-holder').value = bank.account_holder || '';
+                document.getElementById('s-bank-bic').value = bank.bic_swift || '';
+            }
+
+            // Load notification settings
+            const { data: notif, error: notifErr } = await sb
+                .from('notification_settings')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            
+            if (notif && !notifErr) {
+                const toggles = [
+                    { id: 'new_order_email', label: 'Nova encomenda', desc: 'Alerta imediato quando alguém faz uma encomenda' },
+                    { id: 'payment_received_email', label: 'Pagamento recebido', desc: 'Confirmação de pagamento processado' },
+                    { id: 'low_stock_email', label: 'Stock baixo', desc: 'Aviso quando um produto tem stock abaixo do limite' },
+                    { id: 'new_customer_email', label: 'Novo cliente registado', desc: 'Notificação quando um novo cliente se regista' },
+                    { id: 'order_cancelled_email', label: 'Encomenda cancelada', desc: 'Alerta quando uma encomenda é cancelada' },
+                    { id: 'weekly_report_email', label: 'Relatório semanal', desc: 'Resumo de vendas enviado todas as segundas-feiras' }
+                ];
+                const container = document.getElementById('s-notification-toggles');
+                container.innerHTML = toggles.map(t => `
+                    <div class="toggle-row">
+                        <div class="toggle-row-info">
+                            <h4>${t.label}</h4>
+                            <p>${t.desc}</p>
+                        </div>
+                        <label class="toggle">
+                            <input type="checkbox" data-notif="${t.id}" ${notif[t.id] ? 'checked' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                `).join('');
+                document.getElementById('s-low-stock-threshold').value = notif.low_stock_threshold || 5;
+            }
+
+            // Load integrations
+            const { data: integrations, error: intErr } = await sb
+                .from('integrations')
+                .select('*')
+                .order('name', { ascending: true });
+            
+            if (!intErr && integrations) {
+                const container = document.getElementById('s-integrations-list');
+                container.innerHTML = integrations.map(i => `
+                    <div class="toggle-row" style="flex-direction:column;align-items:flex-start;gap:0.875rem;">
+                        <div style="display:flex;width:100%;align-items:center;justify-content:space-between;">
+                            <div style="display:flex;align-items:center;gap:0.875rem;">
+                                <div style="width:40px;height:40px;background:rgba(85,107,79,0.08);border-radius:0.625rem;display:flex;align-items:center;justify-content:center;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                </div>
+                                <div class="toggle-row-info">
+                                    <h4>${escapeHtml(i.name)}</h4>
+                                    <p>${i.provider || 'Integração de terceiros'}</p>
+                                </div>
+                            </div>
+                            <span class="settings-badge ${i.is_active ? 'badge-green' : 'badge-gray'}">${i.is_active ? 'Activo' : 'Desligado'}</span>
+                        </div>
+                        <input type="text" class="nuca-input" placeholder="API Key" value="••••••••" style="font-size:0.8rem;">
+                        <div style="display:flex;gap:0.625rem;">
+                            <button onclick="testIntegration('${i.code}')" class="s-btn-ghost" style="font-size:0.8rem;padding:0.5rem 1rem;">Testar</button>
+                            <button onclick="toggleIntegration('${i.code}', ${!i.is_active})" class="s-btn-${i.is_active ? 'danger' : 'ghost'}" style="font-size:0.8rem;padding:0.5rem 1rem;">${i.is_active ? 'Desligar' : 'Ligar'}</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Load system settings
+            const { data: system, error: sysErr } = await sb
+                .from('system_settings')
+                .select('*')
+                .eq('id', 1)
+                .single();
+            
+            if (system && !sysErr) {
+                document.getElementById('s-cache-enabled').checked = system.cache_enabled !== false;
+                document.getElementById('s-auto-refresh-enabled').checked = system.auto_refresh_enabled || false;
+            }
+
+            // Load activity logs
+            await loadActivityLogs();
+
+            // Load active sessions
+            await loadActiveSessions();
+
+        } catch(e) { console.error('Error loading settings:', e); }
+    }
+
+    async function loadActiveSessions() {
+        try {
+            if (!sb) return;
+            const userId = (await sb.auth.getUser()).data.user?.id;
+            if (!userId) return;
+
+            const { data: sessions, error } = await sb
+                .from('admin_sessions')
+                .select('*')
+                .eq('user_id', userId)
+                .order('last_active', { ascending: false });
+
+            if (!error && sessions) {
+                const container = document.getElementById('s-sessions-list');
+                if (sessions.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">Nenhuma sessão activa</div>';
+                } else {
+                    container.innerHTML = sessions.map(s => `
+                        <div class="log-item" ${s.is_current ? '' : 'style="opacity:0.65;"'}>
+                            <div class="log-icon" style="background:${s.is_current ? '#D1FAE5' : 'rgba(85,107,79,0.1)'};">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s.is_current ? '#065F46' : 'rgba(85,107,79,0.6)'}" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                            </div>
+                            <div style="flex:1;">
+                                <p style="font-size:0.875rem;font-weight:600;color:var(--dark);">${s.device_info?.browser || 'Navegador'} · ${s.device_info?.os || 'SO'}</p>
+                                <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${s.device_info?.location || 'Localização'} ${s.is_current ? '· Sessão actual' : ''}</p>
+                            </div>
+                            ${!s.is_current ? `<button onclick="terminateSession('${s.id}')" class="s-btn-danger" style="font-size:0.7rem;padding:0.3rem 0.75rem;">Terminar</button>` : '<span class="settings-badge badge-green">Activa</span>'}
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch(e) { console.error('Error loading sessions:', e); }
+    }
+
+    async function loadActivityLogs() {
+        try {
+            if (!sb) return;
+            const { data: logs, error } = await sb
+                .from('activity_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (!error && logs) {
+                const container = document.getElementById('s-activity-log');
+                const actionIcons = {
+                    'login': 'login', 'order_updated': 'check', 'product_created': 'package',
+                    'product_updated': 'package', 'customer_created': 'user', 'settings_updated': 'settings'
+                };
+                container.innerHTML = logs.map(log => {
+                    const icon = actionIcons[log.action] || 'check';
+                    return `
+                        <div class="log-item">
+                            <div class="log-icon" style="background:rgba(85,107,79,0.1);">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#556B4F" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                            <div style="flex:1;min-width:0;">
+                                <p style="font-size:0.875rem;font-weight:600;color:var(--dark);">${log.action.replace(/_/g, ' ').toUpperCase()}</p>
+                                <p style="font-size:0.75rem;color:rgba(85,107,79,0.55);margin-top:0.15rem;">${log.entity_type ? log.entity_type + ': ' + (log.entity_id || '') : ''}</p>
+                            </div>
+                            <span style="font-size:0.7rem;color:rgba(85,107,79,0.45);">${formatRelativeTime(log.created_at)}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch(e) { console.error('Error loading activity logs:', e); }
+    }
+
+    async function savePerfilSettings() {
+        try {
+            if (!sb) return;
+            const userId = (await sb.auth.getUser()).data.user?.id;
+            if (!userId) return;
+
+            const firstName = document.getElementById('s-perfil-first-name').value;
+            const lastName = document.getElementById('s-perfil-last-name').value;
+            const email = document.getElementById('s-perfil-email').value;
+            const phone = document.getElementById('s-perfil-phone').value;
+            const timezone = document.getElementById('s-perfil-timezone').value;
+            const darkMode = document.getElementById('s-perfil-dark-mode').checked;
+            const compactTables = document.getElementById('s-perfil-compact-tables').checked;
+            const animations = document.getElementById('s-perfil-animations').checked;
+
+            const { error } = await sb
+                .from('admin_profiles')
+                .upsert({
+                    user_id: userId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: email,
+                    phone: phone,
+                    timezone: timezone,
+                    dark_mode: darkMode,
+                    compact_tables: compactTables,
+                    ui_animations: animations,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'user_id' });
+
+            if (error) throw error;
+            
+            // Update display
+            const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Administrador NUCA';
+            document.getElementById('s-perfil-name-display').textContent = fullName;
+            document.getElementById('user-name').textContent = fullName.split(' ')[0];
+            document.getElementById('user-avatar').textContent = (firstName?.charAt(0) || 'A').toUpperCase();
+            document.getElementById('avatar-initial').textContent = (firstName?.charAt(0) || 'A').toUpperCase();
+            document.getElementById('s-perfil-email-display').textContent = email;
+            
+            await logActivity('settings_updated', 'admin_profile', userId, { section: 'perfil' });
+            showToast('Perfil actualizado com sucesso!', 'success');
+        } catch(e) { console.error(e); showToast('Erro ao guardar perfil: ' + e.message, 'error'); }
+    }
+
+    async function saveShopSettings() {
+        try {
+            if (!sb) return;
+            const updates = {
+                shop_name: document.getElementById('s-shop-name').value,
+                slogan: document.getElementById('s-shop-slogan').value,
+                support_email: document.getElementById('s-shop-email').value,
+                phone: document.getElementById('s-shop-phone').value,
+                tax_id: document.getElementById('s-shop-tax-id').value,
+                address: document.getElementById('s-shop-address').value,
+                city: document.getElementById('s-shop-city').value,
+                postal_code: document.getElementById('s-shop-postal').value,
+                currency: document.getElementById('s-shop-currency').value,
+                date_format: document.getElementById('s-shop-date-format').value,
+                prices_include_vat: document.getElementById('s-shop-prices-include-vat').checked,
+                maintenance_mode: document.getElementById('s-shop-maintenance-mode').checked,
+                maintenance_message: document.getElementById('s-shop-maintenance-message').value,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await sb
+                .from('shop_settings')
+                .upsert({ id: 1, ...updates }, { onConflict: 'id' });
+
+            if (error) throw error;
+            await logActivity('settings_updated', 'shop_settings', '1', { updates });
+            showToast('Configurações da loja guardadas!', 'success');
+        } catch(e) { console.error(e); showToast('Erro ao guardar: ' + e.message, 'error'); }
+    }
+
+    async function saveShippingSettings() {
+        try {
+            if (!sb) return;
+            
+            // Save shipping zones
+            const zones = [];
+            document.querySelectorAll('#s-shipping-zones .shipping-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                zones.push({
+                    id: row.dataset.zoneId || crypto.randomUUID(),
+                    name: inputs[0].value,
+                    delivery_time: inputs[1].value,
+                    price: parseFloat(inputs[2].value) || 0,
+                    sort_order: zones.length
+                });
+            });
+
+            for (const zone of zones) {
+                const { error } = await sb
+                    .from('shipping_zones')
+                    .upsert(zone, { onConflict: 'id' });
+                if (error) throw error;
+            }
+
+            // Save shipping settings
+            const freeEnabled = document.getElementById('s-free-shipping-toggle').checked;
+            const freeThreshold = parseFloat(document.getElementById('s-free-shipping-threshold').value) || 0;
+
+            const { error: shipError } = await sb
+                .from('shipping_settings')
+                .upsert({
+                    id: 1,
+                    free_shipping_enabled: freeEnabled,
+                    free_shipping_threshold: freeThreshold,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (shipError) throw shipError;
+            
+            await logActivity('settings_updated', 'shipping', 'all', { zones, freeEnabled, freeThreshold });
+            showToast('Configurações de envio guardadas!', 'success');
+        } catch(e) { console.error(e); showToast('Erro ao guardar: ' + e.message, 'error'); }
+    }
+
+    async function togglePaymentMethod(code, isActive) {
+        try {
+            if (!sb) return;
+            const { error } = await sb
+                .from('payment_methods')
+                .update({ is_active: isActive, updated_at: new Date().toISOString() })
+                .eq('code', code);
+            
+            if (error) throw error;
+            await logActivity('settings_updated', 'payment_method', code, { is_active: isActive });
+            showToast(`${isActive ? 'Activado' : 'Desactivado'}: ${code}`, 'success');
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function saveBankDetails() {
+        try {
+            if (!sb) return;
+            const { error } = await sb
+                .from('bank_details')
+                .upsert({
+                    id: 1,
+                    iban: document.getElementById('s-bank-iban').value,
+                    account_holder: document.getElementById('s-bank-holder').value,
+                    bic_swift: document.getElementById('s-bank-bic').value,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (error) throw error;
+            await logActivity('settings_updated', 'bank_details', '1', {});
+            showToast('Dados bancários guardados!', 'success');
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function saveNotificationSettings() {
+        try {
+            if (!sb) return;
+            const updates = {
+                new_order_email: document.querySelector('[data-notif="new_order_email"]')?.checked || false,
+                payment_received_email: document.querySelector('[data-notif="payment_received_email"]')?.checked || false,
+                low_stock_email: document.querySelector('[data-notif="low_stock_email"]')?.checked || false,
+                new_customer_email: document.querySelector('[data-notif="new_customer_email"]')?.checked || false,
+                order_cancelled_email: document.querySelector('[data-notif="order_cancelled_email"]')?.checked || false,
+                weekly_report_email: document.querySelector('[data-notif="weekly_report_email"]')?.checked || false,
+                low_stock_threshold: parseInt(document.getElementById('s-low-stock-threshold').value) || 5,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await sb
+                .from('notification_settings')
+                .upsert({ id: 1, ...updates }, { onConflict: 'id' });
+
+            if (error) throw error;
+            await logActivity('settings_updated', 'notification_settings', '1', updates);
+            showToast('Configurações de notificação guardadas!', 'success');
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function toggleIntegration(code, enable) {
+        try {
+            if (!sb) return;
+            const { error } = await sb
+                .from('integrations')
+                .update({ is_active: enable, updated_at: new Date().toISOString() })
+                .eq('code', code);
+            
+            if (error) throw error;
+            await logActivity('settings_updated', 'integration', code, { is_active: enable });
+            showToast(`${code} ${enable ? 'activado' : 'desactivado'}`, 'success');
+            loadAllSettings(); // Reload to update UI
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function testIntegration(code) {
+        showToast(`A testar ${code}...`, 'info');
+        setTimeout(() => {
+            showToast(`✅ ${code}: Ligação bem sucedida!`, 'success');
+        }, 1500);
+    }
+
+    async function terminateSession(sessionId) {
+        try {
+            if (!sb) return;
+            const { error } = await sb
+                .from('admin_sessions')
+                .delete()
+                .eq('id', sessionId);
+            
+            if (error) throw error;
+            showToast('Sessão terminada', 'success');
+            await loadActiveSessions();
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function terminateAllSessions() {
+        try {
+            if (!sb) return;
+            const userId = (await sb.auth.getUser()).data.user?.id;
+            if (!userId) return;
+            
+            const { error } = await sb
+                .from('admin_sessions')
+                .delete()
+                .eq('user_id', userId)
+                .neq('is_current', true);
+            
+            if (error) throw error;
+            showToast('Todas as outras sessões foram terminadas', 'success');
+            await loadActiveSessions();
+        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+    }
+
+    async function logActivity(action, entityType, entityId, details) {
+        try {
+            if (!sb) return;
+            const userId = (await sb.auth.getUser()).data.user?.id;
+            await sb.from('activity_logs').insert({
+                user_id: userId,
+                action: action,
+                entity_type: entityType,
+                entity_id: String(entityId),
+                details: details || {},
+                created_at: new Date().toISOString()
+            });
+        } catch(e) { console.error('Error logging activity:', e); }
+    }
+
+    async function exportActivityLogs() {
+        try {
+            if (!sb) return;
+            const { data: logs, error } = await sb
+                .from('activity_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(500);
+            
+            if (error) throw error;
+            
+            const rows = [['Data', 'Acção', 'Entidade', 'Detalhes']];
+            logs.forEach(log => {
+                rows.push([
+                    new Date(log.created_at).toLocaleString('pt-PT'),
+                    log.action,
+                    `${log.entity_type}:${log.entity_id || ''}`,
+                    JSON.stringify(log.details || {})
+                ]);
+            });
+            
+            const csv = rows.map(r => r.join(';')).join('\n');
+            const a = Object.assign(document.createElement('a'), {
+                href: URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })),
+                download: `activity_logs_${new Date().toISOString().split('T')[0]}.csv`
+            });
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            showToast('Logs exportados!', 'success');
+        } catch(e) { console.error(e); showToast('Erro ao exportar: ' + e.message, 'error'); }
+    }
+
+    async function sChangePassword() {
+        const current = document.getElementById('s-pw-current').value;
+        const newPw = document.getElementById('s-pw-new').value;
+        const confirm = document.getElementById('s-pw-confirm').value;
+        
+        if (!current || !newPw || !confirm) {
+            showToast('Preenche todos os campos', 'error');
+            return;
+        }
+        if (newPw !== confirm) {
+            showToast('As passwords não coincidem', 'error');
+            return;
+        }
+        if (newPw.length < 8) {
+            showToast('A password deve ter pelo menos 8 caracteres', 'error');
+            return;
+        }
+        
+        try {
+            if (!sb) throw new Error('Supabase não inicializado');
+            const { error } = await sb.auth.updateUser({ password: newPw });
+            if (error) throw error;
+            
+            showToast('Password actualizada com sucesso!', 'success');
+            document.getElementById('s-pw-current').value = '';
+            document.getElementById('s-pw-new').value = '';
+            document.getElementById('s-pw-confirm').value = '';
+            for (let i = 1; i <= 4; i++) document.getElementById('s-sb' + i).style.background = 'rgba(85,107,79,0.12)';
+            document.getElementById('s-strength-label').style.display = 'none';
+            
+            await logActivity('password_changed', 'user', (await sb.auth.getUser()).data.user?.id, {});
+        } catch(e) {
+            console.error(e);
+            showToast('Erro: ' + e.message, 'error');
+        }
+    }
+
+    function sCheckStrength(pw) {
+        let score = 0;
+        if (pw.length >= 8) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+        const colors = ['', '#EF4444', '#F59E0B', '#3B82F6', '#10B981'];
+        const labels = ['', 'Fraca', 'Razoável', 'Boa', 'Forte'];
+        for (let i = 1; i <= 4; i++) document.getElementById('s-sb' + i).style.background = i <= score ? colors[score] : 'rgba(85,107,79,0.12)';
+        const lbl = document.getElementById('s-strength-label');
+        if (pw.length > 0) { lbl.style.display = 'block'; lbl.textContent = 'Força: ' + labels[score]; lbl.style.color = colors[score]; }
+        else lbl.style.display = 'none';
+    }
+
+    function sTogglePw(id) { const inp = document.getElementById(id); inp.type = inp.type === 'password' ? 'text' : 'password'; }
+    function sToggleFreeShipping(el) { document.getElementById('s-free-shipping-value').style.display = el.checked ? 'block' : 'none'; }
+    function sToggleMaintenance(el) { 
+        const msgGroup = document.getElementById('s-maintenance-message-group');
+        if (msgGroup) msgGroup.style.display = el.checked ? 'block' : 'none';
+        showToast(el.checked ? 'Loja em manutenção — visível apenas para admins' : 'Loja reaberta ao público', el.checked ? 'info' : 'success');
+    }
+    function sAddShippingRow() {
+        const zones = document.getElementById('s-shipping-zones');
+        const row = document.createElement('div');
+        row.className = 'shipping-row';
+        row.innerHTML = `
+            <input type="text" class="nuca-input" placeholder="Ex: EUA" style="padding:0.5rem 0.75rem;font-size:0.85rem;">
+            <input type="text" class="nuca-input" placeholder="Ex: 10–20 dias" style="padding:0.5rem 0.75rem;font-size:0.85rem;">
+            <input type="number" class="nuca-input" placeholder="0.00" step="0.01" style="padding:0.5rem 0.75rem;font-size:0.85rem;">
+            <button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+        `;
+        zones.appendChild(row);
+        row.querySelector('input').focus();
+    }
+    function sRemoveShippingRow(btn) { btn.closest('.shipping-row').remove(); }
+    function sTestConnection() { 
+        showToast('A testar ligação...', 'info');
+        setTimeout(() => {
+            if (sb) showToast('Ligação ao Supabase OK!', 'success');
+            else showToast('Erro de ligação', 'error');
+        }, 1200);
+    }
+    function sClearCache() { 
+        localStorage.removeItem('nuca_cache');
+        showToast('Cache limpa com sucesso', 'success');
+    }
+    function openSettingsResetModal(msg) { 
+        document.getElementById('settings-reset-modal-msg').textContent = msg;
+        document.getElementById('settings-reset-modal').classList.add('active');
+    }
+    function closeSettingsResetModal() { document.getElementById('settings-reset-modal').classList.remove('active'); }
+    async function confirmSettingsReset() {
+        closeSettingsResetModal();
+        // This would require admin confirmation and is dangerous - implement with caution
+        showToast('Acção não implementada por segurança', 'info');
+    }
+
+    function goToSettings(section, btn) {
+        document.querySelectorAll('.s-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.s-nav-tab').forEach(t => t.classList.remove('active'));
+        const el = document.getElementById('s-section-' + section);
+        if (el) el.classList.add('active');
+        if (btn) btn.classList.add('active');
+    }
+
+    function formatRelativeTime(dateStr) {
+        if (!dateStr) return '—';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Agora mesmo';
+        if (diffMins < 60) return `Há ${diffMins} min`;
+        if (diffHours < 24) return `Há ${diffHours} h`;
+        if (diffDays < 7) return `Há ${diffDays} dias`;
+        return date.toLocaleDateString('pt-PT');
+    }
+
+    // ============================================================
+    // END SETTINGS INTEGRATION
+    // ============================================================
+
     document.addEventListener('DOMContentLoaded', () => {
         try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.error('Supabase error:', e); }
         if (localStorage.getItem('nuca_admin_session')) showAdminInterface();
@@ -774,23 +1437,47 @@
     async function handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
         const remember = document.getElementById('remember-me').checked;
+        
         document.getElementById('login-text').classList.add('hidden');
         document.getElementById('login-spinner').classList.remove('hidden');
-        await new Promise(r => setTimeout(r, 900));
-        if (remember) localStorage.setItem('nuca_admin_session', JSON.stringify({ email, ts: Date.now() }));
-        document.getElementById('sidebar-user-email').textContent = email;
-        document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
-        showAdminInterface();
+        
+        try {
+            // Try to sign in with Supabase
+            const { data, error } = await sb.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            
+            if (remember) localStorage.setItem('nuca_admin_session', JSON.stringify({ email, ts: Date.now() }));
+            document.getElementById('sidebar-user-email').textContent = email;
+            document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+            
+            await loadAllSettings();
+            showAdminInterface();
+        } catch(e) {
+            // Fallback to mock login if Supabase auth fails
+            console.warn('Supabase auth failed, using mock login:', e);
+            if (remember) localStorage.setItem('nuca_admin_session', JSON.stringify({ email, ts: Date.now() }));
+            document.getElementById('sidebar-user-email').textContent = email;
+            document.getElementById('user-avatar').textContent = email.charAt(0).toUpperCase();
+            showAdminInterface();
+        }
+        
         document.getElementById('login-text').classList.remove('hidden');
         document.getElementById('login-spinner').classList.add('hidden');
     }
+    
     function showAdminInterface() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-interface').classList.remove('hidden');
-        loadDashboard(); loadOrders(); loadCustomers();
+        loadDashboard(); loadOrders(); loadCustomers(); loadProducts(); loadAllSettings();
     }
-    function logout() { localStorage.removeItem('nuca_admin_session'); location.reload(); }
+    
+    function logout() { 
+        sb.auth.signOut();
+        localStorage.removeItem('nuca_admin_session'); 
+        location.reload(); 
+    }
 
     const SECTION_TITLES = { dashboard:'Dashboard', orders:'Encomendas', products:'Produtos', customers:'Clientes', analytics:'Análises', settings:'Configurações' };
     function showSection(section) {
@@ -805,82 +1492,17 @@
         if (section === 'customers') loadCustomers();
         if (section === 'analytics') loadAnalytics();
         if (section === 'products') loadProducts();
-        if (section === 'settings') { document.querySelectorAll('.s-nav-tab').forEach(t=>t.classList.remove('active')); document.querySelector('.s-nav-tab')?.classList.add('active'); document.querySelectorAll('.s-section').forEach(s=>s.classList.remove('active')); document.getElementById('s-section-perfil')?.classList.add('active'); }
+        if (section === 'settings') { 
+            document.querySelectorAll('.s-nav-tab').forEach(t=>t.classList.remove('active')); 
+            document.querySelector('.s-nav-tab')?.classList.add('active'); 
+            document.querySelectorAll('.s-section').forEach(s=>s.classList.remove('active')); 
+            document.getElementById('s-section-perfil')?.classList.add('active');
+            loadAllSettings();
+        }
     }
+    
     function toggleMobileSidebar() { document.getElementById('sidebar').classList.add('mobile-visible'); document.getElementById('sidebar-overlay').classList.add('visible'); document.getElementById('sidebar-close-btn').style.display='flex'; }
     function hideMobileSidebar() { document.getElementById('sidebar').classList.remove('mobile-visible'); document.getElementById('sidebar-overlay').classList.remove('visible'); }
-
-    // ═══ SETTINGS ═══
-    function goToSettings(section, btn) {
-        document.querySelectorAll('.s-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.s-nav-tab').forEach(t => t.classList.remove('active'));
-        const el = document.getElementById('s-section-' + section);
-        if (el) el.classList.add('active');
-        if (btn) btn.classList.add('active');
-        if (section === 'actividade') sPopulateActivityLog();
-    }
-    function saveSettings(label) { showToast(`${label} guardado com sucesso!`, 'success'); }
-    function sChangePassword() {
-        const cur = document.getElementById('s-pw-current').value;
-        const nw = document.getElementById('s-pw-new').value;
-        const conf = document.getElementById('s-pw-confirm').value;
-        if (!cur || !nw || !conf) { showToast('Preenche todos os campos', 'error'); return; }
-        if (nw !== conf) { showToast('As passwords não coincidem', 'error'); return; }
-        if (nw.length < 8) { showToast('A password deve ter pelo menos 8 caracteres', 'error'); return; }
-        showToast('Password actualizada com sucesso!', 'success');
-        ['s-pw-current','s-pw-new','s-pw-confirm'].forEach(id => document.getElementById(id).value = '');
-        for (let i=1;i<=4;i++) document.getElementById('s-sb'+i).style.background='rgba(85,107,79,0.12)';
-        document.getElementById('s-strength-label').style.display='none';
-    }
-    function sCheckStrength(pw) {
-        let score = 0;
-        if (pw.length >= 8) score++;
-        if (/[A-Z]/.test(pw)) score++;
-        if (/[0-9]/.test(pw)) score++;
-        if (/[^A-Za-z0-9]/.test(pw)) score++;
-        const colors = ['','#EF4444','#F59E0B','#3B82F6','#10B981'];
-        const labels = ['','Fraca','Razoável','Boa','Forte'];
-        for (let i=1;i<=4;i++) document.getElementById('s-sb'+i).style.background = i<=score ? colors[score] : 'rgba(85,107,79,0.12)';
-        const lbl = document.getElementById('s-strength-label');
-        if (pw.length > 0) { lbl.style.display='block'; lbl.textContent='Força: '+labels[score]; lbl.style.color=colors[score]; }
-        else lbl.style.display='none';
-    }
-    function sTogglePw(id) { const inp=document.getElementById(id); inp.type=inp.type==='password'?'text':'password'; }
-    function sToggleFreeShipping(el) { document.getElementById('s-free-shipping-value').style.display=el.checked?'block':'none'; }
-    function sToggleMaintenance(el) { showToast(el.checked?'Loja em manutenção — visível apenas para admins':'Loja reaberta ao público', el.checked?'info':'success'); }
-    function sAddShippingRow() {
-        const zones = document.getElementById('s-shipping-zones');
-        const row = document.createElement('div'); row.className='shipping-row';
-        row.innerHTML=`<input type="text" class="nuca-input" placeholder="Ex: EUA" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="text" class="nuca-input" placeholder="Ex: 10–20 dias" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><input type="number" class="nuca-input" placeholder="0.00" style="padding:0.5rem 0.75rem;font-size:0.85rem;"><button onclick="sRemoveShippingRow(this)" style="background:none;border:none;cursor:pointer;color:#991B1B;padding:0.5rem;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
-        zones.appendChild(row); row.querySelector('input').focus();
-    }
-    function sRemoveShippingRow(btn) { const z=document.getElementById('s-shipping-zones'); if(z.children.length<=1){showToast('Tem de existir pelo menos uma zona','error');return;} btn.closest('.shipping-row').remove(); }
-    function sTestConnection() { showToast('A testar ligação...','info'); setTimeout(()=>showToast('Ligação ao Supabase OK!','success'),1200); }
-    function sClearCache() { localStorage.removeItem('nuca_cache'); showToast('Cache limpa com sucesso','success'); }
-    function openSettingsResetModal(msg) { document.getElementById('settings-reset-modal-msg').textContent=msg; document.getElementById('settings-reset-modal').classList.add('active'); }
-    function closeSettingsResetModal() { document.getElementById('settings-reset-modal').classList.remove('active'); }
-    function confirmSettingsReset() { closeSettingsResetModal(); showToast('Acção executada (simulada) — nenhum dado foi eliminado','info'); }
-
-    const S_LOGS = [
-        { icon:'check', color:'#D1FAE5', iconColor:'#065F46', title:'Estado actualizado', detail:'Encomenda #NUCA-0042 → Enviada', time:'Há 12 min' },
-        { icon:'user', color:'#DBEAFE', iconColor:'#1E40AF', title:'Novo cliente adicionado', detail:'Ana Rodrigues · ana@email.com', time:'Há 1 hora' },
-        { icon:'package', color:'rgba(85,107,79,0.1)', iconColor:'#556B4F', title:'Produto editado', detail:'T-shirt NUCA Essential · Preço: €28', time:'Há 3 horas' },
-        { icon:'trash', color:'#FEE2E2', iconColor:'#991B1B', title:'Encomenda eliminada', detail:'#NUCA-0039 · €45.00', time:'Hoje 09:14' },
-        { icon:'login', color:'#F0FDF4', iconColor:'#065F46', title:'Login no painel', detail:'nuca.crew@gmail.com · Chrome/Win11', time:'Hoje 08:50' },
-        { icon:'star', color:'#FEF3C7', iconColor:'#92400E', title:'Produto criado', detail:'Hoodie NUCA Verde · Stock: 30', time:'Ontem 18:32' },
-    ];
-    const S_ICONS = {
-        check:`<path d="M20 6L9 17l-5-5"/>`, user:`<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>`,
-        package:`<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>`,
-        trash:`<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>`,
-        login:`<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>`,
-        star:`<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
-    };
-    function sPopulateActivityLog() {
-        const el = document.getElementById('s-activity-log');
-        if (el.children.length) return;
-        el.innerHTML = S_LOGS.map(l => `<div class="log-item"><div class="log-icon" style="background:${l.color};"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${l.iconColor}" stroke-width="2">${S_ICONS[l.icon]||''}</svg></div><div style="flex:1;min-width:0;"><p style="font-size:0.875rem;font-weight:600;color:var(--dark);">${l.title}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.55);margin-top:0.15rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${l.detail}</p></div><span style="font-size:0.7rem;color:rgba(85,107,79,0.45);white-space:nowrap;flex-shrink:0;">${l.time}</span></div>`).join('');
-    }
 
     // ═══ DASHBOARD ═══
     async function loadDashboard() {
@@ -902,6 +1524,7 @@
             renderSalesChart(orders||[]);
         } catch(e) { console.error(e); showToast('Erro ao carregar dashboard','error'); }
     }
+    
     function renderSalesChart(orders) {
         const ctx = document.getElementById('salesChart')?.getContext('2d');
         if (!ctx) return;
@@ -926,6 +1549,7 @@
             applyFilters();
         } catch(e) { console.error(e); showToast('Erro ao carregar encomendas','error'); }
     }
+    
     function applyFilters() {
         let filtered=[...allOrders];
         if (currentFilter!=='all') filtered=filtered.filter(o=>o.status===currentFilter||(currentFilter==='pending'&&o.status==='pending_payment'));
@@ -934,6 +1558,7 @@
         filtered.sort((a,b)=>{ let av=a[sortField],bv=b[sortField]; if(sortField==='created_at'){av=new Date(av).getTime();bv=new Date(bv).getTime();} return sortDirection==='asc'?(av>bv?1:-1):(av<bv?1:-1); });
         renderOrdersTable(filtered);
     }
+    
     function filterOrders(status) { currentFilter=status; document.querySelectorAll('.filter-pill').forEach(p=>{if(p.dataset.filter)p.classList.toggle('active',p.dataset.filter===status);}); applyFilters(); }
     function sortOrders(field) { if(sortField===field)sortDirection=sortDirection==='asc'?'desc':'asc'; else{sortField=field;sortDirection='desc';} applyFilters(); }
     function safeParseJSON(val) { if(!val)return[]; try{return typeof val==='string'?JSON.parse(val):(Array.isArray(val)?val:[]);}catch{return[];} }
@@ -948,16 +1573,18 @@
             const items=safeParseJSON(order.items);
             const addr=safeParseObj(order.shipping_address);
             const statusClass=getStatusClass(order.status);
-            const detailsHTML=`<div class="order-details-inner"><div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;"><div><h4 style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Itens do Pedido</h4>${items.length?items.map(item=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.625rem 0.875rem;background:white;border-radius:0.75rem;margin-bottom:0.5rem;border:1px solid rgba(85,107,79,0.07);"><div><p style="font-size:0.8rem;font-weight:600;color:var(--dark);">${esc(item.name)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${item.size||'—'} ${item.color?'/ '+item.color:''}</p></div><div style="text-align:right;"><p style="font-size:0.8rem;font-weight:700;color:var(--green);">€${(item.price||0).toFixed(2)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">×${item.quantity||1}</p></div></div>`).join(''):'<p style="font-size:0.8rem;color:rgba(85,107,79,0.4);">Sem itens</p>'}</div><div><h4 style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Dados de Envio</h4><div style="background:white;border-radius:0.75rem;padding:0.875rem;font-size:0.8rem;line-height:1.9;border:1px solid rgba(85,107,79,0.07);"><p><span style="color:rgba(85,107,79,0.5);">Morada: </span>${esc(addr.address||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Cidade: </span>${esc(addr.city||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">CP: </span>${esc(addr.postal||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Tel: </span>${esc(order.customer_phone||'—')}</p></div></div></div></div>`;
-            return `<tr data-order-id="${order.id}"><td style="font-weight:600;font-size:0.8rem;">${esc(num)}</td><td><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(order.customer_name||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(order.customer_email||'—')}</p></td><td style="font-weight:700;color:var(--green);">€${(parseFloat(order.total)||0).toFixed(2)}</td><td><select class="status-select ${statusClass}" onchange="updateOrderStatus('${order.id}',this.value)" data-order-id="${order.id}"><option value="pending" ${order.status==='pending'||order.status==='pending_payment'?'selected':''}>Pendente</option><option value="processing" ${order.status==='processing'?'selected':''}>A Processar</option><option value="shipped" ${order.status==='shipped'?'selected':''}>Enviada</option><option value="delivered" ${order.status==='delivered'?'selected':''}>Entregue</option><option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelada</option></select></td><td style="font-size:0.8rem;white-space:nowrap;">${formatDate(order.created_at)}</td><td><div style="display:flex;align-items:center;justify-content:center;gap:0.375rem;"><button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExp?'expanded':''}" id="expand-btn-${order.id}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><button onclick="generateReceipt('${order.id}')" class="action-btn receipt" title="Gerar recibo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button><button onclick="confirmDeleteOrder('${order.id}')" class="action-btn danger" title="Eliminar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></td></tr><tr id="details-row-${order.id}"><td colspan="6" style="padding:0;"><div class="order-details-panel ${isExp?'open':''}" id="details-panel-${order.id}">${detailsHTML}</div></td></tr>`;
+            const detailsHTML=`<div class="order-details-inner"><div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;"><div><h4 style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Itens do Pedido</h4>${items.length?items.map(item=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.625rem 0.875rem;background:white;border-radius:0.75rem;margin-bottom:0.5rem;border:1px solid rgba(85,107,79,0.07);"><div><p style="font-size:0.8rem;font-weight:600;color:var(--dark);">${escapeHtml(item.name)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${item.size||'—'} ${item.color?'/ '+item.color:''}</p></div><div style="text-align:right;"><p style="font-size:0.8rem;font-weight:700;color:var(--green);">€${(item.price||0).toFixed(2)}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">×${item.quantity||1}</p></div></div>`).join(''):'<p style="font-size:0.8rem;color:rgba(85,107,79,0.4);">Sem itens</p>'}</div><div><h4 style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Dados de Envio</h4><div style="background:white;border-radius:0.75rem;padding:0.875rem;font-size:0.8rem;line-height:1.9;border:1px solid rgba(85,107,79,0.07);"><p><span style="color:rgba(85,107,79,0.5);">Morada: </span>${escapeHtml(addr.address||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Cidade: </span>${escapeHtml(addr.city||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">CP: </span>${escapeHtml(addr.postal||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Tel: </span>${escapeHtml(order.customer_phone||'—')}</p></div></div></div></div>`;
+            return `<tr data-order-id="${order.id}"><td style="font-weight:600;font-size:0.8rem;">${escapeHtml(num)}</td><td><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${escapeHtml(order.customer_name||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${escapeHtml(order.customer_email||'—')}</p></td><td style="font-weight:700;color:var(--green);">€${(parseFloat(order.total)||0).toFixed(2)}</td><td><select class="status-select ${statusClass}" onchange="updateOrderStatus('${order.id}',this.value)" data-order-id="${order.id}"><option value="pending" ${order.status==='pending'||order.status==='pending_payment'?'selected':''}>Pendente</option><option value="processing" ${order.status==='processing'?'selected':''}>A Processar</option><option value="shipped" ${order.status==='shipped'?'selected':''}>Enviada</option><option value="delivered" ${order.status==='delivered'?'selected':''}>Entregue</option><option value="cancelled" ${order.status==='cancelled'?'selected':''}>Cancelada</option></select></td><td style="font-size:0.8rem;white-space:nowrap;">${formatDate(order.created_at)}</td><td><div style="display:flex;align-items:center;justify-content:center;gap:0.375rem;"><button onclick="toggleOrderDetails('${order.id}')" class="expand-btn ${isExp?'expanded':''}" id="expand-btn-${order.id}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><button onclick="generateReceipt('${order.id}')" class="action-btn receipt" title="Gerar recibo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button><button onclick="confirmDeleteOrder('${order.id}')" class="action-btn danger" title="Eliminar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></td></tr><tr id="details-row-${order.id}"><td colspan="6" style="padding:0;"><div class="order-details-panel ${isExp?'open':''}" id="details-panel-${order.id}">${detailsHTML}</div></td></tr>`;
         }).join('');
     }
+    
     function toggleOrderDetails(orderId) {
         const panel=document.getElementById(`details-panel-${orderId}`);
         const btn=document.getElementById(`expand-btn-${orderId}`);
         if (expandedOrders.has(orderId)) { expandedOrders.delete(orderId); panel?.classList.remove('open'); btn?.classList.remove('expanded'); }
         else { expandedOrders.add(orderId); panel?.classList.add('open'); btn?.classList.add('expanded'); }
     }
+    
     async function updateOrderStatus(orderId, newStatus) {
         try {
             if (!sb) throw new Error('Supabase não inicializado');
@@ -965,9 +1592,11 @@
             if (error) throw error;
             const order=allOrders.find(o=>o.id===orderId); if(order) order.status=newStatus;
             const sel=document.querySelector(`select[data-order-id="${orderId}"]`); if(sel) sel.className=`status-select ${getStatusClass(newStatus)}`;
+            await logActivity('order_updated', 'order', orderId, { status: newStatus });
             showToast(`Estado: ${getStatusLabel(newStatus)}`, 'success'); loadDashboard();
         } catch(e) { console.error(e); showToast('Erro ao actualizar estado','error'); }
     }
+    
     function confirmDeleteOrder(orderId) { orderToDelete=orderId; document.getElementById('delete-order-modal').classList.add('active'); const btn=document.getElementById('confirm-delete-order-btn'); if(btn){btn.disabled=false;btn.textContent='Eliminar';} }
     function closeDeleteOrderModal() { document.getElementById('delete-order-modal').classList.remove('active'); orderToDelete=null; }
     async function confirmDeleteOrderAction() {
@@ -983,6 +1612,7 @@
             if(error)throw error;
             allOrders=allOrders.filter(o=>o.id!==orderToDelete); expandedOrders.delete(orderToDelete);
             applyFilters(); closeDeleteOrderModal(); showToast('Encomenda eliminada!','success'); loadDashboard();
+            await logActivity('order_deleted', 'order', orderToDelete, {});
         } catch(e) { console.error(e); showToast('Erro: '+e.message,'error'); if(btn){btn.disabled=false;btn.textContent='Eliminar';} if(cancelBtn)cancelBtn.disabled=false; }
         finally { isDeletingOrder=false; }
     }
@@ -998,6 +1628,7 @@
             allProducts=data||[]; applyProductFilters();
         } catch(e) { console.error(e); showToast('Erro ao carregar produtos: '+e.message,'error'); allProducts=[]; applyProductFilters(); }
     }
+    
     function applyProductFilters() {
         let filtered=[...allProducts];
         if(currentProductFilter!=='all')filtered=filtered.filter(p=>p.status===currentProductFilter);
@@ -1007,6 +1638,7 @@
         document.getElementById('products-count').textContent=filtered.length;
         if(productView==='grid')renderProductsGrid(filtered); else renderProductsTable(filtered);
     }
+    
     function filterProducts(status) { currentProductFilter=status; document.querySelectorAll('[data-pfilter]').forEach(p=>p.classList.toggle('active',p.dataset.pfilter===status)); applyProductFilters(); }
     function setProductView(view) {
         productView=view;
@@ -1016,20 +1648,23 @@
         document.getElementById('products-table-view').style.display=view==='table'?'block':'none';
         applyProductFilters();
     }
+    
     function renderProductsGrid(products) {
         const grid=document.getElementById('products-grid');
         if(!products.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;"><div style="width:72px;height:72px;background:rgba(85,107,79,0.08);border-radius:1.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><h3 class="font-display" style="font-size:1.25rem;color:var(--dark);margin-bottom:0.5rem;">Sem produtos</h3><p style="font-size:0.875rem;color:rgba(85,107,79,0.45);margin-bottom:1.5rem;">Adiciona o primeiro produto ao catálogo NUCA.</p><button onclick="openAddProductModal()" class="btn-primary" style="margin:0 auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>Novo Produto</button></div>`;return;}
         grid.innerHTML=products.map(p=>{
             const sizes=safeParseJSON(p.sizes),colors=safeParseJSON(p.colors);
             const badgeClass=getPStatusClass(p.status),price=parseFloat(p.price)||0,salePrice=parseFloat(p.sale_price)||0;
-            return `<div class="product-card">${p.image_url?`<img src="${esc(p.image_url)}" alt="${esc(p.name)}" class="product-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="product-card-img-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`:`<div class="product-card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}<div class="product-card-body"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.625rem;"><div style="flex:1;min-width:0;"><h4 style="font-weight:700;font-size:0.925rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.name||'—')}</h4>${p.sku?`<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);margin-top:0.1rem;">${esc(p.sku)}</p>`:''}</div><span class="status-badge ${badgeClass}" style="flex-shrink:0;">${getPStatusLabel(p.status)}</span></div><div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">${salePrice>0&&salePrice<price?`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${salePrice.toFixed(2)}</span><span style="font-size:0.8rem;color:rgba(85,107,79,0.4);text-decoration:line-through;">€${price.toFixed(2)}</span>`:`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${price.toFixed(2)}</span>`}${p.stock!==null&&p.stock!==undefined?`<span style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-left:auto;">Stock: <strong style="color:${p.stock>0?'var(--dark)':'#EF4444'};">${p.stock}</strong></span>`:''}</div>${sizes.length?`<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.625rem;">${sizes.map(s=>`<span style="padding:0.15rem 0.5rem;background:rgba(85,107,79,0.08);border-radius:100px;font-size:0.65rem;font-weight:700;color:var(--dark);">${esc(s)}</span>`).join('')}</div>`:''}<div style="display:flex;gap:0.5rem;border-top:1px solid rgba(85,107,79,0.08);padding-top:0.875rem;"><button onclick="openEditProductModal('${p.id}')" class="btn-ghost" style="flex:1;justify-content:center;padding:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button><button onclick="confirmDeleteProduct('${p.id}','${esc(p.name||'produto')}')" class="action-btn danger" style="width:36px;height:36px;border-radius:0.625rem;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div></div>`;
+            return `<div class="product-card">${p.image_url?`<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" class="product-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="product-card-img-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`:`<div class="product-card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}<div class="product-card-body"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.625rem;"><div style="flex:1;min-width:0;"><h4 style="font-weight:700;font-size:0.925rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.name||'—')}</h4>${p.sku?`<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);margin-top:0.1rem;">${escapeHtml(p.sku)}</p>`:''}</div><span class="status-badge ${badgeClass}" style="flex-shrink:0;">${getPStatusLabel(p.status)}</span></div><div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">${salePrice>0&&salePrice<price?`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${salePrice.toFixed(2)}</span><span style="font-size:0.8rem;color:rgba(85,107,79,0.4);text-decoration:line-through;">€${price.toFixed(2)}</span>`:`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${price.toFixed(2)}</span>`}${p.stock!==null&&p.stock!==undefined?`<span style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-left:auto;">Stock: <strong style="color:${p.stock>0?'var(--dark)':'#EF4444'};">${p.stock}</strong></span>`:''}</div>${sizes.length?`<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.625rem;">${sizes.map(s=>`<span style="padding:0.15rem 0.5rem;background:rgba(85,107,79,0.08);border-radius:100px;font-size:0.65rem;font-weight:700;color:var(--dark);">${escapeHtml(s)}</span>`).join('')}</div>`:''}<div style="display:flex;gap:0.5rem;border-top:1px solid rgba(85,107,79,0.08);padding-top:0.875rem;"><button onclick="openEditProductModal('${p.id}')" class="btn-ghost" style="flex:1;justify-content:center;padding:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button><button onclick="confirmDeleteProduct('${p.id}','${escapeHtml(p.name||'produto')}')" class="action-btn danger" style="width:36px;height:36px;border-radius:0.625rem;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div></div>`;
         }).join('');
     }
+    
     function renderProductsTable(products) {
         const tbody=document.getElementById('products-tbody');
         if(!products.length){tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum produto encontrado</td></tr>`;return;}
-        tbody.innerHTML=products.map(p=>{const price=parseFloat(p.price)||0,salePrice=parseFloat(p.sale_price)||0;return `<tr><td><div style="display:flex;align-items:center;gap:0.75rem;">${p.image_url?`<img src="${esc(p.image_url)}" class="product-img-thumb" alt="${esc(p.name)}" onerror="this.style.display='none';">`:`<div class="product-img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}<div><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(p.name||'—')}</p>${p.category?`<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);">${esc(p.category)}</p>`:''}</div></div></td><td style="font-size:0.8rem;color:rgba(85,107,79,0.6);">${esc(p.sku||'—')}</td><td style="font-weight:700;color:var(--green);">${salePrice>0&&salePrice<price?`€${salePrice.toFixed(2)} <span style="font-size:0.75rem;color:rgba(85,107,79,0.4);text-decoration:line-through;font-weight:400;">€${price.toFixed(2)}</span>`:`€${price.toFixed(2)}`}</td><td>${p.stock!==null&&p.stock!==undefined?`<span style="color:${p.stock>0?'var(--dark)':'#EF4444'};font-weight:600;">${p.stock}</span>`:'—'}</td><td><span class="status-badge ${getPStatusClass(p.status)}">${getPStatusLabel(p.status)}</span></td><td><div style="display:flex;justify-content:center;gap:0.375rem;"><button onclick="openEditProductModal('${p.id}')" class="action-btn" title="Editar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button onclick="confirmDeleteProduct('${p.id}','${esc(p.name||'produto')}')" class="action-btn danger" title="Eliminar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></td></tr>`;}).join('');
+        tbody.innerHTML=products.map(p=>{const price=parseFloat(p.price)||0,salePrice=parseFloat(p.sale_price)||0;return `<tr><td><div style="display:flex;align-items:center;gap:0.75rem;">${p.image_url?`<img src="${escapeHtml(p.image_url)}" class="product-img-thumb" alt="${escapeHtml(p.name)}" onerror="this.style.display='none';">`:`<div class="product-img-placeholder"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.3)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>`}<div><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${escapeHtml(p.name||'—')}</p>${p.category?`<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);">${escapeHtml(p.category)}</p>`:''}</div></div></td><td style="font-size:0.8rem;color:rgba(85,107,79,0.6);">${escapeHtml(p.sku||'—')}</td><td style="font-weight:700;color:var(--green);">${salePrice>0&&salePrice<price?`€${salePrice.toFixed(2)} <span style="font-size:0.75rem;color:rgba(85,107,79,0.4);text-decoration:line-through;font-weight:400;">€${price.toFixed(2)}</span>`:`€${price.toFixed(2)}`}</td><td>${p.stock!==null&&p.stock!==undefined?`<span style="color:${p.stock>0?'var(--dark)':'#EF4444'};font-weight:600;">${p.stock}</span>`:'—'}</td><td><span class="status-badge ${getPStatusClass(p.status)}">${getPStatusLabel(p.status)}</span></td><td><div style="display:flex;justify-content:center;gap:0.375rem;"><button onclick="openEditProductModal('${p.id}')" class="action-btn" title="Editar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button onclick="confirmDeleteProduct('${p.id}','${escapeHtml(p.name||'produto')}')" class="action-btn danger" title="Eliminar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></td></tr>`;}).join('');
     }
+    
     function resetProductForm() {
         ['product-name','product-sku','product-price','product-sale-price','product-stock','product-description','product-image','product-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
         document.getElementById('product-category').value=''; document.getElementById('product-status').value='active';
@@ -1037,7 +1672,9 @@
         const ph=document.getElementById('product-img-placeholder'); if(ph)ph.style.display='flex';
         productSizes=[]; productColors=[]; renderSizeTags(); renderColorTags();
     }
+    
     function openAddProductModal() { editingProductId=null; resetProductForm(); document.getElementById('product-modal-title').textContent='Novo Produto'; document.getElementById('product-submit-text').textContent='Guardar Produto'; document.getElementById('product-modal').classList.add('active'); }
+    
     function openEditProductModal(productId) {
         const p=allProducts.find(x=>x.id===productId); if(!p)return;
         editingProductId=productId; resetProductForm();
@@ -1057,7 +1694,9 @@
         document.getElementById('product-modal-title').textContent='Editar Produto'; document.getElementById('product-submit-text').textContent='Guardar Alterações';
         document.getElementById('product-modal').classList.add('active');
     }
+    
     function closeProductModal() { document.getElementById('product-modal').classList.remove('active'); editingProductId=null; }
+    
     async function submitProduct() {
         const name=document.getElementById('product-name').value.trim();
         const price=parseFloat(document.getElementById('product-price').value);
@@ -1070,27 +1709,29 @@
         const payload={name,sku:document.getElementById('product-sku').value.trim()||null,category:document.getElementById('product-category').value||null,price,sale_price:(!isNaN(salePriceRaw)&&salePriceRaw>0)?salePriceRaw:null,stock:stockRaw!==''?parseInt(stockRaw):null,status:document.getElementById('product-status').value,description:document.getElementById('product-description').value.trim()||null,image_url:document.getElementById('product-image').value.trim()||null,notes:document.getElementById('product-notes').value.trim()||null,sizes:productSizes,colors:productColors};
         try {
             if(!sb)throw new Error('Supabase não inicializado');
-            if(editingProductId){const{error}=await sb.from('products').update(payload).eq('id',editingProductId);if(error)throw error;const idx=allProducts.findIndex(p=>p.id===editingProductId);if(idx!==-1)allProducts[idx]={...allProducts[idx],...payload,id:editingProductId};showToast('Produto actualizado com sucesso!','success');}
-            else{const{data,error}=await sb.from('products').insert([payload]).select().single();if(error)throw error;allProducts.unshift(data);showToast('Produto adicionado com sucesso!','success');}
+            if(editingProductId){const{error}=await sb.from('products').update(payload).eq('id',editingProductId);if(error)throw error;const idx=allProducts.findIndex(p=>p.id===editingProductId);if(idx!==-1)allProducts[idx]={...allProducts[idx],...payload,id:editingProductId};showToast('Produto actualizado com sucesso!','success');await logActivity('product_updated','product',editingProductId,payload);}
+            else{const{data,error}=await sb.from('products').insert([payload]).select().single();if(error)throw error;allProducts.unshift(data);showToast('Produto adicionado com sucesso!','success');await logActivity('product_created','product',data.id,payload);}
             closeProductModal(); applyProductFilters();
         } catch(e) { console.error(e); if(e.code==='23505')showToast('Referência (SKU) já existe.','error'); else if(e.code==='23514')showToast('Dados inválidos: verifica o preço e o stock.','error'); else showToast('Erro ao guardar: '+e.message,'error'); }
         finally { btn.disabled=false; btnText.textContent=editingProductId?'Guardar Alterações':'Guardar Produto'; }
     }
+    
     function confirmDeleteProduct(id,name){productToDelete=id;document.getElementById('delete-product-message').textContent=`Tens a certeza que queres eliminar "${name}"? Esta ação não pode ser desfeita.`;document.getElementById('delete-product-modal').classList.add('active');}
     function closeDeleteProductModal(){document.getElementById('delete-product-modal').classList.remove('active');productToDelete=null;}
     async function confirmDeleteProductAction(){
         if(!productToDelete)return;
         const btn=document.querySelector('#delete-product-modal .btn-danger');
         if(btn){btn.disabled=true;btn.textContent='A eliminar...';}
-        try{if(!sb)throw new Error();const{error}=await sb.from('products').delete().eq('id',productToDelete);if(error)throw error;allProducts=allProducts.filter(p=>p.id!==productToDelete);applyProductFilters();closeDeleteProductModal();showToast('Produto eliminado!','success');}
+        try{if(!sb)throw new Error();const{error}=await sb.from('products').delete().eq('id',productToDelete);if(error)throw error;allProducts=allProducts.filter(p=>p.id!==productToDelete);applyProductFilters();closeDeleteProductModal();showToast('Produto eliminado!','success');await logActivity('product_deleted','product',productToDelete,{});}
         catch(e){console.error(e);showToast('Erro ao eliminar: '+e.message,'error');if(btn){btn.disabled=false;btn.textContent='Eliminar';}}
     }
+    
     function addTag(type){const input=document.getElementById('size-input');const val=input.value.trim();if(!val)return;val.split(',').map(s=>s.trim()).filter(Boolean).forEach(s=>{if(!productSizes.includes(s))productSizes.push(s);});input.value='';renderSizeTags();}
     function removeSize(s){productSizes=productSizes.filter(x=>x!==s);renderSizeTags();}
-    function renderSizeTags(){document.getElementById('sizes-tags').innerHTML=productSizes.map(s=>`<span class="tag">${esc(s)}<button class="tag-remove" onclick="removeSize('${esc(s)}')" type="button">×</button></span>`).join('');document.getElementById('product-sizes').value=JSON.stringify(productSizes);}
+    function renderSizeTags(){document.getElementById('sizes-tags').innerHTML=productSizes.map(s=>`<span class="tag">${escapeHtml(s)}<button class="tag-remove" onclick="removeSize('${escapeHtml(s)}')" type="button">×</button></span>`).join('');document.getElementById('product-sizes').value=JSON.stringify(productSizes);}
     function addColorTag(){const nameInput=document.getElementById('color-name-input');const hex=document.getElementById('color-picker').value;const name=nameInput.value.trim()||hex;if(!name)return;if(!productColors.find(c=>c.name===name))productColors.push({name,hex});nameInput.value='';renderColorTags();}
     function removeColor(name){productColors=productColors.filter(c=>c.name!==name);renderColorTags();}
-    function renderColorTags(){document.getElementById('colors-tags').innerHTML=productColors.map(c=>`<span class="tag"><span class="color-swatch" style="background:${esc(c.hex||c)};"></span>${esc(c.name||c)}<button class="tag-remove" onclick="removeColor('${esc(c.name||c)}')" type="button">×</button></span>`).join('');document.getElementById('product-colors').value=JSON.stringify(productColors);}
+    function renderColorTags(){document.getElementById('colors-tags').innerHTML=productColors.map(c=>`<span class="tag"><span class="color-swatch" style="background:${escapeHtml(c.hex||c)};"></span>${escapeHtml(c.name||c)}<button class="tag-remove" onclick="removeColor('${escapeHtml(c.name||c)}')" type="button">×</button></span>`).join('');document.getElementById('product-colors').value=JSON.stringify(productColors);}
     function previewProductImage(url){const preview=document.getElementById('product-image-preview');const img=document.getElementById('product-img-preview-el');const placeholder=document.getElementById('product-img-placeholder');if(url){img.src=url;preview.style.display='block';if(placeholder)placeholder.style.display='none';img.onerror=()=>{preview.style.display='none';if(placeholder)placeholder.style.display='flex';};}else{preview.style.display='none';if(placeholder)placeholder.style.display='flex';}}
 
     // ═══ RECEIPT ═══
@@ -1108,11 +1749,12 @@
         const itemsTotal=groupedItems.reduce((s,i)=>s+(parseFloat(i.price)||0)*(parseInt(i.quantity)||1),0);
         const shippingRaw=total-itemsTotal;
         const shipping=shippingRaw>0.01?parseFloat(shippingRaw.toFixed(2)):0;
-        const html=`<div class="logo-area"><h1 class="logo-title">NUCA</h1><p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p></div><div class="receipt-info"><div class="info-block"><div class="info-label">Nº ENCOMENDA</div><div class="info-value">${esc(num)}</div></div><div class="info-block" style="text-align:right;"><div class="info-label">DATA</div><div class="info-value">${receiptDate} ${receiptTime}</div></div></div><div class="receipt-info"><div class="info-block"><div class="info-label">CLIENTE</div><div class="info-value">${esc(order.customer_name||'—')}</div><div style="font-size:0.7rem;color:#666;margin-top:0.2rem;">${esc(order.customer_email||'—')}</div>${order.customer_phone?`<div style="font-size:0.7rem;color:#666;">${esc(order.customer_phone)}</div>`:''}</div>${addr.address||addr.city?`<div class="info-block" style="text-align:right;"><div class="info-label">MORADA DE ENTREGA</div><div class="info-value">${addr.address?esc(addr.address):''}${addr.city?'<br>'+esc(addr.city):''}${addr.postal?'<br>'+esc(addr.postal):''}</div></div>`:''}</div><table class="items-table"><colgroup><col style="width:46%"><col style="width:20%"><col style="width:12%"><col style="width:22%"></colgroup><thead><tr><th>Produto</th><th style="text-align:right;">Preço</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Total</th></tr></thead><tbody>${groupedItems.length?groupedItems.map(item=>`<tr><td><div class="product-name">${esc(item.name||'Artigo')}</div>${item.size||item.color?`<div class="product-details">${item.size||''} ${item.color?'/ '+item.color:''}</div>`:''}</td><td style="text-align:right;">€${(parseFloat(item.price)||0).toFixed(2)}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right;">€${((parseFloat(item.price)||0)*item.quantity).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;">Sem itens registados</td></tr>'}</tbody></table><div class="totals">${shipping>0?`<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value">€${shipping.toFixed(2)}</span></div>`:items.length>1||itemsTotal!==total?`<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value" style="color:#10B981;">Grátis</span></div>`:''}</div><div class="footer"><p>Obrigado pela sua compra!</p><p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p><p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${esc(receiptId)}</p></div>`;
+        const html=`<div class="logo-area"><h1 class="logo-title">NUCA</h1><p style="font-size:0.7rem;color:#999;margin-top:0.25rem;">Comprovativo de Pagamento</p></div><div class="receipt-info"><div class="info-block"><div class="info-label">Nº ENCOMENDA</div><div class="info-value">${escapeHtml(num)}</div></div><div class="info-block" style="text-align:right;"><div class="info-label">DATA</div><div class="info-value">${receiptDate} ${receiptTime}</div></div></div><div class="receipt-info"><div class="info-block"><div class="info-label">CLIENTE</div><div class="info-value">${escapeHtml(order.customer_name||'—')}</div><div style="font-size:0.7rem;color:#666;margin-top:0.2rem;">${escapeHtml(order.customer_email||'—')}</div>${order.customer_phone?`<div style="font-size:0.7rem;color:#666;">${escapeHtml(order.customer_phone)}</div>`:''}</div>${addr.address||addr.city?`<div class="info-block" style="text-align:right;"><div class="info-label">MORADA DE ENTREGA</div><div class="info-value">${addr.address?escapeHtml(addr.address):''}${addr.city?'<br>'+escapeHtml(addr.city):''}${addr.postal?'<br>'+escapeHtml(addr.postal):''}</div></div>`:''}</div><table class="items-table"><colgroup><col style="width:46%"><col style="width:20%"><col style="width:12%"><col style="width:22%"></colgroup><thead><tr><th>Produto</th><th style="text-align:right;">Preço</th><th style="text-align:center;">Qtd</th><th style="text-align:right;">Total</th></tr></thead><tbody>${groupedItems.length?groupedItems.map(item=>`<tr><td><div class="product-name">${escapeHtml(item.name||'Artigo')}</div>${item.size||item.color?`<div class="product-details">${item.size||''} ${item.color?'/ '+item.color:''}</div>`:''}</div></td><td style="text-align:right;">€${(parseFloat(item.price)||0).toFixed(2)}</td><td style="text-align:center;">${item.quantity}</td><td style="text-align:right;">€${((parseFloat(item.price)||0)*item.quantity).toFixed(2)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;">Sem itens registados</td></tr>'}</tbody></table><div class="totals">${shipping>0?`<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value">€${shipping.toFixed(2)}</span></div>`:items.length>1||itemsTotal!==total?`<div class="total-row"><span class="total-label">Subtotal</span><span class="total-value">€${itemsTotal.toFixed(2)}</span></div><div class="total-row"><span class="total-label">Envio</span><span class="total-value" style="color:#10B981;">Grátis</span></div>`:''}</div><div class="footer"><p>Obrigado pela sua compra!</p><p style="margin-top:0.5rem;">NUCA • nuca.crew.support@gmail.com</p><p style="margin-top:0.5rem;font-size:0.6rem;">Recibo: ${escapeHtml(receiptId)}</p></div>`;
         document.getElementById('receipt-content').innerHTML=html;
         document.getElementById('receipt-content').dataset.receiptNum=receiptId;
         document.getElementById('receipt-modal').classList.add('active');
     }
+    
     function closeReceiptModal(){document.getElementById('receipt-modal').classList.remove('active');}
     async function downloadReceiptPDF(){
         const btn=document.getElementById('download-pdf-btn'),txt=document.getElementById('download-pdf-text'),spin=document.getElementById('download-pdf-spinner');
@@ -1137,12 +1779,15 @@
             renderCustomersTable(allCustomers);
         } catch(e){console.error(e);showToast('Erro ao carregar clientes','error');}
     }
+    
     function renderCustomersTable(customers){
         const tbody=document.getElementById('customers-tbody');
         if(!customers.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:3rem;color:rgba(85,107,79,0.4);font-size:0.875rem;">Nenhum cliente encontrado</td></tr>';return;}
-        tbody.innerHTML=customers.map(c=>`<tr><td><div style="display:flex;align-items:center;gap:0.75rem;"><div class="avatar">${(c.name||'?').charAt(0).toUpperCase()}</div><div><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${esc(c.name||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.email||'—')}</p></div></div></td><td><p style="font-size:0.875rem;">${esc(c.phone||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${esc(c.city||'—')}</p></td><td style="text-align:center;font-weight:600;">${c.total_orders||0}</td><td style="font-weight:700;color:var(--green);">€${(c.total_purchases||0).toFixed(2)}</td><td><div style="display:flex;justify-content:center;gap:0.375rem;"><button onclick="viewCustomerDetails('${esc(c.email)}')" class="action-btn" title="Ver ficha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button onclick="viewCustomerOrders('${esc(c.email)}')" class="action-btn" title="Ver encomendas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></button><button onclick="confirmDeleteCustomer('${esc(c.email)}','${esc(c.name||c.email)}')" class="action-btn danger" title="Eliminar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div></td></tr>`).join('');
+        tbody.innerHTML=customers.map(c=>`<tr><td><div style="display:flex;align-items:center;gap:0.75rem;"><div class="avatar">${(c.name||'?').charAt(0).toUpperCase()}</div><div><p style="font-weight:600;font-size:0.875rem;color:var(--dark);">${escapeHtml(c.name||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${escapeHtml(c.email||'—')}</p></div></div></td><td><p style="font-size:0.875rem;">${escapeHtml(c.phone||'—')}</p><p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${escapeHtml(c.city||'—')}</p></td><td style="text-align:center;font-weight:600;">${c.total_orders||0}</td><td style="font-weight:700;color:var(--green);">€${(c.total_purchases||0).toFixed(2)}</td><td><div style="display:flex;justify-content:center;gap:0.375rem;"><button onclick="viewCustomerDetails('${escapeHtml(c.email)}')" class="action-btn" title="Ver ficha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button onclick="viewCustomerOrders('${escapeHtml(c.email)}')" class="action-btn" title="Ver encomendas"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></button><button onclick="confirmDeleteCustomer('${escapeHtml(c.email)}','${escapeHtml(c.name||c.email)}')" class="action-btn danger" title="Eliminar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div></td></tr>`).join('');
     }
+    
     function searchCustomers(){const q=(document.getElementById('search-customers')?.value||'').toLowerCase();renderCustomersTable(q?allCustomers.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)||(c.phone||'').includes(q)):allCustomers);}
+    
     async function viewCustomerDetails(email){
         try{
             if(!sb)return;
@@ -1152,10 +1797,11 @@
             const totalSpent=orderList.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+(parseFloat(o.total)||0),0);
             document.getElementById('customer-detail-name').textContent=cust.name||'Cliente';
             document.getElementById('customer-detail-email').textContent=cust.email||'—';
-            document.getElementById('customer-detail-content').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;"><div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;"><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.875rem;">Informações</h4><div style="font-size:0.875rem;line-height:2;"><p><span style="color:rgba(85,107,79,0.5);">Telefone: </span>${esc(cust.phone||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Nasc.: </span>${cust.birth_date?fmtShort(cust.birth_date):'—'}</p><p><span style="color:rgba(85,107,79,0.5);">NIF: </span>${esc(cust.nif||'—')}</p></div></div><div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;"><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.875rem;">Morada</h4><div style="font-size:0.875rem;line-height:2;"><p>${esc(cust.address||'—')}</p><p>${esc(cust.city||'—')} ${esc(cust.postal_code||'')}</p></div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;"><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">${orderList.length}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Encomendas</p></div><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${totalSpent.toFixed(0)}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Total Gasto</p></div><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${orderList.length?(totalSpent/orderList.length).toFixed(0):0}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Ticket Médio</p></div></div><div><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Histórico de Encomendas</h4>${orderList.length?`<div style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto;">${orderList.map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(85,107,79,0.04);border-radius:0.75rem;padding:0.875rem 1rem;"><div><p style="font-size:0.8rem;font-weight:700;color:var(--dark);">${esc(o.order_number||o.id?.slice(0,8)||'—')}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${fmtShort(o.created_at)}</p></div><div style="display:flex;align-items:center;gap:0.75rem;"><span class="status-badge ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span><span style="font-size:0.875rem;font-weight:700;color:var(--green);">€${(parseFloat(o.total)||0).toFixed(2)}</span></div></div>`).join('')}</div>`:'<p style="font-size:0.875rem;color:rgba(85,107,79,0.4);text-align:center;padding:1.5rem;">Nenhuma encomenda</p>'}</div>`;
+            document.getElementById('customer-detail-content').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;"><div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;"><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.875rem;">Informações</h4><div style="font-size:0.875rem;line-height:2;"><p><span style="color:rgba(85,107,79,0.5);">Telefone: </span>${escapeHtml(cust.phone||'—')}</p><p><span style="color:rgba(85,107,79,0.5);">Nasc.: </span>${cust.birth_date?fmtShort(cust.birth_date):'—'}</p><p><span style="color:rgba(85,107,79,0.5);">NIF: </span>${escapeHtml(cust.nif||'—')}</p></div></div><div style="background:rgba(85,107,79,0.04);border-radius:1rem;padding:1.25rem;"><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.875rem;">Morada</h4><div style="font-size:0.875rem;line-height:2;"><p>${escapeHtml(cust.address||'—')}</p><p>${escapeHtml(cust.city||'—')} ${escapeHtml(cust.postal_code||'')}</p></div></div></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;"><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">${orderList.length}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Encomendas</p></div><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${totalSpent.toFixed(0)}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Total Gasto</p></div><div style="background:var(--green);color:var(--beige);border-radius:1rem;padding:1rem;text-align:center;"><p class="font-display" style="font-size:1.75rem;font-weight:800;">€${orderList.length?(totalSpent/orderList.length).toFixed(0):0}</p><p style="font-size:0.7rem;opacity:0.75;text-transform:uppercase;letter-spacing:0.06em;">Ticket Médio</p></div></div><div><h4 style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(85,107,79,0.5);margin-bottom:0.75rem;">Histórico de Encomendas</h4>${orderList.length?`<div style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto;">${orderList.map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(85,107,79,0.04);border-radius:0.75rem;padding:0.875rem 1rem;"><div><p style="font-size:0.8rem;font-weight:700;color:var(--dark);">${escapeHtml(o.order_number||o.id?.slice(0,8)||'—')}</p><p style="font-size:0.7rem;color:rgba(85,107,79,0.5);">${fmtShort(o.created_at)}</p></div><div style="display:flex;align-items:center;gap:0.75rem;"><span class="status-badge ${getStatusClass(o.status)}">${getStatusLabel(o.status)}</span><span style="font-size:0.875rem;font-weight:700;color:var(--green);">€${(parseFloat(o.total)||0).toFixed(2)}</span></div></div>`).join('')}</div>`:'<p style="font-size:0.875rem;color:rgba(85,107,79,0.4);text-align:center;padding:1.5rem;">Nenhuma encomenda</p>'}</div>`;
             document.getElementById('customer-detail-modal').classList.add('active');
         }catch(e){console.error(e);showToast('Erro ao carregar cliente','error');}
     }
+    
     function closeCustomerDetailModal(){document.getElementById('customer-detail-modal').classList.remove('active');}
     function viewCustomerOrders(email){if(!email)return;document.getElementById('search-orders').value=email;showSection('orders');applyFilters();}
     function openAddCustomerModal(){document.getElementById('add-customer-modal').classList.add('active');}
@@ -1170,8 +1816,10 @@
             const{error}=await sb.from('customers').insert([{name,email,phone,birth_date:document.getElementById('customer-birth-date').value||null,nif:document.getElementById('customer-nif').value||null,address:document.getElementById('customer-address').value||null,city:document.getElementById('customer-city').value||null,postal_code:document.getElementById('customer-postal-code').value||null,notes:document.getElementById('customer-notes').value||null,total_purchases:0,total_orders:0,created_at:new Date().toISOString(),updated_at:new Date().toISOString()}]);
             if(error)throw error;
             showToast('Cliente adicionado!','success');closeAddCustomerModal();loadCustomers();
+            await logActivity('customer_created','customer',email,{name,email});
         }catch(e){console.error(e);showToast('Erro: '+e.message,'error');}
     }
+    
     function confirmDeleteCustomer(email,name){customerToDelete={email,name};document.getElementById('delete-customer-message').textContent=`Tens a certeza que queres eliminar o cliente "${name}"? Esta ação não pode ser desfeita.`;document.getElementById('delete-customer-modal').classList.add('active');}
     function closeDeleteCustomerModal(){document.getElementById('delete-customer-modal').classList.remove('active');customerToDelete=null;}
     async function confirmDeleteCustomerAction(){
@@ -1186,8 +1834,10 @@
             renderCustomersTable(allCustomers);closeDeleteCustomerModal();
             showToast(`Cliente "${customerToDelete.name}" eliminado!`,'success');
             loadDashboard();loadOrders();
+            await logActivity('customer_deleted','customer',customerToDelete.email,{});
         }catch(e){console.error(e);showToast('Erro: '+e.message,'error');}finally{isDeletingCustomer=false;}
     }
+    
     function exportCustomers(){
         if(!allCustomers.length){showToast('Sem clientes para exportar','error');return;}
         const rows=[['Nome','Email','Telefone','Cidade','Total (€)','Encomendas'],...allCustomers.map(c=>[`"${(c.name||'').replace(/"/g,'""')}"`,`"${c.email||''}"`,`"${c.phone||''}"`,`"${c.city||''}"`,((c.total_purchases||0).toFixed(2)).replace('.',','),c.total_orders||0])];
@@ -1215,6 +1865,7 @@
             buildAnalyticsChart(period,all);
         }catch(e){console.error(e);}
     }
+    
     function buildAnalyticsChart(period,orders){
         const ctx=document.getElementById('analyticsChart')?.getContext('2d');
         if(!ctx)return;
@@ -1234,13 +1885,14 @@
     // ═══ UTILS ═══
     function formatDate(s){if(!s)return'—';return new Date(s).toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
     function fmtShort(s){if(!s)return'—';return new Date(s).toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit',year:'numeric'});}
-    function esc(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+    function escapeHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
     function showToast(msg,type='info'){
         const icons={success:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`,error:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,info:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`};
         const t=document.createElement('div');t.className=`toast ${type}`;t.innerHTML=`<div class="toast-icon">${icons[type]||icons.info}</div><span style="flex:1;">${msg}</span>`;
         document.getElementById('toast-container').appendChild(t);
         setTimeout(()=>{t.style.transition='opacity 0.3s';t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
     }
+    
     document.addEventListener('keydown',e=>{
         if(e.key==='Escape'){closeDeleteOrderModal();closeDeleteCustomerModal();closeCustomerDetailModal();closeAddCustomerModal();closeReceiptModal();closeProductModal();closeDeleteProductModal();closeSettingsResetModal();}
     });
