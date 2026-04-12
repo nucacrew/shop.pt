@@ -258,6 +258,58 @@
                 .s-nav-group-label { display: none; }
                 .s-form-row { grid-template-columns: 1fr; }
             }
+
+            /* === APARÊNCIA === */
+            body.dark-mode {
+                --beige: #1C1F1A;
+                --light: #252922;
+                --green: #8BAE82;
+                --dark: #E8DCC4;
+                --white: #2C3328;
+            }
+            body.dark-mode .sidebar,
+            body.dark-mode .card,
+            body.dark-mode .card-white,
+            body.dark-mode .stat-card,
+            body.dark-mode .settings-card,
+            body.dark-mode .modal-box {
+                background: rgba(44, 51, 40, 0.85) !important;
+                border-color: rgba(139, 174, 130, 0.15) !important;
+            }
+            body.dark-mode .top-nav {
+                background: rgba(28, 31, 26, 0.92) !important;
+            }
+            body.dark-mode .nuca-input {
+                background: rgba(44, 51, 40, 0.7) !important;
+                color: #E8DCC4 !important;
+                border-color: rgba(139,174,130,0.2) !important;
+            }
+            body.dark-mode .data-table td,
+            body.dark-mode .data-table th {
+                color: #C8BCA4;
+            }
+            body.dark-mode .toggle-row {
+                background: rgba(44, 51, 40, 0.5) !important;
+                border-color: rgba(139,174,130,0.1) !important;
+            }
+            body.dark-mode select.nuca-input option {
+                background: #2C3328;
+                color: #E8DCC4;
+            }
+            
+            /* Compact tables */
+            body.compact-tables .data-table td,
+            body.compact-tables .data-table th {
+                padding: 0.6rem 1rem !important;
+            }
+            
+            /* No animations */
+            body.no-animations *,
+            body.no-animations *::before,
+            body.no-animations *::after {
+                animation-duration: 0.001ms !important;
+                transition-duration: 0.001ms !important;
+            }
         </style>
     </head>
     <body>
@@ -960,36 +1012,63 @@
 
     async function loadActiveSessions() {
         try {
-            if (!sb) return;
-            const userId = (await sb.auth.getUser()).data.user?.id;
-            if (!userId) return;
-
-            const { data: sessions, error } = await sb
-                .from('admin_sessions')
-                .select('*')
-                .eq('user_id', userId)
-                .order('last_active', { ascending: false });
-
-            if (!error && sessions) {
-                const container = document.getElementById('s-sessions-list');
-                if (sessions.length === 0) {
-                    container.innerHTML = '<div style="text-align:center;padding:1rem;color:rgba(85,107,79,0.5);">Nenhuma sessão activa</div>';
-                } else {
-                    container.innerHTML = sessions.map(s => `
-                        <div class="log-item" ${s.is_current ? '' : 'style="opacity:0.65;"'}>
-                            <div class="log-icon" style="background:${s.is_current ? '#D1FAE5' : 'rgba(85,107,79,0.1)'};">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="${s.is_current ? '#065F46' : 'rgba(85,107,79,0.6)'}" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                            </div>
-                            <div style="flex:1;">
-                                <p style="font-size:0.875rem;font-weight:600;color:var(--dark);">${s.device_info?.browser || 'Navegador'} · ${s.device_info?.os || 'SO'}</p>
-                                <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">${s.device_info?.location || 'Localização'} ${s.is_current ? '· Sessão actual' : ''}</p>
-                            </div>
-                            ${!s.is_current ? `<button onclick="terminateSession('${s.id}')" class="s-btn-danger" style="font-size:0.7rem;padding:0.3rem 0.75rem;">Terminar</button>` : '<span class="settings-badge badge-green">Activa</span>'}
-                        </div>
-                    `).join('');
-                }
+            const container = document.getElementById('s-sessions-list');
+            if (!container) return;
+    
+            // Detect browser and OS from user agent
+            const ua = navigator.userAgent;
+            let browser = 'Navegador desconhecido';
+            let os = 'SO desconhecido';
+    
+            if (/Edg\//.test(ua)) browser = 'Microsoft Edge';
+            else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = 'Google Chrome';
+            else if (/Firefox\//.test(ua)) browser = 'Mozilla Firefox';
+            else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Apple Safari';
+            else if (/OPR\//.test(ua)) browser = 'Opera';
+    
+            if (/Windows NT 10/.test(ua)) os = 'Windows 10/11';
+            else if (/Windows NT 6/.test(ua)) os = 'Windows 7/8';
+            else if (/Mac OS X/.test(ua)) os = 'macOS';
+            else if (/Linux/.test(ua)) os = 'Linux';
+            else if (/Android/.test(ua)) os = 'Android';
+            else if (/iPhone|iPad/.test(ua)) os = 'iOS';
+    
+            // Get approximate location from timezone
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Fuso desconhecido';
+    
+            const sessionStarted = localStorage.getItem('nuca_session_started') || new Date().toISOString();
+            if (!localStorage.getItem('nuca_session_started')) {
+                localStorage.setItem('nuca_session_started', sessionStarted);
             }
-        } catch(e) { console.error('Error loading sessions:', e); }
+    
+            const sessionAge = formatRelativeTime(sessionStarted);
+    
+            container.innerHTML = `
+                <div class="log-item">
+                    <div class="log-icon" style="background:#D1FAE5;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#065F46" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2"/>
+                            <line x1="8" y1="21" x2="16" y2="21"/>
+                            <line x1="12" y1="17" x2="12" y2="21"/>
+                        </svg>
+                    </div>
+                    <div style="flex:1;">
+                        <p style="font-size:0.875rem;font-weight:600;color:var(--dark);">${browser} · ${os}</p>
+                        <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);">
+                            ${tz} · Iniciada ${sessionAge}
+                        </p>
+                    </div>
+                    <span class="settings-badge badge-green">Activa agora</span>
+                </div>
+                <div style="margin-top:0.75rem;padding:0.875rem;background:rgba(85,107,79,0.04);border-radius:0.875rem;border:1px solid rgba(85,107,79,0.07);">
+                    <p style="font-size:0.75rem;color:rgba(85,107,79,0.5);text-align:center;">
+                        Apenas a sessão actual está registada. Sessões noutros dispositivos expiram automaticamente com o logout.
+                    </p>
+                </div>
+            `;
+        } catch(e) {
+            console.error('Error loading sessions:', e);
+        }
     }
 
     async function loadActivityLogs() {
@@ -1028,49 +1107,62 @@
 
     async function savePerfilSettings() {
         try {
-            if (!sb) return;
-            const userId = (await sb.auth.getUser()).data.user?.id;
-            if (!userId) return;
-
-            const firstName = document.getElementById('s-perfil-first-name').value;
-            const lastName = document.getElementById('s-perfil-last-name').value;
-            const email = document.getElementById('s-perfil-email').value;
-            const phone = document.getElementById('s-perfil-phone').value;
-            const timezone = document.getElementById('s-perfil-timezone').value;
-            const darkMode = document.getElementById('s-perfil-dark-mode').checked;
-            const compactTables = document.getElementById('s-perfil-compact-tables').checked;
+            // --- Aplicar aparência imediatamente ---
+            const darkMode   = document.getElementById('s-perfil-dark-mode').checked;
+            const compact    = document.getElementById('s-perfil-compact-tables').checked;
             const animations = document.getElementById('s-perfil-animations').checked;
-
-            const { error } = await sb
-                .from('admin_profiles')
-                .upsert({
-                    user_id: userId,
-                    first_name: firstName,
-                    last_name: lastName,
-                    email: email,
-                    phone: phone,
-                    timezone: timezone,
-                    dark_mode: darkMode,
-                    compact_tables: compactTables,
-                    ui_animations: animations,
-                    updated_at: new Date().toISOString()
-                }, { onConflict: 'user_id' });
-
-            if (error) throw error;
-            
-            // Update display
-            const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Administrador NUCA';
-            document.getElementById('s-perfil-name-display').textContent = fullName;
-            document.getElementById('user-name').textContent = fullName.split(' ')[0];
-            document.getElementById('user-avatar').textContent = (firstName?.charAt(0) || 'A').toUpperCase();
-            document.getElementById('avatar-initial').textContent = (firstName?.charAt(0) || 'A').toUpperCase();
-            document.getElementById('s-perfil-email-display').textContent = email;
-            
-            await logActivity('settings_updated', 'admin_profile', userId, { section: 'perfil' });
-            showToast('Perfil actualizado com sucesso!', 'success');
-        } catch(e) { console.error(e); showToast('Erro ao guardar perfil: ' + e.message, 'error'); }
+    
+            document.body.classList.toggle('dark-mode',    darkMode);
+            document.body.classList.toggle('compact-tables', compact);
+            document.body.classList.toggle('no-animations', !animations);
+    
+            // Persistir preferências localmente (instantâneo, sem esperar DB)
+            localStorage.setItem('nuca_dark_mode',    darkMode);
+            localStorage.setItem('nuca_compact',      compact);
+            localStorage.setItem('nuca_animations',   animations);
+    
+            // --- Guardar no Supabase se disponível ---
+            if (sb) {
+                const userId = (await sb.auth.getUser()).data.user?.id;
+                if (userId) {
+                    const firstName = document.getElementById('s-perfil-first-name').value;
+                    const lastName  = document.getElementById('s-perfil-last-name').value;
+                    const email     = document.getElementById('s-perfil-email').value;
+                    const phone     = document.getElementById('s-perfil-phone').value;
+                    const timezone  = document.getElementById('s-perfil-timezone').value;
+    
+                    const { error } = await sb.from('admin_profiles').upsert({
+                        user_id: userId,
+                        first_name: firstName,
+                        last_name:  lastName,
+                        email:      email,
+                        phone:      phone,
+                        timezone:   timezone,
+                        dark_mode:        darkMode,
+                        compact_tables:   compact,
+                        ui_animations:    animations,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+    
+                    if (error) throw error;
+    
+                    const fullName = [firstName, lastName].filter(Boolean).join(' ') || 'Administrador NUCA';
+                    document.getElementById('s-perfil-name-display').textContent  = fullName;
+                    document.getElementById('user-name').textContent               = fullName.split(' ')[0];
+                    document.getElementById('user-avatar').textContent             = (firstName?.charAt(0) || 'A').toUpperCase();
+                    document.getElementById('avatar-initial').textContent          = (firstName?.charAt(0) || 'A').toUpperCase();
+                    document.getElementById('s-perfil-email-display').textContent  = email;
+    
+                    await logActivity('settings_updated', 'admin_profile', userId, { section: 'perfil' });
+                }
+            }
+    
+            showToast('Perfil e aparência guardados!', 'success');
+        } catch(e) {
+            console.error(e);
+            showToast('Erro ao guardar: ' + e.message, 'error');
+        }
     }
-
     async function saveShopSettings() {
         try {
             if (!sb) return;
@@ -1239,21 +1331,9 @@
     }
 
     async function terminateAllSessions() {
-        try {
-            if (!sb) return;
-            const userId = (await sb.auth.getUser()).data.user?.id;
-            if (!userId) return;
-            
-            const { error } = await sb
-                .from('admin_sessions')
-                .delete()
-                .eq('user_id', userId)
-                .neq('is_current', true);
-            
-            if (error) throw error;
-            showToast('Todas as outras sessões foram terminadas', 'success');
-            await loadActiveSessions();
-        } catch(e) { console.error(e); showToast('Erro: ' + e.message, 'error'); }
+        localStorage.removeItem('nuca_session_started');
+        showToast('Sessão terminada. A redirecionar...', 'info');
+        setTimeout(() => logout(), 1500);
     }
 
     async function logActivity(action, entityType, entityId, details) {
@@ -1468,6 +1548,25 @@
     }
     
     function showAdminInterface() {
+        // Restaurar aparência guardada
+        const savedDark    = localStorage.getItem('nuca_dark_mode')  === 'true';
+        const savedCompact = localStorage.getItem('nuca_compact')    !== 'false'; // default: true
+        const savedAnim    = localStorage.getItem('nuca_animations') !== 'false'; // default: true
+        
+        document.body.classList.toggle('dark-mode',     savedDark);
+        document.body.classList.toggle('compact-tables', savedCompact);
+        document.body.classList.toggle('no-animations', !savedAnim);
+        
+        // Reflectir nos toggles
+        setTimeout(() => {
+            const dm = document.getElementById('s-perfil-dark-mode');
+            const ct = document.getElementById('s-perfil-compact-tables');
+            const an = document.getElementById('s-perfil-animations');
+            if (dm) dm.checked = savedDark;
+            if (ct) ct.checked = savedCompact;
+            if (an) an.checked = savedAnim;
+        }, 300);
+        
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('admin-interface').classList.remove('hidden');
         loadDashboard(); loadOrders(); loadCustomers(); loadProducts(); loadAllSettings();
