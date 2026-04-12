@@ -1384,38 +1384,96 @@
 
     async function sChangePassword() {
         const current = document.getElementById('s-pw-current').value;
-        const newPw = document.getElementById('s-pw-new').value;
+        const newPw   = document.getElementById('s-pw-new').value;
         const confirm = document.getElementById('s-pw-confirm').value;
-        
+    
+        // ── Validações locais ──────────────────────────────────────
         if (!current || !newPw || !confirm) {
-            showToast('Preenche todos os campos', 'error');
-            return;
+            showToast('Preenche todos os campos', 'error'); return;
         }
         if (newPw !== confirm) {
-            showToast('As passwords não coincidem', 'error');
-            return;
+            showToast('As passwords não coincidem', 'error'); return;
         }
         if (newPw.length < 8) {
-            showToast('A password deve ter pelo menos 8 caracteres', 'error');
-            return;
+            showToast('A nova password deve ter pelo menos 8 caracteres', 'error'); return;
         }
-        
+        if (current === newPw) {
+            showToast('A nova password não pode ser igual à actual', 'error'); return;
+        }
+    
+        // ── UI: estado de carregamento ─────────────────────────────
+        const btn = document.querySelector('#s-section-seguranca .btn-primary');
+        const originalText = btn?.innerHTML;
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner" style="width:16px;height:16px;border-width:2px;border-color:rgba(216,198,165,0.3);border-top-color:var(--beige);"></div> A verificar...`;
+        }
+    
         try {
             if (!sb) throw new Error('Supabase não inicializado');
-            const { error } = await sb.auth.updateUser({ password: newPw });
-            if (error) throw error;
-            
+    
+            // ── Passo 1: Obter o email do utilizador atual ─────────
+            const { data: { user }, error: userErr } = await sb.auth.getUser();
+            if (userErr || !user) throw new Error('Sessão expirada. Por favor faz login novamente.');
+    
+            const email = user.email;
+            if (!email) throw new Error('Não foi possível obter o email da sessão actual.');
+    
+            // ── Passo 2: Re-autenticar com a password actual ───────
+            // Isto serve para confirmar que a password actual está correcta
+            if (btn) btn.innerHTML = `<div class="spinner" style="width:16px;height:16px;border-width:2px;border-color:rgba(216,198,165,0.3);border-top-color:var(--beige);"></div> A verificar password...`;
+    
+            const { error: signInErr } = await sb.auth.signInWithPassword({
+                email:    email,
+                password: current
+            });
+    
+            if (signInErr) {
+                // Password actual incorrecta
+                if (signInErr.message.includes('Invalid login') || signInErr.message.includes('invalid_credentials')) {
+                    throw new Error('Password actual incorrecta. Tenta novamente.');
+                }
+                throw signInErr;
+            }
+    
+            // ── Passo 3: Actualizar para a nova password ───────────
+            if (btn) btn.innerHTML = `<div class="spinner" style="width:16px;height:16px;border-width:2px;border-color:rgba(216,198,165,0.3);border-top-color:var(--beige);"></div> A actualizar...`;
+    
+            const { error: updateErr } = await sb.auth.updateUser({ password: newPw });
+    
+            if (updateErr) {
+                // Erro de reauthentication — raro após signInWithPassword mas pode acontecer
+                if (updateErr.message.includes('reauthentication')) {
+                    throw new Error('Sessão demasiado antiga. Faz logout e login novamente, e tenta outra vez.');
+                }
+                throw updateErr;
+            }
+    
+            // ── Sucesso ────────────────────────────────────────────
             showToast('Password actualizada com sucesso!', 'success');
+    
+            // Limpar campos
             document.getElementById('s-pw-current').value = '';
-            document.getElementById('s-pw-new').value = '';
+            document.getElementById('s-pw-new').value     = '';
             document.getElementById('s-pw-confirm').value = '';
-            for (let i = 1; i <= 4; i++) document.getElementById('s-sb' + i).style.background = 'rgba(85,107,79,0.12)';
-            document.getElementById('s-strength-label').style.display = 'none';
-            
-            await logActivity('password_changed', 'user', (await sb.auth.getUser()).data.user?.id, {});
+    
+            // Resetar barra de força
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('s-sb' + i).style.background = 'rgba(85,107,79,0.12)';
+            }
+            const lbl = document.getElementById('s-strength-label');
+            if (lbl) lbl.style.display = 'none';
+    
+            await logActivity('password_changed', 'user', user.id, {});
+    
         } catch(e) {
-            console.error(e);
+            console.error('Erro ao alterar password:', e);
             showToast('Erro: ' + e.message, 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         }
     }
 
