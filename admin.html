@@ -1619,43 +1619,176 @@
 
     // ═══ PRODUCTS ═══
     async function loadProducts() {
-        const grid=document.getElementById('products-grid');
-        if(grid)grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(85,107,79,0.4);"><div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;"><div class="spinner"></div><span style="font-size:0.875rem;">A carregar produtos...</span></div></div>`;
+        const grid = document.getElementById('products-grid');
+        if (grid) grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:rgba(85,107,79,0.4);"><div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;"><div class="spinner"></div><span style="font-size:0.875rem;">A carregar produtos...</span></div></div>`;
+        
         try {
-            if(!sb)throw new Error('Supabase não inicializado');
-            const{data,error}=await sb.from('products').select('*').order('created_at',{ascending:false});
-            if(error)throw error;
-            allProducts=data||[]; applyProductFilters();
-        } catch(e) { console.error(e); showToast('Erro ao carregar produtos: '+e.message,'error'); allProducts=[]; applyProductFilters(); }
+            if (!sb) throw new Error('Supabase não inicializado');
+            
+            // CORREÇÃO: Adicionar .select('*') explícito e verificar erro detalhadamente
+            const { data, error, status, statusText } = await sb
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            // Debug: mostrar no console o que está a acontecer
+            console.log('Supabase response:', { data, error, status, statusText, count: data?.length });
+            
+            if (error) {
+                console.error('Supabase error details:', error);
+                throw error;
+            }
+            
+            // CORREÇÃO: Garantir que allProducts sempre é um array, mesmo que data seja null
+            allProducts = data || [];
+            
+            // Se não há produtos, mostrar mensagem informativa
+            if (allProducts.length === 0) {
+                console.warn('Nenhum produto encontrado na base de dados. Verifica se RLS está desativado ou se há políticas para o role anon.');
+            }
+            
+            applyProductFilters();
+            
+        } catch (e) {
+            console.error('Erro completo ao carregar produtos:', e);
+            showToast('Erro ao carregar produtos: ' + e.message, 'error');
+            // CORREÇÃO: Inicializar como array vazio em caso de erro para não quebrar a UI
+            allProducts = [];
+            applyProductFilters();
+        }
     }
     
+    // CORREÇÃO: Melhorar a função applyProductFilters para garantir que funciona com arrays vazios
     function applyProductFilters() {
-        let filtered=[...allProducts];
-        if(currentProductFilter!=='all')filtered=filtered.filter(p=>p.status===currentProductFilter);
-        const q=(document.getElementById('search-products')?.value||'').toLowerCase();
-        if(q)filtered=filtered.filter(p=>(p.name||'').toLowerCase().includes(q)||(p.sku||'').toLowerCase().includes(q)||(p.category||'').toLowerCase().includes(q));
-        filteredProducts=filtered;
-        document.getElementById('products-count').textContent=filtered.length;
-        if(productView==='grid')renderProductsGrid(filtered); else renderProductsTable(filtered);
+        // Garantir que filteredProducts é sempre um array
+        let filtered = [...(allProducts || [])];
+        
+        if (currentProductFilter !== 'all') {
+            filtered = filtered.filter(p => p.status === currentProductFilter);
+        }
+        
+        const q = (document.getElementById('search-products')?.value || '').toLowerCase();
+        if (q) {
+            filtered = filtered.filter(p => 
+                (p.name || '').toLowerCase().includes(q) || 
+                (p.sku || '').toLowerCase().includes(q) || 
+                (p.category || '').toLowerCase().includes(q)
+            );
+        }
+        
+        filteredProducts = filtered;
+        
+        const countEl = document.getElementById('products-count');
+        if (countEl) countEl.textContent = filtered.length;
+        
+        if (productView === 'grid') {
+            renderProductsGrid(filtered);
+        } else {
+            renderProductsTable(filtered);
+        }
     }
     
-    function filterProducts(status) { currentProductFilter=status; document.querySelectorAll('[data-pfilter]').forEach(p=>p.classList.toggle('active',p.dataset.pfilter===status)); applyProductFilters(); }
-    function setProductView(view) {
-        productView=view;
-        document.getElementById('view-grid-btn').classList.toggle('active',view==='grid');
-        document.getElementById('view-table-btn').classList.toggle('active',view==='table');
-        document.getElementById('products-grid-view').style.display=view==='grid'?'block':'none';
-        document.getElementById('products-table-view').style.display=view==='table'?'block':'none';
-        applyProductFilters();
-    }
-    
+    // CORREÇÃO: Melhorar renderProductsGrid para mostrar estado vazio apropriado
     function renderProductsGrid(products) {
-        const grid=document.getElementById('products-grid');
-        if(!products.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;"><div style="width:72px;height:72px;background:rgba(85,107,79,0.08);border-radius:1.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div><h3 class="font-display" style="font-size:1.25rem;color:var(--dark);margin-bottom:0.5rem;">Sem produtos</h3><p style="font-size:0.875rem;color:rgba(85,107,79,0.45);margin-bottom:1.5rem;">Adiciona o primeiro produto ao catálogo NUCA.</p><button onclick="openAddProductModal()" class="btn-primary" style="margin:0 auto;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 4v16m8-8H4"/></svg>Novo Produto</button></div>`;return;}
-        grid.innerHTML=products.map(p=>{
-            const sizes=safeParseJSON(p.sizes),colors=safeParseJSON(p.colors);
-            const badgeClass=getPStatusClass(p.status),price=parseFloat(p.price)||0,salePrice=parseFloat(p.sale_price)||0;
-            return `<div class="product-card">${p.image_url?`<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" class="product-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="product-card-img-placeholder" style="display:none;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`:`<div class="product-card-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`}<div class="product-card-body"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.625rem;"><div style="flex:1;min-width:0;"><h4 style="font-weight:700;font-size:0.925rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(p.name||'—')}</h4>${p.sku?`<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);margin-top:0.1rem;">${escapeHtml(p.sku)}</p>`:''}</div><span class="status-badge ${badgeClass}" style="flex-shrink:0;">${getPStatusLabel(p.status)}</span></div><div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">${salePrice>0&&salePrice<price?`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${salePrice.toFixed(2)}</span><span style="font-size:0.8rem;color:rgba(85,107,79,0.4);text-decoration:line-through;">€${price.toFixed(2)}</span>`:`<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${price.toFixed(2)}</span>`}${p.stock!==null&&p.stock!==undefined?`<span style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-left:auto;">Stock: <strong style="color:${p.stock>0?'var(--dark)':'#EF4444'};">${p.stock}</strong></span>`:''}</div>${sizes.length?`<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.625rem;">${sizes.map(s=>`<span style="padding:0.15rem 0.5rem;background:rgba(85,107,79,0.08);border-radius:100px;font-size:0.65rem;font-weight:700;color:var(--dark);">${escapeHtml(s)}</span>`).join('')}</div>`:''}<div style="display:flex;gap:0.5rem;border-top:1px solid rgba(85,107,79,0.08);padding-top:0.875rem;"><button onclick="openEditProductModal('${p.id}')" class="btn-ghost" style="flex:1;justify-content:center;padding:0.5rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Editar</button><button onclick="confirmDeleteProduct('${p.id}','${escapeHtml(p.name||'produto')}')" class="action-btn danger" style="width:36px;height:36px;border-radius:0.625rem;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div></div></div>`;
+        const grid = document.getElementById('products-grid');
+        
+        // Garantir que products é um array
+        if (!Array.isArray(products)) products = [];
+        
+        if (!products.length) {
+            grid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;">
+                    <div style="width:72px;height:72px;background:rgba(85,107,79,0.08);border-radius:1.25rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-display" style="font-size:1.25rem;color:var(--dark);margin-bottom:0.5rem;">Sem produtos</h3>
+                    <p style="font-size:0.875rem;color:rgba(85,107,79,0.45);margin-bottom:1.5rem;">
+                        ${allProducts.length === 0 ? 'Não há produtos na base de dados. Verifica as permissões (RLS) no Supabase.' : 'Nenhum produto corresponde aos filtros aplicados.'}
+                    </p>
+                    <button onclick="openAddProductModal()" class="btn-primary" style="margin:0 auto;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Novo Produto
+                    </button>
+                </div>
+            `;
+            return;
+        }
+        
+        grid.innerHTML = products.map(p => {
+            const sizes = safeParseJSON(p.sizes);
+            const colors = safeParseJSON(p.colors);
+            const badgeClass = getPStatusClass(p.status);
+            const price = parseFloat(p.price) || 0;
+            const salePrice = parseFloat(p.sale_price) || 0;
+            
+            return `
+                <div class="product-card">
+                    ${p.image_url ? 
+                        `<img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" class="product-card-img" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="product-card-img-placeholder" style="display:none;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>` : 
+                        `<div class="product-card-img-placeholder">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(85,107,79,0.25)" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>`
+                    }
+                    <div class="product-card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.625rem;">
+                            <div style="flex:1;min-width:0;">
+                                <h4 style="font-weight:700;font-size:0.925rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                    ${escapeHtml(p.name || '—')}
+                                </h4>
+                                ${p.sku ? `<p style="font-size:0.7rem;color:rgba(85,107,79,0.45);margin-top:0.1rem;">${escapeHtml(p.sku)}</p>` : ''}
+                            </div>
+                            <span class="status-badge ${badgeClass}" style="flex-shrink:0;">${getPStatusLabel(p.status)}</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:0.625rem;margin-bottom:0.875rem;">
+                            ${salePrice > 0 && salePrice < price ? 
+                                `<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${salePrice.toFixed(2)}</span>
+                                <span style="font-size:0.8rem;color:rgba(85,107,79,0.4);text-decoration:line-through;">€${price.toFixed(2)}</span>` : 
+                                `<span style="font-size:1.1rem;font-weight:800;color:var(--green);">€${price.toFixed(2)}</span>`
+                            }
+                            ${p.stock !== null && p.stock !== undefined ? 
+                                `<span style="font-size:0.75rem;color:rgba(85,107,79,0.5);margin-left:auto;">
+                                    Stock: <strong style="color:${p.stock > 0 ? 'var(--dark)' : '#EF4444'};">${p.stock}</strong>
+                                </span>` : ''
+                            }
+                        </div>
+                        ${sizes.length ? 
+                            `<div style="display:flex;flex-wrap:wrap;gap:0.25rem;margin-bottom:0.625rem;">
+                                ${sizes.map(s => `<span style="padding:0.15rem 0.5rem;background:rgba(85,107,79,0.08);border-radius:100px;font-size:0.65rem;font-weight:700;color:var(--dark);">${escapeHtml(s)}</span>`).join('')}
+                            </div>` : ''
+                        }
+                        <div style="display:flex;gap:0.5rem;border-top:1px solid rgba(85,107,79,0.08);padding-top:0.875rem;">
+                            <button onclick="openEditProductModal('${p.id}')" class="btn-ghost" style="flex:1;justify-content:center;padding:0.5rem;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                Editar
+                            </button>
+                            <button onclick="confirmDeleteProduct('${p.id}','${escapeHtml(p.name || 'produto')}')" class="action-btn danger" style="width:36px;height:36px;border-radius:0.625rem;flex-shrink:0;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
         }).join('');
     }
     
