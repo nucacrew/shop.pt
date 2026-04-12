@@ -1327,6 +1327,28 @@
                 }).join('');
             }
         } catch(e) { console.error('Error loading activity logs:', e); }
+
+        function applyAppearanceNow() {
+            const darkMode   = document.getElementById('s-perfil-dark-mode')?.checked || false;
+            const compact    = document.getElementById('s-perfil-compact-tables')?.checked || false;
+            const animations = document.getElementById('s-perfil-animations')?.checked !== false;
+        
+            // Aplicar imediatamente ao body
+            document.body.classList.toggle('dark-mode',      darkMode);
+            document.body.classList.toggle('compact-tables', compact);
+            document.body.classList.toggle('no-animations',  !animations);
+        
+            // Persistir no localStorage (instantâneo, sem Supabase)
+            localStorage.setItem('nuca_dark_mode',  darkMode);
+            localStorage.setItem('nuca_compact',    compact);
+            localStorage.setItem('nuca_animations', animations);
+        
+            // Feedback visual imediato
+            showToast(
+                darkMode ? '🌙 Modo escuro activado' : '☀️ Modo claro activado',
+                'info'
+            );
+        }
     }
 
     async function savePerfilSettings() {
