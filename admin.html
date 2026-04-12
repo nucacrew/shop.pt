@@ -788,9 +788,9 @@
                                 <div class="settings-card">
                                     <div class="settings-card-header"><div><h3 class="settings-card-title">Aparência do Painel</h3><p class="settings-card-subtitle">Personaliza a tua experiência</p></div></div>
                                     <div style="display:flex;flex-direction:column;gap:0.75rem;">
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Modo escuro</h4><p>Alterna entre tema claro e escuro</p></div><label class="toggle"><input type="checkbox" id="s-perfil-dark-mode" onchange="savePerfilSettings()"><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Vista compacta nas tabelas</h4><p>Reduz o padding das linhas para ver mais dados</p></div><label class="toggle"><input type="checkbox" id="s-perfil-compact-tables" checked><span class="toggle-slider"></span></label></div>
-                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Animações de interface</h4><p>Transições e efeitos visuais</p></div><label class="toggle"><input type="checkbox" id="s-perfil-animations" checked><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Modo escuro</h4><p>Alterna entre tema claro e escuro</p></div><label class="toggle"><input type="checkbox" id="s-perfil-dark-mode" onchange="applyAppearanceNow()"><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Vista compacta nas tabelas</h4><p>Reduz o padding das linhas para ver mais dados</p></div><label class="toggle"><input type="checkbox" id="s-perfil-compact-tables" checked onchange="applyAppearanceNow()"><span class="toggle-slider"></span></label></div>
+                                        <div class="toggle-row"><div class="toggle-row-info"><h4>Animações de interface</h4><p>Transições e efeitos visuais</p></div><label class="toggle"><input type="checkbox" id="s-perfil-animations" checked onchange="applyAppearanceNow()"><span class="toggle-slider"></span></label></div>
                                     </div>
                                 </div>
                             </div>
