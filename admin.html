@@ -1746,7 +1746,21 @@
         }, 1200);
     }
     function sClearCache() { 
-        localStorage.removeItem('nuca_cache');
+        // Guardar preferências de aparência para não as perder
+        const dark = localStorage.getItem('nuca_dark_mode');
+        const compact = localStorage.getItem('nuca_compact');
+        const animations = localStorage.getItem('nuca_animations');
+        const session = localStorage.getItem('nuca_admin_session');
+        
+        // Limpar tudo
+        localStorage.clear();
+        
+        // Restaurar o que deve persistir
+        if (dark !== null) localStorage.setItem('nuca_dark_mode', dark);
+        if (compact !== null) localStorage.setItem('nuca_compact', compact);
+        if (animations !== null) localStorage.setItem('nuca_animations', animations);
+        if (session !== null) localStorage.setItem('nuca_admin_session', session);
+        
         showToast('Cache limpa com sucesso', 'success');
     }
     function openSettingsResetModal(msg) { 
