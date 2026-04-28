@@ -958,12 +958,30 @@
     }
     
     function selectProductSize(productId, size) {
-        selectedPackSizes[productId] = size;
-        const container = document.querySelector(`.pack-item-card:has([data-product="${productId}"]) .pack-selection-row`);
+    selectedPackSizes[productId] = size;
+    
+    // Atualizar UI - CORREÇÃO VISUAL
+    const container = document.querySelector(`.pack-item-card:has([data-product="${productId}"]) .pack-selection-row`);
         if (container) {
             const buttons = container.querySelectorAll('.pack-size-btn-styled');
-            buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.size === size));
+            buttons.forEach(btn => {
+                if (btn.dataset.size === size) {
+                    btn.classList.add('active');
+                    btn.style.backgroundColor = '#556B4F';
+                    btn.style.color = '#D8C6A5';
+                    btn.style.borderColor = '#556B4F';
+                } else {
+                    btn.classList.remove('active');
+                    btn.style.backgroundColor = '#fff';
+                    btn.style.color = '#556B4F';
+                    btn.style.borderColor = 'rgba(85,107,79,0.35)';
+                }
+            });
         }
+        
+        // Atualizar o select se for meias
+        const selectEl = document.querySelector(`.pack-meias-select[data-product="${productId}"]`);
+        if (selectEl) selectEl.value = size;
     }
     
     function selectProductColor(productId, color) {
