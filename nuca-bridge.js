@@ -332,88 +332,112 @@
         }, 100);
     }
 
+
     /* ═══════════════════════════════════════════════════════════
        9. CORREÇÕES DE PACKS — seleção visual + preços corretos
+       AGUARDA AS FUNÇÕES GLOBAIS ESTAREM PRONTAS
     ═══════════════════════════════════════════════════════════ */
     function patchPackFunctions() {
+        // Verifica a cada 200ms se as funções necessárias já existem
         const checkInterval = setInterval(() => {
-            // Aguardar que as variáveis do script principal estejam disponíveis
+            // Aguardar que as variáveis E FUNÇÕES do script principal estejam disponíveis
             if (typeof window.selectedPackSizes === 'undefined' ||
                 typeof window.currentPack === 'undefined' ||
-                typeof window.cart === 'undefined') return;
-
+                typeof window.cart === 'undefined' ||
+                typeof window.showNotification !== 'function' ||
+                typeof window.updateCartUI !== 'function' ||
+                typeof window.closePackModal !== 'function' ||
+                typeof window.toggleCart !== 'function' ||
+                typeof window.allProducts === 'undefined') {
+                return; // Ainda não está tudo pronto
+            }
+    
             clearInterval(checkInterval);
-
+            console.log('[nuca-bridge] A aplicar correções de packs...');
+    
             /* ── FIX: Seleção visual de tamanho ── */
-            window.selectProductSize = function(productId, size) {
-                window.selectedPackSizes[productId] = size;
-
-                // Botões de tamanho (S/M/L/XL...)
-                document.querySelectorAll(`.pack-size-btn-styled[data-product="${productId}"]`).forEach(btn => {
-                    const isActive = btn.dataset.size === size;
-                    btn.classList.toggle('active', isActive);
-                    btn.style.backgroundColor = isActive ? '#556B4F' : '#fff';
-                    btn.style.color             = isActive ? '#D8C6A5' : '#556B4F';
-                    btn.style.borderColor       = isActive ? '#556B4F' : 'rgba(85,107,79,0.35)';
-                });
-
-                // Select das meias
-                document.querySelectorAll('select.pack-meias-select').forEach(sel => {
-                    const oc = sel.getAttribute('onchange') || '';
-                    if (oc.includes(productId)) sel.value = size;
-                });
-            };
-
+            if (typeof window.selectProductSize !== 'function' || window.selectProductSize.toString().includes('pack-size-btn-styled')) {
+                window.selectProductSize = function(productId, size) {
+                    window.selectedPackSizes[productId] = size;
+    
+                    // Botões de tamanho (S/M/L/XL...)
+                    document.querySelectorAll(`.pack-size-btn-styled[data-product="${productId}"]`).forEach(btn => {
+                        const isActive = btn.dataset.size === size;
+                        btn.classList.toggle('active', isActive);
+                        btn.style.backgroundColor = isActive ? '#556B4F' : '#fff';
+                        btn.style.color = isActive ? '#D8C6A5' : '#556B4F';
+                        btn.style.borderColor = isActive ? '#556B4F' : 'rgba(85,107,79,0.35)';
+                    });
+    
+                    // Select das meias
+                    document.querySelectorAll('select.pack-meias-select').forEach(sel => {
+                        const oc = sel.getAttribute('onchange') || '';
+                        if (oc.includes(productId)) sel.value = size;
+                    });
+                };
+            }
+    
             /* ── FIX: Seleção visual de cor ── */
-            window.selectProductColor = function(productId, color) {
-                window.selectedPackColors[productId] = color;
-                document.querySelectorAll(`.pack-color-dot[data-product="${productId}"]`).forEach(dot => {
-                    dot.classList.toggle('active', dot.dataset.color === color);
-                });
-            };
-
+            if (typeof window.selectProductColor !== 'function' || window.selectProductColor.toString().includes('pack-color-dot')) {
+                window.selectProductColor = function(productId, color) {
+                    window.selectedPackColors[productId] = color;
+                    document.querySelectorAll(`.pack-color-dot[data-product="${productId}"]`).forEach(dot => {
+                        dot.classList.toggle('active', dot.dataset.color === color);
+                    });
+                };
+            }
+    
             /* ── FIX: Seleção visual de estação ── */
-            window.selectProductSeason = function(productId, season) {
-                window.selectedPackSeasons[productId] = season;
-                document.querySelectorAll(`.pack-season-btn[data-product="${productId}"]`).forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.season === season);
-                });
-            };
-
+            if (typeof window.selectProductSeason !== 'function' || window.selectProductSeason.toString().includes('pack-season-btn')) {
+                window.selectProductSeason = function(productId, season) {
+                    window.selectedPackSeasons[productId] = season;
+                    document.querySelectorAll(`.pack-season-btn[data-product="${productId}"]`).forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.season === season);
+                    });
+                };
+            }
+    
             /* ── FIX: Preços corretos com desconto do pack ── */
+            // Guarda a função original se existir
+            const originalAddPackToCart = window.addPackToCart;
+            
             window.addPackToCart = function() {
                 const pack = window.currentPack;
                 if (!pack) return;
-
+    
                 let allValid = true;
                 const packProducts = pack.items
                     .map(id => window.allProducts.find(p => p.id === id))
                     .filter(Boolean);
-
+    
+                // Validações
                 packProducts.forEach(product => {
                     if (pack.type === 'seasons' && product.hasSeasons && !window.selectedPackSeasons[product.id]) {
                         window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe a estação para ${product.name}.`);
-                        allValid = false; return;
+                        allValid = false;
+                        return;
                     }
                     if (product.colors && product.colors.length > 0 && !product.hasSeasons && !window.selectedPackColors[product.id]) {
                         window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe a cor para ${product.name}.`);
-                        allValid = false; return;
+                        allValid = false;
+                        return;
                     }
                     if (product.sizes && product.sizes[0] !== 'Único' && !window.selectedPackSizes[product.id]) {
                         window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe o tamanho para ${product.name}.`);
-                        allValid = false; return;
+                        allValid = false;
+                        return;
                     }
                 });
-
+    
                 if (!allValid) return;
-
+    
                 // Desconto aplicado a cada item proporcionalmente
                 const discountFactor = (100 - pack.discount) / 100;
-
+    
                 packProducts.forEach(product => {
                     let imageUrl = '', colorName = null;
                     let productName = product.name;
-
+    
                     if (pack.type === 'seasons' && product.hasSeasons && window.selectedPackSeasons[product.id]) {
                         const seasonKey = window.getSeasonKey(window.selectedPackSeasons[product.id]);
                         if (product.seasonImages && product.seasonImages[seasonKey]) {
@@ -431,7 +455,7 @@
                         const firstKey = Object.keys(product.images)[0];
                         imageUrl = product.images[firstKey]?.front || '';
                     }
-
+    
                     window.cart.push({
                         id: `${product.id}_pack_${Date.now()}_${Math.random()}`,
                         name: productName,
@@ -443,39 +467,42 @@
                         isPackItem: true
                     });
                 });
-
+    
                 // Itens grátis
                 if (pack.freeGiftIds && pack.freeGiftIds.length > 0) {
                     pack.freeGiftIds.forEach(id => {
                         const p = window.allProducts.find(x => x.id === id);
                         if (!p) return;
                         let img = '';
-                        if (p.images) { const k = Object.keys(p.images)[0]; img = p.images[k]?.front || ''; }
+                        if (p.images) { 
+                            const k = Object.keys(p.images)[0]; 
+                            img = p.images[k]?.front || ''; 
+                        }
                         window.cart.push({
                             id: p.id + '_free_' + Date.now(),
                             name: p.name + ' (Oferta)',
                             price: 0,
                             originalPrice: p.basePrice,
-                            size: null, color: null,
+                            size: null, 
+                            color: null,
                             image: img,
                             isPackItem: true,
                             isFreeGift: true
                         });
                     });
                 }
-
+    
                 window.updateCartUI();
-                window.closePackModal();
+                if (typeof window.closePackModal === 'function') window.closePackModal();
                 setTimeout(() => {
                     window.showNotification('success', 'Pack Adicionado!', `${pack.name} foi adicionado ao carrinho.`);
-                    window.toggleCart();
+                    if (typeof window.toggleCart === 'function') window.toggleCart();
                 }, 350);
             };
-
-            console.log('[nuca-bridge] Correções de packs aplicadas.');
-        }, 150);
+    
+            console.log('[nuca-bridge] Correções de packs aplicadas com sucesso.');
+        }, 200);
     }
-
     /* ═══════════════════════════════════════════════════════════
        10. EXPORTAÇÕES PÚBLICAS
     ═══════════════════════════════════════════════════════════ */
