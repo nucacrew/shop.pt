@@ -2,6 +2,7 @@
  * nuca-bridge.js
  * Liga o painel de admin (Supabase) à loja (index.html) e checkout.
  * Aplica: modo manutenção, envio, IVA, moeda, envio grátis, e regista zona de envio.
+ * Inclui correções: seleção visual de packs e cálculo correto de preços com desconto.
  */
 
 (function () {
@@ -54,7 +55,6 @@
                 return;
             }
 
-            // Carregar configurações da loja
             const { data: shop, error: shopError } = await _supabase
                 .from('shop_settings')
                 .select('maintenance_mode,maintenance_message,currency,prices_include_vat')
@@ -66,10 +66,8 @@
                 _settings.maintenanceMessage = shop.maintenance_message || _settings.maintenanceMessage;
                 _settings.currency = shop.currency || 'EUR';
                 _settings.pricesIncludeVat = shop.prices_include_vat !== false;
-                console.log('[nuca-bridge] Configurações da loja carregadas');
             }
 
-            // Carregar configurações de envio
             const { data: shipSettings, error: shipError } = await _supabase
                 .from('shipping_settings')
                 .select('free_shipping_enabled,free_shipping_threshold')
@@ -79,13 +77,8 @@
             if (!shipError && shipSettings) {
                 _settings.freeShippingEnabled = shipSettings.free_shipping_enabled || false;
                 _settings.freeShippingThreshold = parseFloat(shipSettings.free_shipping_threshold) || 50;
-                console.log('[nuca-bridge] Configurações de envio carregadas:', {
-                    freeEnabled: _settings.freeShippingEnabled,
-                    threshold: _settings.freeShippingThreshold
-                });
             }
 
-            // Carregar zonas de envio
             const { data: zones, error: zonesError } = await _supabase
                 .from('shipping_zones')
                 .select('*')
@@ -93,18 +86,12 @@
 
             if (!zonesError && zones && zones.length > 0) {
                 _settings.shippingZones = zones;
-                
-                // Definir preço de envio padrão (Portugal Continental)
-                const ptZone = zones.find(z => 
+                const ptZone = zones.find(z =>
                     z.name.toLowerCase().includes('portugal') ||
                     z.name.toLowerCase().includes('continental') ||
                     z.name.toLowerCase().includes('nacional')
                 ) || zones[0];
-                
-                if (ptZone) {
-                    _settings.defaultShippingPrice = parseFloat(ptZone.price) || 3.99;
-                }
-                console.log('[nuca-bridge] Zonas de envio carregadas:', zones.length);
+                if (ptZone) _settings.defaultShippingPrice = parseFloat(ptZone.price) || 3.99;
             } else {
                 useDefaultZones();
             }
@@ -143,24 +130,14 @@
     }
 
     function getShippingCost(netTotal, zoneId = null) {
-        // Se tiver zona específica, calcular com base nela
         if (zoneId && _settings.shippingZones.length > 0) {
             const zone = _settings.shippingZones.find(z => String(z.id) === String(zoneId));
             if (zone) {
-                const isNational = zone.name.toLowerCase().includes('portugal') || 
-                                   zone.name.toLowerCase().includes('continental') ||
-                                   zone.name.toLowerCase().includes('açores') ||
-                                   zone.name.toLowerCase().includes('madeira') ||
-                                   zone.name.toLowerCase().includes('ilhas');
-                
-                if (_settings.freeShippingEnabled && isNational && netTotal >= _settings.freeShippingThreshold) {
-                    return 0;
-                }
+                // Grátis para TODAS as zonas acima do threshold
+                if (_settings.freeShippingEnabled && netTotal >= _settings.freeShippingThreshold) return 0;
                 return parseFloat(zone.price) || 0;
             }
         }
-        
-        // Fallback para cálculo padrão
         if (_settings.freeShippingEnabled && netTotal >= _settings.freeShippingThreshold) return 0;
         return _settings.defaultShippingPrice;
     }
@@ -172,7 +149,6 @@
     function getZoneType(zoneId) {
         const zone = getZoneById(zoneId);
         if (!zone) return 'desconhecido';
-        
         const name = zone.name.toLowerCase();
         if (name.includes('continental')) return 'continental';
         if (name.includes('ilhas') || name.includes('açores') || name.includes('madeira')) return 'ilhas';
@@ -187,11 +163,8 @@
     async function registerOrderZone(orderId, zoneId, shippingAddress) {
         try {
             if (!_supabase) return false;
-            
             const zone = getZoneById(zoneId);
             const zoneType = getZoneType(zoneId);
-            
-            // Atualizar a encomenda com a zona de envio
             const { error } = await _supabase
                 .from('orders')
                 .update({
@@ -203,10 +176,7 @@
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', orderId);
-            
             if (error) throw error;
-            
-            console.log('[nuca-bridge] Zona de envio registada:', { orderId, zoneId, zoneType });
             return true;
         } catch (err) {
             console.error('[nuca-bridge] Erro ao registar zona de envio:', err);
@@ -222,7 +192,6 @@
         const shipping = getShippingCost(net);
         const total = net + shipping;
 
-        // Atualizar valor de envio no carrinho
         const shippingEl = document.getElementById('cart-shipping-value');
         if (shippingEl) {
             if (shipping === 0) {
@@ -234,7 +203,6 @@
             }
         }
 
-        // Atualizar linha de progresso para envio grátis
         const threshEl = document.getElementById('cart-shipping-threshold');
         if (threshEl && _settings.freeShippingEnabled) {
             if (shipping > 0) {
@@ -249,11 +217,9 @@
             threshEl.style.display = 'none';
         }
 
-        // Atualizar total final
         const totalEl = document.getElementById('cart-total');
         if (totalEl) totalEl.textContent = formatCurrency(total);
 
-        // Atualizar linha de IVA
         const vatRow = document.getElementById('cart-vat-row');
         const vatLabel = document.getElementById('cart-vat-label');
         if (vatRow && vatLabel) {
@@ -265,11 +231,9 @@
             }
         }
 
-        // Atualizar subtotal se existir elemento
         const subtotalEl = document.getElementById('cart-subtotal');
         if (subtotalEl) subtotalEl.textContent = formatCurrency(net);
-        
-        // Atualizar desconto
+
         const discountEl = document.getElementById('cart-discount');
         if (discountEl) {
             const originalTotal = window.cart?.reduce((s, item) => s + (item.originalPrice || item.price), 0) || net;
@@ -283,15 +247,13 @@
             }
         }
 
-        // Notificar listeners (para checkout, etc.)
         notifyListeners('shippingUpdated', { net, shipping, total });
     }
 
     function updateMarqueeMessage() {
         if (!_settings.freeShippingEnabled) return;
         const threshold = _settings.freeShippingThreshold;
-        const message = `ENVIO GRÁTIS EM COMPRAS ACIMA DE ${formatCurrency(threshold)} • PEÇAS ESSENCIAIS • DESIGN ATEMPORAL • COLEÇÃO ESTAÇÕES DO ANO •&nbsp;`;
-        
+        const message = `ENVIO GRÁTIS EM COMPRAS ACIMA DE ${formatCurrency(threshold)} — TODAS AS ZONAS • PEÇAS ESSENCIAIS • DESIGN ATEMPORAL • COLEÇÃO ESTAÇÕES DO ANO •&nbsp;`;
         document.querySelectorAll('.marquee-content').forEach(el => {
             el.innerHTML = message.repeat(2);
         });
@@ -300,12 +262,9 @@
     function applyMaintenanceMode() {
         const overlay = document.getElementById('nuca-maintenance-overlay');
         if (!overlay) return;
-        
         if (_settings.maintenanceMode) {
             const msgEl = document.getElementById('nuca-maintenance-msg');
-            if (msgEl && _settings.maintenanceMessage) {
-                msgEl.textContent = _settings.maintenanceMessage;
-            }
+            if (msgEl && _settings.maintenanceMessage) msgEl.textContent = _settings.maintenanceMessage;
             overlay.style.display = 'flex';
             document.body.style.overflow = 'hidden';
         } else {
@@ -324,9 +283,7 @@
     function notifyListeners(event, data) {
         _listeners.forEach(l => {
             if (l.event === event) {
-                try {
-                    l.callback(data);
-                } catch (e) {
+                try { l.callback(data); } catch (e) {
                     console.error(`[nuca-bridge] Erro no listener ${event}:`, e);
                 }
             }
@@ -364,44 +321,172 @@
                     if (_orig) _orig();
                     return;
                 }
-                
                 const net = getCartNet();
                 const shipping = getShippingCost(net);
                 const cartParam = encodeURIComponent(JSON.stringify(window.cart));
                 const zonesParam = encodeURIComponent(JSON.stringify(_settings.shippingZones));
-                const freeShippingParam = _settings.freeShippingEnabled ? 
-                    `&freeShipping=${_settings.freeShippingThreshold}` : '';
-                
+                const freeShippingParam = _settings.freeShippingEnabled
+                    ? `&freeShipping=${_settings.freeShippingThreshold}` : '';
                 window.location.href = `checkout.html?cart=${cartParam}&shipping=${shipping}&currency=${_settings.currency}&zones=${zonesParam}${freeShippingParam}`;
             };
         }, 100);
     }
 
     /* ═══════════════════════════════════════════════════════════
-       9. EXPORTAÇÕES PÚBLICAS PARA CHECKOUT
+       9. CORREÇÕES DE PACKS — seleção visual + preços corretos
     ═══════════════════════════════════════════════════════════ */
-    function getShippingZones() {
-        return [..._settings.shippingZones];
-    }
+    function patchPackFunctions() {
+        const checkInterval = setInterval(() => {
+            // Aguardar que as variáveis do script principal estejam disponíveis
+            if (typeof window.selectedPackSizes === 'undefined' ||
+                typeof window.currentPack === 'undefined' ||
+                typeof window.cart === 'undefined') return;
 
-    function isFreeShippingEnabled() {
-        return _settings.freeShippingEnabled;
-    }
+            clearInterval(checkInterval);
 
-    function getFreeShippingThreshold() {
-        return _settings.freeShippingThreshold;
-    }
+            /* ── FIX: Seleção visual de tamanho ── */
+            window.selectProductSize = function(productId, size) {
+                window.selectedPackSizes[productId] = size;
 
-    function getSettings() {
-        return { ..._settings };
-    }
+                // Botões de tamanho (S/M/L/XL...)
+                document.querySelectorAll(`.pack-size-btn-styled[data-product="${productId}"]`).forEach(btn => {
+                    const isActive = btn.dataset.size === size;
+                    btn.classList.toggle('active', isActive);
+                    btn.style.backgroundColor = isActive ? '#556B4F' : '#fff';
+                    btn.style.color             = isActive ? '#D8C6A5' : '#556B4F';
+                    btn.style.borderColor       = isActive ? '#556B4F' : 'rgba(85,107,79,0.35)';
+                });
 
-    async function refreshSettings() {
-        await loadSettings();
+                // Select das meias
+                document.querySelectorAll('select.pack-meias-select').forEach(sel => {
+                    const oc = sel.getAttribute('onchange') || '';
+                    if (oc.includes(productId)) sel.value = size;
+                });
+            };
+
+            /* ── FIX: Seleção visual de cor ── */
+            window.selectProductColor = function(productId, color) {
+                window.selectedPackColors[productId] = color;
+                document.querySelectorAll(`.pack-color-dot[data-product="${productId}"]`).forEach(dot => {
+                    dot.classList.toggle('active', dot.dataset.color === color);
+                });
+            };
+
+            /* ── FIX: Seleção visual de estação ── */
+            window.selectProductSeason = function(productId, season) {
+                window.selectedPackSeasons[productId] = season;
+                document.querySelectorAll(`.pack-season-btn[data-product="${productId}"]`).forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.season === season);
+                });
+            };
+
+            /* ── FIX: Preços corretos com desconto do pack ── */
+            window.addPackToCart = function() {
+                const pack = window.currentPack;
+                if (!pack) return;
+
+                let allValid = true;
+                const packProducts = pack.items
+                    .map(id => window.allProducts.find(p => p.id === id))
+                    .filter(Boolean);
+
+                packProducts.forEach(product => {
+                    if (pack.type === 'seasons' && product.hasSeasons && !window.selectedPackSeasons[product.id]) {
+                        window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe a estação para ${product.name}.`);
+                        allValid = false; return;
+                    }
+                    if (product.colors && product.colors.length > 0 && !product.hasSeasons && !window.selectedPackColors[product.id]) {
+                        window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe a cor para ${product.name}.`);
+                        allValid = false; return;
+                    }
+                    if (product.sizes && product.sizes[0] !== 'Único' && !window.selectedPackSizes[product.id]) {
+                        window.showNotification('warning', 'Seleção incompleta', `Por favor escolhe o tamanho para ${product.name}.`);
+                        allValid = false; return;
+                    }
+                });
+
+                if (!allValid) return;
+
+                // Desconto aplicado a cada item proporcionalmente
+                const discountFactor = (100 - pack.discount) / 100;
+
+                packProducts.forEach(product => {
+                    let imageUrl = '', colorName = null;
+                    let productName = product.name;
+
+                    if (pack.type === 'seasons' && product.hasSeasons && window.selectedPackSeasons[product.id]) {
+                        const seasonKey = window.getSeasonKey(window.selectedPackSeasons[product.id]);
+                        if (product.seasonImages && product.seasonImages[seasonKey]) {
+                            imageUrl = product.seasonImages[seasonKey]?.front || '';
+                        }
+                        colorName = window.seasonColors[window.selectedPackSeasons[product.id]]?.name;
+                        productName += ` - ${window.selectedPackSeasons[product.id]}`;
+                    } else if (window.selectedPackColors[product.id]) {
+                        const colorObj = product.colors.find(c => c.name === window.selectedPackColors[product.id]);
+                        if (colorObj && product.images[colorObj.key]) {
+                            imageUrl = product.images[colorObj.key]?.front || '';
+                        }
+                        colorName = window.selectedPackColors[product.id];
+                    } else if (product.images) {
+                        const firstKey = Object.keys(product.images)[0];
+                        imageUrl = product.images[firstKey]?.front || '';
+                    }
+
+                    window.cart.push({
+                        id: `${product.id}_pack_${Date.now()}_${Math.random()}`,
+                        name: productName,
+                        price: parseFloat((product.basePrice * discountFactor).toFixed(2)),
+                        originalPrice: product.basePrice,
+                        size: window.selectedPackSizes[product.id] || (product.sizes && product.sizes[0] === 'Único' ? 'Único' : null),
+                        color: colorName,
+                        image: imageUrl,
+                        isPackItem: true
+                    });
+                });
+
+                // Itens grátis
+                if (pack.freeGiftIds && pack.freeGiftIds.length > 0) {
+                    pack.freeGiftIds.forEach(id => {
+                        const p = window.allProducts.find(x => x.id === id);
+                        if (!p) return;
+                        let img = '';
+                        if (p.images) { const k = Object.keys(p.images)[0]; img = p.images[k]?.front || ''; }
+                        window.cart.push({
+                            id: p.id + '_free_' + Date.now(),
+                            name: p.name + ' (Oferta)',
+                            price: 0,
+                            originalPrice: p.basePrice,
+                            size: null, color: null,
+                            image: img,
+                            isPackItem: true,
+                            isFreeGift: true
+                        });
+                    });
+                }
+
+                window.updateCartUI();
+                window.closePackModal();
+                setTimeout(() => {
+                    window.showNotification('success', 'Pack Adicionado!', `${pack.name} foi adicionado ao carrinho.`);
+                    window.toggleCart();
+                }, 350);
+            };
+
+            console.log('[nuca-bridge] Correções de packs aplicadas.');
+        }, 150);
     }
 
     /* ═══════════════════════════════════════════════════════════
-       10. INICIALIZAÇÃO
+       10. EXPORTAÇÕES PÚBLICAS
+    ═══════════════════════════════════════════════════════════ */
+    function getShippingZones() { return [..._settings.shippingZones]; }
+    function isFreeShippingEnabled() { return _settings.freeShippingEnabled; }
+    function getFreeShippingThreshold() { return _settings.freeShippingThreshold; }
+    function getSettings() { return { ..._settings }; }
+    async function refreshSettings() { await loadSettings(); }
+
+    /* ═══════════════════════════════════════════════════════════
+       11. INICIALIZAÇÃO
     ═══════════════════════════════════════════════════════════ */
     function init() {
         if (document.readyState === 'loading') {
@@ -410,46 +495,31 @@
                 loadSettings();
                 patchUpdateCartUI();
                 patchCheckout();
+                patchPackFunctions();
             });
         } else {
             initSupabase();
             loadSettings();
             patchUpdateCartUI();
             patchCheckout();
+            patchPackFunctions();
         }
     }
 
     init();
 
     /* ═══════════════════════════════════════════════════════════
-       11. API PÚBLICA
+       12. API PÚBLICA
     ═══════════════════════════════════════════════════════════ */
     window.nucaBridge = {
-        // Configurações
-        getSettings,
-        refreshSettings,
-        getShippingZones,
-        isFreeShippingEnabled,
-        getFreeShippingThreshold,
-        
-        // Cálculos
-        getShippingCost,
-        formatCurrency,
-        getZoneById,
-        getZoneType,
-        
-        // Registo de zona na encomenda
+        getSettings, refreshSettings,
+        getShippingZones, isFreeShippingEnabled, getFreeShippingThreshold,
+        getShippingCost, formatCurrency, getZoneById, getZoneType,
         registerOrderZone,
-        
-        // UI
         updateShippingUI,
-        
-        // Eventos
         addListener,
-        
-        // Dados
         getCartNet
     };
 
-    console.log('[nuca-bridge] Inicializado com sucesso');
+    console.log('[nuca-bridge] Inicializado com sucesso.');
 })();
