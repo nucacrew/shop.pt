@@ -99,7 +99,7 @@
             .variant-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
             .nuca-select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23556B4F' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; cursor: pointer; transition: all 0.2s ease; }
             .nuca-select:focus { outline: none; border-color: #556B4F; box-shadow: 0 0 0 3px rgba(85,107,79,0.1); }
-            .size-btn, .pack-size-btn { transition: all 0.2s ease; }
+            .size-btn, .pack-size-btn-styled { transition: all 0.2s ease; cursor: pointer; }
             .pack-tag-star { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(216,198,165,0.2); padding: 0.25rem 0.75rem; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
             .pack-tag-star svg { width: 12px; height: 12px; stroke: #D8C6A5; stroke-width: 2; fill: none; }
             html, body { overflow-x: hidden; width: 100%; max-width: 100%; }
@@ -826,8 +826,8 @@
         cart.push({
             id: currentProduct.id + (selectedSeason || '') + (selectedColor !== null && currentProduct.colors ? currentProduct.colors[selectedColor]?.name : ''),
             name: currentProduct.name + (selectedSeason ? ` - ${selectedSeason}` : ''),
-            price: currentProduct.basePrice,  // ← guarda apenas o preço final
-            originalPrice: currentProduct.basePrice, // ← para tracking de desconto
+            price: currentProduct.basePrice,
+            originalPrice: currentProduct.basePrice,
             size: selectedSize,
             color: colorName,
             image: imageUrl
@@ -1002,14 +1002,15 @@
     }
     
     function selectProductSize(productId, size) {
-    selectedPackSizes[productId] = size;
-    
-    // Atualizar UI - CORREÇÃO VISUAL
-    const container = document.querySelector(`.pack-item-card:has([data-product="${productId}"]) .pack-selection-row`);
-        if (container) {
-            const buttons = container.querySelectorAll('.pack-size-btn-styled');
+        selectedPackSizes[productId] = size;
+        
+        // CORREÇÃO: atualizar UI dos botões de tamanho no pack
+        const itemCard = document.querySelector(`.pack-item-card:has([data-product="${productId}"])`);
+        if (itemCard) {
+            const buttons = itemCard.querySelectorAll('.pack-size-btn-styled');
             buttons.forEach(btn => {
-                if (btn.dataset.size === size) {
+                const btnSize = btn.getAttribute('data-size');
+                if (btnSize === size) {
                     btn.classList.add('active');
                     btn.style.backgroundColor = '#556B4F';
                     btn.style.color = '#D8C6A5';
@@ -1024,25 +1025,38 @@
         }
         
         // Atualizar o select se for meias
-        const selectEl = document.querySelector(`.pack-meias-select[data-product="${productId}"]`);
+        const selectEl = document.querySelector(`.pack-meias-select[onchange*="${productId}"]`);
         if (selectEl) selectEl.value = size;
     }
     
     function selectProductColor(productId, color) {
         selectedPackColors[productId] = color;
-        const container = document.querySelector(`.pack-item-card:has([data-product="${productId}"]) .pack-selection-row`);
-        if (container) {
-            const dots = container.querySelectorAll('.pack-color-dot');
-            dots.forEach(dot => dot.classList.toggle('active', dot.dataset.color === color));
+        const itemCard = document.querySelector(`.pack-item-card:has([data-product="${productId}"])`);
+        if (itemCard) {
+            const dots = itemCard.querySelectorAll('.pack-color-dot');
+            dots.forEach(dot => {
+                if (dot.getAttribute('data-color') === color) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
         }
     }
     
     function selectProductSeason(productId, season) {
         selectedPackSeasons[productId] = season;
-        const container = document.querySelector(`.pack-item-card:has([data-product="${productId}"]) .pack-selection-row`);
-        if (container) {
-            const btns = container.querySelectorAll('.pack-season-btn');
-            btns.forEach(btn => btn.classList.toggle('active', btn.dataset.season === season));
+        const itemCard = document.querySelector(`.pack-item-card:has([data-product="${productId}"])`);
+        if (itemCard) {
+            const btns = itemCard.querySelectorAll('.pack-season-btn');
+            btns.forEach(btn => {
+                const btnSeason = btn.getAttribute('data-season');
+                if (btnSeason === season) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
     }
     
@@ -1070,6 +1084,7 @@
         
         if (!allValid) return;
         
+        // Adicionar cada produto do pack ao carrinho com o preço correto (preço original individual)
         packProducts.forEach(product => {
             let imageUrl = '';
             let colorName = null;
@@ -1098,6 +1113,7 @@
                 id: `${product.id}_pack_${Date.now()}_${Math.random()}`,
                 name: productName,
                 price: finalPrice,
+                originalPrice: finalPrice,
                 size: selectedPackSizes[product.id] || (product.sizes && product.sizes[0] === 'Único' ? 'Único' : null),
                 color: colorName,
                 image: imageUrl,
@@ -1105,6 +1121,7 @@
             });
         });
         
+        // Adicionar ofertas gratuitas com preço 0
         if (currentPack.freeGiftIds && currentPack.freeGiftIds.length > 0) {
             currentPack.freeGiftIds.forEach(id => {
                 const p = allProducts.find(x => x.id === id);
@@ -1128,7 +1145,7 @@
         updateCartUI();
         closePackModal();
         setTimeout(() => {
-            showNotification('success', 'Pack Adicionado!', `${currentPack.name} foi adicionado ao carrinho.`);
+            showNotification('success', 'Pack Adicionado!', `${currentPack.name} foi adicionado ao carrinho. O desconto já foi aplicado.`);
             toggleCart();
         }, 350);
     }
@@ -1189,14 +1206,11 @@
                 </div>
             `).join('');
             
-            // CORREÇÃO: Calcular subtotal diretamente do item.price (não originalPrice)
+            // Calcular subtotal corretamente pelos preços individuais
             const subtotal = cart.reduce((s, item) => s + parseFloat(item.price), 0);
-            // Calcular desconto apenas se existir originalPrice
-            const originalTotal = cart.reduce((s, item) => s + (item.originalPrice || item.price), 0);
-            const discount = originalTotal - subtotal;
             
             subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
-            discountEl.textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            discountEl.textContent = `€0.00`;
             totalEl.textContent = `€${subtotal.toFixed(2)}`;
         }
         
