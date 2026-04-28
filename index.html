@@ -795,7 +795,51 @@
     function selectColor(index){selectedColor=index;document.querySelectorAll('.variant-thumbnail').forEach((t,i)=>t.classList.toggle('active',i===index));document.querySelectorAll('#modal-colors .color-selector').forEach((b,i)=>b.classList.toggle('active',i===index));if(currentProduct&&currentProduct.images&&currentProduct.colors){const key=currentProduct.colors[index].key;const imgs=currentProduct.images[key];if(imgs){const galleryImgs=document.querySelectorAll('.gallery-image');if(galleryImgs[0])galleryImgs[0].src=imgs.front;if(galleryImgs[1]&&imgs.back)galleryImgs[1].src=imgs.back;}}}
     function renderSizeSelector(){const container=document.getElementById('modal-sizes');const sizeLabel=document.getElementById('size-label');if(currentProduct.sizes&&currentProduct.sizes.length===1&&currentProduct.sizes[0]==='Único'){sizeLabel.textContent='Tamanho';container.innerHTML='<span class="inline-block px-4 py-2 bg-nuca-green/10 text-nuca-green rounded-full text-sm font-bold">Único</span>';selectedSize='Único';return;}if(currentProduct.id.includes('meias')){sizeLabel.textContent='Tamanho (EU) *';container.innerHTML=`<select id="meias-size-select" onchange="selectSize(this.value)" class="nuca-select w-40 p-2.5 border-2 border-nuca-green rounded-lg bg-white text-nuca-green text-sm font-bold"><option value="" selected disabled>Tamanho</option>${currentProduct.sizes.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;}else{sizeLabel.textContent='Tamanho *';container.innerHTML=currentProduct.sizes.map(s=>`<button onclick="selectSize('${s}')" class="size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold transition-all text-sm ${selectedSize===s?'active':'text-nuca-green'}">${s}</button>`).join('');}}
     function selectSize(size){selectedSize=size;renderSizeSelector();}
-    function addToCartFromModal(){if(currentProduct.hasSeasons&&!selectedSeason){showNotification('warning','Seleciona uma estação','Por favor escolhe a estação que preferes.');return;}if(!currentProduct.noColorSelection&&currentProduct.colors&&currentProduct.colors.length>0&&selectedColor===null){showNotification('warning','Seleciona uma cor','Por favor escolhe a cor que preferes.');return;}if(currentProduct.sizes&&currentProduct.sizes[0]!=='Único'&&selectedSize===null){showNotification('warning','Seleciona um tamanho','Por favor escolhe o tamanho que preferes.');return;}let imageUrl='',colorName=null;if(currentProduct.hasSeasons&&selectedSeason&&currentProduct.seasonImages){const k=getSeasonKey(selectedSeason);imageUrl=currentProduct.seasonImages[k]?.front||'';colorName=seasonColors[selectedSeason]?.name;}else if(selectedColor!==null&&currentProduct.images&&currentProduct.colors){const k=currentProduct.colors[selectedColor].key;imageUrl=currentProduct.images[k]?.front||'';colorName=currentProduct.colors[selectedColor].name;}else if(currentProduct.images){imageUrl=currentProduct.images[Object.keys(currentProduct.images)[0]]?.front||'';}cart.push({id:currentProduct.id+(selectedSeason||'')+(selectedColor!==null&&currentProduct.colors?currentProduct.colors[selectedColor]?.name:''),name:currentProduct.name+(selectedSeason?` - ${selectedSeason}`:''),price:currentProduct.basePrice,size:selectedSize,color:colorName,image:imageUrl});updateCartUI();closeProductModal();setTimeout(()=>{showNotification('success','Adicionado!',`${currentProduct.name} foi adicionado ao carrinho.`);toggleCart();},350);}
+    function addToCartFromModal() {
+        if (currentProduct.hasSeasons && !selectedSeason) {
+            showNotification('warning', 'Seleciona uma estação', 'Por favor escolhe a estação que preferes.');
+            return;
+        }
+        if (!currentProduct.noColorSelection && currentProduct.colors && currentProduct.colors.length > 0 && selectedColor === null) {
+            showNotification('warning', 'Seleciona uma cor', 'Por favor escolhe a cor que preferes.');
+            return;
+        }
+        if (currentProduct.sizes && currentProduct.sizes[0] !== 'Único' && selectedSize === null) {
+            showNotification('warning', 'Seleciona um tamanho', 'Por favor escolhe o tamanho que preferes.');
+            return;
+        }
+        
+        let imageUrl = '', colorName = null;
+        
+        if (currentProduct.hasSeasons && selectedSeason && currentProduct.seasonImages) {
+            const k = getSeasonKey(selectedSeason);
+            imageUrl = currentProduct.seasonImages[k]?.front || '';
+            colorName = seasonColors[selectedSeason]?.name;
+        } else if (selectedColor !== null && currentProduct.images && currentProduct.colors) {
+            const k = currentProduct.colors[selectedColor].key;
+            imageUrl = currentProduct.images[k]?.front || '';
+            colorName = currentProduct.colors[selectedColor].name;
+        } else if (currentProduct.images) {
+            imageUrl = currentProduct.images[Object.keys(currentProduct.images)[0]]?.front || '';
+        }
+        
+        cart.push({
+            id: currentProduct.id + (selectedSeason || '') + (selectedColor !== null && currentProduct.colors ? currentProduct.colors[selectedColor]?.name : ''),
+            name: currentProduct.name + (selectedSeason ? ` - ${selectedSeason}` : ''),
+            price: currentProduct.basePrice,  // ← guarda apenas o preço final
+            originalPrice: currentProduct.basePrice, // ← para tracking de desconto
+            size: selectedSize,
+            color: colorName,
+            image: imageUrl
+        });
+        
+        updateCartUI();
+        closeProductModal();
+        setTimeout(() => {
+            showNotification('success', 'Adicionado!', `${currentProduct.name} foi adicionado ao carrinho.`);
+            toggleCart();
+        }, 350);
+    }
     function switchPackTab(tab){document.getElementById('tab-nuca').classList.toggle('active',tab==='nuca');document.getElementById('tab-seasons').classList.toggle('active',tab==='seasons');document.getElementById('packs-nuca-section').classList.toggle('active',tab==='nuca');document.getElementById('packs-seasons-section').classList.toggle('active',tab==='seasons');document.getElementById('tab-nuca').classList.toggle('text-nuca-green',tab!=='nuca');document.getElementById('tab-seasons').classList.toggle('text-nuca-green',tab!=='seasons');}
     function renderPacks(){renderPackGrid('packs-nuca-grid',packs.nuca);renderPackGrid('packs-seasons-grid',packs.seasons);}
     function renderPackGrid(gridId,packList){const grid=document.getElementById(gridId);grid.innerHTML=packList.map(pack=>{const packProducts=pack.items.map(id=>allProducts.find(p=>p.id===id));const thumbs=packProducts.slice(0,3).map(p=>{let img='';if(p.images){const k=Object.keys(p.images)[0];img=p.images[k]?.front||'';}return`<div class="pack-thumbnail"><img src="${img}" alt="${p.name}" loading="lazy"></div>`;}).join('');const more=packProducts.length-3;const tag=pack.type==='seasons'?`<div class="pack-tag-star"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>PACK</span></div>`:`<span class="inline-block px-3 py-1 bg-nuca-beige/20 rounded-full text-xs font-bold tracking-wider uppercase">PACK</span>`;return`<div class="pack-card rounded-3xl p-5 sm:p-6 text-nuca-beige cursor-pointer" onclick="openPackModal('${pack.id}')"><div class="pack-card-content"><div class="pack-card-header">${tag}<h3 class="font-display text-xl sm:text-2xl font-bold mt-2">${pack.name}</h3><p class="text-nuca-beige/70 text-xs sm:text-sm mt-1 line-clamp-2">${pack.description}</p></div><div class="pack-card-body"><div class="pack-thumbnails">${thumbs}${more>0?`<div class="pack-thumbnail-more">+${more}</div>`:''}</div></div><div class="pack-card-footer"><div class="flex items-baseline gap-2"><span class="text-xl sm:text-2xl font-bold">€${pack.price.toFixed(2)}</span><span class="text-xs sm:text-sm line-through text-nuca-beige/50">€${pack.originalPrice.toFixed(2)}</span></div><span class="inline-block mt-2 bg-nuca-beige text-nuca-green px-3 py-1 rounded-full text-xs font-bold">POUPAS ${pack.discount}%</span></div></div></div>`;}).join('');}
@@ -1125,6 +1169,9 @@
         
         if (cart.length === 0) {
             items.innerHTML = '<p class="text-center text-nuca-green/60 py-12">O teu carrinho está vazio</p>';
+            subtotalEl.textContent = '€0.00';
+            discountEl.textContent = '€0.00';
+            totalEl.textContent = '€0.00';
         } else {
             items.innerHTML = cart.map((item, i) => `
                 <div class="flex gap-3 bg-white p-3 rounded-xl">
@@ -1141,17 +1188,22 @@
                     </div>
                 </div>
             `).join('');
+            
+            // CORREÇÃO: Calcular subtotal diretamente do item.price (não originalPrice)
+            const subtotal = cart.reduce((s, item) => s + parseFloat(item.price), 0);
+            // Calcular desconto apenas se existir originalPrice
+            const originalTotal = cart.reduce((s, item) => s + (item.originalPrice || item.price), 0);
+            const discount = originalTotal - subtotal;
+            
+            subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
+            discountEl.textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
+            totalEl.textContent = `€${subtotal.toFixed(2)}`;
         }
         
-        const subtotal = cart.reduce((s, item) => s + (item.originalPrice || item.price), 0);
-        const netTotal = cart.reduce((s, item) => s + item.price, 0);
-        const discount = subtotal - netTotal;
-        
-        subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
-        discountEl.textContent = discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00';
-        totalEl.textContent = `€${netTotal.toFixed(2)}`;
-        
-        if (typeof window.nucaBridge !== 'undefined') window.nucaBridge.updateShippingUI();
+        // Atualizar o shipping UI se o bridge existir
+        if (typeof window.nucaBridge !== 'undefined' && window.nucaBridge.updateShippingUI) {
+            window.nucaBridge.updateShippingUI();
+        }
     }
     
     function removeFromCart(i) {
