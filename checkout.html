@@ -474,20 +474,30 @@
     function calcTotals() {
         let subtotal = 0;
         let discount = 0;
+        let effectiveTotal = 0;
         
         cart.forEach(item => {
             const price = parseFloat(item.price) || 0;
             const origPrice = parseFloat(item.originalPrice) || price;
             const qty = parseInt(item.quantity) || 1;
-            subtotal += origPrice * qty;
+            
+            subtotal += origPrice * qty;      // preço total original
             discount += (origPrice - price) * qty;
+            effectiveTotal += price * qty;     // preço com desconto aplicado
         });
         
         const zone = getSelectedZone();
-        const shippingCost = zone ? getEffectiveShippingPrice(zone, subtotal - discount) : defaultShippingPrice;
-        const total = (subtotal - discount) + shippingCost;
+        const shippingCost = zone ? getEffectiveShippingPrice(zone, effectiveTotal) : defaultShippingPrice;
+        const finalTotal = effectiveTotal + shippingCost;
         
-        return { subtotal, discount, shippingCost, total, zone };
+        return { 
+            subtotal,           // preço total original (para mostrar o "preço cheio")
+            discount,           // desconto aplicado
+            shippingCost,       
+            total: finalTotal,  // total final com desconto + envio
+            effectiveTotal,     // subtotal já com desconto
+            zone 
+        };
     }
 
     /* ═══════════════════════════════════════════════════════════════════
@@ -543,19 +553,20 @@
     }
 
     function updateAllTotals() {
-        const { subtotal, discount, shippingCost, total, zone } = calcTotals();
+        const { subtotal, discount, shippingCost, effectiveTotal, total, zone } = calcTotals();
         
         const shippingText = shippingCost === 0 ? 'Grátis 🎉' : `€${shippingCost.toFixed(2)}`;
         const shippingShort = shippingCost === 0 ? 'Grátis' : `€${shippingCost.toFixed(2)}`;
         const zoneLabel = zone ? `(${zone.name})` : '';
         
-        setText('checkout-subtotal', `€${subtotal.toFixed(2)}`);
+        // Subtotal visual = effectiveTotal (com desconto já aplicado)
+        setText('checkout-subtotal', `€${effectiveTotal.toFixed(2)}`);
         setText('checkout-discount', discount > 0 ? `-€${discount.toFixed(2)}` : '€0.00');
         setText('checkout-shipping', shippingText);
         setText('shipping-zone-label', zoneLabel);
         setText('checkout-total', `€${total.toFixed(2)}`);
         
-        setText('summary-subtotal', `€${subtotal.toFixed(2)}`);
+        setText('summary-subtotal', `€${effectiveTotal.toFixed(2)}`);
         setText('summary-shipping', shippingShort);
         setText('summary-zone-label', zoneLabel);
         setText('summary-total', `€${total.toFixed(2)}`);
