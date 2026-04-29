@@ -135,7 +135,7 @@
                     </div>
                     <div class="border-t border-nuca-green/10 pt-4 space-y-2 text-sm">
                         <div class="flex justify-between text-nuca-green/60"><span>Subtotal</span><span id="checkout-subtotal">€0.00</span></div>
-                        <div class="flex justify-between text-nuca-green/60"><span>Desconto Pack</span><span id="checkout-discount" class="text-green-600">-€0.00</span></div>
+                        <div id="checkout-discount-row" class="flex justify-between text-nuca-green/60"><span>Desconto Pack</span><span id="checkout-discount" ...>
                         <!-- Linha de envio: cinzenta/placeholder no step 1 -->
                         <div class="flex justify-between text-nuca-green/40 shipping-row-step1" id="shipping-line-step1">
                             <span class="italic text-xs">Envio (selecionar na próxima etapa)</span>
@@ -656,7 +656,7 @@
     /* ═══════════════ STEPS E VALIDAÇÃO ═══════════════ */
     function goToStep(step) {
         if (step > currentStep && !validateCurrentStep()) return;
-        if (step >= 2 && !selectedZoneId) {
+        if (step >= 3 && !selectedZoneId) {
             showToast('Por favor, seleciona uma zona de envio.', true);
             return;
         }
