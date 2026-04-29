@@ -794,7 +794,16 @@
     }
 
     function validateShipping() {
-        if (validateShippingOnly()) goToStep(3);
+        if (validateShippingOnly()) {
+            // Passar step sem re-validar
+            document.getElementById(`step-${currentStep}`).classList.add('hidden');
+            document.getElementById('step-3').classList.remove('hidden');
+            renderConfirmStep();
+            updateStepIndicators(3);
+            currentStep = 3;
+            updateAllTotals();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     }
 
     /* ═══════════════ CONFIRMAÇÃO ═══════════════ */
