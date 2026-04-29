@@ -978,100 +978,161 @@
             showToast('Carrinho vazio!', true);
             return;
         }
-
-        const btn      = document.getElementById('confirm-btn');
+    
+        const btn = document.getElementById('confirm-btn');
         const origHTML = btn.innerHTML;
-        btn.innerHTML  = '<div class="loading-spinner" style="width:20px;height:20px;margin:0 auto;"></div>';
-        btn.disabled   = true;
-
+        btn.innerHTML = '<div class="loading-spinner" style="width:20px;height:20px;margin:0 auto;"></div>';
+        btn.disabled = true;
+    
         try {
             const totals = calcTotals();
             const { subtotal, discount, shippingCost, total, zone } = totals;
-
-            const now      = new Date();
-            const dateStr  = now.toISOString().slice(0, 10).replace(/-/g, '');
-            const rand     = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
+            const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
             const orderNumber = `NUCA-${dateStr}-${rand}`;
-
+    
+            // 🔧 CORREÇÃO 1: Garantir que shipping_address é um OBJETO (não string)
             const shippingAddressObj = {
-                address:    orderData.shipping.address,
-                postal:     orderData.shipping.postal,
-                city:       orderData.shipping.city,
-                country:    orderData.shipping.country || 'PT',
-                zone_name:  zone ? zone.name : orderData.shipping.zone,
-                zone_type:  getZoneType(zone),
-                notes:      orderData.shipping.notes || null
+                city: orderData.shipping.city || '',
+                notes: orderData.shipping.notes || null,
+                postal: orderData.shipping.postal || '',
+                address: orderData.shipping.address || ''
             };
-
+            
+            // 🔧 CORREÇÃO 2: Garantir que items é um ARRAY com tipos corretos
+            const itemsArray = cart.map(i => ({
+                id: String(i.id || `temp_${Date.now()}_${Math.random()}`),
+                name: String(i.name || 'Produto'),
+                size: i.size ? String(i.size) : null,
+                color: i.color ? String(i.color) : null,
+                price: Number(parseFloat(i.price).toFixed(2)),
+                season: i.season ? String(i.season) : null,
+                is_free: Boolean(i.isFreeGift || i.price === 0),
+                quantity: Number(parseInt(i.quantity) || 1),
+                pack_name: i.pack_name ? String(i.pack_name) : null,
+                shoe_size: i.shoe_size ? String(i.shoe_size) : null,
+                is_pack_item: Boolean(i.isPackItem || false),
+                original_price: Number(parseFloat(i.originalPrice || i.price || 0).toFixed(2))
+            }));
+    
+            // 🔧 CORREÇÃO 3: Calcular subtotal corretamente (soma dos preços originais * quantidade)
+            const subtotalReal = Number(cart.reduce((s, i) => {
+                const origPrice = parseFloat(i.originalPrice) || parseFloat(i.price) || 0;
+                const qty = parseInt(i.quantity) || 1;
+                return s + (origPrice * qty);
+            }, 0).toFixed(2));
+    
+            // 🔧 CORREÇÃO 4: Garantir que todos os campos numéricos são NUMBER e não strings
             const payload = {
-                order_number:       orderNumber,
-                customer_email:     orderData.shipping.email,
-                customer_name:      `${orderData.shipping.firstName} ${orderData.shipping.lastName}`,
-                customer_phone:     orderData.shipping.phone,
-                shipping_address:   shippingAddressObj,
-                shipping_zone_id:   selectedZoneId,
-                shipping_zone_name: zone ? zone.name : orderData.shipping.zone,
-                shipping_zone_type: getZoneType(zone),
-                shipping_zone_price: shippingCost || 0,
-                items: cart.map(i => ({
-                    id:             i.id || null,
-                    name:           i.name || 'Produto',
-                    price:          parseFloat(i.price) || 0,
-                    original_price: parseFloat(i.originalPrice) || i.price || 0,
-                    quantity:       parseInt(i.quantity) || 1,
-                    size:           i.size || null,
-                    color:          i.color || null,
-                    season:         i.season || null,
-                    is_pack_item:   i.isPackItem || false,
-                    is_free:        i.isFreeGift || false
-                })),
-                payment_method:  'whatsapp',
+                order_number: String(orderNumber),
+                customer_email: String(orderData.shipping.email).toLowerCase().trim(),
+                customer_name: String(`${orderData.shipping.firstName} ${orderData.shipping.lastName}`).trim(),
+                customer_phone: String(orderData.shipping.phone).trim(),
+                shipping_address: shippingAddressObj,  // Objeto, não string
+                items: itemsArray,                      // Array, não string
+                payment_method: 'whatsapp',
+                subtotal: subtotalReal,
+                discount: Number(parseFloat(discount || 0).toFixed(2)),
+                shipping: Number(parseFloat(shippingCost || 0).toFixed(2)),
+                total: Number(parseFloat(total).toFixed(2)),
+                status: 'pending',
                 payment_provider: 'manual',
-                subtotal:        subtotal - discount,
-                discount:        discount,
-                shipping:        shippingCost || 0,
-                total:           total,
-                status:          'pending_payment',
-                created_at:      now.toISOString(),
-                updated_at:      now.toISOString()
+                created_at: now.toISOString(),
+                updated_at: now.toISOString()
             };
-
-            let saved = false, savedId = null;
+    
+            console.log('📤 Enviando payload:', JSON.stringify(payload, null, 2));
+    
+            let saved = false;
+            let savedId = null;
+            let errorMsg = null;
+    
             if (supabaseClient) {
-                const { data, error } = await supabaseClient.from('orders').insert([payload]).select().single();
-                if (!error && data) { saved = true; savedId = data.id; }
-                else if (error)     console.error('Supabase insert error:', error);
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('orders')
+                        .insert(payload)  // NOTA: sem os [] extras
+                        .select();
+                    
+                    if (error) {
+                        console.error('❌ Erro detalhado:', {
+                            code: error.code,
+                            message: error.message,
+                            details: error.details,
+                            hint: error.hint
+                        });
+                        errorMsg = error.message;
+                    } else if (data && data.length > 0) {
+                        saved = true;
+                        savedId = data[0].id;
+                        console.log('✅ Pedido salvo! ID:', savedId);
+                    }
+                } catch (err) {
+                    console.error('❌ Exceção no insert:', err);
+                    errorMsg = err.message;
+                }
+            } else {
+                errorMsg = 'Supabase não inicializado';
             }
-
-            /* Backup local */
-            try {
-                const offline = JSON.parse(localStorage.getItem('nuca_offline_orders') || '[]');
-                offline.push({ ...payload, _saved: saved, _id: savedId });
-                localStorage.setItem('nuca_offline_orders', JSON.stringify(offline));
-            } catch(e) {}
-
-            orderSavedToDatabase = true;
-            savedOrderNumber      = orderNumber;
-            savedOrderId          = savedId;
-
-            const waLink = generateWhatsAppMessage(orderNumber, totals, orderData.shipping);
-
-            document.getElementById('confirm-section').classList.add('hidden');
-            document.getElementById('success-order-number').textContent = orderNumber;
-            document.getElementById('whatsapp-link').href = waLink;
-            document.getElementById('success-section').classList.remove('hidden');
-
-            setTimeout(() => window.open(waLink, '_blank'), 1500);
-            showToast('Pedido registado com sucesso! ✓');
-
-        } catch(err) {
-            console.error('processOrder error:', err);
+    
+            if (!saved) {
+                // Salvar no localStorage como backup
+                const offlineOrder = {
+                    ...payload,
+                    _local_id: Date.now(),
+                    _timestamp: new Date().toISOString(),
+                    _error: errorMsg
+                };
+                const offlineOrders = JSON.parse(localStorage.getItem('nuca_offline_orders') || '[]');
+                offlineOrders.push(offlineOrder);
+                localStorage.setItem('nuca_offline_orders', JSON.stringify(offlineOrders));
+                console.log('💾 Pedido salvo localmente (backup)');
+                showToast('⚠️ Pedido guardado localmente. Será sincronizado mais tarde.', true);
+            }
+    
+            orderSavedToDatabase = saved;
+            savedOrderNumber = orderNumber;
+            savedOrderId = savedId;
+    
+            // Calcular totais para o WhatsApp
+            const waTotals = {
+                subtotal: subtotalReal,
+                discount: discount || 0,
+                shippingCost: shippingCost || 0,
+                total: total,
+                zone: zone
+            };
+    
+            const waLink = generateWhatsAppMessage(orderNumber, waTotals, orderData.shipping);
+    
+            // Mostrar tela de sucesso
+            const confirmSection = document.getElementById('confirm-section');
+            const successSection = document.getElementById('success-section');
+            if (confirmSection) confirmSection.classList.add('hidden');
+            if (successSection) {
+                const orderSpan = document.getElementById('success-order-number');
+                if (orderSpan) orderSpan.textContent = orderNumber;
+                const waLinkEl = document.getElementById('whatsapp-link');
+                if (waLinkEl) waLinkEl.href = waLink;
+                successSection.classList.remove('hidden');
+            }
+    
+            showToast(saved ? '✅ Pedido registado com sucesso!' : '⚠️ Pedido guardado localmente!');
+            
+            // Abrir WhatsApp após 1.5 segundos
+            setTimeout(() => {
+                window.open(waLink, '_blank');
+            }, 1500);
+    
+        } catch (err) {
+            console.error('❌ Erro fatal:', err);
             showToast('Erro ao processar: ' + err.message, true);
             btn.innerHTML = origHTML;
-            btn.disabled  = false;
+            btn.disabled = false;
         }
     }
-
     /* ════════════════════════════════════════════════════════
        UTILITÁRIOS
     ════════════════════════════════════════════════════════ */
