@@ -760,42 +760,345 @@
         ]
     };
 
-    const colorKeyMap={'Bege':'bege','Branca':'branca','Preta':'preta','Preto':'preto','Branco':'branco'};
-    const seasonIcons={'Primavera':`<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,'Verão':`<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,'Outono':`<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,'Inverno':`<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`};
-    const packSeasonIcons={'Primavera':`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,'Verão':`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,'Outono':`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,'Inverno':`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`};
-    const seasonColors={'Primavera':{name:'Menta',hex:'#98D8C8'},'Verão':{name:'Sol',hex:'#F7DC6F'},'Outono':{name:'Terra',hex:'#E59866'},'Inverno':{name:'Gelo',hex:'#AED6F1'}};
-    const categoryLabels={'camisetas':'Camisetas','hoodies':'Hoodies','acessorios':'Acessórios','seasons':'Coleção Estações'};
-    const legalContent={privacidade:{title:'Política de Privacidade',badge:'Privacidade & Dados',badgeIcon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,intro:'A NUCA valoriza a tua privacidade. Recolhemos apenas o necessário para processar as tuas encomendas.',pills:[{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,text:'SSL encriptado'},{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,text:'RGPD compliant'}],sections:[{title:'Dados que Recolhemos',body:'Nome, email, morada de entrega e dados de pagamento quando efectuas uma compra. Apenas o mínimo necessário.'},{title:'Como Usamos os Dados',body:'Exclusivamente para processar encomendas, comunicar o estado de envio e melhorar a tua experiência.'},{title:'Segurança',body:'Todos os dados são transmitidos com encriptação SSL de 256 bits.'},{title:'Os Teus Direitos',body:'Tens o direito de aceder, corrigir ou eliminar os teus dados pessoais a qualquer momento.'}]},termos:{title:'Termos de Uso',badge:'Termos & Condições',badgeIcon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,intro:'Ao utilizares o nosso site e serviços, aceitas os termos descritos aqui.',pills:[{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,text:'Uso pessoal'},{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,text:'Direitos reservados'}],sections:[{title:'Uso do Site',body:'O site NUCA destina-se exclusivamente a uso pessoal e não comercial.'},{title:'Encomendas e Pagamentos',body:'Ao realizares uma encomenda, confirmas que as informações fornecidas são correctas.'},{title:'Envios e Devoluções',body:'Os envios são realizados em 3-5 dias úteis. Aceitamos devoluções no prazo de 14 dias.'},{title:'Propriedade Intelectual',body:'Todo o conteúdo do site é propriedade da NUCA e está protegido por direitos de autor.'}]},trocas:{title:'Trocas e Devoluções',badge:'Política de Trocas',badgeIcon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,intro:'Queremos que fiques 100% satisfeito. Se algo não estiver certo, tratamos da situação sem complicações.',pills:[{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,text:'14 dias para devolver'},{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,text:'Reembolso em 5 dias'}],sections:[{title:'Prazo para Devoluções',body:'Tens 14 dias a contar da data de recepção da encomenda para solicitar uma devolução ou troca.'},{title:'Como Devolver',body:'Envia um email para nuca.crew.support@gmail.com com o número da encomenda e o motivo.'},{title:'Reembolso',body:'Após recebermos e verificarmos o artigo, o reembolso é processado em 5 dias úteis.'},{title:'Trocas',body:'Para trocas de tamanho ou cor, segue o processo de devolução e realiza uma nova encomenda.'}]},envio:{title:'Envio e Entrega',badge:'Envios NUCA',badgeIcon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>`,intro:'Enviamos para todo o Portugal continental e ilhas.',pills:[{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>`,text:'3-5 dias úteis'},{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,text:'Grátis acima de 50€'}],sections:[{title:'Prazo de Processamento',body:'As encomendas são processadas em 1-2 dias úteis após a confirmação do pagamento.'},{title:'Custo de Envio',body:'Envio gratuito em compras acima de €50. Para valores inferiores, o custo é de €3.99.'},{title:'Prazo de Entrega',body:'Após o envio, a entrega demora entre 2-5 dias úteis.'}]},pagamento:{title:'Métodos de Pagamento',badge:'Pagamentos',badgeIcon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`,intro:'Oferecemos métodos de pagamento simples e seguros, adaptados ao mercado português.',pills:[{icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`,text:'100% seguro'}],sections:[{title:'MB WAY',body:'Método mais rápido. Após a encomenda, recebes o número para envio do pagamento via MB WAY.'},{title:'Transferência Bancária',body:'Disponibilizamos o IBAN após confirmação da encomenda. Processamento em 1-2 dias úteis.'},{title:'WhatsApp',body:'Podes finalizar a tua compra diretamente via WhatsApp.'},{title:'Segurança',body:'Não guardamos dados bancários. Todos os pagamentos são confirmados manualmente.'}]}};
-    let cart=[],currentProduct=null,selectedSeason=null,selectedColor=null,selectedSize=null,currentPack=null,selectedPackColors={},selectedPackSizes={},selectedPackSeasons={},carouselPosition=0,currentImageIndex=0;
-    window.cart = cart;
-    document.addEventListener('DOMContentLoaded',()=>{document.getElementById('year').textContent=new Date().getFullYear();renderProducts('all');renderSeasonsCarousel();renderPacks();updateCartUI();});
-    window.addEventListener('scroll',()=>{const n=document.getElementById('navbar');if(window.scrollY>100){n.classList.remove('nav-hidden');n.classList.add('nav-visible');}else{n.classList.add('nav-hidden');n.classList.remove('nav-visible');}});
-    function toggleMobileMenu(){document.getElementById('mobile-menu').classList.toggle('translate-x-full');document.body.classList.toggle('overflow-hidden');}
-    function scrollToShop(e){e.preventDefault();document.getElementById('shop').scrollIntoView({behavior:'smooth'});}
-    function filterProducts(cat){renderProducts(cat);}
-    function filterFromFooter(cat,e){if(e)e.preventDefault();renderProducts(cat);document.getElementById('shop').scrollIntoView({behavior:'smooth'});}
-    function scrollToSection(id,e){if(e)e.preventDefault();document.getElementById(id).scrollIntoView({behavior:'smooth'});}
-    function showNotification(type,title,message,duration=4000){const container=document.getElementById('notification-container');const n=document.createElement('div');n.className='nuca-notification '+type;const icons={warning:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,error:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,success:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,info:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`};n.innerHTML=`<div class="notification-accent"></div><div class="notification-icon ${type}">${icons[type]}</div><div class="notification-body"><div class="notification-title">${title}</div><div class="notification-message">${message}</div></div><button class="notification-close" onclick="closeNotification(this.parentElement)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="notification-progress"></div>`;container.appendChild(n);requestAnimationFrame(()=>{requestAnimationFrame(()=>n.classList.add('show'));});const progress=n.querySelector('.notification-progress');progress.style.width='100%';progress.style.transition=`width ${duration}ms linear`;requestAnimationFrame(()=>{requestAnimationFrame(()=>{progress.style.width='0%';});});setTimeout(()=>closeNotification(n),duration);}
-    function closeNotification(n){n.classList.add('hiding');n.classList.remove('show');setTimeout(()=>{if(n.parentElement)n.remove();},400);}
-    function renderProducts(filter){const grid=document.getElementById('products-grid');const filtered=filter==='all'?mainProducts:mainProducts.filter(p=>p.category===filter);grid.innerHTML=filtered.map(product=>{let imageUrl='';if(product.colors&&product.colors.length>0)imageUrl=product.images[product.colors[0].key]?.front||'';else if(product.images)imageUrl=product.images[Object.keys(product.images)[0]]?.front||'';return`<div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${product.id}')"><div class="relative overflow-hidden aspect-[4/5]"><img src="${imageUrl}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500" loading="lazy"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"><span class="bg-white text-nuca-green px-5 py-2 rounded-full font-bold text-sm">Ver Detalhes</span></div></div><div class="p-4 sm:p-5"><span class="text-xs font-medium text-nuca-green/60 uppercase tracking-wider">${categoryLabels[product.category]||product.category}</span><h3 class="font-display text-base sm:text-lg font-bold text-nuca-green mt-1">${product.name}</h3><p class="text-nuca-green font-bold mt-2">€${product.basePrice.toFixed(2)}</p><div class="flex gap-1 mt-3 flex-wrap">${(product.colors||[]).map(c=>`<span class="w-4 h-4 rounded-full border border-nuca-green/20 inline-block" style="background-color:${c.hex}" title="${c.name}"></span>`).join('')}</div><button class="mt-3 w-full py-2 bg-nuca-green/10 text-nuca-green rounded-full text-xs sm:text-sm font-medium hover:bg-nuca-green hover:text-nuca-beige transition-colors">Adicionar ao Carrinho</button></div></div>`;}).join('');document.querySelectorAll('.filter-btn').forEach(btn=>{const active=btn.dataset.filter===filter;btn.classList.toggle('bg-nuca-green',active);btn.classList.toggle('text-nuca-beige',active);btn.classList.toggle('text-nuca-green',!active);});}
-    function renderSeasonsCarousel(){const track=document.getElementById('seasons-track');const indicators=document.getElementById('carousel-indicators');track.innerHTML=seasonProducts.map(p=>{const img=p.seasonImages?p.seasonImages.primavera.front:'';return`<div class="carousel-slide"><div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${p.id}')"><div class="relative overflow-hidden aspect-[4/5]"><img src="${img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy"><div class="absolute top-4 left-4"><span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider">EDIÇÃO ESPECIAL</span></div></div><div class="p-4 sm:p-6"><h3 class="font-display text-lg sm:text-xl font-bold text-nuca-green">${p.name}</h3><p class="text-nuca-green/70 text-xs sm:text-sm mt-2 line-clamp-2">${p.description}</p><p class="text-nuca-green font-bold text-base sm:text-lg mt-3 sm:mt-4">€${p.basePrice.toFixed(2)}</p></div></div></div>`;}).join('');indicators.innerHTML=seasonProducts.map((_,i)=>`<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i===0?'bg-nuca-green w-6':'bg-nuca-green/30'}"></button>`).join('');}
-    function moveCarousel(dir){const track=document.getElementById('seasons-track');const max=track.children.length-getVisibleSlides();carouselPosition=Math.max(0,Math.min(max,carouselPosition+dir));updateCarousel();}
-    function goToSlide(i){carouselPosition=i;updateCarousel();}
-    function updateCarousel(){const track=document.getElementById('seasons-track');const sw=100/getVisibleSlides();track.style.transform=`translateX(-${carouselPosition*sw}%)`;Array.from(document.getElementById('carousel-indicators').children).forEach((ind,i)=>{ind.classList.toggle('bg-nuca-green',i===carouselPosition);ind.classList.toggle('w-6',i===carouselPosition);ind.classList.toggle('bg-nuca-green/30',i!==carouselPosition);});document.getElementById('carousel-prev').disabled=carouselPosition===0;document.getElementById('carousel-next').disabled=carouselPosition>=track.children.length-getVisibleSlides();}
-    function getVisibleSlides(){if(window.innerWidth>=1024)return 3;if(window.innerWidth>=768)return 2;return 1;}
-    window.addEventListener('resize',updateCarousel);
-    function renderImageGallery(images,colorKeyOrSeasonKey,singleImage=false){const gallery=document.getElementById('modal-image-gallery');if(!images)return;const key=colorKeyOrSeasonKey||Object.keys(images)[0];const imgs=images[key]||images[Object.keys(images)[0]];currentImageIndex=0;if(singleImage||!imgs.back){gallery.innerHTML=`<img id="gallery-main-img" src="${imgs.front}" alt="" class="gallery-single-image" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;}else{gallery.innerHTML=`<img src="${imgs.front}" alt="Frente" class="gallery-image" data-index="0" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><img src="${imgs.back}" alt="Verso" class="gallery-image hidden" data-index="1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><button class="gallery-arrow prev" onclick="changeGalleryImage(-1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg></button><button class="gallery-arrow next" onclick="changeGalleryImage(1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg></button><div class="gallery-nav"><span class="gallery-dot active" onclick="setGalleryImage(0)"></span><span class="gallery-dot" onclick="setGalleryImage(1)"></span></div>`;}}
-    function updateGalleryImage(src){const img=document.getElementById('gallery-main-img');if(img){img.style.opacity='0';setTimeout(()=>{img.src=src;img.style.opacity='1';},200);}}
-    function changeGalleryImage(dir){currentImageIndex=(currentImageIndex+dir+2)%2;updateGalleryDisplay();}
-    function setGalleryImage(i){currentImageIndex=i;updateGalleryDisplay();}
-    function updateGalleryDisplay(){document.querySelectorAll('.gallery-image').forEach((img,i)=>img.classList.toggle('hidden',i!==currentImageIndex));document.querySelectorAll('.gallery-dot').forEach((dot,i)=>dot.classList.toggle('active',i===currentImageIndex));}
-    function openProductModal(productId){currentProduct=allProducts.find(p=>p.id===productId);if(!currentProduct)return;selectedSeason=null;selectedColor=null;selectedSize=null;currentImageIndex=0;document.getElementById('modal-title').textContent=currentProduct.name;document.getElementById('modal-category').textContent=currentProduct.category==='seasons'?'Coleção Estações':categoryLabels[currentProduct.category]||currentProduct.category;document.getElementById('modal-description').textContent=currentProduct.description;document.getElementById('modal-price').textContent=`€${currentProduct.basePrice.toFixed(2)}`;const seasonSection=document.getElementById('season-section'),colorSection=document.getElementById('color-section'),sizeSection=document.getElementById('size-section'),variantThumbnails=document.getElementById('variant-thumbnails'),collectionBadge=document.getElementById('collection-badge'),isSingleImage=currentProduct.noColorSelection;if(currentProduct.hasSeasons&&currentProduct.seasonImages){renderImageGallery(currentProduct.seasonImages,'primavera',isSingleImage);collectionBadge.classList.remove('hidden');collectionBadge.querySelector('span').textContent='EDIÇÃO ESPECIAL';seasonSection.classList.remove('hidden');const seasons=['Primavera','Verão','Outono','Inverno'];document.getElementById('modal-seasons').innerHTML=seasons.map(season=>`<button onclick="selectSeason('${season}')" class="season-selector flex items-center gap-2 p-3 rounded-xl border border-nuca-green/20 transition-all" data-season="${season}"><div class="w-8 h-8 rounded-full bg-nuca-green/10 flex items-center justify-center">${seasonIcons[season]}</div><span>${season}</span></button>`).join('');if(currentProduct.noColorSelection||!currentProduct.colors||currentProduct.colors.length===0){colorSection.classList.add('hidden');variantThumbnails.innerHTML='';}else{colorSection.classList.remove('hidden');document.getElementById('modal-colors').innerHTML=currentProduct.colors.map((color,i)=>`<button onclick="selectColor(${i})" class="color-selector w-9 h-9 rounded-full border-2" style="background-color:${color.hex}" title="${color.name}"></button>`).join('');variantThumbnails.innerHTML=currentProduct.colors.map((color,i)=>`<div class="variant-thumbnail ${i===0?'active':''}" data-color-index="${i}"><img src="${currentProduct.images[color.key]?.front||''}" alt="${color.name}"></div>`).join('');}}else{const firstKey=currentProduct.colors&&currentProduct.colors.length>0?currentProduct.colors[0].key:Object.keys(currentProduct.images)[0];renderImageGallery(currentProduct.images,firstKey,false);collectionBadge.classList.add('hidden');seasonSection.classList.add('hidden');if(currentProduct.colors&&currentProduct.colors.length>0){colorSection.classList.remove('hidden');document.getElementById('modal-colors').innerHTML=currentProduct.colors.map((color,i)=>`<button onclick="selectColor(${i})" class="color-selector w-9 h-9 rounded-full border-2" style="background-color:${color.hex}" title="${color.name}"></button>`).join('');variantThumbnails.innerHTML=currentProduct.colors.map((color,i)=>`<div class="variant-thumbnail ${i===0?'active':''}" data-color-index="${i}"><img src="${currentProduct.images[color.key]?.front||''}" alt="${color.name}"></div>`).join('');}else{colorSection.classList.add('hidden');variantThumbnails.innerHTML='';}}if(currentProduct.sizes){sizeSection.classList.remove('hidden');renderSizeSelector();}else{sizeSection.classList.add('hidden');}const modal=document.getElementById('product-modal'),content=document.getElementById('modal-content');modal.classList.add('active');document.body.classList.add('overflow-hidden');setTimeout(()=>content.classList.add('open'),10);}
-    function closeProductModal(){const content=document.getElementById('modal-content');content.classList.remove('open');setTimeout(()=>{document.getElementById('product-modal').classList.remove('active');document.body.classList.remove('overflow-hidden');},350);}
-    function getSeasonKey(season){const map={'Primavera':'primavera','Verão':'verao','Outono':'outono','Inverno':'inverno'};return map[season]||season.toLowerCase();}
-    function selectSeason(season){selectedSeason=season;document.querySelectorAll('#modal-seasons .season-selector').forEach(btn=>{btn.classList.toggle('active',btn.dataset.season===season);});const key=getSeasonKey(season);const imgs=currentProduct.seasonImages[key];if(!imgs)return;if(currentProduct.noColorSelection){updateGalleryImage(imgs.front);}else{const galleryImgs=document.querySelectorAll('.gallery-image');if(galleryImgs[0])galleryImgs[0].src=imgs.front;if(galleryImgs[1]&&imgs.back)galleryImgs[1].src=imgs.back;}}
-    function selectColor(index){selectedColor=index;document.querySelectorAll('.variant-thumbnail').forEach((t,i)=>t.classList.toggle('active',i===index));document.querySelectorAll('#modal-colors .color-selector').forEach((b,i)=>b.classList.toggle('active',i===index));if(currentProduct&&currentProduct.images&&currentProduct.colors){const key=currentProduct.colors[index].key;const imgs=currentProduct.images[key];if(imgs){const galleryImgs=document.querySelectorAll('.gallery-image');if(galleryImgs[0])galleryImgs[0].src=imgs.front;if(galleryImgs[1]&&imgs.back)galleryImgs[1].src=imgs.back;}}}
-    function renderSizeSelector(){const container=document.getElementById('modal-sizes');const sizeLabel=document.getElementById('size-label');if(currentProduct.sizes&&currentProduct.sizes.length===1&&currentProduct.sizes[0]==='Único'){sizeLabel.textContent='Tamanho';container.innerHTML='<span class="inline-block px-4 py-2 bg-nuca-green/10 text-nuca-green rounded-full text-sm font-bold">Único</span>';selectedSize='Único';return;}if(currentProduct.id.includes('meias')){sizeLabel.textContent='Tamanho (EU) *';container.innerHTML=`<select id="meias-size-select" onchange="selectSize(this.value)" class="nuca-select w-40 p-2.5 border-2 border-nuca-green rounded-lg bg-white text-nuca-green text-sm font-bold"><option value="" selected disabled>Tamanho</option>${currentProduct.sizes.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;}else{sizeLabel.textContent='Tamanho *';container.innerHTML=currentProduct.sizes.map(s=>`<button onclick="selectSize('${s}')" class="size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold transition-all text-sm ${selectedSize===s?'active':'text-nuca-green'}">${s}</button>`).join('');}}
-    function selectSize(size){selectedSize=size;renderSizeSelector();}
+    // ═══════════════════════════════════════════════════════
+    // CONSTANTES — declaradas primeiro para evitar ReferenceError
+    // ═══════════════════════════════════════════════════════
+    const colorKeyMap = { 'Bege': 'bege', 'Branca': 'branca', 'Preta': 'preta', 'Preto': 'preto', 'Branco': 'branco' };
+    const seasonIcons = {
+        'Primavera': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
+        'Verão': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+        'Outono': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
+        'Inverno': `<svg class="season-icon w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
+    };
+    const packSeasonIcons = {
+        'Primavera': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v8M12 18v4M4.93 4.93l4.24 4.24M14.83 14.83l4.24 4.24M2 12h8M18 12h4M4.93 19.07l4.24-4.24M14.83 9.17l4.24-4.24"/></svg>`,
+        'Verão': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>`,
+        'Outono': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/><path d="M12 10v8"/></svg>`,
+        'Inverno': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/></svg>`
+    };
+    const seasonColors = {
+        'Primavera': { name: 'Menta', hex: '#98D8C8' },
+        'Verão': { name: 'Sol', hex: '#F7DC6F' },
+        'Outono': { name: 'Terra', hex: '#E59866' },
+        'Inverno': { name: 'Gelo', hex: '#AED6F1' }
+    };
+    const categoryLabels = { 'camisetas': 'Camisetas', 'hoodies': 'Hoodies', 'acessorios': 'Acessórios', 'seasons': 'Coleção Estações' };
+    const legalContent = {
+        privacidade: { title: 'Política de Privacidade', badge: 'Privacidade & Dados', badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, intro: 'A NUCA valoriza a tua privacidade. Recolhemos apenas o necessário para processar as tuas encomendas.', pills: [{ icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, text: 'SSL encriptado' }, { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`, text: 'RGPD compliant' }], sections: [{ title: 'Dados que Recolhemos', body: 'Nome, email, morada de entrega e dados de pagamento quando efectuas uma compra. Apenas o mínimo necessário.' }, { title: 'Como Usamos os Dados', body: 'Exclusivamente para processar encomendas, comunicar o estado de envio e melhorar a tua experiência.' }, { title: 'Segurança', body: 'Todos os dados são transmitidos com encriptação SSL de 256 bits.' }, { title: 'Os Teus Direitos', body: 'Tens o direito de aceder, corrigir ou eliminar os teus dados pessoais a qualquer momento.' }] },
+        termos: { title: 'Termos de Uso', badge: 'Termos & Condições', badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`, intro: 'Ao utilizares o nosso site e serviços, aceitas os termos descritos aqui.', pills: [{ icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`, text: 'Uso pessoal' }, { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, text: 'Direitos reservados' }], sections: [{ title: 'Uso do Site', body: 'O site NUCA destina-se exclusivamente a uso pessoal e não comercial.' }, { title: 'Encomendas e Pagamentos', body: 'Ao realizares uma encomenda, confirmas que as informações fornecidas são correctas.' }, { title: 'Envios e Devoluções', body: 'Os envios são realizados em 3-5 dias úteis. Aceitamos devoluções no prazo de 14 dias.' }, { title: 'Propriedade Intelectual', body: 'Todo o conteúdo do site é propriedade da NUCA e está protegido por direitos de autor.' }] },
+        trocas: { title: 'Trocas e Devoluções', badge: 'Política de Trocas', badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`, intro: 'Queremos que fiques 100% satisfeito. Se algo não estiver certo, tratamos da situação sem complicações.', pills: [{ icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`, text: '14 dias para devolver' }, { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`, text: 'Reembolso em 5 dias' }], sections: [{ title: 'Prazo para Devoluções', body: 'Tens 14 dias a contar da data de recepção da encomenda para solicitar uma devolução ou troca.' }, { title: 'Como Devolver', body: 'Envia um email para nuca.crew.support@gmail.com com o número da encomenda e o motivo.' }, { title: 'Reembolso', body: 'Após recebermos e verificarmos o artigo, o reembolso é processado em 5 dias úteis.' }, { title: 'Trocas', body: 'Para trocas de tamanho ou cor, segue o processo de devolução e realiza uma nova encomenda.' }] },
+        envio: { title: 'Envio e Entrega', badge: 'Envios NUCA', badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/><circle cx="12" cy="21" r="1"/><circle cx="20" cy="21" r="1"/></svg>`, intro: 'Enviamos para todo o Portugal continental e ilhas.', pills: [{ icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3"/><rect x="9" y="11" width="14" height="10" rx="1"/></svg>`, text: '3-5 dias úteis' }, { icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`, text: 'Grátis acima de 50€' }], sections: [{ title: 'Prazo de Processamento', body: 'As encomendas são processadas em 1-2 dias úteis após a confirmação do pagamento.' }, { title: 'Custo de Envio', body: 'Envio gratuito em compras acima de €50. Para valores inferiores, o custo é de €3.99.' }, { title: 'Prazo de Entrega', body: 'Após o envio, a entrega demora entre 2-5 dias úteis.' }] },
+        pagamento: { title: 'Métodos de Pagamento', badge: 'Pagamentos', badgeIcon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>`, intro: 'Oferecemos métodos de pagamento simples e seguros, adaptados ao mercado português.', pills: [{ icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`, text: '100% seguro' }], sections: [{ title: 'MB WAY', body: 'Método mais rápido. Após a encomenda, recebes o número para envio do pagamento via MB WAY.' }, { title: 'Transferência Bancária', body: 'Disponibilizamos o IBAN após confirmação da encomenda. Processamento em 1-2 dias úteis.' }, { title: 'WhatsApp', body: 'Podes finalizar a tua compra diretamente via WhatsApp.' }, { title: 'Segurança', body: 'Não guardamos dados bancários. Todos os pagamentos são confirmados manualmente.' }] }
+    };
+    
+    // ═══════════════════════════════════════════════════════
+    // VARIÁVEIS DE ESTADO
+    // ═══════════════════════════════════════════════════════
+    let cart = [], currentProduct = null, selectedSeason = null, selectedColor = null, selectedSize = null,
+        currentPack = null, selectedPackColors = {}, selectedPackSizes = {}, selectedPackSeasons = {},
+        carouselPosition = 0, currentImageIndex = 0;
+    
+    // ═══════════════════════════════════════════════════════
+    // FIX 1 + FIX 2 — Expõe ao nuca-bridge.js
+    // NOTA: window.allProducts e window.seasonColors ficam cá
+    // em baixo porque as const já estão declaradas acima.
+    // Os objetos reatribuídos usam defineProperty para manter
+    // a referência sincronizada após openPackModal os resetar.
+    // ═══════════════════════════════════════════════════════
+    window.cart = cart;           // array — push/splice funcionam por referência
+    window.allProducts = allProducts;
+    window.seasonColors = seasonColors;
+    
+    Object.defineProperty(window, 'currentPack', {
+        get: () => currentPack,
+        set: (v) => { currentPack = v; }
+    });
+    Object.defineProperty(window, 'selectedPackColors', {
+        get: () => selectedPackColors,
+        set: (v) => { selectedPackColors = v; }
+    });
+    Object.defineProperty(window, 'selectedPackSizes', {
+        get: () => selectedPackSizes,
+        set: (v) => { selectedPackSizes = v; }
+    });
+    Object.defineProperty(window, 'selectedPackSeasons', {
+        get: () => selectedPackSeasons,
+        set: (v) => { selectedPackSeasons = v; }
+    });
+    
+    // FIX 2 — Expõe funções necessárias ao nuca-bridge.js
+    // (definidas mais abaixo mas o bridge só as usa após DOMContentLoaded)
+    window.getSeasonKey = getSeasonKey;
+    window.showNotification = showNotification;
+    window.updateCartUI = updateCartUI;
+    window.closePackModal = closePackModal;
+    window.toggleCart = toggleCart;
+    
+    // ═══════════════════════════════════════════════════════
+    // INICIALIZAÇÃO
+    // ═══════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('year').textContent = new Date().getFullYear();
+        renderProducts('all');
+        renderSeasonsCarousel();
+        renderPacks();
+        updateCartUI();
+    });
+    
+    window.addEventListener('scroll', () => {
+        const n = document.getElementById('navbar');
+        if (window.scrollY > 100) {
+            n.classList.remove('nav-hidden');
+            n.classList.add('nav-visible');
+        } else {
+            n.classList.add('nav-hidden');
+            n.classList.remove('nav-visible');
+        }
+    });
+    
+    // ═══════════════════════════════════════════════════════
+    // UI GERAL
+    // ═══════════════════════════════════════════════════════
+    function toggleMobileMenu() {
+        document.getElementById('mobile-menu').classList.toggle('translate-x-full');
+        document.body.classList.toggle('overflow-hidden');
+    }
+    function scrollToShop(e) { e.preventDefault(); document.getElementById('shop').scrollIntoView({ behavior: 'smooth' }); }
+    function filterProducts(cat) { renderProducts(cat); }
+    function filterFromFooter(cat, e) { if (e) e.preventDefault(); renderProducts(cat); document.getElementById('shop').scrollIntoView({ behavior: 'smooth' }); }
+    function scrollToSection(id, e) { if (e) e.preventDefault(); document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+    
+    // ═══════════════════════════════════════════════════════
+    // NOTIFICAÇÕES
+    // ═══════════════════════════════════════════════════════
+    function showNotification(type, title, message, duration = 4000) {
+        const container = document.getElementById('notification-container');
+        const n = document.createElement('div');
+        n.className = 'nuca-notification ' + type;
+        const icons = {
+            warning: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+            error: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+            success: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+            info: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+        };
+        n.innerHTML = `<div class="notification-accent"></div><div class="notification-icon ${type}">${icons[type]}</div><div class="notification-body"><div class="notification-title">${title}</div><div class="notification-message">${message}</div></div><button class="notification-close" onclick="closeNotification(this.parentElement)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><div class="notification-progress"></div>`;
+        container.appendChild(n);
+        requestAnimationFrame(() => { requestAnimationFrame(() => n.classList.add('show')); });
+        const progress = n.querySelector('.notification-progress');
+        progress.style.width = '100%';
+        progress.style.transition = `width ${duration}ms linear`;
+        requestAnimationFrame(() => { requestAnimationFrame(() => { progress.style.width = '0%'; }); });
+        setTimeout(() => closeNotification(n), duration);
+    }
+    function closeNotification(n) {
+        n.classList.add('hiding');
+        n.classList.remove('show');
+        setTimeout(() => { if (n.parentElement) n.remove(); }, 400);
+    }
+    
+    // ═══════════════════════════════════════════════════════
+    // PRODUTOS
+    // ═══════════════════════════════════════════════════════
+    function renderProducts(filter) {
+        const grid = document.getElementById('products-grid');
+        const filtered = filter === 'all' ? mainProducts : mainProducts.filter(p => p.category === filter);
+        grid.innerHTML = filtered.map(product => {
+            let imageUrl = '';
+            if (product.colors && product.colors.length > 0) imageUrl = product.images[product.colors[0].key]?.front || '';
+            else if (product.images) imageUrl = product.images[Object.keys(product.images)[0]]?.front || '';
+            return `<div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${product.id}')"><div class="relative overflow-hidden aspect-[4/5]"><img src="${imageUrl}" alt="${product.name}" class="product-image w-full h-full object-cover transition-transform duration-500" loading="lazy"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6"><span class="bg-white text-nuca-green px-5 py-2 rounded-full font-bold text-sm">Ver Detalhes</span></div></div><div class="p-4 sm:p-5"><span class="text-xs font-medium text-nuca-green/60 uppercase tracking-wider">${categoryLabels[product.category] || product.category}</span><h3 class="font-display text-base sm:text-lg font-bold text-nuca-green mt-1">${product.name}</h3><p class="text-nuca-green font-bold mt-2">€${product.basePrice.toFixed(2)}</p><div class="flex gap-1 mt-3 flex-wrap">${(product.colors || []).map(c => `<span class="w-4 h-4 rounded-full border border-nuca-green/20 inline-block" style="background-color:${c.hex}" title="${c.name}"></span>`).join('')}</div><button class="mt-3 w-full py-2 bg-nuca-green/10 text-nuca-green rounded-full text-xs sm:text-sm font-medium hover:bg-nuca-green hover:text-nuca-beige transition-colors">Adicionar ao Carrinho</button></div></div>`;
+        }).join('');
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            const active = btn.dataset.filter === filter;
+            btn.classList.toggle('bg-nuca-green', active);
+            btn.classList.toggle('text-nuca-beige', active);
+            btn.classList.toggle('text-nuca-green', !active);
+        });
+    }
+    
+    // ═══════════════════════════════════════════════════════
+    // CAROUSEL ESTAÇÕES
+    // ═══════════════════════════════════════════════════════
+    function renderSeasonsCarousel() {
+        const track = document.getElementById('seasons-track');
+        const indicators = document.getElementById('carousel-indicators');
+        track.innerHTML = seasonProducts.map(p => {
+            const img = p.seasonImages ? p.seasonImages.primavera.front : '';
+            return `<div class="carousel-slide"><div class="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openProductModal('${p.id}')"><div class="relative overflow-hidden aspect-[4/5]"><img src="${img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy"><div class="absolute top-4 left-4"><span class="collection-badge text-nuca-beige px-3 py-1 rounded-full text-xs font-bold tracking-wider">EDIÇÃO ESPECIAL</span></div></div><div class="p-4 sm:p-6"><h3 class="font-display text-lg sm:text-xl font-bold text-nuca-green">${p.name}</h3><p class="text-nuca-green/70 text-xs sm:text-sm mt-2 line-clamp-2">${p.description}</p><p class="text-nuca-green font-bold text-base sm:text-lg mt-3 sm:mt-4">€${p.basePrice.toFixed(2)}</p></div></div></div>`;
+        }).join('');
+        indicators.innerHTML = seasonProducts.map((_, i) => `<button onclick="goToSlide(${i})" class="w-2 h-2 rounded-full transition-all ${i === 0 ? 'bg-nuca-green w-6' : 'bg-nuca-green/30'}"></button>`).join('');
+    }
+    function moveCarousel(dir) {
+        const track = document.getElementById('seasons-track');
+        const max = track.children.length - getVisibleSlides();
+        carouselPosition = Math.max(0, Math.min(max, carouselPosition + dir));
+        updateCarousel();
+    }
+    function goToSlide(i) { carouselPosition = i; updateCarousel(); }
+    function updateCarousel() {
+        const track = document.getElementById('seasons-track');
+        const sw = 100 / getVisibleSlides();
+        track.style.transform = `translateX(-${carouselPosition * sw}%)`;
+        Array.from(document.getElementById('carousel-indicators').children).forEach((ind, i) => {
+            ind.classList.toggle('bg-nuca-green', i === carouselPosition);
+            ind.classList.toggle('w-6', i === carouselPosition);
+            ind.classList.toggle('bg-nuca-green/30', i !== carouselPosition);
+        });
+        document.getElementById('carousel-prev').disabled = carouselPosition === 0;
+        document.getElementById('carousel-next').disabled = carouselPosition >= track.children.length - getVisibleSlides();
+    }
+    function getVisibleSlides() {
+        if (window.innerWidth >= 1024) return 3;
+        if (window.innerWidth >= 768) return 2;
+        return 1;
+    }
+    
+    // FIX 4 — resize com debounce (evita chamadas excessivas)
+    let _resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(updateCarousel, 150);
+    });
+    
+    // ═══════════════════════════════════════════════════════
+    // GALERIA DE IMAGENS
+    // ═══════════════════════════════════════════════════════
+    function renderImageGallery(images, colorKeyOrSeasonKey, singleImage = false) {
+        const gallery = document.getElementById('modal-image-gallery');
+        if (!images) return;
+        const key = colorKeyOrSeasonKey || Object.keys(images)[0];
+        const imgs = images[key] || images[Object.keys(images)[0]];
+        currentImageIndex = 0;
+        if (singleImage || !imgs.back) {
+            gallery.innerHTML = `<img id="gallery-main-img" src="${imgs.front}" alt="" class="gallery-single-image" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`;
+        } else {
+            gallery.innerHTML = `<img src="${imgs.front}" alt="Frente" class="gallery-image" data-index="0" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><img src="${imgs.back}" alt="Verso" class="gallery-image hidden" data-index="1" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"><button class="gallery-arrow prev" onclick="changeGalleryImage(-1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="15 18 9 12 15 6"/></svg></button><button class="gallery-arrow next" onclick="changeGalleryImage(1)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="9 18 15 12 9 6"/></svg></button><div class="gallery-nav"><span class="gallery-dot active" onclick="setGalleryImage(0)"></span><span class="gallery-dot" onclick="setGalleryImage(1)"></span></div>`;
+        }
+    }
+    function updateGalleryImage(src) {
+        const img = document.getElementById('gallery-main-img');
+        if (img) {
+            img.style.opacity = '0';
+            setTimeout(() => { img.src = src; img.style.opacity = '1'; }, 200);
+        }
+    }
+    function changeGalleryImage(dir) { currentImageIndex = (currentImageIndex + dir + 2) % 2; updateGalleryDisplay(); }
+    function setGalleryImage(i) { currentImageIndex = i; updateGalleryDisplay(); }
+    function updateGalleryDisplay() {
+        document.querySelectorAll('.gallery-image').forEach((img, i) => img.classList.toggle('hidden', i !== currentImageIndex));
+        document.querySelectorAll('.gallery-dot').forEach((dot, i) => dot.classList.toggle('active', i === currentImageIndex));
+    }
+    
+    // ═══════════════════════════════════════════════════════
+    // MODAL PRODUTO
+    // ═══════════════════════════════════════════════════════
+    function openProductModal(productId) {
+        currentProduct = allProducts.find(p => p.id === productId);
+        if (!currentProduct) return;
+        selectedSeason = null; selectedColor = null; selectedSize = null; currentImageIndex = 0;
+        document.getElementById('modal-title').textContent = currentProduct.name;
+        document.getElementById('modal-category').textContent = currentProduct.category === 'seasons' ? 'Coleção Estações' : categoryLabels[currentProduct.category] || currentProduct.category;
+        document.getElementById('modal-description').textContent = currentProduct.description;
+        document.getElementById('modal-price').textContent = `€${currentProduct.basePrice.toFixed(2)}`;
+        const seasonSection = document.getElementById('season-section'), colorSection = document.getElementById('color-section'),
+            sizeSection = document.getElementById('size-section'), variantThumbnails = document.getElementById('variant-thumbnails'),
+            collectionBadge = document.getElementById('collection-badge'), isSingleImage = currentProduct.noColorSelection;
+        if (currentProduct.hasSeasons && currentProduct.seasonImages) {
+            renderImageGallery(currentProduct.seasonImages, 'primavera', isSingleImage);
+            collectionBadge.classList.remove('hidden');
+            collectionBadge.querySelector('span').textContent = 'EDIÇÃO ESPECIAL';
+            seasonSection.classList.remove('hidden');
+            const seasons = ['Primavera', 'Verão', 'Outono', 'Inverno'];
+            document.getElementById('modal-seasons').innerHTML = seasons.map(season => `<button onclick="selectSeason('${season}')" class="season-selector flex items-center gap-2 p-3 rounded-xl border border-nuca-green/20 transition-all" data-season="${season}"><div class="w-8 h-8 rounded-full bg-nuca-green/10 flex items-center justify-center">${seasonIcons[season]}</div><span>${season}</span></button>`).join('');
+            if (currentProduct.noColorSelection || !currentProduct.colors || currentProduct.colors.length === 0) {
+                colorSection.classList.add('hidden'); variantThumbnails.innerHTML = '';
+            } else {
+                colorSection.classList.remove('hidden');
+                document.getElementById('modal-colors').innerHTML = currentProduct.colors.map((color, i) => `<button onclick="selectColor(${i})" class="color-selector w-9 h-9 rounded-full border-2" style="background-color:${color.hex}" title="${color.name}"></button>`).join('');
+                variantThumbnails.innerHTML = currentProduct.colors.map((color, i) => `<div class="variant-thumbnail ${i === 0 ? 'active' : ''}" data-color-index="${i}"><img src="${currentProduct.images[color.key]?.front || ''}" alt="${color.name}"></div>`).join('');
+            }
+        } else {
+            const firstKey = currentProduct.colors && currentProduct.colors.length > 0 ? currentProduct.colors[0].key : Object.keys(currentProduct.images)[0];
+            renderImageGallery(currentProduct.images, firstKey, false);
+            collectionBadge.classList.add('hidden');
+            seasonSection.classList.add('hidden');
+            if (currentProduct.colors && currentProduct.colors.length > 0) {
+                colorSection.classList.remove('hidden');
+                document.getElementById('modal-colors').innerHTML = currentProduct.colors.map((color, i) => `<button onclick="selectColor(${i})" class="color-selector w-9 h-9 rounded-full border-2" style="background-color:${color.hex}" title="${color.name}"></button>`).join('');
+                variantThumbnails.innerHTML = currentProduct.colors.map((color, i) => `<div class="variant-thumbnail ${i === 0 ? 'active' : ''}" data-color-index="${i}"><img src="${currentProduct.images[color.key]?.front || ''}" alt="${color.name}"></div>`).join('');
+            } else {
+                colorSection.classList.add('hidden'); variantThumbnails.innerHTML = '';
+            }
+        }
+        if (currentProduct.sizes) { sizeSection.classList.remove('hidden'); renderSizeSelector(); } else { sizeSection.classList.add('hidden'); }
+        const modal = document.getElementById('product-modal'), content = document.getElementById('modal-content');
+        modal.classList.add('active');
+        document.body.classList.add('overflow-hidden');
+        setTimeout(() => content.classList.add('open'), 10);
+    }
+    function closeProductModal() {
+        const content = document.getElementById('modal-content');
+        content.classList.remove('open');
+        setTimeout(() => { document.getElementById('product-modal').classList.remove('active'); document.body.classList.remove('overflow-hidden'); }, 350);
+    }
+    
+    // ═══════════════════════════════════════════════════════
+    // SELEÇÕES DO MODAL
+    // ═══════════════════════════════════════════════════════
+    function getSeasonKey(season) {
+        const map = { 'Primavera': 'primavera', 'Verão': 'verao', 'Outono': 'outono', 'Inverno': 'inverno' };
+        return map[season] || season.toLowerCase();
+    }
+    function selectSeason(season) {
+        selectedSeason = season;
+        document.querySelectorAll('#modal-seasons .season-selector').forEach(btn => { btn.classList.toggle('active', btn.dataset.season === season); });
+        const key = getSeasonKey(season);
+        const imgs = currentProduct.seasonImages[key];
+        if (!imgs) return;
+        if (currentProduct.noColorSelection) {
+            updateGalleryImage(imgs.front);
+        } else {
+            const galleryImgs = document.querySelectorAll('.gallery-image');
+            if (galleryImgs[0]) galleryImgs[0].src = imgs.front;
+            if (galleryImgs[1] && imgs.back) galleryImgs[1].src = imgs.back;
+        }
+    }
+    function selectColor(index) {
+        selectedColor = index;
+        document.querySelectorAll('.variant-thumbnail').forEach((t, i) => t.classList.toggle('active', i === index));
+        document.querySelectorAll('#modal-colors .color-selector').forEach((b, i) => b.classList.toggle('active', i === index));
+        if (currentProduct && currentProduct.images && currentProduct.colors) {
+            const key = currentProduct.colors[index].key;
+            const imgs = currentProduct.images[key];
+            if (imgs) {
+                const galleryImgs = document.querySelectorAll('.gallery-image');
+                if (galleryImgs[0]) galleryImgs[0].src = imgs.front;
+                if (galleryImgs[1] && imgs.back) galleryImgs[1].src = imgs.back;
+            }
+        }
+    }
+    function renderSizeSelector() {
+        const container = document.getElementById('modal-sizes');
+        const sizeLabel = document.getElementById('size-label');
+        if (currentProduct.sizes && currentProduct.sizes.length === 1 && currentProduct.sizes[0] === 'Único') {
+            sizeLabel.textContent = 'Tamanho';
+            container.innerHTML = '<span class="inline-block px-4 py-2 bg-nuca-green/10 text-nuca-green rounded-full text-sm font-bold">Único</span>';
+            selectedSize = 'Único';
+            return;
+        }
+        if (currentProduct.id.includes('meias')) {
+            sizeLabel.textContent = 'Tamanho (EU) *';
+            container.innerHTML = `<select id="meias-size-select" onchange="selectSize(this.value)" class="nuca-select w-40 p-2.5 border-2 border-nuca-green rounded-lg bg-white text-nuca-green text-sm font-bold"><option value="" selected disabled>Tamanho</option>${currentProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
+        } else {
+            sizeLabel.textContent = 'Tamanho *';
+            container.innerHTML = currentProduct.sizes.map(s => `<button onclick="selectSize('${s}')" class="size-btn w-10 h-10 rounded-full border-2 border-nuca-green font-bold transition-all text-sm ${selectedSize === s ? 'active' : 'text-nuca-green'}">${s}</button>`).join('');
+        }
+    }
+    function selectSize(size) { selectedSize = size; renderSizeSelector(); }
+    
+    // ═══════════════════════════════════════════════════════
+    // ADICIONAR AO CARRINHO (PRODUTO INDIVIDUAL)
+    // ═══════════════════════════════════════════════════════
     function addToCartFromModal() {
         if (currentProduct.hasSeasons && !selectedSeason) {
             showNotification('warning', 'Seleciona uma estação', 'Por favor escolhe a estação que preferes.');
@@ -809,9 +1112,9 @@
             showNotification('warning', 'Seleciona um tamanho', 'Por favor escolhe o tamanho que preferes.');
             return;
         }
-        
+    
         let imageUrl = '', colorName = null;
-        
+    
         if (currentProduct.hasSeasons && selectedSeason && currentProduct.seasonImages) {
             const k = getSeasonKey(selectedSeason);
             imageUrl = currentProduct.seasonImages[k]?.front || '';
@@ -823,9 +1126,10 @@
         } else if (currentProduct.images) {
             imageUrl = currentProduct.images[Object.keys(currentProduct.images)[0]]?.front || '';
         }
-        
+    
         cart.push({
-            id: currentProduct.id + (selectedSeason || '') + (selectedColor !== null && currentProduct.colors ? currentProduct.colors[selectedColor]?.name : ''),
+            // FIX 3 — ID único mesmo para produtos sem cor/estação (ex: Tote Bag, Chaveiro)
+            id: currentProduct.id + (selectedSeason || '') + (selectedColor !== null && currentProduct.colors ? currentProduct.colors[selectedColor]?.name : '') + '_' + Date.now(),
             name: currentProduct.name + (selectedSeason ? ` - ${selectedSeason}` : ''),
             price: currentProduct.basePrice,
             originalPrice: currentProduct.basePrice,
@@ -833,7 +1137,7 @@
             color: colorName,
             image: imageUrl
         });
-        
+    
         updateCartUI();
         closeProductModal();
         setTimeout(() => {
@@ -1089,7 +1393,8 @@
         packProducts.forEach(product => {
             let imageUrl = '';
             let colorName = null;
-            let finalPrice = product.basePrice;
+            const discountFactor = (100 - currentPack.discount) / 100;
+            let finalPrice = parseFloat((product.basePrice * discountFactor).toFixed(2));
             let productName = product.name;
             
             if (currentPack.type === 'seasons' && product.hasSeasons && selectedPackSeasons[product.id]) {
@@ -1114,7 +1419,7 @@
                 id: `${product.id}_pack_${Date.now()}_${Math.random()}`,
                 name: productName,
                 price: finalPrice,
-                originalPrice: finalPrice,
+                originalPrice: product.basePrice,
                 size: selectedPackSizes[product.id] || (product.sizes && product.sizes[0] === 'Único' ? 'Único' : null),
                 color: colorName,
                 image: imageUrl,
@@ -1208,7 +1513,13 @@
             `).join('');
             
             // Calcular subtotal corretamente pelos preços individuais
-            const subtotal = cart.reduce((s, item) => s + parseFloat(item.price), 0);
+            const subtotal = cart.reduce((s, item) => s + (parseFloat(item.originalPrice) || parseFloat(item.price) || 0), 0);
+            const total = cart.reduce((s, item) => s + (parseFloat(item.price) || 0), 0);
+            const discount = subtotal - total;
+            
+            subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
+            discountEl.textContent = discount > 0 ? `-€${discount.toFixed(2)}` : `€0.00`;
+            totalEl.textContent = `€${total.toFixed(2)}`;
             
             subtotalEl.textContent = `€${subtotal.toFixed(2)}`;
             discountEl.textContent = `€0.00`;
